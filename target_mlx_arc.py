@@ -52,25 +52,9 @@ def _init_backend():
     _model, _tokenizer = load(MODEL_PATH)
 
     if USE_TURBOQUANT:
-        try:
-            from turboquant_mlx import TurboQuantKVCache
-            TurboQuantKVCache(bits=TQ_BITS)
-            print(f"[backend] TurboQuant {TQ_BITS}-bit available", flush=True)
-        except Exception as e:
-            print(f"[backend] TurboQuant unavailable ({e}), using default cache", flush=True)
+        print(f"[backend] KV quantization: {TQ_BITS}-bit (mlx-lm built-in)", flush=True)
 
     print("[backend] MLX ready.", flush=True)
-
-
-def _make_cache():
-    """Create KV cache — turboquant-compressed or default."""
-    if USE_TURBOQUANT:
-        try:
-            from turboquant_mlx import TurboQuantKVCache
-            return TurboQuantKVCache(bits=TQ_BITS)
-        except Exception:
-            pass
-    return None  # mlx-lm will use default cache
 
 
 def _generate(prompt: str, temperature: float) -> str:
@@ -79,15 +63,14 @@ def _generate(prompt: str, temperature: float) -> str:
         _init_backend()
 
     from mlx_lm import generate
+    from mlx_lm.sample_utils import make_sampler
 
     kwargs = {
         "max_tokens": MAX_NEW_TOKENS,
-        "temp": max(temperature, 1e-6),
+        "sampler": make_sampler(temp=max(temperature, 1e-6)),
     }
-
-    cache = _make_cache()
-    if cache is not None:
-        kwargs["kv_cache"] = cache
+    if USE_TURBOQUANT:
+        kwargs["kv_bits"] = TQ_BITS
 
     response = generate(
         _model,

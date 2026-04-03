@@ -115,35 +115,22 @@ def init_mlx():
     _model, _tokenizer = load(MODEL_PATH)
 
     if USE_TURBOQUANT:
-        try:
-            from turboquant_mlx import TurboQuantKVCache
-            # Verify it can instantiate
-            TurboQuantKVCache(bits=TQ_BITS)
-            print(f"[evolve] TurboQuant {TQ_BITS}-bit available", flush=True)
-        except Exception as e:
-            print(f"[evolve] TurboQuant unavailable: {e}", flush=True)
+        print(f"[evolve] KV quantization: {TQ_BITS}-bit (mlx-lm built-in)", flush=True)
 
     print("[evolve] MLX ready.", flush=True)
-
-
-def make_cache():
-    if USE_TURBOQUANT:
-        try:
-            from turboquant_mlx import TurboQuantKVCache
-            return TurboQuantKVCache(bits=TQ_BITS)
-        except Exception:
-            pass
-    return None
 
 
 def generate(prompt: str, temperature: float = 0.3) -> str:
     init_mlx()
     from mlx_lm import generate as mlx_generate
+    from mlx_lm.sample_utils import make_sampler
 
-    kwargs = {"max_tokens": MAX_NEW_TOKENS, "temp": max(temperature, 1e-6)}
-    cache = make_cache()
-    if cache is not None:
-        kwargs["kv_cache"] = cache
+    kwargs = {
+        "max_tokens": MAX_NEW_TOKENS,
+        "sampler": make_sampler(temp=max(temperature, 1e-6)),
+    }
+    if USE_TURBOQUANT:
+        kwargs["kv_bits"] = TQ_BITS
 
     return mlx_generate(_model, _tokenizer, prompt=prompt, **kwargs)
 

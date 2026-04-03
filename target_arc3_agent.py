@@ -207,12 +207,7 @@ def init_backend():
         print(f"[arc3] Loading {MODEL_PATH} via MLX...", flush=True)
         _model, _tokenizer = load(MODEL_PATH)
         if USE_TURBOQUANT:
-            try:
-                from turboquant_mlx import TurboQuantKVCache
-                TurboQuantKVCache(bits=TQ_BITS)
-                print(f"[arc3] TurboQuant {TQ_BITS}-bit available", flush=True)
-            except Exception:
-                pass
+            print(f"[arc3] KV quantization: {TQ_BITS}-bit (mlx-lm built-in)", flush=True)
         print("[arc3] MLX ready.", flush=True)
     elif MODEL_BACKEND == "openai":
         import openai
@@ -226,13 +221,10 @@ def generate_llm(prompt: str, temperature: float = 0.3) -> str:
 
     if MODEL_BACKEND == "mlx":
         from mlx_lm import generate as mlx_generate
-        kwargs = {"max_tokens": MAX_NEW_TOKENS, "temp": max(temperature, 1e-6)}
+        from mlx_lm.sample_utils import make_sampler
+        kwargs = {"max_tokens": MAX_NEW_TOKENS, "sampler": make_sampler(temp=max(temperature, 1e-6))}
         if USE_TURBOQUANT:
-            try:
-                from turboquant_mlx import TurboQuantKVCache
-                kwargs["kv_cache"] = TurboQuantKVCache(bits=TQ_BITS)
-            except Exception:
-                pass
+            kwargs["kv_bits"] = TQ_BITS
         return mlx_generate(_model, _tokenizer, prompt=prompt, **kwargs)
 
     elif MODEL_BACKEND == "openai":
