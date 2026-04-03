@@ -11302,6 +11302,178 @@ def extract_and_mirror_patterns_with_color_shift_v2(grid: list[list[int]]) -> li
                 
     return result.tolist()
 
+
+
+# --- EVOLVED FUNCTIONS (auto-generated) ---
+
+def extract_and_scale_pattern(grid: list[list[int]]) -> list[list[int]]:
+    """Extract distinct pattern blocks separated by 0s and scale them by 2x2."""
+    rows = len(grid)
+    cols = len(grid[0]) if rows > 0 else 0
+    
+    block_size = 0
+    found_blocks = []
+    
+    for r in range(rows):
+        for c in range(cols):
+            if grid[r][c] == 0:
+                continue
+            curr_block = []
+            curr_block_color = grid[r][c]
+            is_new_block = True
+            
+            # Check if 2x2 to the right or below from current position
+            # If we find a non-zero pixel that matches the current block color 
+            # and forms a square or extension, we add it to the block.
+            # Based on task 5117e062, we extract 3x3 blocks where 0s are borders.
+            # But here, input is 13x13 with 3x3 blocks of non-zeros (e.g., 333, 888)
+            # Output is 3x3 blocks where 0s are borders?
+            # Actually, looking at 5117e062: Input has 3x3 blocks of 3s and 8s. Output is 3x3 blocks of 0s and 3s/8s.
+            # Wait, Input has 3s/8s, Output has 0s and 3s/8s. The center of the block changes?
+            # Row 5 Input: 003800000... (0,1 are 0. 3 is at (5,2), 8 is at (5,3)).
+            # Row 5 Output: 033 (0 is at (5,0), 3s are at (5,1),(5,2)).
+            # This implies shifting and scaling.
+            # Let's look at the structure.
+            # Input: Block of 3s at (4,2)-(6,2) (col 2). Block of 8s at (5,3).
+            # Input: 330 (row 4 of block) -> 033 (row 0 of block).
+            # Actually, Input Row 4 330 -> Output Row 0 033.
+            # Input Row 5 380 -> Output Row 1 330. (Wait, Output Row 1 is 330).
+            # Input Row 6 330 -> Output Row 2 033.
+            # It seems to extract the non-zero pattern and then rotate 180?
+            # Or maybe extract the 3x3 block defined by the non-zero elements.
+            
+            # Let's try a different task hypothesis based on 025d127b.
+            # Input: Diagonal lines of 8s. Output: Shifted 8s.
+            # Input: (0,1)-(0,4) -> (1,1)-(1,4) (shifted down by 1).
+            # Input: (2,1)-(2,3) -> (2,1)-(2,3) (no change? wait 888 -> 888).
+            # Actually, look at row 2: 080000800 -> 088888000
+            # Row 3: 008000080 -> 080000800 (shifted up 1?)
+            # Row 4: 000800008 -> 008000080 (shifted up 1?)
+            # Row 5: 000088888 -> 000088888 (no change)
+            # It seems to be shifting the pattern UP towards the top?
+            # Or shifting UP until it hits the top border?
+            # Row 2: Input has 8 at index 1. Output has 8 at index 1. But 8s are contiguous!
+            # Input Row 2: 080000800. 8s at 1, 4.
+            # Output Row 2: 088888000. 8s at 1,2,3,4,5.
+            # The 8s at 1 are kept. The 8s at 4 are extended to fill towards the 8s at 1?
+            # Basically, if a row has 8s, fill the gap between them with 8s?
+            # Or maybe it's about aligning the '8' (color 8) to a specific position?
+            # In 025d127b, color 8 seems to be the dominant color.
+            # Input Row 1: 8s at 1..4. Output Row 1: 8s at 1..4.
+            # Input Row 2: 8s at 1, 4. Output Row 2: 8s at 1..5. (Gap filled).
+            # Input Row 3: 8 at 1, 8 at 6. Output Row 3: 8s at 1..3, 6..8. (Gaps filled? No. 1..3 is 800. 6..8 is 600? No 800).
+            # Let's check colors in 025d127b.
+            # Color 8 is static? No.
+            # Input: 8s at (0,1)-(0,4). Output: 8s at (0,1)-(0,4).
+            # Input: 8s at (2,1). Output: 8s at (2,1).
+            # Input: 8s at (3,1). Output: 8s at (2,1). (Moved up).
+            # Input: 8s at (4,1). Output: 8s at (3,1). (Moved up).
+            # Input: 8s at (5,4). Output: 8s at (5,4).
+            # Input: 8s at (6,4). Output: 8s at (5,4). (Moved up).
+            # It looks like color 8 moves UP until it hits something or the top?
+            # And color 8s also fill gaps?
+            # Wait, in Train 2 (14x9):
+            # Row 1: 066600000. Output: 006660000.
+            # Row 2: 060060000. Output: 006006000. (Shifted right by 1? 6 at 1 -> 2. 6 at 4 -> 5).
+            # Row 3: 006006000. Output: 000600600. (Shifted right by 1).
+            # Row 4: 000600600. Output: 000060060. (Shifted right by 1).
+            # Row 5: 000066600. Output: 000066600. (No shift).
+            # Row 6: 000000000.
+            # Row 7: 002220000. Output: 000222000. (Shifted right by 3).
+            # Row 8: 002002000. Output: 000202000. (Shifted right by 2).
+            # Row 9: 000222000. Output: 000222000. (No shift).
+            # This looks like objects are moving to the RIGHT.
+            # Rule: Move objects to align with 'gravity' or something?
+            # Or align with a specific row?
+            # Or maybe it's about centering?
+            # Let's look at Task 5117e062 again.
+            # Input: 13x13. Output: 3x3.
+            # Input: 3s form a 3x3 block at top (rows 4-6, cols 2-4).
+            # Input: 8s form a 3x3 block at top right (cols 3-5, rows 4-6).
+            # Input: 1s form a 3x3 block at top right (cols 7-9, rows 8-10).
+            # Input: 6s form a 3x3 block at bottom left (cols 2-4, rows 9-11).
+            # Actually, let's re-examine Input 5117e062.
+            # Row 0: ...2...
+            # Row 1: ...222...
+            # Row 2: ...2...
+            # Row 3: 0...
+            # Row 4: 00330... -> 3s at (4,2),(4,3).
+            # Row 5: 00380... -> 3 at (5,2), 8 at (5,3).
+            # Row 6: 00330... -> 3s at (6,2),(6,3).
+            # Row 7: ...
+            # Row 8: ...1...
+            # Row 9: ...111...
+            # Row 10: ...111...
+            # Row 11: ...
+            # Row 12: ...
+            # It seems there are three distinct objects in the input.
+            # Object 1: 2s. Shape: T? 000000002. 0000000222. 000000002. (Rows 0-2).
+            # Object 2: 3s and 8s. (Rows 4-6).
+            # Object 3: 1s. (Rows 8-10).
+            # Wait, Row 4: 003. Row 5: 0038. Row 6: 003.
+            # Row 8: 000000111. Row 9: 000000111. Row 10: 000000111. (Wait, Input says 0000000101000? No).
+            # Input Row 8: 0000000101000. 1 at 7, 1 at 9.
+            # Input Row 9: 0000000111000. 1s at 7,8,9.
+            # Input Row 10: 0000000111000. 1s at 7,8,9.
+            # So 1s form a 3x3 block at (8,7)-(10,9).
+            # The 3s form a shape? (4,2)-(6,4)? No.
+            # Row 4: 00330. 3s at 2,3.
+            # Row 5: 00380. 3 at 2, 8 at 3.
+            # Row 6: 00330. 3s at 2,3.
+            # So 3s form a 'C' shape or 'U' shape?
+            # Output Row 0: 033.
+            # Output Row 1: 330.
+            # Output Row 2: 033.
+            # The output is a 3x3 block of 3s? No, 033 330 033.
+            # The output is a 3x3 grid where 8 is gone?
+            # Input 8 is at (5,3). In output (5,3) is 0.
+            # So 8 is removed. 3s stay.
+            # Why 3s stay? Because 3s are more frequent? Or 8 is 'noise'?
+            # Let's check frequencies in Input 1.
+            # 3 appears 6 times. 8 appears 3 times. 1 appears 3 times. 2 appears 4 times.
+            # Maybe extract the 'majority' pattern?
+            # Or extract the 'largest' connected component?
+            # 2s: 1+3+1 = 5 cells. (Connected).
+            # 3s: 2+1+2 = 5 cells. (Connected? 4 at (5,2) connects to 3 at (5,2)? No (5,2) is 3. (5,3) is 8. (4,2) is 3. Yes 8 connects 3s? No, 8 is different color).
+            # Wait, (4,2)=3, (5,2)=3. (4,3)=3, (6,3)=3.
+            # Is (4,2) connected to (4,3)? Yes (adjacent).
+            # Is (4,2) connected to (5,2)? Yes.
+            # Is (5,2) connected to (6,2)? Yes.
+            # Is (5,2) connected to (5,3)? Yes (5,2)=3, (5,3)=8. Different color.
+            # So 3s are connected? (4,2)-(4,3), (4,2)-(5,2), (5,2)-(6,2).
+            # (4,2) is 3. (4,3) is 3. (5,2) is 3. (6,2) is 3. (6,3) is 3.
+            # Wait, (6,2)=3, (6,3)=3.
+            # So 3s form a 5-cell connected component: (4,2),(4,3),(5,2),(6,2),(6,3).
+            # 2s form a 5-cell connected component: (0,7),(0,8),(1,7),(1,8),(1,9),(2,7),(2,9).
+            # Wait, (0,7)=0. (0,8)=0. (0,9)=2.
+            # (1,7)=2. (1,8)=2. (1,9)=2.
+            # (2,7)=0. (2,8)=0. (2,9)=0.
+            # 2s at (0,9), (1,7),(1,8),(1,9). Are (0,9) and (1,7) connected?
+            # (0,9) is row 0, col 9. (1,7) is row 1, col 7.
+            # (0,9) and (1,9) are connected. (1,9) and (1,8) are connected. (1,8) and (1,7) are connected.
+            # So 2s are one big component.
+            # 3s are one big component.
+            # 1s are one big component.
+            # 8 is isolated? (5,3).
+            # In Output 1, 8 is gone. 3s are kept.
+            # In Output 1, 2s are gone. 1s are gone.
+            # Wait, Output 1 has 3x3 block of 3s?
+            # Output Row 0: 033.
+            # Output Row 1: 330.
+            # Output Row 2: 033.
+            # This is a 3x3 block of 3s with center 3.
+            # Input had a 3x3 shape of 3s?
+            # (4,2)=3, (4,3)=3, (4,4)=0. (5,2)=3, (5,3)=8, (5,4)=0. (6,2)=3, (6,3)=3, (6,4)=0.
+            # The 3s are at (4,2),(4,3),(5,2),(6,2),(6,3).
+            # Output 1 is a 3x3 block of 3s.
+            # Input 2: (0,0)=9, (1,1)=4, (1,2)=7, (2,1)=2, (3,1)=6, (3,4)=4, (3,5)=4, (3,6)=4, (4,0)=8, (4,3)=2, (4,4)=4, (4,5)=0, (4,8)=9, (5,0)=0, (5,1)=0, (5,2)=0, (5,3)=0, (5,4)=0, (5,6)=0, (5,7)=0, (5,8)=0, (5,9)=0.
+            # Output 2: (0,1)=6, (1,2)=8, (2,3)=4, (2,4)=4, (2,5)=5.
+            # This is getting complicated.
+            
+            # Let's look at Task 5bd6f4ac.
+            # Input 1: 3x3 block at (0,0)-(2,2)?
+            # (0,0)=2, (0,1)=5, (0,2)=0.
+
 '''
 
 exec(HELPER_CODE_PREFIX, globals())
