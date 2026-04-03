@@ -11105,6 +11105,203 @@ def extract_and_mirror_pattern_with_color_shift(grid: list[list[int]]) -> list[l
     
     return result.tolist()
 
+
+
+# --- EVOLVED FUNCTIONS (auto-generated) ---
+
+def expand_and_fill_pattern(grid: list[list[int]]) -> list[list[int]]:
+    """Extracts the smallest repeating unit from the grid and expands it to fill the grid with mirrored repetitions."""
+    import numpy as np
+    grid_np = np.array(grid)
+    h, w = grid_np.shape
+    
+    # Identify repeating units by checking for periodicity
+    # Check horizontal period
+    h_period = 1
+    for p in range(1, w):
+        if all(grid_np[i, p] == grid_np[i, 0] for i in range(h)):
+            h_period = p
+            break
+    
+    # Check vertical period
+    v_period = 1
+    for p in range(1, h):
+        if all(grid_np[p, j] == grid_np[0, j] for j in range(w)):
+            v_period = p
+            break
+    
+    # If no period found, assume the whole grid is the pattern
+    if h_period == 1 and v_period == 1:
+        return grid
+    
+    # Extract the smallest repeating block
+    block_h = v_period
+    block_w = h_period
+    
+    # Extract the block
+    block = grid_np[:block_h, :block_w]
+    
+    # Create a mirrored block
+    block_h_mirror = np.concatenate([block, block[:, ::-1]], axis=1)
+    block_v_mirror = np.concatenate([block_h_mirror, np.flip(block_h_mirror, axis=0)], axis=0)
+    
+    # Tile the mirrored block to fill the grid
+    result = np.zeros((h, w), dtype=int)
+    for i in range(h):
+        for j in range(w):
+            r = i % (2 * block_h)
+            c = j % (2 * block_w)
+            result[i, j] = block_v_mirror[r, c]
+            
+    return result.tolist()
+
+def fill_pattern_with_mirror_color_shift(grid: list[list[int]]) -> list[list[int]]:
+    """Extracts the smallest repeating pattern, mirrors it, and shifts colors based on the quadrant."""
+    import numpy as np
+    grid_np = np.array(grid)
+    h, w = grid_np.shape
+    
+    # Find horizontal period
+    h_period = 1
+    for p in range(1, w):
+        if all(grid_np[i, p] == grid_np[i, 0] for i in range(h)):
+            h_period = p
+            break
+    
+    # Find vertical period
+    v_period = 1
+    for p in range(1, h):
+        if all(grid_np[p, j] == grid_np[0, j] for j in range(w)):
+            v_period = p
+            break
+    
+    # Extract the smallest repeating block
+    block = grid_np[:v_period, :h_period]
+    
+    # Create a mirrored block
+    block_h_mirror = np.concatenate([block, block[:, ::-1]], axis=1)
+    block_v_mirror = np.concatenate([block_h_mirror, np.flip(block_h_mirror, axis=0)], axis=0)
+    
+    # Tile the mirrored block to fill the grid
+    result = np.zeros((h, w), dtype=int)
+    for i in range(h):
+        for j in range(w):
+            r = i % (2 * v_period)
+            c = j % (2 * h_period)
+            val = block_v_mirror[r, c]
+            
+            # Apply color shift based on quadrant
+            q_r = r // v_period
+            q_c = c // h_period
+            
+            # Shift color based on quadrant (e.g., +1 or -1)
+            # Assuming colors are 0-9, shift by 1
+            if val > 0:
+                new_val = (val + q_r * q_c) % 10
+                result[i, j] = new_val
+            else:
+                result[i, j] = val
+                
+    return result.tolist()
+
+def extract_and_mirror_patterns_with_color_shift(grid: list[list[int]]) -> list[list[int]]:
+    """Extracts the smallest repeating pattern from the grid, mirrors it, and shifts colors based on the quadrant."""
+    import numpy as np
+    grid_np = np.array(grid)
+    h, w = grid_np.shape
+    
+    # Find horizontal period
+    h_period = 1
+    for p in range(1, w):
+        if all(grid_np[i, p] == grid_np[i, 0] for i in range(h)):
+            h_period = p
+            break
+    
+    # Find vertical period
+    v_period = 1
+    for p in range(1, h):
+        if all(grid_np[p, j] == grid_np[0, j] for j in range(w)):
+            v_period = p
+            break
+    
+    # Extract the smallest repeating block
+    block = grid_np[:v_period, :h_period]
+    
+    # Create a mirrored block
+    block_h_mirror = np.concatenate([block, block[:, ::-1]], axis=1)
+    block_v_mirror = np.concatenate([block_h_mirror, np.flip(block_h_mirror, axis=0)], axis=0)
+    
+    # Tile the mirrored block to fill the grid
+    result = np.zeros((h, w), dtype=int)
+    for i in range(h):
+        for j in range(w):
+            r = i % (2 * v_period)
+            c = j % (2 * h_period)
+            val = block_v_mirror[r, c]
+            
+            # Apply color shift based on quadrant
+            q_r = r // v_period
+            q_c = c // h_period
+            
+            # Shift color based on quadrant (e.g., +1 or -1)
+            # Assuming colors are 0-9, shift by 1
+            if val > 0:
+                new_val = (val + q_r * q_c) % 10
+                result[i, j] = new_val
+            else:
+                result[i, j] = val
+                
+    return result.tolist()
+
+def extract_and_mirror_patterns_with_color_shift_v2(grid: list[list[int]]) -> list[list[int]]:
+    """Extracts the smallest repeating pattern from the grid, mirrors it, and shifts colors based on the quadrant."""
+    import numpy as np
+    grid_np = np.array(grid)
+    h, w = grid_np.shape
+    
+    # Find horizontal period
+    h_period = 1
+    for p in range(1, w):
+        if all(grid_np[i, p] == grid_np[i, 0] for i in range(h)):
+            h_period = p
+            break
+    
+    # Find vertical period
+    v_period = 1
+    for p in range(1, h):
+        if all(grid_np[p, j] == grid_np[0, j] for j in range(w)):
+            v_period = p
+            break
+    
+    # Extract the smallest repeating block
+    block = grid_np[:v_period, :h_period]
+    
+    # Create a mirrored block
+    block_h_mirror = np.concatenate([block, block[:, ::-1]], axis=1)
+    block_v_mirror = np.concatenate([block_h_mirror, np.flip(block_h_mirror, axis=0)], axis=0)
+    
+    # Tile the mirrored block to fill the grid
+    result = np.zeros((h, w), dtype=int)
+    for i in range(h):
+        for j in range(w):
+            r = i % (2 * v_period)
+            c = j % (2 * h_period)
+            val = block_v_mirror[r, c]
+            
+            # Apply color shift based on quadrant
+            q_r = r // v_period
+            q_c = c // h_period
+            
+            # Shift color based on quadrant (e.g., +1 or -1)
+            # Assuming colors are 0-9, shift by 1
+            if val > 0:
+                new_val = (val + q_r * q_c) % 10
+                result[i, j] = new_val
+            else:
+                result[i, j] = val
+                
+    return result.tolist()
+
 '''
 
 exec(HELPER_CODE_PREFIX, globals())
