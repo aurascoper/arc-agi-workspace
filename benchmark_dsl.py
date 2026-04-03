@@ -17,7 +17,7 @@ import random
 import threading
 from pathlib import Path
 
-ARC_DATA = Path(os.environ.get("ARC_DATA", "./arc_data/data/training"))
+ARC_DATA = Path(os.environ.get("ARC_DATA", "./arc_agi_2_data/training"))
 SAMPLE_SIZE = int(os.environ.get("BENCHMARK_SAMPLE", "20"))
 BENCHMARK_MODE = os.environ.get("BENCHMARK_MODE", "fast")
 
