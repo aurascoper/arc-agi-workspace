@@ -314,7 +314,7 @@ except ImportError:
 
     class GameState:
         NOT_PLAYED = "NOT_PLAYED"
-        PLAYING = "PLAYING"
+        NOT_FINISHED = "NOT_FINISHED"
         WIN = "WIN"
         GAME_OVER = "GAME_OVER"
 
@@ -490,7 +490,7 @@ def benchmark_policy(episodes=5):
                 # Mock frame response
                 frames.append(FrameData(
                     frame=[],
-                    state=GameState.PLAYING,
+                    state=GameState.NOT_FINISHED,
                     levels_completed=0,
                 ))
             except Exception:
