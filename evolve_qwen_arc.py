@@ -49,7 +49,7 @@ RESULTS_DIR = WORKSPACE / "evolution_results"
 HYPOTHESES_FILE = RESULTS_DIR / "hypotheses.jsonl"
 
 MODEL_PATH = os.environ.get("ARC_MODEL_PATH", "mlx-community/Qwen3.5-9B-4bit")
-MAX_NEW_TOKENS = int(os.environ.get("EVOLVE_MAX_TOKENS", "2048"))
+MAX_NEW_TOKENS = int(os.environ.get("EVOLVE_MAX_TOKENS", "4096"))
 TASKS_PER_DIAGNOSTIC = int(os.environ.get("TASKS_PER_DIAGNOSTIC", "5"))
 OUTER_ROUNDS = int(os.environ.get("EVOLVE_ROUNDS", "3"))
 CODOPT_BRANCHES = int(os.environ.get("CODOPT_BRANCHES", "3"))
@@ -373,45 +373,38 @@ def compute_solve_score(failing_results):
 # ---------------------------------------------------------------------------
 
 DIAGNOSTIC_PROMPT = """\
-You are an expert at the ARC-AGI challenge. Analyze these failing ARC tasks and \
-propose NEW Python helper functions that would help solve them.
+/no_think
+You are an ARC-AGI DSL engineer. Given failing tasks, output ONLY Python functions. No analysis, no explanation — just code.
 
-Current DSL has {num_functions} helper functions.
+Current DSL: {num_functions} functions. Do NOT duplicate existing functions.
 
-## Research Context — Known ARC Techniques
+## Known Techniques
 {research_context}
 
-## Existing Function Signatures (do NOT duplicate these)
+## Existing (last 50 signatures, do NOT duplicate)
 {existing_signatures}
 
-## Previous Hypotheses (what worked / what didn't)
+## Previous Experiments
 {hypothesis_history}
 
 ## Failing Tasks
 {task_descriptions}
 
-For each failing task:
-1. Describe what transformation pattern you see (in/out relationship)
-2. Identify what CAPABILITY is missing from the DSL (reference research context above)
-3. Write a NEW Python function that implements this capability
+OUTPUT EXACTLY 3-5 new Python functions in ```python blocks. Each function:
+- Takes `grid: list[list[int]]` as first arg, returns `list[list[int]]`
+- Is self-contained (only stdlib + numpy)
+- Does ONE transformation relevant to the failing tasks above
+- Has a one-line docstring
 
-Output format:
 ```python
-def new_function_name(grid, ...):
-    \"\"\"One-line description of what this does.\"\"\"
+def function_name(grid: list[list[int]]) -> list[list[int]]:
+    \"\"\"One-line description.\"\"\"
+    import numpy as np
     # implementation
-    ...
+    return result
 ```
 
-Rules:
-- Functions must be self-contained (only use stdlib + numpy)
-- Each function does ONE clear thing
-- Include type hints and a docstring
-- Test mentally on the example grids before proposing
-- DO NOT rewrite existing functions — only propose NEW ones
-- Reference the research context to ground your proposals
-
-Propose 3-5 new functions."""
+START WITH ```python IMMEDIATELY. No preamble."""
 
 
 def _extract_function_signatures(helper_code):
@@ -545,16 +538,18 @@ def run_codopt_round():
     """Run one codopt tournament round on dsl.py."""
     cmd = [
         "codopt", "run",
-        "--edit", str(DSL_PATH),
-        "--metric", str(METRIC_FILE),
+        "--edit", "dsl.py",
+        "--metric", "metric.json",
         "--metric-key", "score",
-        "--command", f"python3 {WORKSPACE / 'benchmark_dsl.py'}",
-        "--test", f"python3 {WORKSPACE / 'tests_dsl.py'}",
-        "--info", str(WORKSPACE / "INFO.md"),
+        "--command", "python3 benchmark_dsl.py",
+        "--test", "python3 tests_dsl.py",
+        "--info", "INFO.md",
         "--branch", str(CODOPT_BRANCHES),
         "--time", str(CODOPT_TIME),
         "--rounds", "1",
-        "--max-agents", "6",
+        "--max-agents", "4",
+        "--dockerfile", "Dockerfile",
+        "--no-open-ui",
     ]
 
     print(f"[evolve] Running codopt: {' '.join(cmd[:6])}...")
