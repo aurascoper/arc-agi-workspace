@@ -18,4 +18,6 @@ codopt run \
   --branch "$BRANCHES" \
   --time "$TIME" \
   --rounds "$ROUNDS" \
-  --max-agents 6
+  --max-agents 4 \
+  --dockerfile Dockerfile \
+  --no-open-ui
