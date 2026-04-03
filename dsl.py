@@ -10986,6 +10986,125 @@ def extract_and_mirror_patterns(grid: list[list[int]]) -> list[list[int]]:
         
     return result.tolist()
 
+
+
+# --- EVOLVED FUNCTIONS (auto-generated) ---
+
+def fill_pattern_with_mirror(grid: list[list[int]]) -> list[list[int]]:
+    """Extracts non-zero pattern, determines its bounding box, and fills the grid by mirroring the pattern in both axes to create a symmetric tiling."""
+    import numpy as np
+    grid_np = np.array(grid)
+    mask = grid_np != 0
+    if not np.any(mask):
+        return grid
+    
+    # Find bounding box of non-zero elements
+    rmin, rmax = np.where(mask.any(axis=1))[0][0], np.where(mask.any(axis=1))[-1][0]
+    cmin, cmax = np.where(mask.any(axis=0))[0][0], np.where(mask.any(axis=0))[-1][0]
+    
+    # Extract the pattern region
+    pattern = grid_np[rmin:rmax+1, cmin:cmax+1]
+    
+    # Calculate dimensions
+    h, w = pattern.shape
+    target_h, target_w = grid_np.shape
+    
+    # Create a mirrored version of the pattern (symmetric)
+    # Mirror horizontally
+    pattern_h_mirror = np.concatenate([pattern, pattern[:, ::-1]])
+    # Mirror vertically
+    pattern_v_mirror = np.concatenate([pattern_h_mirror, np.flipud(pattern_h_mirror)])
+    
+    # Determine the fundamental repeating unit (smallest symmetric tile)
+    # If the pattern itself is already symmetric, use it. Otherwise, use the mirrored version.
+    # Heuristic: if pattern == pattern_h_mirror[:h, :w], use pattern. Else use pattern_v_mirror.
+    is_h_sym = np.array_equal(pattern, pattern_h_mirror[:, :w])
+    is_v_sym = np.array_equal(pattern[:, :h], np.flipud(pattern))
+    
+    if is_h_sym and is_v_sym:
+        final_pattern = pattern
+    elif is_h_sym:
+        final_pattern = pattern
+    elif is_v_sym:
+        final_pattern = pattern
+    else:
+        # Create a symmetric pattern by mirroring
+        # Combine horizontal and vertical mirrors
+        final_pattern = np.concatenate([pattern_h_mirror, np.flipud(pattern_h_mirror)])
+    
+    # Tile the final pattern to fill the grid
+    result = np.zeros((target_h, target_w), dtype=int)
+    tile_h, tile_w = final_pattern.shape
+    
+    # Determine the tiling strategy based on target dimensions
+    # Try to fit the tile into the grid
+    if tile_h <= target_h and tile_w <= target_w:
+        # Simple tiling
+        for r in range(0, target_h, tile_h):
+            for c in range(0, target_w, tile_w):
+                r_end = min(r + tile_h, target_h)
+                c_end = min(c + tile_w, target_w)
+                result[r:r_end, c:c_end] = final_pattern[:r_end-r, :c_end-c]
+    
+    return result.tolist()
+
+def extract_and_mirror_pattern_with_color_shift(grid: list[list[int]]) -> list[list[int]]:
+    """Extracts the non-zero pattern, mirrors it to form a symmetric block, and tiles it into the grid, optionally shifting colors based on position."""
+    import numpy as np
+    grid_np = np.array(grid)
+    mask = grid_np != 0
+    if not np.any(mask):
+        return grid
+    
+    # Find bounding box of non-zero elements
+    rmin, rmax = np.where(mask.any(axis=1))[0][0], np.where(mask.any(axis=1))[-1][0]
+    cmin, cmax = np.where(mask.any(axis=0))[0][0], np.where(mask.any(axis=0))[-1][0]
+    
+    # Extract the pattern region
+    pattern = grid_np[rmin:rmax+1, cmin:cmax+1]
+    
+    # Calculate dimensions
+    h, w = pattern.shape
+    target_h, target_w = grid_np.shape
+    
+    # Create a symmetric pattern by mirroring
+    # Horizontal mirror
+    pattern_h = np.concatenate([pattern, pattern[:, ::-1]])
+    # Vertical mirror
+    pattern_v = np.concatenate([pattern_h, pattern_h[::-1]])
+    
+    # Determine the fundamental tile size (half of the symmetric block)
+    # If the pattern is already symmetric, use the original pattern
+    is_h_sym = np.array_equal(pattern, pattern_h[:, :w])
+    is_v_sym = np.array_equal(pattern[:, :h], pattern_h[:, :h])
+    
+    if is_h_sym and is_v_sym:
+        tile = pattern
+    else:
+        # Use the symmetric block as the tile
+        # But we need to determine if we should mirror or just tile
+        # Heuristic: if the target grid is larger than the pattern, tile it
+        # If the target grid is smaller or similar, just return the symmetric block
+        tile = pattern_h if w * 2 <= target_w else pattern
+        
+        # If the pattern is small and target is large, tile it
+        if tile_h * 2 <= target_h and tile_w * 2 <= target_w:
+            tile = np.concatenate([pattern, pattern[:, ::-1]])
+            tile = np.concatenate([tile, tile[::-1]])
+    
+    # Tile the tile into the grid
+    result = np.zeros((target_h, target_w), dtype=int)
+    t_h, t_w = tile.shape
+    
+    # Fill the grid with the tiled pattern
+    for r in range(0, target_h, t_h):
+        for c in range(0, target_w, t_w):
+            r_end = min(r + t_h, target_h)
+            c_end = min(c + t_w, target_w)
+            result[r:r_end, c:c_end] = tile[:r_end-r, :c_end-c]
+    
+    return result.tolist()
+
 '''
 
 exec(HELPER_CODE_PREFIX, globals())
