@@ -208,8 +208,9 @@ def init_backend():
         _model, _tokenizer = load(MODEL_PATH)
         if USE_TURBOQUANT:
             try:
-                from turboquant_mlx import apply_patch
-                apply_patch()
+                from turboquant_mlx import TurboQuantKVCache
+                TurboQuantKVCache(bits=TQ_BITS)
+                print(f"[arc3] TurboQuant {TQ_BITS}-bit available", flush=True)
             except Exception:
                 pass
         print("[arc3] MLX ready.", flush=True)
@@ -228,10 +229,8 @@ def generate_llm(prompt: str, temperature: float = 0.3) -> str:
         kwargs = {"max_tokens": MAX_NEW_TOKENS, "temp": max(temperature, 1e-6)}
         if USE_TURBOQUANT:
             try:
-                from turboquant_mlx import make_adaptive_cache
-                kwargs["kv_cache"] = make_adaptive_cache(
-                    len(_model.layers), bits=TQ_BITS, fp16_layers=4
-                )
+                from turboquant_mlx import TurboQuantKVCache
+                kwargs["kv_cache"] = TurboQuantKVCache(bits=TQ_BITS)
             except Exception:
                 pass
         return mlx_generate(_model, _tokenizer, prompt=prompt, **kwargs)

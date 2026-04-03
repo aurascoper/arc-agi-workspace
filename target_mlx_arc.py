@@ -53,9 +53,9 @@ def _init_backend():
 
     if USE_TURBOQUANT:
         try:
-            from turboquant_mlx import apply_patch
-            apply_patch()
-            print(f"[backend] TurboQuant {TQ_BITS}-bit enabled (fp16_layers={TQ_FP16_LAYERS})", flush=True)
+            from turboquant_mlx import TurboQuantKVCache
+            TurboQuantKVCache(bits=TQ_BITS)
+            print(f"[backend] TurboQuant {TQ_BITS}-bit available", flush=True)
         except Exception as e:
             print(f"[backend] TurboQuant unavailable ({e}), using default cache", flush=True)
 
@@ -66,12 +66,8 @@ def _make_cache():
     """Create KV cache — turboquant-compressed or default."""
     if USE_TURBOQUANT:
         try:
-            from turboquant_mlx import make_adaptive_cache
-            return make_adaptive_cache(
-                len(_model.layers),
-                bits=TQ_BITS,
-                fp16_layers=TQ_FP16_LAYERS,
-            )
+            from turboquant_mlx import TurboQuantKVCache
+            return TurboQuantKVCache(bits=TQ_BITS)
         except Exception:
             pass
     return None  # mlx-lm will use default cache
