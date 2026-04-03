@@ -1,0 +1,9 @@
+__pycache__/
+*.pyc
+.venv/
+metric.json
+evolution_results/
+arc_data/
+arc_agi_2_data/
+*.egg-info/
+.DS_Store
