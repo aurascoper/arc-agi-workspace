@@ -25,7 +25,7 @@ from copy import deepcopy
 
 MODEL_PATH = os.environ.get(
     "ARC_MODEL_PATH",
-    "mlx-community/Qwen3-30B-A3B-4bit",  # MoE: 30B total, 3B active, ~7GB at 4-bit
+    "mlx-community/Qwen3.5-9B-4bit",  # Dense 9B at 4-bit, ~5.5GB — fits M4 16GB
 )
 
 MAX_TASKS_TO_EVALUATE = 10

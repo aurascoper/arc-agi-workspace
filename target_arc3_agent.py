@@ -44,7 +44,7 @@ logger = logging.getLogger(__name__)
 # ---------------------------------------------------------------------------
 
 MODEL_BACKEND = os.environ.get("ARC3_BACKEND", "mlx")  # "mlx" or "openai"
-MODEL_PATH = os.environ.get("ARC_MODEL_PATH", "mlx-community/Qwen3-30B-A3B-4bit")
+MODEL_PATH = os.environ.get("ARC_MODEL_PATH", "mlx-community/Qwen3.5-9B-4bit")
 MAX_NEW_TOKENS = int(os.environ.get("ARC_MAX_TOKENS", "1024"))
 USE_TURBOQUANT = os.environ.get("USE_TURBOQUANT", "1") == "1"
 TQ_BITS = int(os.environ.get("TQ_BITS", "3"))

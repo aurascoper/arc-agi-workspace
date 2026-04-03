@@ -48,7 +48,7 @@ METRIC_FILE = WORKSPACE / "metric.json"
 RESULTS_DIR = WORKSPACE / "evolution_results"
 HYPOTHESES_FILE = RESULTS_DIR / "hypotheses.jsonl"
 
-MODEL_PATH = os.environ.get("ARC_MODEL_PATH", "mlx-community/Qwen3-30B-A3B-4bit")
+MODEL_PATH = os.environ.get("ARC_MODEL_PATH", "mlx-community/Qwen3.5-9B-4bit")
 MAX_NEW_TOKENS = int(os.environ.get("EVOLVE_MAX_TOKENS", "2048"))
 TASKS_PER_DIAGNOSTIC = int(os.environ.get("TASKS_PER_DIAGNOSTIC", "5"))
 OUTER_ROUNDS = int(os.environ.get("EVOLVE_ROUNDS", "3"))
