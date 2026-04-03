@@ -7,7 +7,7 @@ RUN apt-get update \
         curl \
     && rm -rf /var/lib/apt/lists/*
 
-# Install uv (required by codopt)
-RUN pip install --no-cache-dir uv
+# Install uv (required by codopt) and numpy (required by dsl.py)
+RUN pip install --no-cache-dir uv numpy
 
 WORKDIR /workspace
