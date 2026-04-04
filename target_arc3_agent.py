@@ -6,9 +6,13 @@ Architecture: Program synthesis as policy.
   Phase 2 (Exploitation): BFS in causal graph toward goal state
 
 Uses the official ARC-AGI-3-Agents API:
-  - Extends Agent base class
-  - Implements choose_action(frames, latest_frame) -> GameAction
-  - Implements is_done(frames, latest_frame) -> bool
+  - Extends Agent base class (from agents.agent)
+  - Implements choose_action(frames: list[FrameData], latest_frame: FrameData) -> GameAction
+  - Implements is_done(frames: list[FrameData], latest_frame: FrameData) -> bool
+
+SDK packages:
+  - arc_agi: Arcade, EnvironmentWrapper, scorecard management
+  - arcengine: GameAction, GameState, FrameData, FrameDataRaw, ActionInput
 
 Backends:
   - MLX local (Qwen3-30B-A3B-4bit + turboquant) for dev/testing
@@ -32,9 +36,7 @@ import json
 import logging
 import os
 import re
-import threading
 import time
-from copy import deepcopy
 from typing import Any, Optional
 
 logger = logging.getLogger(__name__)
@@ -59,112 +61,458 @@ POLICY_CODE = r'''
 import numpy as np
 from collections import Counter, deque
 
+# --- DSL helpers (inlined from dsl.py, adapted for 64x64 / 16-color) ---
+
+def _to_grid(frame_layer):
+    return frame_layer.tolist() if hasattr(frame_layer, 'tolist') else frame_layer
+
+def _detect_background(grid):
+    rows, cols = len(grid), len(grid[0])
+    border = (
+        [grid[0][c] for c in range(cols)] +
+        [grid[rows-1][c] for c in range(cols)] +
+        [grid[r][0] for r in range(rows)] +
+        [grid[r][cols-1] for r in range(rows)]
+    )
+    if not border:
+        return 0
+    counts = Counter(border)
+    # Tie-break by overall frequency
+    all_counts = Counter(cell for row in grid for cell in row)
+    return max(counts, key=lambda c: (counts[c], all_counts.get(c, 0)))
+
+def _palette(grid):
+    seen, out = set(), []
+    for row in grid:
+        for v in row:
+            if v not in seen:
+                seen.add(v); out.append(v)
+    return out
+
+def _get_objects(grid, background=None, diag=False):
+    if background is None:
+        background = _detect_background(grid)
+    rows, cols = len(grid), len(grid[0])
+    visited = set()
+    objs = []
+    deltas = [(0,1),(0,-1),(1,0),(-1,0)]
+    if diag:
+        deltas += [(1,1),(1,-1),(-1,1),(-1,-1)]
+    for r in range(rows):
+        for c in range(cols):
+            if grid[r][c] != background and (r, c) not in visited:
+                color = grid[r][c]
+                q = deque([(r, c)])
+                visited.add((r, c))
+                component = []
+                while q:
+                    cr, cc = q.popleft()
+                    component.append((cr, cc))
+                    for dr, dc in deltas:
+                        nr, nc = cr + dr, cc + dc
+                        if (0 <= nr < rows and 0 <= nc < cols
+                                and (nr, nc) not in visited
+                                and grid[nr][nc] == color):
+                            visited.add((nr, nc))
+                            q.append((nr, nc))
+                objs.append(component)
+    return objs
+
+def _get_bbox(coords):
+    if not coords: return (0, 0, 0, 0)
+    rs = [r for r, c in coords]; cs = [c for r, c in coords]
+    return (min(rs), min(cs), max(rs), max(cs))
+
+def _obj_center(coords):
+    r0, c0, r1, c1 = _get_bbox(coords)
+    return ((r0 + r1) // 2, (c0 + c1) // 2)
+
+def _obj_summary(grid, obj):
+    bbox = _get_bbox(obj)
+    return {'bbox': bbox, 'center': _obj_center(obj), 'size': len(obj),
+            'color': grid[obj[0][0]][obj[0][1]],
+            'height': bbox[2]-bbox[0]+1, 'width': bbox[3]-bbox[1]+1}
+
+def _foreground_pixels(grid, background):
+    return sum(1 for row in grid for c in row if c != background)
+
+
+# --- Frame analysis ---
+
 def analyze_frame(frame_data):
-    """Extract features from the current game frame."""
-    if not frame_data or not hasattr(frame_data, 'frame'):
+    """Extract rich features from a FrameData object.
+
+    Returns dict with layer-level info, object detection, background,
+    foreground regions, and clickable targets.
+    """
+    if frame_data is None:
         return {}
 
-    frame = frame_data.frame
-    if not frame or not isinstance(frame, list):
+    raw_frame = getattr(frame_data, 'frame', None)
+    if raw_frame is None or len(raw_frame) == 0:
         return {}
 
     features = {
-        'num_grids': len(frame),
-        'grid_shapes': [np.array(g).shape if g else (0,0) for g in frame],
-        'palettes': [set(c for row in g for c in row) if g else set() for g in frame],
+        'num_layers': len(raw_frame),
+        'layer_shapes': [],
+        'palettes': [],
         'symmetries': [],
+        'backgrounds': [],
+        'objects': [],          # per-layer list of object summaries
+        'fg_pixel_counts': [],
+        'color_histograms': [],
+        'clickable_targets': [],  # (row, col) centers of detected objects
+        'levels_completed': getattr(frame_data, 'levels_completed', 0),
+        'win_levels': getattr(frame_data, 'win_levels', 0),
+        'available_actions': list(getattr(frame_data, 'available_actions', [])),
     }
 
-    for g in frame:
-        if not g:
+    for layer in raw_frame:
+        arr = np.asarray(layer)
+        features['layer_shapes'].append(tuple(arr.shape))
+
+        # Convert to list-of-lists for DSL helpers
+        grid = _to_grid(layer)
+        if not grid or not grid[0]:
+            features['palettes'].append(set())
+            features['symmetries'].append({'h': False, 'v': False})
+            features['backgrounds'].append(0)
+            features['objects'].append([])
+            features['fg_pixel_counts'].append(0)
+            features['color_histograms'].append({})
+            features['clickable_targets'].append([])
             continue
-        arr = np.array(g)
-        features['symmetries'].append({
-            'h': np.array_equal(arr, arr[:, ::-1]),
-            'v': np.array_equal(arr, arr[::-1, :]),
-            'r90': np.array_equal(arr, np.rot90(arr)),
-        })
+
+        # Palette
+        pal = _palette(grid)
+        features['palettes'].append(set(pal))
+
+        # Background detection
+        bg = _detect_background(grid)
+        features['backgrounds'].append(bg)
+
+        # Color histogram
+        features['color_histograms'].append(dict(Counter(
+            cell for row in grid for cell in row)))
+
+        # Foreground pixel count
+        fg_count = _foreground_pixels(grid, bg)
+        features['fg_pixel_counts'].append(fg_count)
+
+        # Symmetry (fast numpy check)
+        if arr.ndim == 2 and arr.shape[0] > 0 and arr.shape[1] > 0:
+            features['symmetries'].append({
+                'h': bool(np.array_equal(arr, arr[:, ::-1])),
+                'v': bool(np.array_equal(arr, arr[::-1, :])),
+            })
+        else:
+            features['symmetries'].append({'h': False, 'v': False})
+
+        # Object detection (connected same-color components)
+        try:
+            objs = _get_objects(grid, background=bg, diag=False)
+            obj_summaries = [_obj_summary(grid, o) for o in objs]
+            # Sort by size descending — largest objects are usually most important
+            obj_summaries.sort(key=lambda s: s['size'], reverse=True)
+            features['objects'].append(obj_summaries)
+
+            # Clickable targets: centers of all objects, largest first
+            targets = [s['center'] for s in obj_summaries]
+            features['clickable_targets'].append(targets)
+        except Exception:
+            features['objects'].append([])
+            features['clickable_targets'].append([])
 
     return features
 
 
+# --- Change detection ---
+
 def detect_pattern_change(prev_features, curr_features):
-    """Detect what changed between frames to build causal model."""
+    """Detect what changed between consecutive frames: pixel, object, and semantic."""
     if not prev_features or not curr_features:
         return {'type': 'unknown'}
 
     changes = {}
-    if prev_features.get('num_grids') != curr_features.get('num_grids'):
-        changes['grid_count_changed'] = True
 
-    prev_shapes = prev_features.get('grid_shapes', [])
-    curr_shapes = curr_features.get('grid_shapes', [])
-    if prev_shapes != curr_shapes:
+    # --- Layer-level structural changes ---
+    if prev_features.get('num_layers') != curr_features.get('num_layers'):
+        changes['layer_count_changed'] = True
+
+    if prev_features.get('layer_shapes') != curr_features.get('layer_shapes'):
         changes['shapes_changed'] = True
 
-    prev_palettes = prev_features.get('palettes', [])
-    curr_palettes = curr_features.get('palettes', [])
-    for i in range(min(len(prev_palettes), len(curr_palettes))):
-        if prev_palettes[i] != curr_palettes[i]:
+    # --- Palette changes ---
+    prev_pals = prev_features.get('palettes', [])
+    curr_pals = curr_features.get('palettes', [])
+    for i in range(min(len(prev_pals), len(curr_pals))):
+        if prev_pals[i] != curr_pals[i]:
             changes[f'palette_{i}_changed'] = True
+            new_colors = curr_pals[i] - prev_pals[i]
+            lost_colors = prev_pals[i] - curr_pals[i]
+            if new_colors:
+                changes[f'new_colors_{i}'] = new_colors
+            if lost_colors:
+                changes[f'lost_colors_{i}'] = lost_colors
+
+    # --- Foreground pixel count changes ---
+    prev_fg = prev_features.get('fg_pixel_counts', [])
+    curr_fg = curr_features.get('fg_pixel_counts', [])
+    for i in range(min(len(prev_fg), len(curr_fg))):
+        delta = curr_fg[i] - prev_fg[i]
+        if delta != 0:
+            changes[f'fg_delta_{i}'] = delta
+
+    # --- Object-level changes (per layer) ---
+    prev_objs = prev_features.get('objects', [])
+    curr_objs = curr_features.get('objects', [])
+    for i in range(min(len(prev_objs), len(curr_objs))):
+        po = prev_objs[i]
+        co = curr_objs[i]
+        n_prev = len(po)
+        n_curr = len(co)
+        if n_prev != n_curr:
+            changes[f'obj_count_delta_{i}'] = n_curr - n_prev
+        if n_prev > 0 and n_curr > 0:
+            # Check if the largest object moved
+            prev_top = po[0]  # largest by size
+            curr_top = co[0]
+            if prev_top['center'] != curr_top['center']:
+                changes[f'largest_obj_moved_{i}'] = {
+                    'from': prev_top['center'],
+                    'to': curr_top['center'],
+                }
+            if prev_top['color'] != curr_top['color']:
+                changes[f'largest_obj_recolored_{i}'] = {
+                    'from': prev_top['color'],
+                    'to': curr_top['color'],
+                }
+            if prev_top['size'] != curr_top['size']:
+                changes[f'largest_obj_resized_{i}'] = {
+                    'from': prev_top['size'],
+                    'to': curr_top['size'],
+                }
+
+    # --- Level advancement ---
+    if prev_features.get('levels_completed', 0) < curr_features.get('levels_completed', 0):
+        changes['level_advanced'] = True
+
+    # Classify overall change magnitude
+    n_changes = len(changes)
+    if n_changes == 0:
+        changes['type'] = 'no_change'
+    elif 'level_advanced' in changes:
+        changes['type'] = 'level_advance'
+    elif n_changes <= 2:
+        changes['type'] = 'minor'
+    else:
+        changes['type'] = 'major'
 
     return changes
 
 
-def exploration_strategy(frames, features_history, causal_model):
-    """Phase 1: Systematic probing to build causal model.
+# --- Exploration (Phase 1) ---
 
-    Strategy: Try each simple action once, observe effect, build causal map.
-    Then try complex actions at interesting positions (corners, center, objects).
+def exploration_strategy(frames, features_history, causal_model, action_log):
+    """Phase 1: Systematic probing with object-informed clicks.
+
+    Strategy:
+      1. Try each simple action (ACTION1-5) once.
+      2. Try ACTION7 (undo) to test reversibility.
+      3. Click on detected objects (largest first), falling back to grid.
+      4. Undo after a click to test click reversibility.
+      5. Return None to switch to exploitation.
     """
-    n_actions = len(frames)
+    n_actions = len(action_log)
 
-    # First 5 frames: try each simple action (ACTION1-ACTION5)
+    # Step 1: Try each simple action (ACTION1-ACTION5)
     if n_actions < 5:
         return {'action': f'ACTION{n_actions + 1}', 'phase': 'explore_simple'}
 
-    # Next: try ACTION6 at key positions
-    if n_actions < 10:
-        positions = [(0, 0), (0, 31), (31, 0), (31, 31), (16, 16)]
-        idx = n_actions - 5
-        if idx < len(positions):
-            x, y = positions[idx]
-            return {'action': 'ACTION6', 'x': x, 'y': y, 'phase': 'explore_complex'}
+    # Step 2: Try ACTION7 (undo) to learn if it reverses the last action
+    if n_actions == 5:
+        return {'action': 'ACTION7', 'phase': 'explore_undo'}
 
-    # After exploration: analyze causal model and exploit
-    return None  # Signal to switch to exploitation
+    # Step 3: Click on detected objects or key positions
+    if n_actions < 16:
+        click_idx = n_actions - 6  # 0..9
+
+        # Gather clickable targets from latest frame analysis
+        targets = []
+        if features_history:
+            latest_feat = features_history[-1]
+            click_lists = latest_feat.get('clickable_targets', [])
+            for layer_targets in click_lists:
+                for t in layer_targets:
+                    if t not in targets:
+                        targets.append(t)
+
+        # Fallback grid positions for when objects aren't detected
+        grid_positions = [
+            (32, 32), (16, 16), (48, 48), (16, 48), (48, 16),
+            (0, 0), (0, 63), (63, 0), (63, 63), (32, 0),
+        ]
+
+        if click_idx < len(targets):
+            r, c = targets[click_idx]
+            return {'action': 'ACTION6', 'x': int(c), 'y': int(r),
+                    'phase': 'explore_click_object'}
+        else:
+            fallback_idx = click_idx - len(targets)
+            if fallback_idx < len(grid_positions):
+                r, c = grid_positions[fallback_idx]
+                return {'action': 'ACTION6', 'x': int(c), 'y': int(r),
+                        'phase': 'explore_click_grid'}
+
+    # Step 4: Undo after clicks to test reversibility
+    if n_actions == 16:
+        return {'action': 'ACTION7', 'phase': 'explore_undo_click'}
+
+    # After exploration: switch to exploitation
+    return None
 
 
-def exploitation_strategy(frames, features_history, causal_model):
-    """Phase 2: Use causal model to solve the puzzle.
+# --- Exploitation (Phase 2) ---
 
-    BFS over action sequences, using causal model to prune unpromising branches.
+def exploitation_strategy(frames, features_history, causal_model, action_log):
+    """Phase 2: Use causal model (enriched with object-level changes) to solve.
+
+    Priorities:
+      1. Repeat level-advancing actions.
+      2. Repeat actions that caused meaningful object changes.
+      3. Click on new/moved objects.
+      4. Cycle with periodic undo for backtracking.
     """
-    # Find which actions caused the most productive changes
-    productive_actions = []
+    # Categorize causal entries by effect type
+    level_advancing = []
+    object_movers = []      # actions that moved objects
+    object_changers = []    # actions that added/removed/recolored objects
+    pixel_changers = []     # any other non-trivial change
+
     for entry in causal_model:
-        action = entry.get('action')
         changes = entry.get('changes', {})
-        if changes:
-            productive_actions.append((action, len(changes), entry))
+        if not changes or changes.get('type') == 'no_change':
+            continue
+        if changes.get('level_advanced'):
+            level_advancing.append(entry)
+            continue
+        # Score by object-level impact
+        obj_score = 0
+        for k, v in changes.items():
+            if 'largest_obj_moved' in k:
+                obj_score += 3
+                object_movers.append(entry)
+            elif 'obj_count_delta' in k:
+                obj_score += 2
+                object_changers.append(entry)
+            elif 'largest_obj_recolored' in k or 'largest_obj_resized' in k:
+                obj_score += 2
+                object_changers.append(entry)
+            elif 'fg_delta' in k:
+                obj_score += 1
+        if obj_score > 0:
+            pixel_changers.append((obj_score, entry))
+        elif len(changes) > 1:
+            pixel_changers.append((1, entry))
 
-    productive_actions.sort(key=lambda x: x[1], reverse=True)
+    # Priority 1: repeat actions that advanced levels
+    if level_advancing:
+        best = level_advancing[-1]
+        action_name = best['action_name']
+        if best.get('x') is not None:
+            return {'action': action_name, 'x': best['x'], 'y': best['y'],
+                    'phase': 'exploit_advance'}
+        return {'action': action_name, 'phase': 'exploit_advance'}
 
-    if productive_actions:
-        # Repeat the most productive action pattern
-        best = productive_actions[0][2]
-        action_name = best['action']
-        if 'x' in best:
-            return {'action': action_name, 'x': best['x'], 'y': best['y'], 'phase': 'exploit'}
-        return {'action': action_name, 'phase': 'exploit'}
+    # Priority 2: repeat actions that caused object movement
+    if object_movers:
+        best = object_movers[-1]
+        action_name = best['action_name']
+        if best.get('x') is not None:
+            return {'action': action_name, 'x': best['x'], 'y': best['y'],
+                    'phase': 'exploit_obj_move'}
+        return {'action': action_name, 'phase': 'exploit_obj_move'}
 
-    # Fallback: cycle through simple actions
-    idx = len(frames) % 5
-    return {'action': f'ACTION{idx + 1}', 'phase': 'exploit_fallback'}
+    # Priority 3: click on newly appeared or moved objects
+    if features_history and len(features_history) >= 2:
+        curr_feat = features_history[-1]
+        prev_feat = features_history[-2]
+        curr_objs = curr_feat.get('objects', [[]])
+        prev_objs = prev_feat.get('objects', [[]])
+        # Look at primary layer (index 0)
+        if curr_objs and prev_objs:
+            co = curr_objs[0] if curr_objs else []
+            po = prev_objs[0] if prev_objs else []
+            prev_centers = {o['center'] for o in po}
+            # Find objects with new centers (moved or newly appeared)
+            new_targets = [o for o in co if o['center'] not in prev_centers]
+            if new_targets:
+                t = new_targets[0]
+                r, c = t['center']
+                return {'action': 'ACTION6', 'x': int(c), 'y': int(r),
+                        'phase': 'exploit_click_new_obj'}
+
+    # Priority 4: repeat highest-scoring object-changing action
+    if object_changers:
+        best = object_changers[-1]
+        action_name = best['action_name']
+        if best.get('x') is not None:
+            return {'action': action_name, 'x': best['x'], 'y': best['y'],
+                    'phase': 'exploit_obj_change'}
+        return {'action': action_name, 'phase': 'exploit_obj_change'}
+
+    # Priority 5: repeat highest-scoring pixel-changing action
+    pixel_changers.sort(key=lambda x: x[0], reverse=True)
+    if pixel_changers:
+        best = pixel_changers[0][1]
+        action_name = best['action_name']
+        if best.get('x') is not None:
+            return {'action': action_name, 'x': best['x'], 'y': best['y'],
+                    'phase': 'exploit_pixel'}
+        return {'action': action_name, 'phase': 'exploit_pixel'}
+
+    # Priority 6: cycle with periodic undo for backtracking
+    n = len(action_log)
+    if n % 7 == 6:
+        return {'action': 'ACTION7', 'phase': 'exploit_backtrack'}
+    # Interleave simple actions with object-targeted clicks
+    if n % 3 == 0 and features_history:
+        latest_feat = features_history[-1]
+        targets = []
+        for lt in latest_feat.get('clickable_targets', []):
+            targets.extend(lt)
+        if targets:
+            # Rotate through detected object centers
+            t_idx = (n // 3) % len(targets)
+            r, c = targets[t_idx]
+            return {'action': 'ACTION6', 'x': int(c), 'y': int(r),
+                    'phase': 'exploit_cycle_click'}
+    idx = n % 5
+    return {'action': f'ACTION{idx + 1}', 'phase': 'exploit_cycle'}
 
 
-def choose_policy_action(frames, latest_frame):
-    """Main policy entry point. Returns action dict or None to signal done."""
+# --- Multi-level tracking ---
+
+def check_level_transition(prev_frame, curr_frame):
+    """Detect whether a level transition occurred."""
+    prev_lc = getattr(prev_frame, 'levels_completed', 0) if prev_frame else 0
+    curr_lc = getattr(curr_frame, 'levels_completed', 0) if curr_frame else 0
+    return curr_lc > prev_lc
+
+
+# --- Main policy entry point ---
+
+def choose_policy_action(frames, latest_frame, action_log=None):
+    """Main policy entry point. Returns action dict or None to signal done.
+
+    Args:
+        frames: list of FrameData objects (full history).
+        latest_frame: the most recent FrameData.
+        action_log: list of dicts recording actions taken so far.
+    """
+    if action_log is None:
+        action_log = []
+
     features_history = []
     causal_model = []
 
@@ -174,19 +522,26 @@ def choose_policy_action(frames, latest_frame):
         features_history.append(features)
         if i > 0:
             changes = detect_pattern_change(features_history[i-1], features)
+            action_entry = action_log[i-1] if i-1 < len(action_log) else {}
             causal_model.append({
                 'frame': i,
-                'action': f'frame_{i}',  # will be enriched with actual action names
+                'action_name': action_entry.get('action', f'frame_{i}'),
+                'x': action_entry.get('x'),
+                'y': action_entry.get('y'),
                 'changes': changes,
             })
 
+    # Check for level transition -- reset exploration on new level
+    if len(frames) >= 2 and check_level_transition(frames[-2], latest_frame):
+        return {'action': 'ACTION1', 'phase': 'explore_new_level'}
+
     # Phase 1: Exploration
-    explore_result = exploration_strategy(frames, features_history, causal_model)
+    explore_result = exploration_strategy(frames, features_history, causal_model, action_log)
     if explore_result is not None:
         return explore_result
 
     # Phase 2: Exploitation
-    return exploitation_strategy(frames, features_history, causal_model)
+    return exploitation_strategy(frames, features_history, causal_model, action_log)
 '''
 
 # ---------------------------------------------------------------------------
@@ -257,9 +612,20 @@ def load_dsl_helpers():
 
 
 def analyze_frame_with_dsl(frame_grids, dsl_ns):
-    """Use DSL helpers to analyze frame grids."""
+    """Use DSL helpers to analyze frame grids.
+
+    frame_grids may be list of numpy arrays (FrameDataRaw) or
+    list of list-of-lists (FrameData).  Convert to lists for DSL functions.
+    """
+    import numpy as np
+
     analysis = []
     for i, grid in enumerate(frame_grids):
+        if grid is None:
+            continue
+        # Normalise to list-of-lists for DSL compatibility
+        if hasattr(grid, 'tolist'):
+            grid = grid.tolist()
         if not grid:
             continue
         info = {"grid_index": i}
@@ -280,57 +646,50 @@ def analyze_frame_with_dsl(frame_grids, dsl_ns):
 
 
 # ---------------------------------------------------------------------------
-# AGENT CLASS — integrates with ARC-AGI-3-Agents framework
+# SDK IMPORTS — arcengine provides the core types, agents.agent the base class
 # ---------------------------------------------------------------------------
 
+from arcengine import FrameData, FrameDataRaw, GameAction, GameState, ActionInput
+
 try:
-    from arcengine import FrameData, GameAction, GameState
     from agents.agent import Agent as BaseAgent
     HAS_FRAMEWORK = True
 except ImportError:
     HAS_FRAMEWORK = False
-    # Stub classes for standalone testing
-    class FrameData:
-        def __init__(self, **kwargs):
-            for k, v in kwargs.items():
-                setattr(self, k, v)
 
-    class GameAction:
-        RESET = "RESET"
-        @staticmethod
-        def from_name(name): return name
-        def set_data(self, d): self.data = d
-        def is_simple(self): return True
-        def is_complex(self): return False
+    class BaseAgent:  # type: ignore[no-redef]
+        """Minimal stub so the agent class can be defined standalone."""
+        MAX_ACTIONS: int = 80
+        action_counter: int = 0
+        def __init__(self, *args: Any, **kwargs: Any) -> None:
+            pass
 
-    class GameState:
-        NOT_PLAYED = "NOT_PLAYED"
-        NOT_FINISHED = "NOT_FINISHED"
-        WIN = "WIN"
-        GAME_OVER = "GAME_OVER"
 
-    class BaseAgent:
-        def __init__(self, *args, **kwargs): pass
-
+# ---------------------------------------------------------------------------
+# AGENT CLASS — integrates with ARC-AGI-3-Agents framework
+# ---------------------------------------------------------------------------
 
 class NeurosymbolicAgent(BaseAgent):
     """ARC-AGI-3 agent using program synthesis as policy.
 
     The agent:
-    1. Runs POLICY_CODE to get action decisions
+    1. Runs POLICY_CODE to get action decisions (codopt-evolvable)
     2. Optionally uses LLM to generate improved policies mid-game
     3. Uses DSL helpers for frame analysis
+    4. Tracks multi-level progression (6+ levels per environment)
+    5. Supports ACTION7 (undo) for backtracking from dead-ends
     """
 
     MAX_ACTIONS = 80
-    EXPLORATION_BUDGET = 15  # actions reserved for exploration phase
+    EXPLORATION_BUDGET = 13  # actions reserved for exploration phase
     LLM_ASSIST = os.environ.get("ARC3_LLM_ASSIST", "0") == "1"
 
     def __init__(self, *args: Any, **kwargs: Any) -> None:
         super().__init__(*args, **kwargs)
-        self.policy_ns = {}
-        self.action_history = []
+        self.policy_ns: dict[str, Any] = {}
+        self.action_log: list[dict[str, Any]] = []
         self.dsl_ns = load_dsl_helpers()
+        self.levels_seen: list[int] = [0]  # track level transitions
         self._load_policy()
 
     def _load_policy(self):
@@ -340,118 +699,151 @@ class NeurosymbolicAgent(BaseAgent):
         except Exception as e:
             logger.error(f"Failed to load POLICY_CODE: {e}")
 
-    def is_done(self, frames: list, latest_frame) -> bool:
-        """Done when we win or exhaust actions."""
-        if hasattr(latest_frame, 'state'):
-            return latest_frame.state in (GameState.WIN,)
-        return False
+    # ------------------------------------------------------------------
+    # Framework interface
+    # ------------------------------------------------------------------
 
-    def choose_action(self, frames: list, latest_frame) -> Any:
-        """Choose action using POLICY_CODE + optional LLM assistance."""
-        state = getattr(latest_frame, 'state', None)
+    def is_done(self, frames: list[FrameData], latest_frame: FrameData) -> bool:
+        """Done when we win."""
+        return latest_frame.state == GameState.WIN
+
+    def choose_action(
+        self, frames: list[FrameData], latest_frame: FrameData
+    ) -> GameAction:
+        """Choose action using POLICY_CODE + optional LLM assistance.
+
+        Returns a real GameAction enum member ready for the framework.
+        """
+        state = latest_frame.state
 
         # Must reset if not started or game over
         if state in (GameState.NOT_PLAYED, GameState.GAME_OVER):
-            return self._make_action("RESET")
+            self._record_action("RESET", phase="reset")
+            return GameAction.RESET
+
+        # Track level transitions
+        curr_lc = latest_frame.levels_completed
+        if self.levels_seen and curr_lc > self.levels_seen[-1]:
+            self.levels_seen.append(curr_lc)
+            logger.info(f"Level transition detected: now at {curr_lc} levels completed")
 
         # Run policy code
         choose_fn = self.policy_ns.get("choose_policy_action")
         if choose_fn:
             try:
-                result = choose_fn(frames, latest_frame)
+                result = choose_fn(frames, latest_frame, action_log=self.action_log)
                 if result:
                     action_name = result.get("action", "ACTION1")
+                    phase = result.get("phase", "policy")
                     if "x" in result and "y" in result:
                         return self._make_complex_action(
-                            action_name, result["x"], result["y"],
-                            reasoning=result.get("phase", "policy")
+                            action_name, int(result["x"]), int(result["y"]),
+                            reasoning=phase,
                         )
-                    return self._make_action(
-                        action_name,
-                        reasoning=result.get("phase", "policy")
-                    )
+                    return self._make_action(action_name, reasoning=phase)
             except Exception as e:
                 logger.warning(f"Policy error: {e}")
 
-        # LLM-assisted fallback: ask LLM what to do
+        # LLM-assisted fallback
         if self.LLM_ASSIST and self.action_counter > self.EXPLORATION_BUDGET:
             return self._llm_choose_action(frames, latest_frame)
 
-        # Default: cycle simple actions
+        # Default: cycle simple actions with occasional undo
+        if self.action_counter % 7 == 6:
+            return self._make_action("ACTION7", reasoning="default_undo")
         idx = self.action_counter % 5
         return self._make_action(f"ACTION{idx + 1}", reasoning="default_cycle")
 
-    def _llm_choose_action(self, frames, latest_frame):
+    # ------------------------------------------------------------------
+    # LLM-assisted action selection
+    # ------------------------------------------------------------------
+
+    def _llm_choose_action(
+        self, frames: list[FrameData], latest_frame: FrameData
+    ) -> GameAction:
         """Use LLM to decide next action based on frame analysis."""
-        # Analyze current state with DSL
-        frame_grids = getattr(latest_frame, 'frame', [])
+        frame_grids = latest_frame.frame  # list of 2-D grids (list-of-lists)
         analysis = analyze_frame_with_dsl(frame_grids, self.dsl_ns)
 
         prompt = f"""You are playing an ARC-AGI-3 puzzle game. You can take these actions:
 ACTION1-ACTION5: Simple actions (no parameters)
-ACTION6: Complex action with (x, y) coordinates
+ACTION6: Complex action with (x, y) coordinates (0-63 each)
+ACTION7: Undo last action
 
 Current state analysis:
 {json.dumps(analysis, indent=2, default=str)}
 
 Action history (last 10):
-{json.dumps(self.action_history[-10:], indent=2)}
+{json.dumps(self.action_log[-10:], indent=2)}
 
-Levels completed so far: {getattr(latest_frame, 'levels_completed', 0)}
+Levels completed so far: {latest_frame.levels_completed}
+Win condition levels: {latest_frame.win_levels}
 
 Choose the next action. Respond with JSON:
 {{"action": "ACTION1", "reasoning": "why"}}
 or
-{{"action": "ACTION6", "x": 10, "y": 10, "reasoning": "why"}}"""
+{{"action": "ACTION6", "x": 10, "y": 10, "reasoning": "why"}}
+or
+{{"action": "ACTION7", "reasoning": "undo because ..."}}"""
 
         try:
             response = generate_llm(prompt, temperature=0.2)
-            # Extract JSON from response
             m = re.search(r'\{[^}]+\}', response)
             if m:
                 data = json.loads(m.group())
                 action_name = data.get("action", "ACTION1")
                 if "x" in data and "y" in data:
                     return self._make_complex_action(
-                        action_name, data["x"], data["y"],
-                        reasoning=data.get("reasoning", "llm")
+                        action_name, int(data["x"]), int(data["y"]),
+                        reasoning=data.get("reasoning", "llm"),
                     )
-                return self._make_action(action_name, reasoning=data.get("reasoning", "llm"))
+                return self._make_action(
+                    action_name, reasoning=data.get("reasoning", "llm")
+                )
         except Exception as e:
             logger.warning(f"LLM action failed: {e}")
 
         return self._make_action("ACTION1", reasoning="llm_fallback")
 
-    def _make_action(self, name: str, reasoning: str = "") -> Any:
-        """Create a simple GameAction."""
-        self.action_history.append({"action": name, "reasoning": reasoning})
-        if HAS_FRAMEWORK:
-            action = GameAction.from_name(name)
-            action.reasoning = reasoning
-            return action
-        return {"action": name, "reasoning": reasoning}
+    # ------------------------------------------------------------------
+    # Action construction helpers
+    # ------------------------------------------------------------------
 
-    def _make_complex_action(self, name: str, x: int, y: int, reasoning: str = "") -> Any:
-        """Create a complex GameAction with coordinates."""
-        self.action_history.append({"action": name, "x": x, "y": y, "reasoning": reasoning})
-        if HAS_FRAMEWORK:
-            action = GameAction.from_name(name)
-            action.set_data({"x": x, "y": y})
-            action.reasoning = reasoning
-            return action
-        return {"action": name, "x": x, "y": y, "reasoning": reasoning}
+    def _record_action(
+        self, name: str, x: Optional[int] = None, y: Optional[int] = None, phase: str = ""
+    ):
+        """Record an action in the action log for causal model building."""
+        entry: dict[str, Any] = {"action": name, "phase": phase}
+        if x is not None:
+            entry["x"] = x
+            entry["y"] = y
+        self.action_log.append(entry)
+
+    def _make_action(self, name: str, reasoning: str = "") -> GameAction:
+        """Create a simple GameAction and log it."""
+        self._record_action(name, phase=reasoning)
+        action = GameAction.from_name(name)
+        return action
+
+    def _make_complex_action(
+        self, name: str, x: int, y: int, reasoning: str = ""
+    ) -> GameAction:
+        """Create a complex GameAction (ACTION6) with coordinates and log it."""
+        self._record_action(name, x=x, y=y, phase=reasoning)
+        action = GameAction.from_name(name)
+        action.set_data({"x": x, "y": y})
+        return action
 
 
 # ---------------------------------------------------------------------------
-# CODOPT BENCHMARK — evaluate POLICY_CODE quality
+# CODOPT BENCHMARK -- evaluate POLICY_CODE quality
 # ---------------------------------------------------------------------------
 
-def benchmark_policy(episodes=5):
+def benchmark_policy(episodes: int = 5):
     """Evaluate POLICY_CODE over simulated episodes.
     For codopt: writes metric.json with mean reward.
     """
-    # Load and exec policy
-    policy_ns = {}
+    policy_ns: dict[str, Any] = {}
     try:
         exec(POLICY_CODE, policy_ns)
     except Exception as e:
@@ -465,35 +857,33 @@ def benchmark_policy(episodes=5):
         json.dump({"score": 0.0}, open("metric.json", "w"))
         return
 
-    # Simulate episodes with mock frames
     total_score = 0.0
     for ep in range(episodes):
-        frames = [FrameData(frame=[], state=GameState.NOT_PLAYED, levels_completed=0)]
-        actions_taken = 0
+        frames = [FrameData(levels_completed=0)]
+        action_log: list[dict[str, Any]] = []
         max_actions = 40
 
         for step in range(max_actions):
             try:
-                result = choose_fn(frames, frames[-1])
+                result = choose_fn(frames, frames[-1], action_log=action_log)
                 if result is None:
                     break
-                actions_taken += 1
+                action_log.append(result)
                 # Mock frame response
                 frames.append(FrameData(
-                    frame=[],
                     state=GameState.NOT_FINISHED,
                     levels_completed=0,
                 ))
             except Exception:
                 break
 
-        # Score: diversity of actions tried (proxy for good exploration)
-        unique_actions = len(set(
-            a.get("action", "") if isinstance(a, dict) else str(a)
-            for a in [choose_fn(frames[:i+1], frames[i]) for i in range(min(10, len(frames)))]
-            if a is not None
-        ))
-        ep_score = min(1.0, unique_actions / 6.0)
+        # Score: diversity of actions tried, including undo (proxy for good exploration)
+        unique_actions = set()
+        for entry in action_log:
+            if isinstance(entry, dict):
+                unique_actions.add(entry.get("action", ""))
+        # 7 possible actions (ACTION1-7), score normalised to [0,1]
+        ep_score = min(1.0, len(unique_actions) / 7.0)
         total_score += ep_score
 
     mean_score = total_score / episodes
@@ -509,23 +899,25 @@ def test_standalone():
     """Test the agent without the ARC-AGI-3 framework."""
     print("=== Standalone Agent Test ===")
 
-    # Test policy code
-    policy_ns = {}
+    policy_ns: dict[str, Any] = {}
     exec(POLICY_CODE, policy_ns)
     choose_fn = policy_ns["choose_policy_action"]
 
-    mock_grid = [[0,0,1],[0,1,0],[1,0,0]]
-    frames = [FrameData(frame=[mock_grid], state="PLAYING", levels_completed=0)]
+    # FrameData from arcengine: frame is list of list-of-list-of-int
+    mock_grid = [[0, 0, 1], [0, 1, 0], [1, 0, 0]]
+    frames = [FrameData(frame=[mock_grid], state=GameState.NOT_FINISHED, levels_completed=0)]
+    action_log: list[dict[str, Any]] = []
 
     for step in range(20):
-        result = choose_fn(frames, frames[-1])
+        result = choose_fn(frames, frames[-1], action_log=action_log)
         if result is None:
             print(f"Step {step}: Policy returned None (done exploring)")
             break
         print(f"Step {step}: {result}")
+        action_log.append(result)
         frames.append(FrameData(
             frame=[mock_grid],
-            state="PLAYING",
+            state=GameState.NOT_FINISHED,
             levels_completed=0,
         ))
 
