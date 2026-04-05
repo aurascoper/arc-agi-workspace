@@ -1,0 +1,275 @@
+{
+  "cells": [
+    {
+      "hypothesis_type": "connected_components",
+      "grid_size_bin": "medium",
+      "func_name": "get_objects",
+      "code": "def get_objects(grid, background=None, diag=False):\n    \"\"\"Find connected same-color components, excluding the background color.\"\"\"\n    if background is None:\n        background = detect_background_color(grid)\n    rows, cols = len(grid), len(grid[0])\n    visited = set()\n    objs = []\n    neighbors = [(0,1),(0,-1),(1,0),(-1,0)] + ([(1,1),(1,-1),(-1,1),(-1,-1)] if diag else [])\n    for r in range(rows):\n        for c in range(cols):\n            if grid[r][c] != background and (r, c) not in visited:\n                q = deque([(r, c)])\n                component = []\n                visited.add((r, c))\n                color = grid[r][c]\n                while q:\n                    curr_r, curr_c = q.popleft()\n                    component.append((curr_r, curr_c))\n                    for dr, dc in neighbors:\n                        nr, nc = curr_r + dr, curr_c + dc\n                        if 0 <= nr < rows and 0 <= nc < cols and \\\n                           grid[nr][nc] == color and (nr, nc) not in visited:\n                            visited.add((nr, nc))\n                            q.append((nr, nc))\n                objs.append(component)\n    return objs\n",
+      "score": 0.5,
+      "timestamp": 1775430507.8081138,
+      "metadata": {}
+    },
+    {
+      "hypothesis_type": "color_logic",
+      "grid_size_bin": "medium",
+      "func_name": "get_foreground_pixels",
+      "code": "def get_foreground_pixels(grid, background=None):\n    if background is None:\n        background = detect_background_color(grid)\n    return [(r, c) for r, row in enumerate(grid) for c, value in enumerate(row) if value != background]\n",
+      "score": 0.5,
+      "timestamp": 1775430507.809819,
+      "metadata": {}
+    },
+    {
+      "hypothesis_type": "other",
+      "grid_size_bin": "medium",
+      "func_name": "foreground_bbox",
+      "code": "def foreground_bbox(grid, background=None):\n    pixels = get_foreground_pixels(grid, background=background)\n    return get_bbox(pixels) if pixels else (0, 0, 0, 0)\n",
+      "score": 0.5,
+      "timestamp": 1775430507.810814,
+      "metadata": {}
+    },
+    {
+      "hypothesis_type": "flood_fill",
+      "grid_size_bin": "medium",
+      "func_name": "make_grid",
+      "code": "def make_grid(rows, cols, fill=0):\n    return [[fill]*cols for _ in range(rows)]\n",
+      "score": 0.5,
+      "timestamp": 1775430507.8116639,
+      "metadata": {}
+    },
+    {
+      "hypothesis_type": "spatial_relation",
+      "grid_size_bin": "medium",
+      "func_name": "neighbors4",
+      "code": "def neighbors4(r, c):\n    return [(r, c+1), (r, c-1), (r+1, c), (r-1, c)]\n",
+      "score": 0.5,
+      "timestamp": 1775430507.812608,
+      "metadata": {}
+    },
+    {
+      "hypothesis_type": "transform_geom",
+      "grid_size_bin": "medium",
+      "func_name": "rotate_cw",
+      "code": "def rotate_cw(grid):\n    rows, cols = len(grid), len(grid[0])\n    return [[grid[rows-1-r][c] for r in range(rows)] for c in range(cols)]\n",
+      "score": 0.5,
+      "timestamp": 1775430507.8133729,
+      "metadata": {}
+    },
+    {
+      "hypothesis_type": "symmetry",
+      "grid_size_bin": "medium",
+      "func_name": "flip_anti_diagonal",
+      "code": "def flip_anti_diagonal(grid):\n    return [row[::-1] for row in transpose(grid)]\n",
+      "score": 0.5,
+      "timestamp": 1775430507.813938,
+      "metadata": {}
+    },
+    {
+      "hypothesis_type": "pattern_tile",
+      "grid_size_bin": "medium",
+      "func_name": "tile_grid",
+      "code": "def tile_grid(grid, repeat_r, repeat_c=None):\n    if repeat_c is None:\n        repeat_c = repeat_r\n    tiled_rows = []\n    base_rows = [row * repeat_c for row in grid]\n    for _ in range(repeat_r):\n        tiled_rows.extend([row[:] for row in base_rows])\n    return tiled_rows\n",
+      "score": 0.5,
+      "timestamp": 1775430507.8144588,
+      "metadata": {}
+    },
+    {
+      "hypothesis_type": "counting_arithmetic",
+      "grid_size_bin": "medium",
+      "func_name": "infer_noise_color",
+      "code": "def infer_noise_color(grid, background=None):\n    if background is None:\n        background = detect_background_color(grid)\n    counts = color_counts(grid)\n    candidates = [color for color in counts if color != background]\n    if not candidates:\n        return background\n    rows, cols = len(grid), len(grid[0])\n    border_counts = Counter()\n    for c in range(cols):\n        border_counts[grid[0][c]] += 1\n        border_counts[grid[rows - 1][c]] += 1\n    for r in range(1, rows - 1):\n        border_counts[grid[r][0]] += 1\n        border_counts[grid[r][cols - 1]] += 1\n    objects = objects_by_color(grid, background=background)\n    ranked = []\n    for color in candidates:\n        comps = objects.get(color, [])\n        interior_mass = sum(\n            1 for obj in comps for r, c in obj\n            if 0 < r < rows - 1 and 0 < c < cols - 1\n        )\n        ranked.append((\n            -border_counts[color],\n            counts[color] - border_counts[color],\n            -len(comps),\n            interior_mass,\n            max((len(obj) for obj in comps), default=0),\n            color,\n        ))\n    return min(ranked)[-1]\n",
+      "score": 0.5,
+      "timestamp": 1775430507.816499,
+      "metadata": {}
+    },
+    {
+      "hypothesis_type": "connected_components",
+      "grid_size_bin": "small",
+      "func_name": "remove_small_objects",
+      "code": "def remove_small_objects(grid, max_size=1, background=None, diag=False):\n    if background is None:\n        background = detect_background_color(grid)\n    out = copy_grid(grid)\n    for obj in get_objects(grid, background=background, diag=diag):\n        if len(obj) <= max_size:\n            for r, c in obj:\n                out[r][c] = background\n    return out\n",
+      "score": 0.5,
+      "timestamp": 1775430507.81768,
+      "metadata": {}
+    },
+    {
+      "hypothesis_type": "color_logic",
+      "grid_size_bin": "small",
+      "func_name": "remove_small_shapes",
+      "code": "def remove_small_shapes(grid, max_size=1, background=None, diag=True):\n    if background is None:\n        background = detect_background_color(grid)\n    out = copy_grid(grid)\n    for shape in get_shapes(grid, background=background, diag=diag):\n        if len(shape) <= max_size:\n            for r, c in shape:\n                out[r][c] = background\n    return out\n",
+      "score": 0.5,
+      "timestamp": 1775430507.8183942,
+      "metadata": {}
+    },
+    {
+      "hypothesis_type": "masking_boolean",
+      "grid_size_bin": "medium",
+      "func_name": "union",
+      "code": "def union(grid_a, grid_b, background=None):\n    if background is None:\n        background = detect_background_color(grid_a) if grid_a else detect_background_color(grid_b)\n    return overlay(grid_a, grid_b, transparent=background)\n",
+      "score": 0.5,
+      "timestamp": 1775430507.820839,
+      "metadata": {}
+    },
+    {
+      "hypothesis_type": "color_logic",
+      "grid_size_bin": "large",
+      "func_name": "estimate_hole_size_limit",
+      "code": "def estimate_hole_size_limit(grid, background=None):\n    if background is None:\n        background = detect_background_color(grid)\n    pixels = get_foreground_pixels(grid, background=background)\n    if not pixels:\n        return 1\n    min_r, min_c, max_r, max_c = get_bbox(pixels)\n    area = (max_r - min_r + 1) * (max_c - min_c + 1)\n    return max(1, min(9, max(len(pixels) // 10, area // 20)))\n",
+      "score": 0.5,
+      "timestamp": 1775430507.8263638,
+      "metadata": {}
+    },
+    {
+      "hypothesis_type": "counting_arithmetic",
+      "grid_size_bin": "large",
+      "func_name": "score_repair_candidate",
+      "code": "def score_repair_candidate(grid, background=None):\n    if background is None:\n        background = detect_background_color(grid)\n    pixels = get_foreground_pixels(grid, background=background)\n    if not pixels:\n        return float('-inf')\n    min_r, min_c, max_r, max_c = get_bbox(pixels)\n    area = (max_r - min_r + 1) * (max_c - min_c + 1)\n    density = len(pixels) / max(area, 1)\n    shapes = get_shapes(grid, background=background, diag=True)\n    shape_count = len(shapes)\n    border_count = sum(1 for shape in shapes if touches_border(grid, shape))\n    fragmentation_penalty = 0.25 * max(shape_count - 1, 0)\n    border_penalty = 0.1 * border_count\n    return max(symmetry_score_h(grid, background=background), symmetry_score_v(grid, background=background)) + density - fragmentation_penalty - border_penalty\n",
+      "score": 0.5,
+      "timestamp": 1775430507.8277912,
+      "metadata": {}
+    },
+    {
+      "hypothesis_type": "connected_components",
+      "grid_size_bin": "large",
+      "func_name": "largest_object_grid",
+      "code": "def largest_object_grid(grid, background=None, diag=False, crop_result=True):\n    if background is None:\n        background = detect_background_color(grid)\n    objs = get_objects(grid, background=background, diag=diag)\n    if not objs:\n        return crop_foreground(grid, background=background) if crop_result else copy_grid(grid)\n    largest = max(objs, key=len)\n    out = crop_object(grid, largest, background=background)\n    return crop_foreground(out, background=background) if crop_result else out\n",
+      "score": 0.5,
+      "timestamp": 1775430507.834711,
+      "metadata": {}
+    },
+    {
+      "hypothesis_type": "boundary_edge",
+      "grid_size_bin": "medium",
+      "func_name": "touches_border",
+      "code": "def touches_border(grid, obj):\n    if not obj:\n        return False\n    rows, cols = len(grid), len(grid[0])\n    return any(r == 0 or c == 0 or r == rows - 1 or c == cols - 1 for r, c in obj)\n",
+      "score": 0.5,
+      "timestamp": 1775430507.838681,
+      "metadata": {}
+    },
+    {
+      "hypothesis_type": "flood_fill",
+      "grid_size_bin": "small",
+      "func_name": "fill_l_shape_corners",
+      "code": "def fill_l_shape_corners(grid, fill_color=1, background=None):\n    \"\"\"For each 2x2 region with exactly 3 same-color non-background cells, fill the 4th with fill_color.\"\"\"\n    if background is None:\n        background = detect_background_color(grid)\n    out = copy_grid(grid)\n    rows, cols = len(grid), len(grid[0])\n    for r in range(rows - 1):\n        for c in range(cols - 1):\n            cells = [(r, c), (r, c+1), (r+1, c), (r+1, c+1)]\n            non_bg = [(rr, cc) for rr, cc in cells if grid[rr][cc] != background]\n            bg_cells = [(rr, cc) for rr, cc in cells if grid[rr][cc] == background]\n            if len(non_bg) == 3 and len(bg_cells) == 1:\n                colors = [grid[rr][cc] for rr, cc in non_bg]\n                if len(set(colors)) == 1:\n                    rr, cc = bg_cells[0]\n                    out[rr][cc] = fill_color\n    return out\n",
+      "score": 0.5,
+      "timestamp": 1775430507.8409631,
+      "metadata": {}
+    },
+    {
+      "hypothesis_type": "symmetry",
+      "grid_size_bin": "small",
+      "func_name": "reflect_2x2_block_to_corners",
+      "code": "def reflect_2x2_block_to_corners(grid, background=0):\n    \"\"\"\n    Find the unique 2x2 non-background block; place its diagonally-opposite values\n    at the 4 adjacent diagonal zones (each 2x2, clipped to grid bounds).\n    \"\"\"\n    rows, cols = len(grid), len(grid[0])\n    block_r, block_c = None, None\n    for r in range(rows - 1):\n        for c in range(cols - 1):\n            if (grid[r][c] != background and grid[r][c+1] != background and\n                    grid[r+1][c] != background and grid[r+1][c+1] != background):\n                block_r, block_c = r, c\n                break\n        if block_r is not None:\n            break\n    if block_r is None:\n        return grid\n    tl = grid[block_r][block_c]\n    tr = grid[block_r][block_c + 1]\n    bl = grid[block_r + 1][block_c]\n    br = grid[block_r + 1][block_c + 1]\n    out = [row[:] for row in grid]\n    for er, ec, value in [\n        (block_r - 2, block_c - 2, br),\n        (block_r - 2, block_c + 2, bl),\n        (block_r + 2, block_c - 2, tr),\n        (block_r + 2, block_c + 2, tl),\n    ]:\n        for dr in range(2):\n            for dc in range(2):\n                rr, cc = er + dr, ec + dc\n                if 0 <= rr < rows and 0 <= cc < cols:\n                    out[rr][cc] = value\n    return out\n",
+      "score": 0.5,
+      "timestamp": 1775430507.842974,
+      "metadata": {}
+    },
+    {
+      "hypothesis_type": "pattern_tile",
+      "grid_size_bin": "small",
+      "func_name": "find_minimal_tile",
+      "code": "def find_minimal_tile(grid):\n    \"\"\"\n    Given a grid that is a repeating tile, extract the smallest repeating tile.\n    Tries row periods first (smallest), then column periods within each row period.\n    \"\"\"\n    rows = len(grid)\n    cols = len(grid[0]) if grid else 0\n    for rp in range(1, rows + 1):\n        if rows % rp == 0:\n            tile = grid[:rp]\n            if all(grid[r][c] == tile[r % rp][c] for r in range(rows) for c in range(cols)):\n                for cp in range(1, cols + 1):\n                    if cols % cp == 0:\n                        mini = [row[:cp] for row in tile]\n                        if all(tile[r][c] == mini[r][c % cp] for r in range(rp) for c in range(cols)):\n                            return mini\n    return grid\n",
+      "score": 0.5,
+      "timestamp": 1775430507.846077,
+      "metadata": {}
+    },
+    {
+      "hypothesis_type": "counting_arithmetic",
+      "grid_size_bin": "small",
+      "func_name": "classify_cell_count",
+      "code": "def classify_cell_count(grid, background=0, low_color=7, high_color=1, low_range=(3, 4)):\n    \"\"\"\n    Count non-background cells. If count is in low_range (3 or 4), return [[low_color]],\n    otherwise return [[high_color]]. Used for 3x3 pattern classification.\n    \"\"\"\n    count = sum(v != background for row in grid for v in row)\n    if count in low_range:\n        return [[low_color]]\n    return [[high_color]]\n",
+      "score": 0.5,
+      "timestamp": 1775430507.847222,
+      "metadata": {}
+    },
+    {
+      "hypothesis_type": "grid_decompose",
+      "grid_size_bin": "medium",
+      "func_name": "xor_split_halves",
+      "code": "def xor_split_halves(grid, separator=4, marker=2, output_val=3, background=0):\n    \"\"\"Find separator row (all same value). XOR top/bottom halves: where exactly one half has marker, output output_val.\"\"\"\n    rows, cols = len(grid), len(grid[0])\n    sep_row = next((r for r in range(rows) if all(grid[r][c] == separator for c in range(cols))), None)\n    if sep_row is None:\n        return grid\n    top, bottom = grid[:sep_row], grid[sep_row+1:]\n    if len(top) != len(bottom):\n        return grid\n    return [[output_val if (top[i][c] == marker) ^ (bottom[i][c] == marker) else background for c in range(cols)] for i in range(len(top))]\n",
+      "score": 0.5,
+      "timestamp": 1775430507.8492749,
+      "metadata": {}
+    },
+    {
+      "hypothesis_type": "pattern_tile",
+      "grid_size_bin": "large",
+      "func_name": "repair_periodic_pattern",
+      "code": "def repair_periodic_pattern(grid, missing=0):\n    \"\"\"Fill in missing (value 0) cells by detecting the repeating tile period.\"\"\"\n    rows, cols = len(grid), len(grid[0])\n    non_missing = [(r, c, grid[r][c]) for r in range(rows) for c in range(cols) if grid[r][c] != missing]\n    if not non_missing:\n        return [row[:] for row in grid]\n    best_pr, best_pc, best_ref = None, None, {}\n    for pr in range(1, min(rows, 16) + 1):\n        for pc in range(1, min(cols, 16) + 1):\n            ref = {}\n            consistent = True\n            for r, c, v in non_missing:\n                key = (r % pr, c % pc)\n                if key in ref and ref[key] != v:\n                    consistent = False\n                    break\n                ref[key] = v\n            if consistent and len(ref) == pr * pc:\n                if best_pr is None or pr * pc < best_pr * best_pc:\n                    best_pr, best_pc = pr, pc\n                    best_ref = dict(ref)\n    if best_pr is None:\n        best_match_size = None\n        for pr in range(1, min(rows, 16) + 1):\n            for pc in range(1, min(cols, 16) + 1):\n                ref = {}\n                consistent = True\n                for r, c, v in non_missing:\n                    key = (r % pr, c % pc)\n                    if key in ref and ref[key] != v:\n                        consistent = False\n                        break\n                    ref[key] = v\n                if consistent and (best_match_size is None or pr * pc < best_match_size):\n                    best_match_size = pr * pc\n                    best_pr, best_pc = pr, pc\n                    best_ref = dict(ref)\n    if best_pr is None:\n        return [row[:] for row in grid]\n    out = [row[:] for row in grid]\n    for r in range(rows):\n        for c in range(cols):\n            if grid[r][c] == missing:\n                key = (r % best_pr, c % best_pc)\n                if key in best_ref:\n                    out[r][c] = best_ref[key]\n    return out\n",
+      "score": 0.5,
+      "timestamp": 1775430507.8562298,
+      "metadata": {}
+    },
+    {
+      "hypothesis_type": "flood_fill",
+      "grid_size_bin": "large",
+      "func_name": "fill_largest_zero_rect_with_6",
+      "code": "def fill_largest_zero_rect_with_6(grid, background=0, fill_color=6):\n    \"\"\"Find the largest area all-background rectangle in non-marker rows (rows\n    containing only 0 or 1) and fill it with fill_color (6). Uses histogram method.\"\"\"\n    rows, cols = len(grid), len(grid[0])\n    normal_vals = {0, 1}\n    marker_rows = set()\n    for r in range(rows):\n        for c in range(cols):\n            if grid[r][c] not in normal_vals:\n                marker_rows.add(r)\n                break\n\n    def max_rect_hist(heights):\n        stack, max_area, best = [], 0, None\n        for i in range(len(heights) + 1):\n            h = heights[i] if i < len(heights) else 0\n            start = i\n            while stack and stack[-1][1] >= h:\n                idx, height = stack.pop()\n                area = height * (i - idx)\n                if area > max_area:\n                    max_area = area\n                    best = (area, idx, i - 1, height)\n                start = idx\n            stack.append((start, h))\n        return best\n\n    heights = [0] * cols\n    best_area, best_region = 0, None\n    for r in range(rows):\n        if r in marker_rows:\n            heights = [0] * cols\n        else:\n            for c in range(cols):\n                heights[c] = heights[c] + 1 if grid[r][c] == background else 0\n            result = max_rect_hist(heights)\n            if result and result[0] > best_area:\n                area, left, right, height = result\n                best_area = area\n                best_region = (r - height + 1, r, left, right)\n\n    if not best_region:\n        return [row[:] for row in grid]\n    out = [row[:] for row in grid]\n    top, bot, left, right = best_region\n    for r in range(top, bot + 1):\n        for c in range(left, right + 1):\n            out[r][c] = fill_color\n    return out\n\n",
+      "score": 0.5,
+      "timestamp": 1775430507.875871,
+      "metadata": {}
+    },
+    {
+      "hypothesis_type": "boundary_edge",
+      "grid_size_bin": "small",
+      "func_name": "surround_seeds_with_3x3_border",
+      "code": "def surround_seeds_with_3x3_border(grid):\n    H = len(grid)\n    W = len(grid[0])\n    seeds = [(r, c) for r in range(H) for c in range(W) if grid[r][c] != 0]\n    result = [[0] * W for _ in range(H)]\n    for sr, sc in seeds:\n        result[sr][sc] = grid[sr][sc]\n        for dr in [-1, 0, 1]:\n            for dc in [-1, 0, 1]:\n                if dr == 0 and dc == 0:\n                    continue\n                rr, cc = sr + dr, sc + dc\n                if 0 <= rr < H and 0 <= cc < W and result[rr][cc] == 0:\n                    result[rr][cc] = 1\n    return result\n\n",
+      "score": 0.5,
+      "timestamp": 1775430507.887396,
+      "metadata": {}
+    },
+    {
+      "hypothesis_type": "other",
+      "grid_size_bin": "small",
+      "func_name": "expand_cells_to_4x4_blocks",
+      "code": "def expand_cells_to_4x4_blocks(grid):\n    H = len(grid); W = len(grid[0])\n    outH = H*2; outW = W*2\n    result = [[0]*outW for _ in range(outH)]\n    for r in range(H):\n        for c in range(W):\n            if grid[r][c] != 0:\n                br = (r-1)*2; bc = (c-1)*2\n                for dr in range(4):\n                    for dc in range(4):\n                        nr = br+dr; nc = bc+dc\n                        if 0 <= nr < outH and 0 <= nc < outW:\n                            result[nr][nc] = grid[r][c]\n    return result\n\n",
+      "score": 0.5,
+      "timestamp": 1775430507.8924181,
+      "metadata": {}
+    },
+    {
+      "hypothesis_type": "topology",
+      "grid_size_bin": "medium",
+      "func_name": "draw_cross_through_all_1rect_centers",
+      "code": "def draw_cross_through_all_1rect_centers(grid):\n    H = len(grid); W = len(grid[0])\n    bg = grid[0][0]\n    visited = [[False]*W for _ in range(H)]\n    rects = []\n    for sr in range(H):\n        for sc in range(W):\n            if grid[sr][sc]==1 and not visited[sr][sc]:\n                stack = [(sr,sc)]; cells = []\n                while stack:\n                    r,c = stack.pop()\n                    if not(0<=r<H and 0<=c<W) or visited[r][c] or grid[r][c]!=1: continue\n                    visited[r][c]=True; cells.append((r,c))\n                    for dr,dc in [(0,1),(0,-1),(1,0),(-1,0)]: stack.append((r+dr,c+dc))\n                rs2 = [r for r,c in cells]; cs2 = [c for r,c in cells]\n                rects.append((min(rs2),max(rs2),min(cs2),max(cs2)))\n    result = [list(row) for row in grid]\n    for r0,r1,c0,c1 in rects:\n        center_r = (r0+r1)//2; center_c = (c0+c1)//2\n        for c in range(W):\n            if result[center_r][c] == bg: result[center_r][c] = 6\n        for r in range(H):\n            if result[r][center_c] == bg: result[r][center_c] = 6\n    return result\n\n",
+      "score": 0.5,
+      "timestamp": 1775430507.893594,
+      "metadata": {}
+    },
+    {
+      "hypothesis_type": "transform_geom",
+      "grid_size_bin": "small",
+      "func_name": "crop_top_left_2x2",
+      "code": "def crop_top_left_2x2(grid):\n    return [list(grid[r][:2]) for r in range(min(2,len(grid)))]\n\n",
+      "score": 0.5,
+      "timestamp": 1775430507.9125938,
+      "metadata": {}
+    },
+    {
+      "hypothesis_type": "transform_geom",
+      "grid_size_bin": "large",
+      "func_name": "extract_and_scale_pattern",
+      "code": "def extract_and_scale_pattern(grid: list[list[int]]) -> list[list[int]]:\n    \"\"\"Extract distinct pattern blocks separated by 0s and scale them by 2x2.\"\"\"\n    rows = len(grid)\n    cols = len(grid[0]) if rows > 0 else 0\n    \n    block_size = 0\n    found_blocks = []\n    \n    for r in range(rows):\n        for c in range(cols):\n            if grid[r][c] == 0:\n                continue\n            curr_block = []\n            curr_block_color = grid[r][c]\n            is_new_block = True\n            \n            # Check if 2x2 to the right or below from current position\n            # If we find a non-zero pixel that matches the current block color \n            # and forms a square or extension, we add it to the block.\n            # Based on task 5117e062, we extract 3x3 blocks where 0s are borders.\n            # But here, input is 13x13 with 3x3 blocks of non-zeros (e.g., 333, 888)\n            # Output is 3x3 blocks where 0s are borders?\n            # Actually, looking at 5117e062: Input has 3x3 blocks of 3s and 8s. Output is 3x3 blocks of 0s and 3s/8s.\n            # Wait, Input has 3s/8s, Output has 0s and 3s/8s. The center of the block changes?\n            # Row 5 Input: 003800000... (0,1 are 0. 3 is at (5,2), 8 is at (5,3)).\n            # Row 5 Output: 033 (0 is at (5,0), 3s are at (5,1),(5,2)).\n            # This implies shifting and scaling.\n            # Let's look at the structure.\n            # Input: Block of 3s at (4,2)-(6,2) (col 2). Block of 8s at (5,3).\n            # Input: 330 (row 4 of block) -> 033 (row 0 of block).\n            # Actually, Input Row 4 330 -> Output Row 0 033.\n            # Input Row 5 380 -> Output Row 1 330. (Wait, Output Row 1 is 330).\n            # Input Row 6 330 -> Output Row 2 033.\n            # It seems to extract the non-zero pattern and then rotate 180?\n            # Or maybe extract the 3x3 block defined by the non-zero elements.\n            \n            # Let's try a different task hypothesis based on 025d127b.\n            # Input:",
+      "score": 0.5,
+      "timestamp": 1775430507.920471,
+      "metadata": {}
+    },
+    {
+      "hypothesis_type": "grid_decompose",
+      "grid_size_bin": "small",
+      "func_name": "b6afb2da_transform",
+      "code": "def b6afb2da_transform(grid: list[list[int]]) -> list[list[int]]:\n    \"\"\"Extract 5x5 subgrids from quadrants and map colors to transformed palette (0->1, 5->4, 6->2, 7->2) based on specific quadrant positions.\"\"\"\n    import numpy as np\n    b, w = len(grid), len(grid[0])\n    # Assume 10x10 split into 4 equal quadrants (5x5)\n    if b == 10 and w == 10:\n        q1 = grid[:5][:5]\n        q2 = grid[:5][5:]\n        q3 = grid[5:][5:]\n        q4 = grid[5:][:5]\n        \n        # Transform 5x5 grids\n        def transform_quad(q):\n            res = np.zeros((5, 5), dtype=int)\n            for r in range(5):\n                for c in range(5):\n                    if q[r][c] == 0:\n                        res[r][c] = 0 if r > 4 else 0 if c > 5 else 0 # Placeholder logic needs refinement based on mapping\n                    elif q[r][c] == 5:\n                        res[r][c] = 4 if r % 2 == 0 else 2\n                    elif q[r][c] == 1:\n                        res[r][c] = 0\n                    elif q[r][c] == 2:\n                        res[r][c] = 2\n                    elif q[r][c] == 3:\n                        res[r][c] = 0\n                    elif q[r][c] == 4:\n                        res[r][c] = 4\n                    elif q[r][c] == 6:\n                        res[r][c] = 2\n                    elif q[r][c] == 7:\n                        res[r][c] = 2\n            return res\n\n        # Mapping input quadrants to output quadrants\n        # Input: Q1 full, Q2 empty, Q3 empty, Q4 empty (from Train 1, but wait, Train 1 has 5x5 filled)\n        # Actually Input is 10x10.\n        # Train 1 Input: Left 5x5 block is 5s. Right/Bottom are 0s (mostly).\n        # Wait, looking at Train 1 Input again:\n        # Rows 0-4: 555555 0000 (First 6 cols are 5s, last 4 are 0s)\n        # Rows 5-9: 000000 0000 (Row 5 empty), Rows 6-9: 0000 555555 (Cols 4-9 are 5s)\n        # This is not 4 quadrants. It's specific regions.\n        # Let's re-examine Train 1 Input/Output structure.\n        # Train 1: Input ",
+      "score": 0.5,
+      "timestamp": 1775430507.9554281,
+      "metadata": {}
+    },
+    {
+      "hypothesis_type": "symmetry",
+      "grid_size_bin": "large",
+      "func_name": "extract_and_mirror_vertical_pattern",
+      "code": "def extract_and_mirror_vertical_pattern(grid: list[list[int]]) -> list[list[int]]:\n    \"\"\"Extracts the active object in the input grid and mirrors it vertically to fill the empty space in the output grid, preserving the original background.\"\"\"\n    import numpy as np\n    g = np.array(grid)\n    h, w = g.shape\n    \n    # Identify background color (most frequent or 0)\n    bg = 0\n    if h > 0 and w > 0:\n        counts = np.bincount(g.flatten())\n        bg = np.argmax(counts)\n    \n    # Identify foreground pixels (non-background)\n    fg_mask = g != bg\n    \n    # Determine the bounding box of the foreground object(s)\n    rows = np.where(np.any(fg_mask, axis=1))[0]\n    cols = np.where(np.any(fg_mask, axis=0))[0]\n    \n    if len(rows) == 0 or len(cols) == 0:\n        return g.tolist()\n        \n    r_min, r_max = rows[0], rows[-1]\n    c_min, c_max = cols[0], cols[-1]\n    \n    # Extract the sub-grid containing the object\n    obj = g[r_min:r_max+1, c_min:c_max+1]\n    obj_h, obj_w = obj.shape\n    \n    # Determine the target shape based on input/output dimensions (from failing task analysis)\n    # Task 1: Input (11x10), Output (11x10). Object moves from top-left to center.\n    # Task 2: Input (8x12), Output (8x12). Object expands horizontally.\n    # Task 3: Input (10x20), Output (10x20). Object expands horizontally.\n    \n    # The transformation seems to be: Extract object, place it in the center of the output grid dimensions\n    # or expand it to fill the width.\n    \n    # Strategy: Create a new grid of the target size.\n    # Copy the extracted object to the center of the new grid.\n    # If the object is not a square, scale it or pad it.\n    \n    # Observation from Task 1:\n    # Input: 0040000000 (Row 2)\n    # Input: 0008180000 (Row 3)\n    # ...\n    # Output: 0008810000 (Row 3) -> Row 3 content moved to Row 3 but shifted?\n    # Actually, let's look at the shapes.\n    # Input Row 2: 0040... (4 is at index 2)\n    # Output Row 2: 0000... (4 is gone)\n    # Input Row 3: 000818... (8 a",
+      "score": 0.5,
+      "timestamp": 1775430507.967248,
+      "metadata": {}
+    }
+  ],
+  "updated": 1775430507.967336
+}

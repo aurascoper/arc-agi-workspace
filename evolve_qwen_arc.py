@@ -167,6 +167,58 @@ def format_hypothesis_type_guidance() -> str:
     return "\n".join(lines)
 
 
+def _format_coverage_gaps() -> str:
+    """Identify underrepresented hypothesis types and format as prompt guidance.
+
+    Compares current DSL function distribution across HYPOTHESIS_TYPE_KEYWORDS
+    categories. Types with fewer than the median count are flagged as gaps.
+    """
+    # Count functions per type by scanning dsl.py function names
+    try:
+        dsl_code = DSL_PATH.read_text()
+    except Exception:
+        return ""
+    func_names = re.findall(r"^def (\w+)\s*\(", dsl_code, re.MULTILINE)
+    if not func_names:
+        return ""
+
+    type_counts: dict[str, int] = {t: 0 for t in HYPOTHESIS_TYPE_KEYWORDS}
+    type_counts["other"] = 0
+    for name in func_names:
+        best_type, best_hits = "other", 0
+        for htype, keywords in HYPOTHESIS_TYPE_KEYWORDS.items():
+            hits = sum(1 for kw in keywords if kw in name.lower())
+            if hits > best_hits:
+                best_type, best_hits = htype, hits
+        type_counts[best_type] += 1
+
+    if not type_counts:
+        return ""
+
+    counts = [v for v in type_counts.values() if v > 0]
+    if not counts:
+        return ""
+    median_count = sorted(counts)[len(counts) // 2]
+
+    # Find underrepresented types (below median, excluding "other")
+    gaps = []
+    for htype in HYPOTHESIS_TYPE_KEYWORDS:
+        c = type_counts.get(htype, 0)
+        if c < median_count:
+            gaps.append((htype, c, median_count))
+
+    if not gaps:
+        return ""
+
+    lines = ["## COVERAGE GAPS — underrepresented function types (PRIORITIZE these)"]
+    gaps.sort(key=lambda x: x[1])
+    for htype, count, med in gaps:
+        keywords = ", ".join(HYPOTHESIS_TYPE_KEYWORDS[htype][:4])
+        lines.append(f"  {htype}: only {count} functions (median={med}). Keywords: {keywords}")
+    lines.append("Propose functions that fill these gaps. The DSL is over-indexed on common types.")
+    return "\n".join(lines)
+
+
 RESEARCH_CONTEXT = """\
 Key ARC-AGI solution techniques from the literature:
 
@@ -1110,6 +1162,21 @@ def build_diagnostic_prompt(failing_results):
     if type_guidance:
         research = research + "\n\n" + type_guidance
 
+    # Cherry-pick P0: Coverage-gap prompt — show underrepresented hypothesis types
+    coverage_gap = _format_coverage_gaps()
+    if coverage_gap:
+        research = research + "\n\n" + coverage_gap
+
+    # P4: MAP-Elites coverage gaps — show empty/weak niches
+    try:
+        from dsl_map_elites import get_map_elites
+        me = get_map_elites()
+        me_gaps = me.format_gaps_for_prompt(max_gaps=5)
+        if me_gaps:
+            research = research + "\n\n" + me_gaps
+    except Exception:
+        pass
+
     # Cherry-pick 1: Targeted literature search based on failure categories
     lit_hints, lit_hint_ids = _targeted_literature_hints(categories)
     if lit_hints:
@@ -1444,12 +1511,13 @@ def run_lora_training_cycle(round_num: int, state: dict) -> dict:
     # Unload model to free GPU memory
     unload_model()
 
-    # Run training as subprocess for memory isolation
+    # Run training as subprocess for memory isolation (with PB2 HP scheduling)
     try:
         result = subprocess.run(
             [sys.executable, str(WORKSPACE / "lora_train.py"),
              "--data", str(SUCCESSFUL_PROGRAMS_PATH),
-             "--output", str(adapter_dir)],
+             "--output", str(adapter_dir),
+             "--pb2"],
             capture_output=True, text=True, timeout=1800,
             cwd=str(WORKSPACE),
         )
@@ -1841,6 +1909,24 @@ def evolve(rounds=None, diagnose_only=False, never_stop=False, tier3_tasks=None,
             improved = post_score > pre_score
             status = "keep" if improved else "stagnant"
             print(f"\n[7/9] DECIDE — {status} (metric {pre_score:.4f}->{post_score:.4f})")
+
+        # P4: Update MAP-Elites archive with surviving functions
+        if improved and func_names:
+            try:
+                from dsl_map_elites import get_map_elites
+                me = get_map_elites()
+                dsl_code_now = DSL_PATH.read_text()
+                for fn in func_names:
+                    # Extract function code from current DSL
+                    fn_match = re.search(
+                        rf'^(def {re.escape(fn)}\s*\([^)]*\).*?)(?=\ndef |\Z)',
+                        dsl_code_now, re.MULTILINE | re.DOTALL
+                    )
+                    if fn_match:
+                        me.update(fn, fn_match.group(1), solve_after,
+                                  metadata={"round": round_num})
+            except Exception:
+                pass
 
         # --- 8. RECORD ---
         commit_hash = None

@@ -191,6 +191,25 @@ def build_optimization_prompt(dsl_code: str, info_text: str, config: BeamConfig)
     existing_names = _extract_function_names(dsl_code)
     ban_list = ", ".join(existing_names[-60:]) if existing_names else "(none)"
 
+    # Go-Explore archive context — inject prior best attempts for near-solved tasks
+    archive_context = ""
+    try:
+        from program_archive import get_archive
+        archive = get_archive()
+        near_solved = archive.get_near_solved(min_score=0.5, max_score=0.99)
+        if near_solved:
+            import random as _arc_rng
+            sampled = _arc_rng.sample(near_solved, min(2, len(near_solved)))
+            parts = []
+            for tid in sampled:
+                snippet = archive.format_for_prompt(tid, k=1)
+                if snippet:
+                    parts.append(snippet)
+            if parts:
+                archive_context = "\n".join(parts)
+    except Exception:
+        pass
+
     # Categories to encourage diversity
     import random
     categories = [
@@ -281,6 +300,7 @@ Prioritize functions related to: {focus}
 ## Background
 {info_text}
 {dsl_primitives_section}
+{archive_context}
 {task_instruction}"""
 
 
@@ -512,6 +532,12 @@ def _mini_solve_eval(worktree_path: str, config: BeamConfig) -> float:
                     _log_successful_program(tf.stem, td, code, prompt)
                 except Exception:
                     pass
+                # Archive successful solve (Go-Explore)
+                try:
+                    from program_archive import get_archive
+                    get_archive().update(tf.stem, 1.0, code)
+                except Exception:
+                    pass
             elif failures:
                 pair_scores = [calculate_pixel_accuracy(f[1], f[2]) if f[2] is not None else 0.0 for f in failures]
                 avg_pa = sum(pair_scores) / len(pair_scores)
@@ -526,6 +552,12 @@ def _mini_solve_eval(worktree_path: str, config: BeamConfig) -> float:
                 try:
                     from synthetic_tasks import collect_from_beam_failure
                     collect_from_beam_failure(td, code, tf.stem)
+                except Exception:
+                    pass
+                # Archive partial solution (Go-Explore)
+                try:
+                    from program_archive import get_archive
+                    get_archive().update(tf.stem, avg_pa, code)
                 except Exception:
                     pass
                 scores.append(avg_pa)
@@ -745,9 +777,45 @@ def run_beam_search(config: Optional[BeamConfig] = None) -> Optional[NodeResult]
                 candidates.append(node)
                 all_nodes.append(node)
 
-        # Select survivors
+        # Select survivors with novelty bonus (QD-inspired)
         valid = [c for c in candidates if c.score is not None and c.test_passed]
-        valid.sort(key=lambda n: n.score if n.score is not None else -1,
+        # Compute novelty bonus: reward candidates whose new functions cover
+        # underrepresented transformation types
+        NOVELTY_LAMBDA = 0.15  # weight of novelty bonus vs raw score
+        baseline_names = set(_extract_function_names(dsl_code))
+        for c in valid:
+            novelty = 0.0
+            if c.dsl_code:
+                new_names = set(_extract_function_names(c.dsl_code)) - baseline_names
+                if new_names:
+                    # Count how many distinct type categories the new functions cover
+                    types_covered = set()
+                    for name in new_names:
+                        best_type = "other"
+                        best_hits = 0
+                        for ttype, kws in [
+                            ("symmetry", ["symmetr", "mirror", "reflect", "flip"]),
+                            ("flood_fill", ["flood", "fill", "paint", "region"]),
+                            ("connected_components", ["connect", "component", "object", "blob"]),
+                            ("color_logic", ["color", "palette", "histogram", "recolor"]),
+                            ("pattern_tile", ["pattern", "tile", "repeat", "stamp"]),
+                            ("transform_geom", ["rotate", "scale", "crop", "shift", "gravity"]),
+                            ("grid_decompose", ["decompos", "split", "quadrant", "partition"]),
+                            ("topology", ["topology", "layer", "occlu", "stack"]),
+                            ("counting_arithmetic", ["count", "arith", "sum", "sort"]),
+                            ("boundary_edge", ["boundar", "edge", "border", "contour"]),
+                            ("masking_boolean", ["mask", "boolean", "xor", "union"]),
+                        ]:
+                            hits = sum(1 for kw in kws if kw in name.lower())
+                            if hits > best_hits:
+                                best_type, best_hits = ttype, hits
+                        types_covered.add(best_type)
+                    # Novelty = fraction of distinct types (0-1 range)
+                    novelty = len(types_covered) / max(len(new_names), 1)
+            c._novelty_bonus = novelty  # type: ignore[attr-defined]
+            c._adjusted_score = (c.score or 0) + NOVELTY_LAMBDA * novelty  # type: ignore[attr-defined]
+
+        valid.sort(key=lambda n: getattr(n, '_adjusted_score', n.score or -1),
                    reverse=True)
         survivors = valid[:survivor_cap]
 

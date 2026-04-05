@@ -26,13 +26,19 @@ from pathlib import Path
 WORKSPACE = Path(__file__).resolve().parent
 MODEL_PATH = os.environ.get("ARC_MODEL_PATH", "mlx-community/Qwen3.5-9B-4bit")
 
-# LoRA hyperparameters
+# LoRA hyperparameters (defaults; PB2 may override LR, ITERS, DATA_MIX)
 LORA_RANK = 4
 LORA_LAYERS = 8
 BATCH_SIZE = 1
 MAX_SEQ_LENGTH = 1024
 ITERS = 200
 LEARNING_RATE = 2e-5
+
+# PB2 hyperparameter search bounds
+PB2_HISTORY_PATH = Path(__file__).resolve().parent / "evolution_results" / "pb2_history.jsonl"
+PB2_LR_BOUNDS = (1e-6, 1e-4)    # log scale
+PB2_ITERS_BOUNDS = (50, 400)     # linear
+PB2_MIX_BOUNDS = (0.0, 1.0)     # synthetic data ratio
 
 # Canary validation
 CANARY_COUNT = 5
@@ -374,6 +380,169 @@ def validate_adapter(adapter_path: Path, canary_task_names: list[str]) -> bool:
 
 
 # ---------------------------------------------------------------------------
+# PB2 — Population-Based Bandits for hyperparameter scheduling
+# (Parker-Holder et al., NeurIPS 2020, arXiv:2002.02518)
+# Sequential single-agent variant: GP-based Bayesian optimization over
+# (learning_rate, iters, data_mix) → holdout score.
+# ---------------------------------------------------------------------------
+
+def _load_pb2_history() -> list[dict]:
+    """Load PB2 trial history."""
+    if not PB2_HISTORY_PATH.exists():
+        return []
+    entries = []
+    with open(PB2_HISTORY_PATH) as f:
+        for line in f:
+            line = line.strip()
+            if line:
+                try:
+                    entries.append(json.loads(line))
+                except json.JSONDecodeError:
+                    continue
+    return entries
+
+
+def _save_pb2_trial(config: dict, score: float):
+    """Append a PB2 trial result."""
+    PB2_HISTORY_PATH.parent.mkdir(parents=True, exist_ok=True)
+    import time
+    entry = {
+        "lr": config["lr"],
+        "iters": config["iters"],
+        "data_mix": config["data_mix"],
+        "score": score,
+        "timestamp": time.time(),
+    }
+    with open(PB2_HISTORY_PATH, "a") as f:
+        f.write(json.dumps(entry) + "\n")
+
+
+def pb2_suggest_config() -> dict:
+    """Suggest next LoRA hyperparameters using GP-UCB.
+
+    Falls back to random sampling if sklearn is unavailable or history is too short.
+    Returns dict with keys: lr, iters, data_mix.
+    """
+    import math
+
+    history = _load_pb2_history()
+
+    # Need at least 3 trials for GP to be meaningful
+    if len(history) < 3:
+        # Random sampling for initial exploration
+        lr = math.exp(random.uniform(math.log(PB2_LR_BOUNDS[0]),
+                                     math.log(PB2_LR_BOUNDS[1])))
+        iters = random.randint(PB2_ITERS_BOUNDS[0], PB2_ITERS_BOUNDS[1])
+        data_mix = random.uniform(*PB2_MIX_BOUNDS)
+        return {"lr": lr, "iters": iters, "data_mix": data_mix}
+
+    try:
+        from sklearn.gaussian_process import GaussianProcessRegressor
+        from sklearn.gaussian_process.kernels import Matern
+        import numpy as np
+    except ImportError:
+        # sklearn not available — perturb best config
+        best = max(history, key=lambda h: h["score"])
+        lr = best["lr"] * random.choice([0.5, 0.8, 1.0, 1.25, 2.0])
+        lr = max(PB2_LR_BOUNDS[0], min(PB2_LR_BOUNDS[1], lr))
+        iters = best["iters"] + random.choice([-50, -25, 0, 25, 50])
+        iters = max(PB2_ITERS_BOUNDS[0], min(PB2_ITERS_BOUNDS[1], iters))
+        data_mix = best["data_mix"] + random.uniform(-0.2, 0.2)
+        data_mix = max(0.0, min(1.0, data_mix))
+        return {"lr": lr, "iters": iters, "data_mix": data_mix}
+
+    # Normalize features to [0, 1]
+    X = np.array([
+        [math.log(h["lr"]), h["iters"], h["data_mix"]]
+        for h in history
+    ])
+    y = np.array([h["score"] for h in history])
+
+    # Normalize X columns
+    X_min = X.min(axis=0)
+    X_max = X.max(axis=0)
+    X_range = X_max - X_min
+    X_range[X_range == 0] = 1.0
+    X_norm = (X - X_min) / X_range
+
+    # Normalize y
+    y_mean, y_std = y.mean(), max(y.std(), 1e-8)
+    y_norm = (y - y_mean) / y_std
+
+    # Fit GP
+    kernel = Matern(nu=2.5, length_scale=0.5, length_scale_bounds=(0.01, 10.0))
+    gp = GaussianProcessRegressor(kernel=kernel, alpha=0.1, n_restarts_optimizer=3)
+    gp.fit(X_norm, y_norm)
+
+    # UCB acquisition: generate random candidates, pick best UCB
+    beta = 2.0  # exploration-exploitation tradeoff
+    n_candidates = 200
+    candidates = np.random.rand(n_candidates, 3)  # uniform [0,1]^3
+    mu, sigma = gp.predict(candidates, return_std=True)
+    ucb = mu + beta * sigma
+    best_idx = np.argmax(ucb)
+
+    # Denormalize
+    best_norm = candidates[best_idx]
+    best_raw = best_norm * X_range + X_min
+    lr = math.exp(best_raw[0])
+    lr = max(PB2_LR_BOUNDS[0], min(PB2_LR_BOUNDS[1], lr))
+    iters = int(round(best_raw[1]))
+    iters = max(PB2_ITERS_BOUNDS[0], min(PB2_ITERS_BOUNDS[1], iters))
+    data_mix = float(best_raw[2])
+    data_mix = max(0.0, min(1.0, data_mix))
+
+    print(f"[pb2] GP-UCB suggested: lr={lr:.2e}, iters={iters}, data_mix={data_mix:.2f} "
+          f"(from {len(history)} trials, best_ucb={ucb[best_idx]:.3f})")
+
+    return {"lr": lr, "iters": iters, "data_mix": data_mix}
+
+
+def run_training_pb2(data_dir: Path, adapter_output: Path,
+                     pb2_config: dict | None = None) -> bool:
+    """Run LoRA training with PB2-suggested hyperparameters."""
+    if pb2_config is None:
+        pb2_config = pb2_suggest_config()
+
+    lr = pb2_config["lr"]
+    iters = pb2_config["iters"]
+
+    adapter_output.mkdir(parents=True, exist_ok=True)
+
+    cmd = [
+        sys.executable, "-m", "mlx_lm.lora",
+        "--model", MODEL_PATH,
+        "--train",
+        "--data", str(data_dir),
+        "--adapter-path", str(adapter_output),
+        "--batch-size", str(BATCH_SIZE),
+        "--num-layers", str(LORA_LAYERS),
+        "--lora-rank", str(LORA_RANK),
+        "--iters", str(iters),
+        "--learning-rate", str(lr),
+        "--max-seq-length", str(MAX_SEQ_LENGTH),
+        "--val-batches", "10",
+        "--steps-per-report", "20",
+        "--steps-per-eval", "50",
+    ]
+
+    print(f"[pb2] Training: lr={lr:.2e}, iters={iters}, data_mix={pb2_config['data_mix']:.2f}")
+    result = subprocess.run(cmd, capture_output=True, text=True, timeout=1800)
+
+    if result.returncode != 0:
+        print(f"[pb2] Training FAILED (exit {result.returncode})")
+        print(f"[pb2] stderr: {result.stderr[-500:]}")
+        return False
+
+    print(f"[pb2] Training complete. Adapter saved to {adapter_output}")
+    if result.stdout:
+        lines = result.stdout.strip().split("\n")
+        for line in lines[-5:]:
+            print(f"  {line}")
+    return True
+
+
+# ---------------------------------------------------------------------------
 # MAIN
 # ---------------------------------------------------------------------------
 
@@ -381,6 +550,7 @@ def main():
     parser = argparse.ArgumentParser(description="LoRA self-distillation on successful ARC programs")
     parser.add_argument("--data", type=Path, required=True, help="Path to successful_programs.jsonl")
     parser.add_argument("--output", type=Path, required=True, help="Adapter output directory")
+    parser.add_argument("--pb2", action="store_true", help="Use PB2 hyperparameter scheduling")
     args = parser.parse_args()
 
     if not args.data.exists():
@@ -394,8 +564,16 @@ def main():
         print(f"[lora] Only {count} unique programs — need at least 10 for training")
         sys.exit(1)
 
-    # Step 2: Train
-    success = run_training(data_dir, args.output)
+    # Step 2: Train (with optional PB2 hyperparameter scheduling)
+    pb2_config = None
+    if args.pb2:
+        pb2_config = pb2_suggest_config()
+        print(f"[pb2] Config: lr={pb2_config['lr']:.2e}, iters={pb2_config['iters']}, "
+              f"data_mix={pb2_config['data_mix']:.2f}")
+        success = run_training_pb2(data_dir, args.output, pb2_config)
+    else:
+        success = run_training(data_dir, args.output)
+
     if not success:
         sys.exit(1)
 
@@ -403,14 +581,20 @@ def main():
     canary_tasks = select_canary_tasks(entries)
     if not canary_tasks:
         print("[lora] No canary tasks available — accepting adapter without validation")
+        if pb2_config:
+            _save_pb2_trial(pb2_config, 0.5)  # neutral score for unvalidated
         sys.exit(0)
 
     passed = validate_adapter(args.output, canary_tasks)
     if passed:
         print(f"[lora] Adapter VALIDATED — all {len(canary_tasks)} canary tasks passed")
+        if pb2_config:
+            _save_pb2_trial(pb2_config, 1.0)  # full score for validated adapter
         sys.exit(0)
     else:
         print(f"[lora] Adapter REJECTED — canary task regression detected")
+        if pb2_config:
+            _save_pb2_trial(pb2_config, 0.0)  # zero for rejected
         sys.exit(1)
 
 
