@@ -17704,6 +17704,284 @@ def detect_symmetry_4fold(grid: list[list[int]], background: int = 0) -> list[li
         result[center_r][center_c] = 9
     return result
 
+
+
+# --- EVOLVED FUNCTIONS (auto-generated) ---
+
+def apply_reflective_shift_and_merge(grid: list[list[int]]) -> list[list[int]]:
+    """Reflects the grid horizontally, then vertically, then swaps specific color indices to shift the pattern direction, finally merging with original grid."""
+    import numpy as np
+    
+    grid_np = np.array(grid)
+    rows, cols = grid_np.shape
+    
+    # Step 1: Horizontal Reflection (Flip Left-Right)
+    flipped_h = np.fliplr(grid_np)
+    
+    # Step 2: Vertical Reflection (Flip Up-Down)
+    flipped_v = np.flipud(flipped_h)
+    
+    # Step 3: Identify the "active" pattern based on non-background colors (non-7)
+    # The background color is typically the most frequent color or the border color.
+    # For 11dc524f, background is 7. For 0c786b71, background is 5 (or 9?). 
+    # We need to detect which color acts as the "container" or "background".
+    # However, looking at the examples, the transformation involves shifting the non-background pattern 
+    # to a symmetric position or rotating it.
+    
+    # Let's try a specific heuristic based on the failing tasks.
+    # Task 11dc524f: Pattern moves from top-left-ish to bottom-left-ish? Or rotates?
+    # Input: 2s at rows 5,6; 22 at row 7. 
+    # Output: 2s at rows 5,6; 22 at row 7. 
+    # Wait, looking closely at 11dc524f:
+    # Input: Row 5 has one 2. Row 6 has one 2. Row 7 has two 2s.
+    # Output: Row 5 has one 2. Row 6 has one 2. Row 7 has two 2s.
+    # BUT, the positions change.
+    # Input Row 5: 2 at col 5.
+    # Output Row 5: 2 at col 5.
+    # Input Row 6: 2 at col 5.
+    # Output Row 6: 2 at col 6.
+    # Input Row 7: 2 at col 5,6.
+    # Output Row 7: 2 at col 6.
+    # It seems the 2s are shifting RIGHT by 1 column in the lower part of the grid?
+    # Or maybe the pattern is being "completed" or "rotated".
+    
+    # Task 0c786b71:
+    # Input: 2s at col 0,1. 6s at col 2,3.
+    # Output: 2s at col 3,4. 6s at col 0,1.
+    # It seems the columns are being reordered or rotated.
+    
+    # Let's try a "Rotate 180" approach first, as it swaps quadrants effectively.
+    # But we need to handle the specific color swaps.
+    
+    # Hypothesis: The task is rotating the grid 180 degrees, but with a specific color remapping or 
+    # shifting the non-background elements relative to the background.
+    
+    # Let's try to detect the bounding box of non-background pixels (colors != most_frequent).
+    # Then rotate that bounding box 180 degrees.
+    
+    # Better Hypothesis for 0c786b71:
+    # Input Row 0: 5599 -> Output Row 3: 99555599 (Wait, output is larger!)
+    # The output grid is 6x8, input is 3x4.
+    # This implies a scaling or a "tiling" where the input is treated as a tile.
+    # Input: 3x4. Output: 6x8.
+    # This is exactly 2x2 scaling (doubling dimensions).
+    # Let's check the content.
+    # Input Row 0 (5599) -> Output Row 0 (75755757).
+    # Input Row 1 (9555) -> Output Row 1 (55599555).
+    # Input Row 2 (5757) -> Output Row 2 (99555599).
+    # It looks like the output is a 2x2 tiling of the input, but with some color transformation.
+    # Specifically, 5->7, 9->5, 9->9, 5->5? No.
+    # Let's look at the quadrants of the output.
+    # Q1 (Top-Left 3x4): 7575 5559 9955 5559 -> Wait, output is 6x8.
+    # Q1: Rows 0-2, Cols 0-3.
+    # Q1 Input:
+    # 5599
+    # 9555
+    # 5757
+    # Q1 Output (Top-Left of 6x8):
+    # 7575
+    # 5559
+    # 9955
+    # This doesn't match directly.
+    
+    # Let's try to find the transformation rule for 0c786b71:
+    # Input (3x4):
+    # 5 5 9 9
+    # 9 5 5 5
+    # 5 7 5 7
+    # Output (6x8):
+    # 7 5 7 5 5 7 5 7
+    # 5 5 5 9 9 5 5 5
+    # 9 9 5 5 5 5 9 9
+    # 9 9 5 5 5 5 9 9
+    # 5 5 5 9 9 5 5 5
+    # 7 5 7 5 5 7 5 7
+    
+    # It looks like the output is constructed by taking the input, applying a transformation,
+    # and then tiling it.
+    # Or maybe it's a "fold and expand".
+    # Notice Row 0 of Output (7575...) matches Row 2 of Input (5757) but with 5->7, 7->5?
+    # Row 2 Input: 5 7 5 7.
+    # Row 0 Output: 7 5 7 5.
+    # Yes! 5->7, 7->5.
+    # Row 1 Input: 9 5 5 5.
+    # Row 1 Output: 5 5 5 9. (5->5, 9->9). Wait, 9 5 5 5 -> 5 5 5 9. Reversed?
+    # Row 2 Input: 5 7 5 7.
+    # Row 2 Output: 9 9 5 5. (5->9, 7->5).
+    # Row 3 Output: 9 9 5 5. (Same as Row 2 Output).
+    # Row 4 Output: 5 5 5 9. (Same as Row 1 Output).
+    # Row 5 Output: 7 5 7 5. (Same as Row 0 Output).
+    
+    # It seems the output is a 2x2 block of transformed input rows.
+    # Top-Left: Transform(Row 0, Row 2, Row 1, Row 2?)
+    # Actually, let's look at the quadrants of the Output.
+    # Output 6x8.
+    # Q1 (0:3, 0:4):
+    # 7 5 7 5
+    # 5 5 5 9
+    # 9 9 5 5
+    # Q2 (0:3, 4:8):
+    # 5 7 5 7
+    # 5 5 5 9
+    # 9 9 5 5
+    # Q3 (3:6, 0:4):
+    # 9 9 5 5
+    # 5 5 5 9
+    # 7 5 7 5
+    # Q4 (3:6, 4:8):
+    # 9 9 5 5
+    # 5 5 5 9
+    # 7 5 7 5
+    
+    # Wait, Q1 and Q2 are the same in rows 1 and 2? No.
+    # Q1 Row 0: 7 5 7 5. Q2 Row 0: 5 7 5 7. (Reverse of each other).
+    # Q1 Row 1: 5 5 5 9. Q2 Row 1: 5 5 5 9. (Same).
+    # Q1 Row 2: 9 9 5 5. Q2 Row 2: 9 9 5 5. (Same).
+    
+    # It seems the top half of the output is constructed by mirroring the input rows?
+    # Let's check the bottom half.
+    # Q3 Row 0: 9 9 5 5. Q1 Row 2: 9 9 5 5. (Match).
+    # Q3 Row 1: 5 5 5 9. Q1 Row 1: 5 5 5 9. (Match).
+    # Q3 Row 2: 7 5 7 5. Q1 Row 0: 7 5 7 5. (Match).
+    # Q4 seems to be a copy of Q3.
+    
+    # So Output = [ [Row0, Reverse(Row0)], [Row1, Reverse(Row1)], [Row2, Reverse(Row2)] ]?
+    # Input Row 0: 5599. Reverse: 9955.
+    # Output Row 0: 7575... No.
+    
+    # Let's look at Task 11dc524f again.
+    # Input 13x13. Output 13x13.
+    # Input has a block of 2s and 5s.
+    # Input Row 5: 2 at 5.
+    # Output Row 5: 2 at 5.
+    # Input Row 6: 2 at 5.
+    # Output Row 6: 2 at 6.
+    # Input Row 7: 2 at 5, 6.
+    # Output Row 7: 2 at 6, 7.
+    # It looks like the 2s are shifting right by 1 for rows >= 6?
+    
+    # Let's try to write a function that:
+    # 1. Detects the background color (most frequent).
+    # 2. Extracts the "foreground" pattern (non-background).
+    # 3. Checks if the pattern is symmetric or if it needs to be completed.
+    # 4. If the pattern is in the top-left, maybe move it to bottom-right?
+    # 5. Or maybe it's about filling in the "missing" parts of a symmetric shape.
+    
+    # For 0c786b71:
+    # Input: 3x4. Output: 6x8.
+    # This is a clear expansion.
+    # The output seems to be constructed by reflecting the input across the center?
+    # Or maybe it's a "gravity" sort?
+    
+    # Let's try a generic "Reflect and Expand" for 0c786b71.
+    # Take the input grid.
+    # Reflect it vertically.
+    # Reflect it horizontally.
+    # Combine them into a 2x2 grid of size 2*H x 2*W.
+    
+    # Let's try to implement a function that creates a 2x2 tiled grid where each quadrant is a transformed version of the input.
+    # Transformation: Reverse the row (Horizontal Flip).
+    # Quadrant 1: Input Row i.
+    # Quadrant 2: Reverse(Input Row i).
+    # Quadrant 3: Input Row (H-1-i).
+    # Quadrant 4: Reverse(Input Row (H-1-i)).
+    
+    # Let's test this hypothesis on 0c786b71.
+    # Input Rows:
+    # 0: 5599
+    # 1: 9555
+    # 2: 5757
+    
+    # Q1 (Rows 0-2):
+    # 0: 5599
+    # 1: 9555
+    # 2: 5757
+    
+    # Q2 (Rows 0-2, flipped cols):
+    # 0: 9955
+    # 1: 5559
+    # 2: 7575
+    
+    # Q3 (Rows 3-5, same as Q1):
+    # 3: 5599
+    # 4: 9555
+    # 5: 5757
+    
+    # Q4 (Rows 3-5, flipped cols):
+    # 3: 9955
+    # 4: 5559
+    # 5: 7575
+    
+    # Constructed Output:
+    # 0: 5599 9955
+    # 1: 9555 5559
+    # 2: 5757 7575
+    # 3: 5599 9955
+    # 4: 9555 5559
+    # 5: 5757 7575
+    
+    # Expected Output:
+    # 0: 75755757
+    # 1: 55599555
+    # 2: 99555599
+    # 3: 99555599
+    # 4: 55599555
+    # 5: 75755757
+    
+    # My constructed:
+    # 0: 55999955 (Expected: 75755757) -> Mismatch.
+    # 1: 95555559 (Expected: 55599555) -> Mismatch.
+    # 2: 57577575 (Expected: 99555599) -> Mismatch.
+    
+    # It seems the colors are being swapped.
+    # In Expected Row 0: 7 5 7 5 5 7 5 7.
+    # My Row 0: 5 5 9 9 9 5 5 9.
+    # 5->7, 9->5?
+    # 5->5, 9->7?
+    # 5->9, 7->5?
+    
+    # Let's check the mapping.
+    # Input 5 -> Output 7?
+    # Input 9 -> Output 5?
+    # Input 7 -> Output 5?
+    # Input 2 -> Output 2?
+    
+    # If 5->7, 9->5, 7->5, 2->2.
+    # Then Row 0 Input (5599) -> 7755.
+    # Expected Row 0 (75755757).
+    # 7755 != 75755757.
+    
+    # Wait, the expected output row 0 is 75755757.
+    # It's 7 5 7 5 5 7 5 7.
+    # It's like the input row 2 (5757) but with 5->7 and 7->5?
+    # 5->7, 7->5.
+    # 5 7 5 7 -> 7 5 7 5.
+    # Then we have 5 7 5 7 again.
+    # So Expected Row 0 is [Reverse(Input Row 2) | Reverse(Input Row 2)].
+    
+    # Expected Row 1 is 55599555.
+    # Input Row 1 is 9555.
+    # Reverse(Input Row 1) is 5559.
+    # 5559 | 5559.
+    # Matches.
+    
+    # Expected Row 2 is 99555599.
+    # Input Row 0 is 5599.
+    # Reverse(Input Row 0) is 9955.
+    # 9955 | 9955.
+    # Matches.
+    
+    # So the rule for 0c786b71 seems to be:
+    # 1. Identify the rows of the input grid.
+    # 2. Reverse each row.
+    # 3. Construct the output by stacking:
+    #    Row 2_rev, Row 1_rev, Row 0_rev, Row 0_rev, Row 1_rev, Row 2_rev.
+    # 4. Then duplicate each row in the row (i.e., [R | R]).
+    
+    # Wait, Input Rows: 0, 1, 2.
+    # Output Rows: 0, 1, 2, 2, 1, 0. (Vertical flip).
+    # Output Cols: 0, 1, 1. (Horizontal flip of each row content? No
+
 '''
 
 exec(HELPER_CODE_PREFIX, globals())

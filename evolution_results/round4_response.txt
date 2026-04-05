@@ -1,268 +1,276 @@
 
 
 ```python
-def transform_pattern_to_full_grid(grid: list[list[int]], target_bg: int = 7) -> list[list[int]]:
-    """Replicates the 3x4 input into a 6x8 grid by mirroring along both axes and swapping background/marker colors based on a rule derived from the input's background."""
+def apply_reflective_shift_and_merge(grid: list[list[int]]) -> list[list[int]]:
+    """Reflects the grid horizontally, then vertically, then swaps specific color indices to shift the pattern direction, finally merging with original grid."""
     import numpy as np
-    h, w = len(grid), len(grid[0]) if grid else 0
-    new_h, new_w = h * 2, w * 2
     
-    # Identify background color from input (most frequent)
-    colors = {}
-    for r in range(h):
-        for c in range(w):
-            c_val = grid[r][c]
-            if c_val not in colors:
-                colors[c_val] = 0
-            colors[c_val] += 1
+    grid_np = np.array(grid)
+    rows, cols = grid_np.shape
     
-    bg_color = max(colors, key=colors.get)
+    # Step 1: Horizontal Reflection (Flip Left-Right)
+    flipped_h = np.fliplr(grid_np)
     
-    # Create a 2x2 block of transformations based on the input's background
-    # The input seems to have a dominant non-bg color or specific structure that dictates the full grid fill
-    # Based on Task 2 (Input 2,2,6,6 vs Output 4,2,2,2,2,6,6), it seems we are swapping colors or mapping them.
-    # Let's implement a generic 'expand and transform' strategy that handles the specific inputs provided.
+    # Step 2: Vertical Reflection (Flip Up-Down)
+    flipped_v = np.flipud(flipped_h)
     
-    # Strategy: 
-    # 1. Create a 2x2 canvas of the input.
-    # 2. Flip the top-left quadrant.
-    # 3. Flip the bottom-right quadrant.
-    # 4. Construct the full grid by placing these transformed quadrants.
+    # Step 3: Identify the "active" pattern based on non-background colors (non-7)
+    # The background color is typically the most frequent color or the border color.
+    # For 11dc524f, background is 7. For 0c786b71, background is 5 (or 9?). 
+    # We need to detect which color acts as the "container" or "background".
+    # However, looking at the examples, the transformation involves shifting the non-background pattern 
+    # to a symmetric position or rotating it.
     
-    # Observation from Task 1: Input has BG 7, 2 and 5 are foreground. Output has BG 7. 
-    # Input: 7777 / 7777 / 2777 / 7777 (approx)
-    # Output: 7777 / 7777 / 7727 / 7777 (approx) -> The 2s flip vertically/horizontally.
+    # Let's try a specific heuristic based on the failing tasks.
+    # Task 11dc524f: Pattern moves from top-left-ish to bottom-left-ish? Or rotates?
+    # Input: 2s at rows 5,6; 22 at row 7. 
+    # Output: 2s at rows 5,6; 22 at row 7. 
+    # Wait, looking closely at 11dc524f:
+    # Input: Row 5 has one 2. Row 6 has one 2. Row 7 has two 2s.
+    # Output: Row 5 has one 2. Row 6 has one 2. Row 7 has two 2s.
+    # BUT, the positions change.
+    # Input Row 5: 2 at col 5.
+    # Output Row 5: 2 at col 5.
+    # Input Row 6: 2 at col 5.
+    # Output Row 6: 2 at col 6.
+    # Input Row 7: 2 at col 5,6.
+    # Output Row 7: 2 at col 6.
+    # It seems the 2s are shifting RIGHT by 1 column in the lower part of the grid?
+    # Or maybe the pattern is being "completed" or "rotated".
     
-    # Observation from Task 2: Input 2,2,6,6. Output 4,2,2,2,2,6,6.
-    # The 2s and 6s seem to have changed roles or positions.
+    # Task 0c786b71:
+    # Input: 2s at col 0,1. 6s at col 2,3.
+    # Output: 2s at col 3,4. 6s at col 0,1.
+    # It seems the columns are being reordered or rotated.
     
-    # Let's try a specific logic: Mirror the grid vertically and horizontally to create a 2x2 block,
-    # then apply a color swap logic where the 'minority' color becomes the background in specific quadrants.
+    # Let's try a "Rotate 180" approach first, as it swaps quadrants effectively.
+    # But we need to handle the specific color swaps.
     
-    # Actually, looking at Task 2 Input:
-    # 5599 -> 7575 (in output row 0)
-    # 9555 -> 5559 (in output row 1)
-    # 5757 -> 9955 (in output row 2)
-    # It looks like we are generating a larger grid based on the input pattern, possibly involving a 'fill' or 'replicate' logic.
+    # Hypothesis: The task is rotating the grid 180 degrees, but with a specific color remapping or 
+    # shifting the non-background elements relative to the background.
     
-    # Let's try: Create the 2x2 grid by mirroring. Then fill the result.
-    # Wait, the output grid size is always double the input grid size in these examples (3x4 -> 6x8, 13x13 -> 13x13? No, 13x13 input -> 13x13 output in Task 1).
-    # Task 1: Input 13x13, Output 13x13.
-    # Task 2: Input 3x4, Output 6x8.
+    # Let's try to detect the bounding box of non-background pixels (colors != most_frequent).
+    # Then rotate that bounding box 180 degrees.
     
-    # Hypothesis: If input is square, output is square. If input is rectangular, output is double size.
-    # Transformation:
-    # 1. Determine if input is square.
-    # 2. If square: Apply a specific color swap or pattern completion.
-    # 3. If rectangular: Expand by mirroring.
+    # Better Hypothesis for 0c786b71:
+    # Input Row 0: 5599 -> Output Row 3: 99555599 (Wait, output is larger!)
+    # The output grid is 6x8, input is 3x4.
+    # This implies a scaling or a "tiling" where the input is treated as a tile.
+    # Input: 3x4. Output: 6x8.
+    # This is exactly 2x2 scaling (doubling dimensions).
+    # Let's check the content.
+    # Input Row 0 (5599) -> Output Row 0 (75755757).
+    # Input Row 1 (9555) -> Output Row 1 (55599555).
+    # Input Row 2 (5757) -> Output Row 2 (99555599).
+    # It looks like the output is a 2x2 tiling of the input, but with some color transformation.
+    # Specifically, 5->7, 9->5, 9->9, 5->5? No.
+    # Let's look at the quadrants of the output.
+    # Q1 (Top-Left 3x4): 7575 5559 9955 5559 -> Wait, output is 6x8.
+    # Q1: Rows 0-2, Cols 0-3.
+    # Q1 Input:
+    # 5599
+    # 9555
+    # 5757
+    # Q1 Output (Top-Left of 6x8):
+    # 7575
+    # 5559
+    # 9955
+    # This doesn't match directly.
     
-    # Let's implement a function that handles the 'Expand and Transform' for rectangular inputs.
-    # For square inputs, it might need a different logic, but let's focus on the transformation first.
+    # Let's try to find the transformation rule for 0c786b71:
+    # Input (3x4):
+    # 5 5 9 9
+    # 9 5 5 5
+    # 5 7 5 7
+    # Output (6x8):
+    # 7 5 7 5 5 7 5 7
+    # 5 5 5 9 9 5 5 5
+    # 9 9 5 5 5 5 9 9
+    # 9 9 5 5 5 5 9 9
+    # 5 5 5 9 9 5 5 5
+    # 7 5 7 5 5 7 5 7
     
-    # Let's check the color mapping in Task 2:
-    # Input 0: 5 5 9 9 -> Output 0: 7 5 7 5 7 5 5 7 (Wait, this is complex)
-    # Input 1: 9 5 5 5 -> Output 1: 5 5 5 9 9 5 5 5
-    # Input 2: 5 7 5 7 -> Output 2: 9 9 5 5 5 5 9 9
+    # It looks like the output is constructed by taking the input, applying a transformation,
+    # and then tiling it.
+    # Or maybe it's a "fold and expand".
+    # Notice Row 0 of Output (7575...) matches Row 2 of Input (5757) but with 5->7, 7->5?
+    # Row 2 Input: 5 7 5 7.
+    # Row 0 Output: 7 5 7 5.
+    # Yes! 5->7, 7->5.
+    # Row 1 Input: 9 5 5 5.
+    # Row 1 Output: 5 5 5 9. (5->5, 9->9). Wait, 9 5 5 5 -> 5 5 5 9. Reversed?
+    # Row 2 Input: 5 7 5 7.
+    # Row 2 Output: 9 9 5 5. (5->9, 7->5).
+    # Row 3 Output: 9 9 5 5. (Same as Row 2 Output).
+    # Row 4 Output: 5 5 5 9. (Same as Row 1 Output).
+    # Row 5 Output: 7 5 7 5. (Same as Row 0 Output).
     
-    # It looks like the input is being transformed into a larger grid where:
-    # - The top-left part of the input is transformed.
-    # - The other quadrants are transformed based on symmetry or inversion.
+    # It seems the output is a 2x2 block of transformed input rows.
+    # Top-Left: Transform(Row 0, Row 2, Row 1, Row 2?)
+    # Actually, let's look at the quadrants of the Output.
+    # Output 6x8.
+    # Q1 (0:3, 0:4):
+    # 7 5 7 5
+    # 5 5 5 9
+    # 9 9 5 5
+    # Q2 (0:3, 4:8):
+    # 5 7 5 7
+    # 5 5 5 9
+    # 9 9 5 5
+    # Q3 (3:6, 0:4):
+    # 9 9 5 5
+    # 5 5 5 9
+    # 7 5 7 5
+    # Q4 (3:6, 4:8):
+    # 9 9 5 5
+    # 5 5 5 9
+    # 7 5 7 5
     
-    # Let's try to construct the output grid based on the input grid's content by mirroring and color mapping.
+    # Wait, Q1 and Q2 are the same in rows 1 and 2? No.
+    # Q1 Row 0: 7 5 7 5. Q2 Row 0: 5 7 5 7. (Reverse of each other).
+    # Q1 Row 1: 5 5 5 9. Q2 Row 1: 5 5 5 9. (Same).
+    # Q1 Row 2: 9 9 5 5. Q2 Row 2: 9 9 5 5. (Same).
     
-    # Let's assume the background color for the output is the dominant color of the input.
+    # It seems the top half of the output is constructed by mirroring the input rows?
+    # Let's check the bottom half.
+    # Q3 Row 0: 9 9 5 5. Q1 Row 2: 9 9 5 5. (Match).
+    # Q3 Row 1: 5 5 5 9. Q1 Row 1: 5 5 5 9. (Match).
+    # Q3 Row 2: 7 5 7 5. Q1 Row 0: 7 5 7 5. (Match).
+    # Q4 seems to be a copy of Q3.
     
-    # But wait, in Task 2, Input BG is likely 2 or 6? 
-    # Counts: 2: 5 times, 6: 5 times. No clear BG.
-    # But Output BG seems to be 6? Or 4?
-    # Output 0: 4 2 4 6 6 4 2 4. BG 4?
-    # Output 1: 6 6 2 2 2 2 6 6. BG 6?
-    # Output 2: 2 4 2 6 6 2 4 2. BG 6?
+    # So Output = [ [Row0, Reverse(Row0)], [Row1, Reverse(Row1)], [Row2, Reverse(Row2)] ]?
+    # Input Row 0: 5599. Reverse: 9955.
+    # Output Row 0: 7575... No.
     
-    # This is tricky. Let's try a generic 'Expand and Mirror' approach that might work for both.
-    # Or maybe it's about 'filling' the space.
+    # Let's look at Task 11dc524f again.
+    # Input 13x13. Output 13x13.
+    # Input has a block of 2s and 5s.
+    # Input Row 5: 2 at 5.
+    # Output Row 5: 2 at 5.
+    # Input Row 6: 2 at 5.
+    # Output Row 6: 2 at 6.
+    # Input Row 7: 2 at 5, 6.
+    # Output Row 7: 2 at 6, 7.
+    # It looks like the 2s are shifting right by 1 for rows >= 6?
     
-    # Let's try: 
-    # 1. Create a grid of the same size as input.
-    # 2. Fill it with the background color.
-    # 3. Place the input grid in the center? No.
+    # Let's try to write a function that:
+    # 1. Detects the background color (most frequent).
+    # 2. Extracts the "foreground" pattern (non-background).
+    # 3. Checks if the pattern is symmetric or if it needs to be completed.
+    # 4. If the pattern is in the top-left, maybe move it to bottom-right?
+    # 5. Or maybe it's about filling in the "missing" parts of a symmetric shape.
     
-    # Let's look at the Task 1 again.
-    # Input: 13x13. Output: 13x13.
-    # Input has a pattern of 2s and 5s.
-    # Output has a pattern of 2s and 5s, but shifted or flipped.
-    # Input Row 6: 2 7 7 7 5 5 7 7 7 7 7 7 7
-    # Output Row 6: 7 7 2 5 7 7 7 7 7 7 7 7 7
-    # It looks like the 2s and 5s have moved or been flipped.
+    # For 0c786b71:
+    # Input: 3x4. Output: 6x8.
+    # This is a clear expansion.
+    # The output seems to be constructed by reflecting the input across the center?
+    # Or maybe it's a "gravity" sort?
     
-    # Let's try a function that detects the 'active' region and transforms it.
+    # Let's try a generic "Reflect and Expand" for 0c786b71.
+    # Take the input grid.
+    # Reflect it vertically.
+    # Reflect it horizontally.
+    # Combine them into a 2x2 grid of size 2*H x 2*W.
     
-    def get_dominant_color(grid: list[list[int]]) -> int:
-        counts = {}
-        for r in range(len(grid)):
-            for c in range(len(grid[0])):
-                c = grid[r][c]
-                counts[c] = counts.get(c, 0) + 1
-        return max(counts, key=counts.get)
-
-    def get_secondary_color(grid: list[list[int]]) -> int:
-        counts = {c: grid[r][c] for r in range(len(grid)) for c in range(len(grid[0]))}
-        counts = {k: v for k, v in counts.items() if k != get_dominant_color(grid)}
-        if counts:
-            return max(counts, key=counts.get)
-        return 0
-
-    # Let's try to identify the background color for the output.
-    # In Task 1, BG is 7.
-    # In Task 2, BG is 4? Or 6?
+    # Let's try to implement a function that creates a 2x2 tiled grid where each quadrant is a transformed version of the input.
+    # Transformation: Reverse the row (Horizontal Flip).
+    # Quadrant 1: Input Row i.
+    # Quadrant 2: Reverse(Input Row i).
+    # Quadrant 3: Input Row (H-1-i).
+    # Quadrant 4: Reverse(Input Row (H-1-i)).
     
-    # Let's try to implement a function that 'unfolds' the input grid into a larger grid.
-    # For Task 1 (13x13), output is 13x13.
-    # For Task 2 (3x4), output is 6x8.
+    # Let's test this hypothesis on 0c786b71.
+    # Input Rows:
+    # 0: 5599
+    # 1: 9555
+    # 2: 5757
     
-    # Maybe the logic is:
-    # 1. Identify the 'object' colors (non-background).
-    # 2. Create a new grid of size (2*H, 2*W) or (H, W).
-    # 3. Fill it with the background color.
-    # 4. Place the input grid into the center of the new grid? Or top-left?
+    # Q1 (Rows 0-2):
+    # 0: 5599
+    # 1: 9555
+    # 2: 5757
     
-    # Let's try a specific transformation: 
-    # If the input is square, apply a specific pattern completion.
-    # If the input is rectangular, expand it by mirroring.
+    # Q2 (Rows 0-2, flipped cols):
+    # 0: 9955
+    # 1: 5559
+    # 2: 7575
     
-    # But we need a single function that works for both.
+    # Q3 (Rows 3-5, same as Q1):
+    # 3: 5599
+    # 4: 9555
+    # 5: 5757
     
-    # Observation:
-    # Task 1: The 2s and 5s are swapped in position relative to the center?
-    # Input: 2s are on the left of the 5s.
-    # Output: 5s are on the left of the 2s.
+    # Q4 (Rows 3-5, flipped cols):
+    # 3: 9955
+    # 4: 5559
+    # 5: 7575
     
-    # Task 2: 
-    # Input: 5s are top-left. 6s are bottom-right.
-    # Output: 4s are top-left. 6s are bottom-right. 2s are in between?
+    # Constructed Output:
+    # 0: 5599 9955
+    # 1: 9555 5559
+    # 2: 5757 7575
+    # 3: 5599 9955
+    # 4: 9555 5559
+    # 5: 5757 7575
     
-    # Let's try to map the colors.
-    # Task 1: 2 -> 2, 5 -> 5. (Colors are preserved).
-    # Task 2: 5 -> 4, 9 -> 5, 2 -> 6, 6 -> 4?
-    # Input 0: 5599 -> 7575. (5->7, 9->5)
-    # Input 1: 9555 -> 5559. (9->5, 5->9)
-    # Input 2: 5757 -> 9955. (5->9, 7->5)
+    # Expected Output:
+    # 0: 75755757
+    # 1: 55599555
+    # 2: 99555599
+    # 3: 99555599
+    # 4: 55599555
+    # 5: 75755757
     
-    # It seems like the colors are being remapped.
+    # My constructed:
+    # 0: 55999955 (Expected: 75755757) -> Mismatch.
+    # 1: 95555559 (Expected: 55599555) -> Mismatch.
+    # 2: 57577575 (Expected: 99555599) -> Mismatch.
     
-    # Let's try to find a color mapping rule.
-    # Task 1: 2->2, 5->5.
-    # Task 2: 5->?, 9->?, etc.
+    # It seems the colors are being swapped.
+    # In Expected Row 0: 7 5 7 5 5 7 5 7.
+    # My Row 0: 5 5 9 9 9 5 5 9.
+    # 5->7, 9->5?
+    # 5->5, 9->7?
+    # 5->9, 7->5?
     
-    # Maybe the rule is: The colors are remapped to the 'next' available color in a sequence?
-    # Or maybe it's based on the count of the colors?
+    # Let's check the mapping.
+    # Input 5 -> Output 7?
+    # Input 9 -> Output 5?
+    # Input 7 -> Output 5?
+    # Input 2 -> Output 2?
     
-    # Let's try to count the colors in the input grid.
-    # Task 1: 7 is dominant. 2 and 5 are the others.
-    # Task 2: 2 and 6 are the others.
+    # If 5->7, 9->5, 7->5, 2->2.
+    # Then Row 0 Input (5599) -> 7755.
+    # Expected Row 0 (75755757).
+    # 7755 != 75755757.
     
-    # Maybe the output is generated by:
-    # 1. Creating a grid of size 2x2 * input size.
-    # 2. Filling the quadrants with specific transformations of the input.
+    # Wait, the expected output row 0 is 75755757.
+    # It's 7 5 7 5 5 7 5 7.
+    # It's like the input row 2 (5757) but with 5->7 and 7->5?
+    # 5->7, 7->5.
+    # 5 7 5 7 -> 7 5 7 5.
+    # Then we have 5 7 5 7 again.
+    # So Expected Row 0 is [Reverse(Input Row 2) | Reverse(Input Row 2)].
     
-    # Let's try: 
-    # Quadrant 0 (Top-Left): Input grid with colors remapped.
-    # Quadrant 1 (Top-Right): Horizontal flip of Quadrant 0.
-    # Quadrant 2 (Bottom-Left): Vertical flip of Quadrant 0.
-    # Quadrant 3 (Bottom-Right): Vertical flip of Quadrant 1 (which is equivalent to Horizontal flip of Quadrant 2).
+    # Expected Row 1 is 55599555.
+    # Input Row 1 is 9555.
+    # Reverse(Input Row 1) is 5559.
+    # 5559 | 5559.
+    # Matches.
     
-    # This creates a symmetric 2x2 block.
+    # Expected Row 2 is 99555599.
+    # Input Row 0 is 5599.
+    # Reverse(Input Row 0) is 9955.
+    # 9955 | 9955.
+    # Matches.
     
-    # But wait, Task 1 output is NOT symmetric in the same way.
-    # Task 1 Input: 2s at (6,0), (6,1), (7,0), (7,1). 5s at (6,4), (6,5), (7,4), (7,5).
-    # Task 1 Output: 2s at (6,2), (7,2), (7,3), (7,4). 5s at (6,3), (6,4), (7,3), (7,5).
-    # This is a shift!
+    # So the rule for 0c786b71 seems to be:
+    # 1. Identify the rows of the input grid.
+    # 2. Reverse each row.
+    # 3. Construct the output by stacking:
+    #    Row 2_rev, Row 1_rev, Row 0_rev, Row 0_rev, Row 1_rev, Row 2_rev.
+    # 4. Then duplicate each row in the row (i.e., [R | R]).
     
-    # Task 2 Input: 2s at (0,1), (0,2), (1,0), (1,1), (1,2). 6s at (0,3), (2,0), (2,1), (2,2), (2,3), (3,0), (3,1), (3,2), (3,3).
-    # Task 2 Output: 4s at (0,0), (0,3), (0,5), (0,6), (0,7), (1,0), (1,2), (1,5), (1,6), (2,4), (2,5), (2,6), (2,7), (2,8), (3,2), (3,3), (3,4), (3,5), (3,6), (3,7), (3,8), (3,9), (3,10).
-    # This doesn't look like a simple shift or mirror.
-    
-    # Let's try a different approach.
-    # Maybe it's about 'filling' the grid with the 'secondary' colors.
-    
-    # Let's try to extract the 'active' colors from the input grid.
-    # Then create a new grid where the 'active' colors are placed in a specific pattern.
-    
-    # Let's try to detect the 'center of mass' of the active colors.
-    
-    # Let's try to implement a function that:
-    # 1. Identifies the background color (most frequent).
-    # 2. Identifies the foreground colors (all others).
-    # 3. Creates a new grid of size (2*H, 2*W).
-    # 4. Fills the top-left quadrant with the input grid, but with colors remapped.
-    # 5. Fills the top-right quadrant with the horizontal flip of the top-left quadrant, with colors remapped.
-    # 6. Fills the bottom-left quadrant with the vertical flip of the top-left quadrant, with colors remapped.
-    # 7. Fills the bottom-right quadrant with the vertical flip of the top-right quadrant (or horizontal flip of bottom-left), with colors remapped.
-    
-    # This seems to be the most promising approach.
-    
-    # Let's define the color remapping.
-    # Task 1: 7 (BG) -> 7. 2 -> 2. 5 -> 5.
-    # Task 2: 2 -> 6. 6 -> 4. 5 -> 5. 9 -> 5.
-    # Wait, in Task 2, 5 and 9 are remapped to 5. 2 and 6 are remapped to 6 and 4.
-    # This suggests that the colors are being grouped.
-    
-    # Let's try to implement a function that:
-    # 1. Computes the color histogram.
-    # 2. Identifies the most frequent color as the background.
-    # 3. Identifies the second most frequent color.
-    # 4. Creates a new grid of size (2*H, 2*W).
-    # 5. Fills the top-left quadrant with the input grid.
-    # 6. Fills the top-right quadrant with the horizontal flip of the input grid.
-    # 7. Fills the bottom-left quadrant with the vertical flip of the input grid.
-    # 8. Fills the bottom-right quadrant with the vertical flip of the top-right quadrant.
-    # 9. Remaps the colors in the top-left quadrant based on the histogram.
-    # 10. Applies the same remapping to the other quadrants.
-    
-    # But this is too complex to implement in a single function without knowing the remapping rule.
-    
-    # Let's try a simpler approach.
-    # Maybe the task is to 'expand' the grid by a factor of 2, but with a specific transformation applied to the input.
-    
-    # Let's try:
-    # def transform_pattern_to_full_grid(grid: list[list[int]], target_bg: int = 7) -> list[list[int]]:
-    #     h, w = len(grid), len(grid[0]) if grid else 0
-    #     new_h, new_w = h * 2, w * 2
-    #     result = [[0] * new_w for _ in range(new_h)]
-    
-    #     # Identify background color
-    #     counts = {}
-    #     for r in range(h):
-    #         for c in range(w):
-    #             c_val = grid[r][c]
-    #             if c_val not in counts:
-    #                 counts[c_val] = 0
-    #             counts[c_val] += 1
-    
-    #     bg_color = max(counts, key=counts.get)
-    
-    #     # Remap colors in the input grid
-    #     remap = {c: c for c in counts}
-    #     # But Task 2 has remapping.
-    #     # Maybe remap is: new_color = (c - bg_color) + something?
-    
-    #     # Let's try to fill the new grid with the input grid, but with colors remapped to the 'next' available colors.
-    
-    #     # Actually, let's just try to mirror the input grid.
-    
-    #     # Copy input to top-left
-    #     for r in range(h):
-    #         for c in range(w):
-    #             result[r][c] = grid[r][c]
-    
-    #     # Copy top-left to top-right (Horizontal Mirror)
-    #     for r in range(h):
-    #         for c in range(w):
-    #             result[r][new_w - c - 1] = grid[r][c]
-    
-    #     # Copy top-left to bottom-left (Vertical Mirror)
-    #     for r in range(h):
-    #         for c in range(w):
-    #             result[new_h - r - 1][c] = grid[r][c]
-    
-    #     # Copy top-left
+    # Wait, Input Rows: 0, 1, 2.
+    # Output Rows: 0, 1, 2, 2, 1, 0. (Vertical flip).
+    # Output Cols: 0, 1, 1. (Horizontal flip of each row content? No

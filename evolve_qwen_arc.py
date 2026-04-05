@@ -256,7 +256,7 @@ def generate(prompt: str, temperature: float = 0.3, max_tokens: int | None = Non
 
 def log_hypothesis(round_num, hypothesis, source, proposed_functions,
                    metric_before, metric_after, solve_before, solve_after,
-                   status, commit_hash=None):
+                   status, commit_hash=None, literature_hints=None):
     """Append one experiment record to hypotheses.jsonl."""
     RESULTS_DIR.mkdir(exist_ok=True)
     htype = classify_hypothesis_type(hypothesis, proposed_functions)
@@ -275,10 +275,38 @@ def log_hypothesis(round_num, hypothesis, source, proposed_functions,
         "status": status,
         "commit": commit_hash,
     }
+    if literature_hints:
+        entry["literature_hints"] = literature_hints
+        entry["hints_helped"] = improved
     with open(HYPOTHESES_FILE, "a") as f:
         f.write(json.dumps(entry) + "\n")
     # Cross-run learning: track which hypothesis types win/lose
     update_hypothesis_type_scores(htype, improved)
+    if literature_hints:
+        _update_hint_attribution(literature_hints, improved)
+
+
+HINT_ATTRIBUTION_FILE = RESULTS_DIR / "hint_attribution.json"
+
+
+def _update_hint_attribution(hints: list[str], improved: bool):
+    """Track which literature hints led to improvements vs failures."""
+    data = {}
+    if HINT_ATTRIBUTION_FILE.exists():
+        try:
+            data = json.loads(HINT_ATTRIBUTION_FILE.read_text())
+        except (json.JSONDecodeError, OSError):
+            pass
+    for hint in hints:
+        key = hint[:80]  # truncate for key
+        if key not in data:
+            data[key] = {"wins": 0, "losses": 0, "total": 0}
+        data[key]["total"] += 1
+        if improved:
+            data[key]["wins"] += 1
+        else:
+            data[key]["losses"] += 1
+    HINT_ATTRIBUTION_FILE.write_text(json.dumps(data, indent=2))
 
 
 def load_recent_hypotheses(n=10):
@@ -440,7 +468,7 @@ def solve_task_single(task_data, task_name="unknown"):
         return 0.0, [{"task_name": task_name, "failure_type": "NO_TRANSFORM",
                        "error_message": f"LLM response had no transform ({len(response)} chars)"}]
 
-    passed, failures = try_code_on_task(code, task_data)
+    passed, failures = try_code_on_task(code, task_data, abpr_trace=True)
     if passed:
         # Log successful program for future LoRA fine-tuning
         _log_successful_program(task_name, task_data, code, prompt)
@@ -450,9 +478,10 @@ def solve_task_single(task_data, task_name="unknown"):
     for idx, fail in enumerate(failures):
         inp, expected, predicted, err_msg = fail[0], fail[1], fail[2], fail[3]
         tb = fail[4] if len(fail) > 4 else None
+        abpr = fail[5] if len(fail) > 5 else None
         ftype = "CRASH" if predicted is None else "WRONG_ANSWER"
         pa = calculate_pixel_accuracy(expected, predicted) if predicted else 0.0
-        traces.append({
+        trace_entry = {
             "task_name": task_name,
             "failure_type": ftype,
             "error_message": err_msg[:200] if err_msg else None,
@@ -461,7 +490,10 @@ def solve_task_single(task_data, task_name="unknown"):
             "input_shape": (len(inp), len(inp[0])) if isinstance(inp, list) and inp else (0, 0),
             "output_shape": (len(expected), len(expected[0])) if isinstance(expected, list) and expected else (0, 0),
             "predicted_shape": (len(predicted), len(predicted[0])) if isinstance(predicted, list) and predicted else None,
-        })
+        }
+        if abpr:
+            trace_entry["abpr_trace"] = abpr[:10]  # limit to 10 calls
+        traces.append(trace_entry)
     best_pa = max(t["pixel_accuracy"] for t in traces) if traces else 0.0
     return best_pa, traces
 
@@ -682,11 +714,11 @@ def _targeted_literature_hints(categories: dict) -> str:
 
     # Pick query based on dominant failure category
     if not categories:
-        return ""
+        return "", []
     dominant = max(categories, key=categories.get)
     query = CATEGORY_QUERIES.get(dominant)
     if not query:
-        return ""
+        return "", []
 
     # Check cache (24h TTL)
     cache_file = RESULTS_DIR / "literature_cache.json"
@@ -702,7 +734,7 @@ def _targeted_literature_hints(categories: dict) -> str:
         cached = cache[cache_key]
         age_hours = (datetime.now().timestamp() - cached.get("ts", 0)) / 3600
         if age_hours < 24 and cached.get("hints"):
-            return cached["hints"]
+            return cached["hints"], cached.get("hint_ids", [])
 
     # Query Semantic Scholar (free, no API key needed, 100 req/5min)
     try:
@@ -718,32 +750,34 @@ def _targeted_literature_hints(categories: dict) -> str:
             data = json.loads(resp.read())
     except Exception as e:
         print(f"  [literature] Semantic Scholar query failed: {e}")
-        return ""
+        return "", []
 
     papers = data.get("data", [])
     if not papers:
-        return ""
+        return "", []
 
     lines = [f"## Targeted Literature (for {dominant} failures, from Semantic Scholar)"]
+    hint_ids = []
     for p in papers[:3]:
         title = p.get("title", "")
         abstract = (p.get("abstract") or "")[:200]
         year = p.get("year", "")
         if abstract:
             lines.append(f"- **{title}** ({year}): {abstract}...")
+            hint_ids.append(f"s2:{dominant}:{title[:60]}")
     lines.append("Consider techniques from these papers when designing new helper functions.")
 
     hints = "\n".join(lines)
 
     # Cache result
-    cache[cache_key] = {"ts": datetime.now().timestamp(), "hints": hints}
+    cache[cache_key] = {"ts": datetime.now().timestamp(), "hints": hints, "hint_ids": hint_ids}
     try:
         RESULTS_DIR.mkdir(exist_ok=True)
         cache_file.write_text(json.dumps(cache, indent=2))
     except Exception:
         pass
 
-    return hints
+    return hints, hint_ids
 
 
 def _extract_function_signatures(helper_code):
@@ -856,6 +890,13 @@ def build_diagnostic_prompt(failing_results):
             if t["failure_type"] == "WRONG_ANSWER":
                 tdesc += f"\n    Pixel accuracy: {t.get('pixel_accuracy', 0):.2f}"
                 tdesc += f"\n    Expected shape: {t.get('output_shape')}, Got: {t.get('predicted_shape')}"
+            if t.get("abpr_trace"):
+                tdesc += "\n    ABPR call trace:"
+                for step in t["abpr_trace"]:
+                    call = step.get("call", "?")
+                    shape = step.get("result_shape", "?")
+                    err = step.get("error", "")
+                    tdesc += f"\n      → {call}() → shape={shape}" + (f" ERROR: {err}" if err else "")
             trace_descs.append(tdesc)
 
     # Cherry-pick 2: Inject hypothesis type win/loss guidance
@@ -865,11 +906,11 @@ def build_diagnostic_prompt(failing_results):
         research = research + "\n\n" + type_guidance
 
     # Cherry-pick 1: Targeted literature search based on failure categories
-    lit_hints = _targeted_literature_hints(categories)
+    lit_hints, lit_hint_ids = _targeted_literature_hints(categories)
     if lit_hints:
         research = research + "\n\n" + lit_hints
 
-    return DIAGNOSTIC_PROMPT.format(
+    prompt = DIAGNOSTIC_PROMPT.format(
         num_functions=num_functions,
         research_context=research,
         existing_signatures=sig_text,
@@ -879,6 +920,7 @@ def build_diagnostic_prompt(failing_results):
         task_descriptions="\n".join(task_descs),
         execution_traces="\n".join(trace_descs) if trace_descs else "(no traces captured)",
     )
+    return prompt, lit_hint_ids
 
 
 def build_prompt_fix_diagnostic(failing_results, prompt_fail_pct):
@@ -1070,15 +1112,25 @@ def run_codopt_round():
 
 def git_commit_if_improved(round_num, pre_score, post_score, hypothesis="",
                            solve_before=0.0, solve_after=0.0):
-    """Compare scores and commit if improved. Returns (new_score, commit_hash)."""
-    if post_score <= pre_score:
+    """Compare scores and commit if improved. Returns (new_score, commit_hash).
+
+    At ceiling (both scores ≥ 0.999), commits based on solve improvement instead.
+    """
+    at_ceiling = pre_score >= 0.999 and post_score >= 0.999
+    if at_ceiling:
+        if solve_after <= solve_before:
+            print(f"[evolve] At ceiling, no solve improvement: "
+                  f"{solve_before:.4f}->{solve_after:.4f}")
+            return pre_score, None
+    elif post_score <= pre_score:
         print(f"[evolve] No improvement: metric {pre_score:.4f}->{post_score:.4f}")
         return pre_score, None
 
     timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
+    label = (f"solve {solve_before:.4f} -> {solve_after:.4f}" if at_ceiling
+             else f"{pre_score:.4f} -> {post_score:.4f}")
     msg = (
-        f"evolve: round {round_num} DSL improvement "
-        f"{pre_score:.4f} -> {post_score:.4f}\n\n"
+        f"evolve: round {round_num} results [keep] score={post_score:.4f}\n\n"
         f"Solve score: {solve_before:.4f} -> {solve_after:.4f}\n"
         f"Hypothesis: {hypothesis[:200]}\n"
         f"Model: {MODEL_PATH}\n"
@@ -1281,7 +1333,21 @@ def evolve(rounds=None, diagnose_only=False, never_stop=False, tier3_tasks=None,
         current_score = 0.0
     print(f"[evolve] Baseline score: {current_score:.4f}")
 
+    # Resume round numbering from hypotheses.jsonl (survives process restarts)
     round_num = 0
+    if HYPOTHESES_FILE.exists():
+        try:
+            with open(HYPOTHESES_FILE) as f:
+                for line in f:
+                    line = line.strip()
+                    if line:
+                        entry = json.loads(line)
+                        round_num = max(round_num, entry.get("round", 0))
+        except (json.JSONDecodeError, OSError):
+            pass
+    if round_num > 0:
+        print(f"[evolve] Resuming from round {round_num + 1} (found {round_num} in hypotheses.jsonl)")
+
     while True:
         round_num += 1
         if not never_stop and round_num > rounds:
@@ -1334,12 +1400,13 @@ def evolve(rounds=None, diagnose_only=False, never_stop=False, tier3_tasks=None,
             and round_num % 2 == 0
         )
 
+        injected_hint_ids = []
         if use_prompt_fix_mode:
             print(f"\n[2/9] DIAGNOSE — PROMPT-FIX MODE (prompt_score={prompt_score:.2f}, {prompt_fail_pct:.0f}% PROMPT_FAIL)...")
             diag_prompt = build_prompt_fix_diagnostic(failing, prompt_fail_pct)
         else:
             print(f"\n[2/9] DIAGNOSE — analyzing {len(failing)} failures...")
-            diag_prompt = build_diagnostic_prompt(failing)
+            diag_prompt, injected_hint_ids = build_diagnostic_prompt(failing)
 
         diag_path = RESULTS_DIR / f"round{round_num}_diagnostic.txt"
         diag_path.write_text(diag_prompt)
@@ -1367,6 +1434,7 @@ def evolve(rounds=None, diagnose_only=False, never_stop=False, tier3_tasks=None,
                         "## Failing Tasks",
                         f"{lit_hints}\n\n## Failing Tasks",
                     )
+                    injected_hint_ids.append("broad:stagnation_hints")
                     print(f"  [literature] Extra broad hints injected (stagnant={stagnant_streak})")
             except ImportError:
                 pass
@@ -1417,10 +1485,21 @@ def evolve(rounds=None, diagnose_only=False, never_stop=False, tier3_tasks=None,
             # Normal mode: append new primitives
             validated = [f for f in new_functions if validate_function(f)]
             func_names = []
+            rejected_task_specific = []
             for v in validated:
                 m = re.match(r"def\s+(\w+)", v)
                 if m:
-                    func_names.append(m.group(1))
+                    name = m.group(1)
+                    # Reject task-specific functions (overfit to one puzzle)
+                    if re.search(r"[0-9a-f]{8}", name) or re.search(r"task_\w+|specific_to_", name):
+                        rejected_task_specific.append(name)
+                        continue
+                    func_names.append(name)
+            if rejected_task_specific:
+                # Remove overfitting functions from validated list
+                validated = [v for v in validated
+                             if not any(rn in v for rn in rejected_task_specific)]
+                print(f"[evolve] Rejected task-specific: {rejected_task_specific}")
             print(f"[evolve] Proposed {len(new_functions)}, valid {len(validated)}: {func_names}")
             hypothesis = f"Add {', '.join(func_names)}" if func_names else "No valid functions proposed"
 
@@ -1443,6 +1522,7 @@ def evolve(rounds=None, diagnose_only=False, never_stop=False, tier3_tasks=None,
                 log_hypothesis(
                     round_num, hypothesis, "prompt-fix" if use_prompt_fix_mode else "diagnostic",
                     func_names, current_score, current_score, solve_before, solve_before, "crash",
+                    literature_hints=injected_hint_ids or None,
                 )
                 continue
 
@@ -1480,13 +1560,21 @@ def evolve(rounds=None, diagnose_only=False, never_stop=False, tier3_tasks=None,
               f"solve {solve_before:.4f}->{solve_after:.4f}")
 
         # --- 7. DECIDE ---
-        # Use beam search improvement signal when base metric is at ceiling.
-        # beam_improved means a candidate beat baseline on the blended score
-        # (which includes tier 3 solve accuracy).
-        if post_score >= 0.999 and beam_improved:
-            improved = True
-            status = "keep"
-            print(f"\n[7/9] DECIDE — {status} (beam search found winner: {beam_score:.4f})")
+        # At ceiling (base metric ≥ 0.999), use THREE signals for keep/stagnant:
+        #   1. beam_improved — codopt tournament found a winner on blended score
+        #   2. solve improvement — solve_after > solve_before (tier 3 accuracy gain)
+        #   3. base metric improvement — post_score > pre_score (below ceiling only)
+        if post_score >= 0.999:
+            solve_improved = solve_after > solve_before + 0.005  # min-delta for noise
+            if beam_improved or solve_improved:
+                improved = True
+                status = "keep"
+                reason = "beam winner" if beam_improved else "solve improvement"
+                print(f"\n[7/9] DECIDE — {status} ({reason}: solve {solve_before:.4f}->{solve_after:.4f})")
+            else:
+                improved = False
+                status = "stagnant"
+                print(f"\n[7/9] DECIDE — {status} (at ceiling, no solve improvement)")
         else:
             improved = post_score > pre_score
             status = "keep" if improved else "stagnant"
@@ -1507,7 +1595,7 @@ def evolve(rounds=None, diagnose_only=False, never_stop=False, tier3_tasks=None,
         log_hypothesis(
             round_num, hypothesis, "prompt-fix" if use_prompt_fix_mode else "diagnostic",
             func_names, pre_score, post_score, solve_before, solve_after,
-            status, commit_hash,
+            status, commit_hash, literature_hints=injected_hint_ids or None,
         )
 
         # --- LoRA regression check ---

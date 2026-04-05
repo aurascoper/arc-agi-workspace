@@ -1,18 +1,19 @@
 #!/usr/bin/env python3
 """
-literature_scan.py — Periodic arXiv scan for ARC-AGI / program synthesis techniques.
+literature_scan.py — Periodic arXiv + OpenAlex scan for ARC-AGI / program synthesis techniques.
 
-Queries arXiv's public Atom API for recent papers, extracts technique summaries
-via Ollama, and writes evolution_results/literature_hints.json for the evolution
-loop to consume during HYPOTHESIZE when stagnation is detected.
+Queries arXiv's public Atom API and OpenAlex for recent papers, extracts technique
+summaries via Ollama, and writes evolution_results/literature_hints.json for the
+evolution loop to consume during HYPOTHESIZE when stagnation is detected.
 
 Usage:
   python literature_scan.py                  # scan + summarize, write hints file
   python literature_scan.py --query "DSL"    # custom query
   python literature_scan.py --list           # just list papers, no summarization
   python literature_scan.py --max-papers 10  # limit papers to process
+  python literature_scan.py --sources arxiv openalex  # choose sources
 
-No API key required. ArXiv Atom feed is free and rate-limit-friendly.
+No API key required. ArXiv Atom feed and OpenAlex REST API are both free.
 """
 
 import argparse
@@ -39,6 +40,10 @@ OLLAMA_MODEL = os.environ.get("OLLAMA_MODEL", "deepseek-coder-v2")
 ARXIV_API = "http://export.arxiv.org/api/query"
 ARXIV_NS = {"atom": "http://www.w3.org/2005/Atom"}
 
+OPENALEX_API = "https://api.openalex.org/works"
+# mailto puts you in the "polite pool" (10x faster, ~10k req/day, no key needed)
+OPENALEX_MAILTO = os.environ.get("OPENALEX_MAILTO", "")
+
 # Queries targeting ARC-AGI-relevant research
 DEFAULT_QUERIES = [
     '"Abstraction and Reasoning Corpus"',
@@ -48,9 +53,19 @@ DEFAULT_QUERIES = [
     '"domain specific language" AND "program induction"',
 ]
 
+# OpenAlex uses free-text search (no boolean), so separate query list
+OPENALEX_QUERIES = [
+    "Abstraction and Reasoning Corpus",
+    "ARC-AGI benchmark",
+    "program synthesis grid transformation",
+    "inductive logic programming visual reasoning",
+    "domain specific language program induction",
+]
+
 MAX_RESULTS_PER_QUERY = 5
-MAX_PAPERS_TOTAL = 15
+MAX_PAPERS_TOTAL = 20
 DAYS_LOOKBACK = 90  # only consider papers from the last N days
+ALL_SOURCES = ["arxiv", "openalex"]
 
 
 # ---------------------------------------------------------------------------
@@ -121,22 +136,125 @@ def fetch_arxiv(query: str, max_results: int = 5) -> list[dict]:
     return papers
 
 
-def fetch_all_queries(queries: list[str], max_total: int = MAX_PAPERS_TOTAL) -> list[dict]:
-    """Run multiple queries, deduplicate by arxiv_id, return up to max_total papers."""
+def _openalex_reconstruct_abstract(inverted_index: dict | None) -> str:
+    """Reconstruct plain-text abstract from OpenAlex abstract_inverted_index."""
+    if not inverted_index:
+        return ""
+    positions: dict[int, str] = {}
+    for word, indices in inverted_index.items():
+        for idx in indices:
+            positions[idx] = word
+    if not positions:
+        return ""
+    return " ".join(positions[i] for i in sorted(positions.keys()))
+
+
+def fetch_openalex(query: str, max_results: int = 5) -> list[dict]:
+    """Query OpenAlex works API and return list of paper dicts.
+
+    OpenAlex is a free, open academic graph (no key required).
+    Adding mailto= puts requests in the polite pool (~10k/day, faster).
+    Rate limit: 10 req/s without mailto, 100k/day with mailto.
+    Docs: https://docs.openalex.org/api-entities/works
+    """
+    cutoff_date = (datetime.now() - timedelta(days=DAYS_LOOKBACK)).strftime("%Y-%m-%d")
+
+    params: dict[str, str] = {
+        "search": query,
+        "filter": f"from_publication_date:{cutoff_date}",
+        "sort": "relevance_score:desc",
+        "per_page": str(max_results),
+        "select": "id,doi,title,publication_date,abstract_inverted_index,type",
+    }
+    if OPENALEX_MAILTO:
+        params["mailto"] = OPENALEX_MAILTO
+
+    url = f"{OPENALEX_API}?{urllib.parse.urlencode(params)}"
+
+    try:
+        req = urllib.request.Request(url, headers={"User-Agent": "arc-agi-literature-scan/1.0"})
+        with urllib.request.urlopen(req, timeout=30) as resp:
+            data = json.loads(resp.read())
+    except Exception as e:
+        print(f"  [openalex] fetch error for '{query}': {e}")
+        return []
+
+    papers = []
+    for work in data.get("results", []):
+        title = work.get("title") or ""
+        if not title:
+            continue
+
+        abstract = _openalex_reconstruct_abstract(work.get("abstract_inverted_index"))
+        pub_date = work.get("publication_date", "")
+        doi = work.get("doi", "") or ""
+
+        # Use DOI as canonical ID; fall back to OpenAlex ID
+        openalex_id = work.get("id", "")
+        # Strip prefix for compact storage
+        if openalex_id.startswith("https://openalex.org/"):
+            openalex_id = openalex_id[len("https://openalex.org/"):]
+
+        # Derive arxiv_id from DOI if it's an arXiv preprint
+        arxiv_id = ""
+        if doi and "arxiv" in doi.lower():
+            # DOI like https://doi.org/10.48550/arxiv.2507.14172 -> 2507.14172
+            m = re.search(r"arxiv\.(\d+\.\d+)", doi, re.IGNORECASE)
+            if m:
+                arxiv_id = m.group(1)
+
+        papers.append({
+            "arxiv_id": arxiv_id or openalex_id,   # dedup key compatible with arXiv papers
+            "title": " ".join(title.strip().split()),
+            "abstract": " ".join(abstract.strip().split()),
+            "published": pub_date[:10],
+            "doi": doi,
+            "source": "openalex",
+        })
+
+    return papers
+
+
+def fetch_all_queries(queries: list[str], max_total: int = MAX_PAPERS_TOTAL,
+                      sources: list[str] | None = None) -> list[dict]:
+    """Run multiple queries across sources, deduplicate, return up to max_total papers."""
+    if sources is None:
+        sources = ALL_SOURCES
+
     seen_ids = set()
+    seen_titles = set()
     all_papers = []
 
-    for query in queries:
-        print(f"  [arxiv] Searching: '{query}'...")
-        papers = fetch_arxiv(query, max_results=MAX_RESULTS_PER_QUERY)
+    def _normalize_title(t: str) -> str:
+        return re.sub(r"\s+", " ", t.lower().strip())
+
+    def _add(papers: list[dict]):
         for p in papers:
-            if p["arxiv_id"] not in seen_ids:
+            norm = _normalize_title(p["title"])
+            if p["arxiv_id"] not in seen_ids and norm not in seen_titles:
                 seen_ids.add(p["arxiv_id"])
+                seen_titles.add(norm)
                 all_papers.append(p)
                 if len(all_papers) >= max_total:
-                    return all_papers
-        # Be polite to arXiv
-        time.sleep(3)
+                    return True
+        return False
+
+    # --- arXiv ---
+    if "arxiv" in sources:
+        for query in queries:
+            print(f"  [arxiv] Searching: '{query}'...")
+            if _add(fetch_arxiv(query, max_results=MAX_RESULTS_PER_QUERY)):
+                return all_papers
+            time.sleep(3)  # be polite to arXiv
+
+    # --- OpenAlex ---
+    if "openalex" in sources:
+        oa_queries = OPENALEX_QUERIES
+        for query in oa_queries:
+            print(f"  [openalex] Searching: '{query}'...")
+            if _add(fetch_openalex(query, max_results=MAX_RESULTS_PER_QUERY)):
+                return all_papers
+            time.sleep(0.5)  # OpenAlex is more generous with rate limits
 
     return all_papers
 
@@ -171,12 +289,38 @@ Output as JSON array:
 
 If the paper has ZERO relevance to 2D grids, patterns, or spatial reasoning, output: NOT_RELEVANT"""
 
+TEMP_EXTRACT_PROMPT = """/no_think
+You are extracting temperature scaling findings from a research paper relevant to LLM code generation.
 
-def extract_techniques(paper: dict) -> list[dict]:
-    """Use Ollama to extract implementable techniques from a paper abstract."""
+Paper title: {title}
+Abstract: {abstract}
+
+Extract the paper's specific findings about optimal temperature settings for code generation or program synthesis. Focus on:
+1. What temperature range does the paper recommend for code generation?
+2. Should temperature vary by generation phase (initial generation vs repair/reflection)?
+3. Any findings specific to Mixture-of-Experts (MoE) architectures or small models (<10B params)?
+4. Beam width or candidate count recommendations?
+
+Output as JSON:
+```json
+{{"recommended_temps": "range or specific values", "phase_specific": true/false, "moe_specific": true/false, "beam_width_finding": "summary or null", "key_finding": "one-sentence summary of the most actionable insight"}}
+```
+
+If the paper has ZERO relevance to temperature, sampling, or code generation quality, output: NOT_RELEVANT"""
+
+
+def extract_techniques(paper: dict, mode: str = "default") -> list[dict]:
+    """Use Ollama to extract implementable techniques from a paper abstract.
+
+    mode="default": extract Python function ideas for grid manipulation
+    mode="temperature": extract temperature scaling findings for code generation
+    """
     import requests
 
-    prompt = EXTRACT_PROMPT.format(title=paper["title"], abstract=paper["abstract"])
+    if mode == "temperature":
+        prompt = TEMP_EXTRACT_PROMPT.format(title=paper["title"], abstract=paper["abstract"])
+    else:
+        prompt = EXTRACT_PROMPT.format(title=paper["title"], abstract=paper["abstract"])
 
     try:
         resp = requests.post(
@@ -230,13 +374,18 @@ def extract_techniques(paper: dict) -> list[dict]:
 
 def scan_and_extract(queries: list[str] | None = None,
                      max_papers: int = MAX_PAPERS_TOTAL,
-                     list_only: bool = False) -> list[dict]:
+                     list_only: bool = False,
+                     sources: list[str] | None = None,
+                     mode: str = "default") -> list[dict]:
     """Full pipeline: fetch papers, extract techniques, write hints file."""
     if queries is None:
         queries = DEFAULT_QUERIES
+    if sources is None:
+        sources = ALL_SOURCES
 
-    print(f"[literature] Scanning arXiv ({len(queries)} queries, last {DAYS_LOOKBACK} days)...")
-    papers = fetch_all_queries(queries, max_total=max_papers)
+    src_label = "+".join(sources)
+    print(f"[literature] Scanning {src_label} ({len(queries)} queries, last {DAYS_LOOKBACK} days)...")
+    papers = fetch_all_queries(queries, max_total=max_papers, sources=sources)
     print(f"[literature] Found {len(papers)} papers")
 
     if not papers:
@@ -251,7 +400,7 @@ def scan_and_extract(queries: list[str] | None = None,
     all_techniques = []
     for i, paper in enumerate(papers):
         print(f"  [{i+1}/{len(papers)}] Extracting from: {paper['title'][:70]}...")
-        techniques = extract_techniques(paper)
+        techniques = extract_techniques(paper, mode=mode)
         if techniques:
             print(f"    → {len(techniques)} techniques found")
             all_techniques.extend(techniques)
@@ -329,13 +478,19 @@ def load_hints(max_hints: int = 5) -> str:
 
 
 if __name__ == "__main__":
-    parser = argparse.ArgumentParser(description="ArXiv literature scan for ARC-AGI evolution")
+    parser = argparse.ArgumentParser(description="Literature scan for ARC-AGI evolution (arXiv + OpenAlex)")
     parser.add_argument("--query", type=str, nargs="+", help="Custom search queries")
     parser.add_argument("--max-papers", type=int, default=MAX_PAPERS_TOTAL)
     parser.add_argument("--list", action="store_true", help="Just list papers, no extraction")
     parser.add_argument("--days", type=int, default=DAYS_LOOKBACK, help="Lookback period in days")
+    parser.add_argument("--sources", type=str, nargs="+", default=ALL_SOURCES,
+                        choices=ALL_SOURCES, help="Which sources to query (default: all)")
+    parser.add_argument("--mode", type=str, default="default",
+                        choices=["default", "temperature"],
+                        help="Extraction mode: default (DSL functions) or temperature (scaling findings)")
     args = parser.parse_args()
 
     DAYS_LOOKBACK = args.days
     queries = args.query if args.query else None
-    scan_and_extract(queries=queries, max_papers=args.max_papers, list_only=args.list)
+    scan_and_extract(queries=queries, max_papers=args.max_papers,
+                     list_only=args.list, sources=args.sources, mode=args.mode)

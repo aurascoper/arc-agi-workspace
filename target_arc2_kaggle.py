@@ -32,12 +32,17 @@ import numpy as np
 # CONFIGURATION
 # ---------------------------------------------------------------------------
 
-MODEL_PATH = os.environ.get("ARC_MODEL_PATH", "Qwen/Qwen3.5-35B-A3B-GPTQ-Int4")
+MODEL_PATH = os.environ.get("ARC_MODEL_PATH", "Qwen/Qwen3-30B-A3B-GPTQ-Int4")
 
-# Auto-detect Kaggle model mounts
+# Auto-detect Kaggle model mounts — Qwen3-30B-A3B fits T4x2 better than 35B
 _model_candidates = [
+    ("/kaggle/input/qwen3-30b-a3b-gptq-int4", "gptq"),
+    ("/kaggle/input/qwenqwen3-30b-a3b-gptq-int4", "gptq"),
+    ("/kaggle/input/qwen3-30b-a3b-thinking-2507-4bit", "gptq"),
+    ("/kaggle/input/junhowieqwen3-30b-a3b-instruct-2507-gptq", "gptq"),
     ("/kaggle/input/qwen35-35b-a3b-gptq-int4", "gptq"),
     ("/kaggle/input/models/qwen-lm/qwen-3-5/transformers/qwen3.5-35b-a3b/1", "bitsandbytes"),
+    ("/kaggle/input/models/qwen-lm/qwen-3/transformers/qwen3-30b-a3b/1", "bitsandbytes"),
 ]
 QUANTIZATION = os.environ.get("ARC_QUANTIZATION", "gptq")
 
@@ -93,8 +98,9 @@ def _init_backend():
     )
 
     if QUANTIZATION == "gptq":
+        # Use standard "gptq" — "gptq_marlin" fails on models missing Marlin config
         llm_kwargs["dtype"] = "bfloat16"
-        llm_kwargs["quantization"] = "gptq_marlin"
+        llm_kwargs["quantization"] = "gptq"
     elif QUANTIZATION == "bitsandbytes":
         llm_kwargs["dtype"] = "float16"
         llm_kwargs["quantization"] = "bitsandbytes"

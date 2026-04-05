@@ -255,7 +255,75 @@ def run_with_timeout(fn, args, timeout_sec=5):
     return result[0]
 
 
-def try_code_on_task(code: str, task_data: dict, evaluate_on_test=False):
+def _trace_transform(code: str, input_grid, dsl_code: str) -> list[dict]:
+    """ABPR: capture intermediate grid states during transform execution.
+
+    Wraps each top-level DSL call inside transform() to record before/after.
+    Returns list of {"call": "func_name(...)", "result_shape": (r,c), "ok": bool}.
+    """
+    traces = []
+    ns = dict(HELPER_FUNCTIONS)
+    try:
+        exec(dsl_code + "\n" + code, ns)
+    except Exception:
+        return traces
+
+    transform_fn = ns.get("transform")
+    if not transform_fn:
+        return traces
+
+    import dis
+    try:
+        instructions = list(dis.get_instructions(transform_fn))
+    except Exception:
+        return traces
+
+    # Extract top-level function calls from bytecode
+    call_names = []
+    for instr in instructions:
+        if instr.opname in ("LOAD_GLOBAL", "LOAD_DEREF") and isinstance(instr.argval, str):
+            if instr.argval in ns and callable(ns.get(instr.argval)):
+                call_names.append(instr.argval)
+
+    if not call_names:
+        return traces
+
+    # Instrument: wrap each called function to record intermediate results
+    call_log = []
+    for fname in set(call_names):
+        original = ns.get(fname)
+        if not original or not callable(original):
+            continue
+
+        def make_wrapper(orig, name):
+            def wrapper(*args, **kwargs):
+                result = orig(*args, **kwargs)
+                shape = None
+                if isinstance(result, list) and result and isinstance(result[0], list):
+                    shape = (len(result), len(result[0]))
+                call_log.append({"call": name, "result_shape": shape})
+                return result
+            return wrapper
+
+        ns[fname] = make_wrapper(original, fname)
+
+    try:
+        ns2 = dict(ns)
+        exec(dsl_code + "\n" + code, ns2)
+        # Re-apply wrappers to the new namespace
+        for fname in set(call_names):
+            if fname in ns and fname not in ("transform",):
+                ns2[fname] = ns[fname]
+        transform_fn2 = ns2.get("transform")
+        if transform_fn2:
+            run_with_timeout(transform_fn2, (input_grid,), timeout_sec=5)
+    except Exception as e:
+        call_log.append({"call": "EXCEPTION", "error": str(e)[:100]})
+
+    return call_log
+
+
+def try_code_on_task(code: str, task_data: dict, evaluate_on_test=False, abpr_trace=False):
     ns = dict(HELPER_FUNCTIONS)
     failures = []
     pairs = task_data.get("test", []) if evaluate_on_test else task_data.get("train", [])
@@ -278,16 +346,20 @@ def try_code_on_task(code: str, task_data: dict, evaluate_on_test=False):
                 pred_list = [list(row) for row in pred] if pred else []
                 out_list = [list(row) for row in pair["output"]]
                 if pred_list != out_list:
-                    failures.append((pair["input"], pair["output"], pred_list, None, None))
+                    abpr = _trace_transform(code, pair["input"], dsl_code) if abpr_trace else None
+                    failures.append((pair["input"], pair["output"], pred_list, None, None, abpr))
+                else:
+                    pass  # success — no trace needed
             except Exception as e:
-                failures.append((pair["input"], pair["output"], None, str(e), traceback.format_exc()))
+                abpr = _trace_transform(code, pair["input"], dsl_code) if abpr_trace else None
+                failures.append((pair["input"], pair["output"], None, str(e), traceback.format_exc(), abpr))
 
     except Exception as e:
         tb = traceback.format_exc()
         if pairs:
-            failures.append((pairs[0]["input"], pairs[0]["output"], None, str(e), tb))
+            failures.append((pairs[0]["input"], pairs[0]["output"], None, str(e), tb, None))
         else:
-            failures.append(("", "", None, str(e), tb))
+            failures.append(("", "", None, str(e), tb, None))
 
     return len(failures) == 0, failures
 
