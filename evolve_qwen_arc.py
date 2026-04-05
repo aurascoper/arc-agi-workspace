@@ -58,6 +58,12 @@ TASKS_PER_DIAGNOSTIC = int(os.environ.get("TASKS_PER_DIAGNOSTIC", "5"))
 OUTER_ROUNDS = int(os.environ.get("EVOLVE_ROUNDS", "3"))
 CODOPT_BRANCHES = int(os.environ.get("CODOPT_BRANCHES", "3"))
 CODOPT_TIME = int(os.environ.get("CODOPT_TIME", "120"))
+
+# Fixed holdout set for consistent progress tracking (seed=2026, n=10)
+HOLDOUT_SEED = 2026
+HOLDOUT_SIZE = 10
+HOLDOUT_FILE = RESULTS_DIR / "holdout_scores.jsonl"
+SOLVE_COMMIT_THRESHOLD = float(os.environ.get("SOLVE_THRESHOLD", "0.85"))
 TIER3_TASKS = int(os.environ.get("TIER3_TASKS", "2"))
 
 # ---------------------------------------------------------------------------
@@ -601,6 +607,53 @@ def compute_solve_score(failing_results):
     if not tier3_scores:
         return 0.0
     return sum(tier3_scores) / len(tier3_scores)
+
+
+def _get_holdout_tasks():
+    """Return a fixed set of task files for consistent progress measurement."""
+    task_files = sorted(ARC_DATA.glob("*.json"))
+    if not task_files:
+        return []
+    rng = random.Random(HOLDOUT_SEED)
+    return rng.sample(task_files, min(HOLDOUT_SIZE, len(task_files)))
+
+
+def compute_holdout_score():
+    """Evaluate tier3 solve on a FIXED set of tasks. Returns (mean_score, per_task_scores).
+
+    Unlike compute_solve_score which uses random tasks each round, this always
+    evaluates the same tasks, making progress observable across rounds.
+    """
+    holdout = _get_holdout_tasks()
+    if not holdout:
+        return 0.0, {}
+
+    ns = load_dsl_namespace()
+    per_task = {}
+    for tf in holdout:
+        with open(tf) as f:
+            task_data = json.load(f)
+        try:
+            score, _ = solve_task_single(task_data, task_name=tf.stem)
+        except Exception:
+            score = 0.0
+        per_task[tf.stem] = round(score, 4)
+
+    mean = sum(per_task.values()) / len(per_task) if per_task else 0.0
+    return round(mean, 4), per_task
+
+
+def log_holdout_score(round_num, mean_score, per_task):
+    """Append holdout evaluation to tracking file."""
+    entry = {
+        "round": round_num,
+        "ts": datetime.now().isoformat()[:19],
+        "holdout_mean": mean_score,
+        "per_task": per_task,
+    }
+    with open(HOLDOUT_FILE, "a") as f:
+        f.write(json.dumps(entry) + "\n")
+    print(f"[holdout] Score: {mean_score:.4f} ({len(per_task)} tasks)")
 
 
 # ---------------------------------------------------------------------------
@@ -1486,6 +1539,15 @@ def evolve(rounds=None, diagnose_only=False, never_stop=False, tier3_tasks=None,
             validated = [f for f in new_functions if validate_function(f)]
             func_names = []
             rejected_task_specific = []
+            rejected_garbage = []
+            # Garbage name patterns — generic/placeholder names that indicate
+            # the model failed to produce task-aware hypotheses
+            GARBAGE_NAME_PATTERNS = [
+                r"^function_name$", r"^func\d*$", r"^new_function_name$",
+                r"^replace_specific_values_with_\w+$",
+                r"^replace_\w+_with_\w+$",  # e.g. replace_twos_with_eights
+                r"^replace_value_\w+$",
+            ]
             for v in validated:
                 m = re.match(r"def\s+(\w+)", v)
                 if m:
@@ -1494,12 +1556,20 @@ def evolve(rounds=None, diagnose_only=False, never_stop=False, tier3_tasks=None,
                     if re.search(r"[0-9a-f]{8}", name) or re.search(r"task_\w+|specific_to_", name):
                         rejected_task_specific.append(name)
                         continue
+                    # Reject garbage/placeholder names
+                    if any(re.match(pat, name) for pat in GARBAGE_NAME_PATTERNS):
+                        rejected_garbage.append(name)
+                        continue
                     func_names.append(name)
             if rejected_task_specific:
                 # Remove overfitting functions from validated list
                 validated = [v for v in validated
                              if not any(rn in v for rn in rejected_task_specific)]
                 print(f"[evolve] Rejected task-specific: {rejected_task_specific}")
+            if rejected_garbage:
+                validated = [v for v in validated
+                             if not any(rn in v for rn in rejected_garbage)]
+                print(f"[evolve] Rejected garbage names: {rejected_garbage}")
             print(f"[evolve] Proposed {len(new_functions)}, valid {len(validated)}: {func_names}")
             hypothesis = f"Add {', '.join(func_names)}" if func_names else "No valid functions proposed"
 
@@ -1559,22 +1629,27 @@ def evolve(rounds=None, diagnose_only=False, never_stop=False, tier3_tasks=None,
         print(f"[evolve] Results: metric {pre_score:.4f}->{post_score:.4f}, "
               f"solve {solve_before:.4f}->{solve_after:.4f}")
 
+        # --- 6b. HOLDOUT — fixed-task progress measurement ---
+        holdout_mean, holdout_per_task = compute_holdout_score()
+        log_holdout_score(round_num, holdout_mean, holdout_per_task)
+
         # --- 7. DECIDE ---
-        # At ceiling (base metric ≥ 0.999), use THREE signals for keep/stagnant:
+        # Decision uses TWO signals:
         #   1. beam_improved — codopt tournament found a winner on blended score
-        #   2. solve improvement — solve_after > solve_before (tier 3 accuracy gain)
-        #   3. base metric improvement — post_score > pre_score (below ceiling only)
+        #   2. solve_after >= threshold — absolute tier3 quality gate (default 0.85)
+        # NOTE: We no longer compare solve_after vs solve_before (too noisy due to
+        # random task sampling). Instead, use absolute threshold + beam winner signal.
         if post_score >= 0.999:
-            solve_improved = solve_after > solve_before + 0.005  # min-delta for noise
-            if beam_improved or solve_improved:
+            above_threshold = solve_after >= SOLVE_COMMIT_THRESHOLD
+            if beam_improved or above_threshold:
                 improved = True
                 status = "keep"
-                reason = "beam winner" if beam_improved else "solve improvement"
-                print(f"\n[7/9] DECIDE — {status} ({reason}: solve {solve_before:.4f}->{solve_after:.4f})")
+                reason = "beam winner" if beam_improved else f"solve≥{SOLVE_COMMIT_THRESHOLD}"
+                print(f"\n[7/9] DECIDE — {status} ({reason}: solve={solve_after:.4f}, holdout={holdout_mean:.4f})")
             else:
                 improved = False
                 status = "stagnant"
-                print(f"\n[7/9] DECIDE — {status} (at ceiling, no solve improvement)")
+                print(f"\n[7/9] DECIDE — {status} (solve={solve_after:.4f}<{SOLVE_COMMIT_THRESHOLD}, holdout={holdout_mean:.4f})")
         else:
             improved = post_score > pre_score
             status = "keep" if improved else "stagnant"
