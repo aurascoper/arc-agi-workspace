@@ -1,0 +1,237 @@
+/no_think
+You are an ARC-AGI DSL engineer. Given failing tasks, output ONLY Python functions. No analysis, no explanation — just code.
+
+Current DSL: 797 functions. Do NOT duplicate existing functions.
+
+## Known Techniques
+Key ARC-AGI solution techniques from the literature:
+
+1. CONNECTED COMPONENTS: Identify connected regions of same-colored cells (4- or
+   8-connected). Used for object isolation, counting, and spatial reasoning.
+
+2. FLOOD FILL: Fill enclosed regions bounded by a specific color. Common in tasks
+   involving containment, boundary detection, and region painting.
+
+3. SYMMETRY DETECTION: Detect reflective (horizontal, vertical, diagonal) and
+   rotational symmetry in grids. Many tasks involve completing symmetric patterns.
+
+4. TOPOLOGICAL SORTING / LAYERING: Tasks involving occlusion or z-ordering require
+   understanding which objects overlap and their relative positions.
+
+5. PATTERN MATCHING / TEMPLATE DETECTION: Find recurring sub-grids (stamps, tiles)
+   within larger grids. Used for tiling, repetition detection, and rule extraction.
+
+6. COLOR HISTOGRAM / FREQUENCY ANALYSIS: Count color occurrences to detect dominant
+   colors, rare colors (markers), or color-based rules (majority vote, XOR).
+
+7. OBJECT RELATION GRAPHS: Build graphs of spatial relationships between objects
+   (above, below, left, right, inside, touching) for compositional reasoning.
+
+8. GRID DECOMPOSITION: Split grids into quadrants, strips, or tiles based on
+   separators (lines of uniform color). Many tasks operate on sub-grids independently.
+
+9. SCALING / RESAMPLING: Enlarge or shrink patterns by integer factors. Tasks
+   frequently involve upscaling a small pattern to fill a larger grid.
+
+10. GRAVITY / MOVEMENT SIMULATION: Move objects in a direction until they hit
+    boundaries or other objects. Used in "drop", "slide", and "gravity" tasks.
+
+## Hypothesis Type Track Record (win rate by category)
+  connected_components: 100% (1/1) [+]
+  other: 100% (1/1) [+]
+PREFER types with higher win rates. AVOID types that consistently lose.
+
+## Existing (last 50 signatures, do NOT duplicate)
+  ... (819 more) ...
+  def detect_l_shapes(grid: list[list[int]])
+  def detect_rectangles_by_color(grid: list[list[int]])
+  def find_symmetry_axes(grid: list[list[int]])
+  def extract_connected_components(grid: list[list[int]])
+  def find_rectangular_regions(grid: list[list[int]])
+  def detect_l_shapes_precise(grid: list[list[int]])
+  def transform_four_color_pattern(grid: list[list[int]])
+  def transform_pattern_b6afb2da(grid: list[list[int]])
+  def transform_pattern_34b99a2b(grid: list[list[int]])
+  def extract_color_zones_by_horizontal_segments(grid: list[list[int]])
+  def generate_inverted_pattern_zones(grid: list[list[int]])
+  def transform_quadrant_boundary_patterns(grid: list[list[int]])
+  def expand_border_with_diagonal_reflection(grid: list[list[int]])
+  def apply_symmetry_correction_and_fill(grid: list[list[int]], target_fill: int = 3)
+  def fill_pattern_with_specific_color_propagation(grid: list[list[int]], color: int = 5)
+  def fill_pattern_with_specific_component(grid: list[list[int]], component: list[tuple], color: int)
+  def transform_pattern_by_row_reflection(grid: list[list[int]])
+  def generate_diagonal_patterns_from_corners(grid: list[list[int]])
+  def calculate_quadrant_dominant_color(grid: list[list[int]])
+  def find_2x2_pattern(grid: list[list[int]])
+  def detect_3x3_symmetry_axes(grid: list[list[int]])
+  def count_connected_components(grid: list[list[int]], target_color: int = 1, background: int = 0)
+  def find_largest_connected_component(grid: list[list[int]], target_color: int = 1, background: int = 0)
+  def find_3x3_pattern_matches(grid: list[list[int]], pattern: list[list[int]], background: int = 0)
+  def count_nonzero_colors(grid: list[list[int]], background: int = 0)
+  def detect_symmetry_vertical(grid: list[list[int]], background: 0)
+  def detect_symmetry_4fold(grid: list[list[int]], background: int = 0)
+  def apply_reflective_shift_and_merge(grid: list[list[int]])
+  def extract_and_mirror_vertical_pattern(grid: list[list[int]])
+  def scale_grid_by_3(grid: list[list[int]])
+  def downscale_grid_by_factor(grid: list[list[int]], factor: int = 2)
+  def scale_grid_by_nonzero_count_expanded(grid: list[list[int]])
+  def scale_grid_by_nonzero_count_contracted(grid: list[list[int]])
+  def scale_grid_by_unique_color_count_expanded(grid: list[list[int]])
+  def scale_grid_by_unique_color_count_contracted(grid: list[list[int]])
+  def complete_vertical_walls_and_shift_objects(grid: list[list[int]])
+  def remove_isolated_noise_pixels(grid: list[list[int]])
+  def denoise_random_spikes(grid: list[list[int]])
+  def clean_minority_color_spikes(grid: list[list[int]], target_color: int = 1, background: int = 0)
+  def smooth_random_dots(grid: list[list[int]], background: int = 0)
+  def remove_outlier_pixels(grid: list[list[int]], background: int = 0)
+  def denoise_isolated_nonzero(grid: list[list[int]], background: int = 0)
+  def denoise_minority_color(grid: list[list[int]], target_color: int = 1, background: int = 0)
+  def collapse_and_merge_columns(grid: list[list[int]])
+  def flood_fill_path(grid: list[list[int]])
+  def shortest_path_breadth_first(grid: list[list[int]], start: tuple, end: tuple, wall: int)
+  def solve_maze_dfs(grid: list[list[int]], wall: int, start: tuple, end: tuple)
+  def find_maze_entry_exit(grid: list[list[int]], wall: int, target: int)
+  def carve_path_along_route(grid: list[list[int]], path: list[tuple], fill_color: int)
+  def count_steps_to_target(grid: list[list[int]], target: int, wall: int)
+
+## Previous Experiments ([-] = no improvement, [+] = improved)
+  [-] Round 2: Add decompose_and_convert_pattern (decompose_and_convert_pattern) metric 1.000->1.000
+  [-] Round 3: Add propagate_symmetry_markers, transform_split_quadrants, transform_radial_patt (propagate_symmetry_markers, transform_split_quadrants, transform_radial_pattern) metric 1.000->1.000
+  [-] Round 1: Add execute_symmetric_scaling (execute_symmetric_scaling) metric 1.000->1.000
+  [-] Round 2: Add separate_and_refine_quadrants (separate_and_refine_quadrants) metric 1.000->1.000
+  [-] Round 1: Add transform_pattern_to_quarter_scale (transform_pattern_to_quarter_scale) metric 1.000->1.000
+  [-] Round 1: Add apply_hole_fill_pattern (apply_hole_fill_pattern) metric 1.000->1.000
+  [-] Round 2: Add transform_four_color_pattern, transform_pattern_b6afb2da, transform_pattern_ (transform_four_color_pattern, transform_pattern_b6afb2da, transform_pattern_34b99a2b) metric 1.000->1.000
+  [-] Round 3: Add extract_color_zones_by_horizontal_segments, generate_inverted_pattern_zones, (extract_color_zones_by_horizontal_segments, generate_inverted_pattern_zones, transform_quadrant_boundary_patterns) metric 1.000->1.000
+  [-] Round 15 [connected_components]: Add complete_vertical_walls_and_shift_objects (complete_vertical_walls_and_shift_objects) metric 1.000->1.000
+  [-] Round 16 [other]: Add collapse_and_merge_columns (collapse_and_merge_columns) metric 1.000->1.000
+
+## BLACKLIST — DO NOT propose functions similar to these (already tried, didn't help):
+apply_hole_fill, apply_symmetry_correction, calculate_quadrant_dominant, collapse_and_merge, complete_vertical_walls, decompose_and_convert, execute_symmetric_scaling, expand_border_with, extract_color_zones, fill_pattern_with, generate_diagonal_patterns, generate_inverted_pattern, propagate_symmetry_markers, separate_and_refine, transform_four_color, transform_pattern_34b99a2b, transform_pattern_b6afb2da, transform_pattern_by, transform_pattern_to, transform_quadrant_boundary, transform_quadrant_fill, transform_radial_pattern, transform_split_quadrants
+
+## Failure Distribution: SOLVE_FAIL: 2
+
+## Failing Tasks
+### Task: 59341089.json [SOLVE_FAIL]
+Scores: tier1=1.00 tier2=1.00 tier3(solve)=0.00
+Train 1 Input (3x3):
+888
+557
+578
+Train 1 Output (3x12):
+888888888888
+755557755557
+875578875578
+Train 2 Input (3x3):
+778
+588
+588
+Train 2 Output (3x12):
+877778877778
+885588885588
+885588885588
+
+### Task: 3a301edc.json [SOLVE_FAIL]
+Scores: tier1=1.00 tier2=1.00 tier3(solve)=0.00
+Train 1 Input (16x17):
+00000000000000000
+00000000000000000
+00000000000000000
+00055555550000000
+00055555550000000
+00055222550000000
+00055222550000000
+00055222550000000
+00055555550000000
+00055555550000000
+00000000000000000
+00000000000000000
+00000000000000000
+00000000000000000
+00000000000000000
+00000000000000000
+Train 1 Output (16x17):
+22222222222220000
+22222222222220000
+22222222222220000
+22255555552220000
+22255555552220000
+22255222552220000
+22255222552220000
+22255222552220000
+22255555552220000
+22255555552220000
+22222222222220000
+22222222222220000
+22222222222220000
+00000000000000000
+00000000000000000
+00000000000000000
+Train 2 Input (13x14):
+00000000000000
+00000000000000
+00000000000000
+00033333000000
+00033333000000
+00033133000000
+00033333000000
+00033333000000
+00000000000000
+00000000000000
+00000000000000
+00000000000000
+00000000000000
+Train 2 Output (13x14):
+00000000000000
+00000000000000
+00111111100000
+00133333100000
+00133333100000
+00133133100000
+00133333100000
+00133333100000
+00111111100000
+00000000000000
+00000000000000
+00000000000000
+00000000000000
+
+
+## What went WRONG (execution traces from failed solve attempts)
+- 59341089: WRONG_ANSWER
+    Pixel accuracy: 0.00
+    Expected shape: (3, 12), Got: (3, 12)
+- 59341089: WRONG_ANSWER
+    Pixel accuracy: 0.00
+    Expected shape: (3, 12), Got: (3, 12)
+- 3a301edc: CRASH
+    Error: expected an indented block after 'if' statement on line 21744 (<string>, line 21787)
+    Traceback:
+      Traceback (most recent call last):
+        File "/Users/aurascoper/Developer/arc_agi/workspace/target_mlx_arc.py", line 345, in try_code_on_task
+          exec(dsl_code + "\n" + code, ns)
+          ~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+        File "<string>", line 21787
+          # 3 -> 
+                 ^
+      IndentationError: expected an indented block after 'if' statement on line 21744
+
+IMPORTANT: Study the input/output pairs carefully. Each task has a UNIQUE transformation rule.
+Do NOT propose generic mirror/pattern/tile functions. Analyze what SPECIFIC operation maps each input to its output.
+
+OUTPUT EXACTLY 3-5 new Python functions in ```python blocks. Each function:
+- Takes `grid: list[list[int]]` as first arg, returns `list[list[int]]`
+- Is self-contained (only stdlib + numpy)
+- Does ONE transformation relevant to the failing tasks above
+- Has a one-line docstring
+- Must be DIFFERENT from blacklisted approaches
+
+```python
+def function_name(grid: list[list[int]]) -> list[list[int]]:
+    """One-line description."""
+    import numpy as np
+    # implementation
+    return result
+```
+
+START WITH ```python IMMEDIATELY. No preamble.
