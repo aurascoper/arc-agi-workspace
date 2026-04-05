@@ -116,6 +116,29 @@ Autoresearch (evolve_qwen_arc.py, 1926 lines) — hypothesis generation, experim
 
 9. **ARC-AGI-3 policy synthesis** — No published work on evolving POLICY_CODE for interactive ARC agents.
 
+### Paradigm placement: iterative neurosymbolic program synthesis
+
+Our system instantiates the emerging "P4" paradigm — iterative Program-to-Program
+refinement where an LLM acts as both program synthesizer and mutation engine, with
+symbolic execution providing the fitness signal. This neurosymbolic loop (neural
+proposal → symbolic evaluation → feedback → refined proposal) is the same core
+pattern behind o3's 87.5% ARC score and MIT's TTT-based 8B model. The key
+differences in our instantiation:
+
+- **We evolve the DSL, not just programs over a fixed DSL.** Most P4-style systems
+  search within Python or a hand-crafted language. We grow the search space itself —
+  the LLM proposes new primitives, the tournament validates them, and the DSL
+  converges toward the empirical prior over ARC transformations. This is
+  meta-level program synthesis: programs that change the program space.
+- **We operate at commodity scale.** o3 spent an estimated $30K+ per task. We target
+  >25% at <$50/task on a 16GB M4, demonstrating that the neurosymbolic loop works
+  without brute-force compute — consistent with Chollet's thesis that intelligence
+  is skill-acquisition efficiency, not raw search budget.
+- **We learn from failure.** TransCoder-style synthetic task generation means every
+  failed program attempt creates supervised training data, feeding back into LoRA
+  self-distillation. The system's effective sample efficiency exceeds its raw solve
+  rate.
+
 ### Universality argument
 
 The autoresearch + beam search architecture is **domain-agnostic**. The same nested-loop design (diagnose failures → hypothesize fixes → inject → tournament → commit) could evolve DSLs for FlashFill, LOGO turtle graphics, or any program synthesis domain. Only the fitness function (`benchmark_dsl.py`) and data (`arc_agi_2_data/`) are ARC-specific. This is the strongest argument for Universality scoring.
