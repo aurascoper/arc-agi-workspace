@@ -1,7 +1,7 @@
 /no_think
 You are an ARC-AGI DSL engineer. Given failing tasks, output ONLY Python functions. No analysis, no explanation — just code.
 
-Current DSL: 744 functions. Do NOT duplicate existing functions.
+Current DSL: 753 functions. Do NOT duplicate existing functions.
 
 ## Known Techniques
 Key ARC-AGI solution techniques from the literature:
@@ -37,17 +37,7 @@ Key ARC-AGI solution techniques from the literature:
     boundaries or other objects. Used in "drop", "slide", and "gravity" tasks.
 
 ## Existing (last 50 signatures, do NOT duplicate)
-  ... (765 more) ...
-  def clean_grid_noise(grid: list[list[int]])
-  def remove_outliers_by_consensus(grid: list[list[int]])
-  def remove_granular_noise(grid: list[list[int]])
-  def fix_border_noise(grid: list[list[int]])
-  def remove_border_noise(grid: list[list[int]])
-  def fix_isolated_noise(grid: list[list[int]])
-  def remove_outliers_by_consensus(grid: list[list[int]])
-  def denoise_random_noise(grid: list[list[int]])
-  def propagate_symmetry_markers(grid: list[list[int]])
-  def transform_split_quadrants(grid: list[list[int]])
+  ... (775 more) ...
   def transform_radial_pattern(grid: list[list[int]])
   def transform_quadrant_fill_pattern(grid: list[list[int]])
   def detect_2x2_pattern_match(grid: list[list[int]], template: list[list[int]])
@@ -88,9 +78,18 @@ Key ARC-AGI solution techniques from the literature:
   def count_2x2_blocks_of_color(grid: list[list[int]], target: int)
   def get_color_ratio_between_regions(grid: list[list[int]], region1: list, region2: list)
   def transform_pattern_to_quarter_scale(grid: list[list[int]])
+  def b6afb2da_transform(grid: list[list[int]])
+  def transform_quad(q)
+  def apply_hole_fill_pattern(grid: list[list[int]], target_color: int = 2)
+  def find_rectangles(grid: list[list[int]])
+  def detect_l_shapes(grid: list[list[int]])
+  def detect_rectangles_by_color(grid: list[list[int]])
+  def find_symmetry_axes(grid: list[list[int]])
+  def extract_connected_components(grid: list[list[int]])
+  def find_rectangular_regions(grid: list[list[int]])
+  def detect_l_shapes_precise(grid: list[list[int]])
 
 ## Previous Experiments ([-] = no improvement, [+] = improved)
-  [-] Round 14: Add replace_twos_with_eights, replace_two_with_eight, replace_two_with_eight, re (replace_twos_with_eights, replace_two_with_eight, replace_two_with_eight) metric 1.000->1.000
   [-] Round 1: Add replace_specific_values_with_fours (replace_specific_values_with_fours) metric 1.000->1.000
   [-] Round 1: Add replace_specific_values_with_nines (replace_specific_values_with_nines) metric 1.000->1.000
   [-] Round 2: Add replace_diagonal_with_ones, replace_with_nines, replace_with_threes (replace_diagonal_with_ones, replace_with_nines, replace_with_threes) metric 1.000->1.000
@@ -100,9 +99,10 @@ Key ARC-AGI solution techniques from the literature:
   [-] Round 1: Add execute_symmetric_scaling (execute_symmetric_scaling) metric 1.000->1.000
   [-] Round 2: Add separate_and_refine_quadrants (separate_and_refine_quadrants) metric 1.000->1.000
   [-] Round 1: Add transform_pattern_to_quarter_scale (transform_pattern_to_quarter_scale) metric 1.000->1.000
+  [-] Round 1: Add apply_hole_fill_pattern (apply_hole_fill_pattern) metric 1.000->1.000
 
 ## BLACKLIST — DO NOT propose functions similar to these (already tried, didn't help):
-apply_mirror_and, decompose_and_convert, execute_symmetric_scaling, propagate_symmetry_markers, replace_diagonal_with, replace_specific_values, replace_two_with, replace_twos_with, replace_with_nines, replace_with_threes, separate_and_refine, transform_pattern_to, transform_quadrant_fill, transform_radial_pattern, transform_split_quadrants
+apply_hole_fill, apply_mirror_and, decompose_and_convert, execute_symmetric_scaling, propagate_symmetry_markers, replace_diagonal_with, replace_specific_values, replace_with_nines, replace_with_threes, separate_and_refine, transform_pattern_to, transform_quadrant_fill, transform_radial_pattern, transform_split_quadrants
 
 ## Failure Distribution: SOLVE_FAIL: 2
 
@@ -183,17 +183,12 @@ Train 2 Output (5x4):
 
 
 ## What went WRONG (execution traces from failed solve attempts)
-- b6afb2da: CRASH
-    Error: expected an indented block after function definition on line 19091 (<string>, line 19091)
-    Traceback:
-      Traceback (most recent call last):
-        File "/Users/aurascoper/Developer/arc_agi/workspace/target_mlx_arc.py", line 245, in try_code_on_task
-          exec(dsl_code + "\n" + code, ns)
-          ~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-        File "<string>", line 19091
-          def is_v_line_down(r, c):
-                                   ^
-      IndentationError: expected an indented block after function definition on line 19091
+- b6afb2da: WRONG_ANSWER
+    Pixel accuracy: 0.00
+    Expected shape: (10, 10), Got: None
+- b6afb2da: WRONG_ANSWER
+    Pixel accuracy: 0.00
+    Expected shape: (10, 10), Got: None
 - 34b99a2b: WRONG_ANSWER
     Pixel accuracy: 0.64
     Expected shape: (5, 4), Got: (5, 4)
