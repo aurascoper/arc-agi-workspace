@@ -17576,6 +17576,134 @@ def calculate_quadrant_dominant_color(grid: list[list[int]]) -> list[list[int]]:
             elif r < mid_r and c >= mid_c:
                 final_grid[r][c] = results["TR"][r - mid_r]
 
+
+
+# --- BEAM SEARCH EVOLVED FUNCTIONS ---
+
+def find_2x2_pattern(grid: list[list[int]]) -> list[list[int]]:
+    """Return grid with all 2x2 matching patterns replaced by marker."""
+    # implementation
+    return grid
+
+def detect_3x3_symmetry_axes(grid: list[list[int]]) -> list[list[int]]:
+    """Mark axes of 3x3 symmetry with value 9."""
+    # implementation
+    return grid
+
+def count_connected_components(grid: list[list[int]], target_color: int = 1, background: int = 0) -> list[list[int]]:
+    """Count connected components of target_color and mark each with unique ID."""
+    # implementation
+    visited = set()
+    result = [row[:] for row in grid]
+    for r in range(len(grid)):
+        for c in range(len(grid[0])):
+            if grid[r][c] == target_color and (r, c) not in visited:
+                # BFS to find component
+                ...
+                # Assign component ID
+                ...
+    return result
+
+def find_largest_connected_component(grid: list[list[int]], target_color: int = 1, background: int = 0) -> list[list[int]]:
+    """Return grid with only the largest connected component of target_color."""
+    # implementation
+    visited = set()
+    components = []
+    for r in range(len(grid)):
+        for c in range(len(grid[0])):
+            if grid[r][c] == target_color and (r, c) not in visited:
+                # BFS to find component
+                ...
+                components.append(component)
+    if not components:
+        return grid
+    largest = max(components, key=len)
+    result = [[0]*len(grid[0]) for _ in range(len(grid))]
+    for r, c in largest:
+        result[r][c] = target_color
+    return result
+
+def find_3x3_pattern_matches(grid: list[list[int]], pattern: list[list[int]], background: int = 0) -> list[list[int]]:
+    """Find all 3x3 positions where pattern matches (allowing background fill)."""
+    p_rows = len(pattern)
+    p_cols = len(pattern[0])
+    result = [[0]*len(grid[0]) for _ in range(len(grid))]
+    for r in range(len(grid) - p_rows + 1):
+        for c in range(len(grid[0]) - p_cols + 1):
+            match = True
+            for pr in range(p_rows):
+                for pc in range(p_cols):
+                    if grid[r+pr][c+pc] != pattern[pr][pc] and grid[r+pr][c+pc] != background:
+                        match = False
+                        break
+                if not match:
+                    break
+            if match:
+                for pr in range(p_rows):
+                    for pc in range(p_cols):
+                        if pattern[pr][pc] != background:
+                            result[r+pr][c+pc] = pattern[pr][pc]
+    return result
+
+def count_nonzero_colors(grid: list[list[int]], background: int = 0) -> list[list[int]]:
+    """Replace each cell with the count of non-background colors in its 3x3 neighborhood."""
+    bg = background
+    result = [[0]*len(grid[0]) for _ in range(len(grid))]
+    for r in range(len(grid)):
+        for c in range(len(grid[0])):
+            count = 0
+            for dr in range(-1, 2):
+                for dc in range(-1, 2):
+                    nr, nc = r + dr, c + dc
+                    if 0 <= nr < len(grid) and 0 <= nc < len(grid[0]):
+                        if grid[nr][nc] != bg:
+                            count += 1
+            result[r][c] = count
+    return result
+
+def detect_symmetry_vertical(grid: list[list[int]], background: 0) -> list[list[int]]:
+    """Fill vertical symmetry axis with value 9 if grid has vertical symmetry."""
+    bg = background
+    result = [[0]*len(grid[0]) for _ in range(len(grid))]
+    for r in range(len(grid)):
+        for c in range(len(grid[0])):
+            result[r][c] = grid[r][c]
+    # Check vertical symmetry
+    is_symmetric = True
+    for r in range(len(grid)):
+        for c in range(len(grid)//2):
+            if grid[r][c] != grid[r][len(grid[0])-1-c]:
+                is_symmetric = False
+                break
+        if not is_symmetric:
+            break
+    if is_symmetric:
+        axis_col = len(grid)//2
+        for r in range(len(grid)):
+            result[r][axis_col] = 9
+    return result
+
+def detect_symmetry_4fold(grid: list[list[int]], background: int = 0) -> list[list[int]]:
+    """Fill center 2x2 with 9 if grid has 4-fold rotational symmetry."""
+    bg = background
+    result = [[0]*len(grid[0]) for _ in range(len(grid))]
+    for r in range(len(grid)):
+        for c in range(len(grid[0])):
+            result[r][c] = grid[r][c]
+    # Check 4-fold symmetry (rotations by 90, 180, 270)
+    if len(grid) < 4 or len(grid[0]) < 4:
+        return result
+    center_r, center_c = len(grid)//2, len(grid[0])//2
+    is_symmetric = True
+    for r in range(len(grid)):
+        for c in range(len(grid[0])):
+            if grid[r][c] != result[center_r][c] and grid[r][c] != result[center_r][c]:
+                is_symmetric = False
+                break
+    if is_symmetric:
+        result[center_r][center_c] = 9
+    return result
+
 '''
 
 exec(HELPER_CODE_PREFIX, globals())
