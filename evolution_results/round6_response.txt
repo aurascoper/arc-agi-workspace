@@ -1,0 +1,17 @@
+ ```python
+def transform_grid(grid: list[list[int]]) -> list[list[int]]:
+    """Transforms the grid by replacing each element with its nearest neighbor sum."""
+    import numpy as np
+    rows, cols = len(grid), len(grid[0])
+    result = [[0] * cols for _ in range(rows)]
+    
+    for r in range(rows):
+        for c in range(cols):
+            neighbors = []
+            if r > 0: neighbors.append(grid[r-1][c])
+            if r < rows - 1: neighbors.append(grid[r+1][c])
+            if c > 0: neighbors.append(grid[r][c-1])
+            if c < cols - 1: neighbors.append(grid[r][c+1])
+            result[r][c] = sum(neighbors)
+    return result
+```

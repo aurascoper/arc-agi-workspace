@@ -1,0 +1,285 @@
+{
+  "last_scan": "2026-04-04T12:00:00Z",
+  "scan_sources": ["arxiv", "semantic_scholar"],
+  "techniques": [
+    {
+      "name": "Symbol-Equivariant Layers for Color Permutation Invariance",
+      "category": "A",
+      "description": "Enforce permutation equivariance at the architectural level through symbol-equivariant layers, guaranteeing identical solutions under symbol/color permutations. Eliminates need for costly color-swap data augmentation. Only 2M parameters needed.",
+      "implementation_hint": "For DSL helper functions: implement a canonicalize_colors(grid) function that maps grid colors to a canonical ordering (e.g., by frequency) before processing. This ensures the DSL solver sees a normalized representation regardless of color assignment. Use numpy to compute color histograms and build a permutation map.",
+      "source_paper": "Symbol-Equivariant Recurrent Reasoning Models",
+      "arxiv_id": "2603.02193",
+      "published": "2026-03-02"
+    },
+    {
+      "name": "Symmetry-Aware Augmentation Framework (Group Symmetries + Grid Traversals)",
+      "category": "A",
+      "description": "Principled augmentation framework based on group symmetries (rotations, reflections), grid traversals, and automata perturbations. Enforces invariance to representation changes. Combined with test-time training (TTT) via LoRA for per-task specialization.",
+      "implementation_hint": "Implement augment_grid(grid, transform_id) that applies D4 symmetry group (8 transforms: identity, 3 rotations, 4 reflections). For each ARC task, generate all 8 views, solve each, then aggregate/vote on solutions. Use numpy rot90 and flip operations. Also implement inverse_transform to map solutions back.",
+      "source_paper": "ARC-AGI-2 Technical Report",
+      "arxiv_id": "2603.06590",
+      "published": "2026-02-04"
+    },
+    {
+      "name": "Task Generator Framework for Synthetic Training Data",
+      "category": "A",
+      "description": "ARC-TGI provides 461 compact Python generators that sample diverse ARC tasks while preserving latent rules. Each generator pairs tasks with natural-language reasoning chains and partially-evaluated Python code. Supports task-level constraints ensuring training examples collectively expose variations needed to infer the rule.",
+      "implementation_hint": "Use ARC-TGI generators to create unlimited synthetic training data for DSL evolution. Each generator is a compact Python program that can be called to produce (input_grid, output_grid, reasoning_chain) triples. Integrate with codopt loop: generate synthetic tasks matching discovered rule families, evolve DSL primitives on them.",
+      "source_paper": "ARC-TGI: Human-Validated Task Generators with Reasoning Chain Templates for ARC-AGI",
+      "arxiv_id": "2603.05099",
+      "published": "2026-03-05"
+    },
+    {
+      "name": "Recursive Inference Machines with Reweighting",
+      "category": "A",
+      "description": "RIMs extend Tiny Recursive Models through a reweighting component inspired by classical inference engines. Shows improved performance on ARC-AGI-1 and ARC-AGI-2. The key insight is that iterative refinement in hidden representation space (latent recursion) combined with importance reweighting yields better reasoning.",
+      "implementation_hint": "For the codopt beam search: implement a reweighting step that scores candidate DSL programs not just by output match but by a confidence-weighted ensemble. Score each candidate's intermediate states and reweight based on consistency across multiple recursive applications. Can be approximated with a simple scoring function over partial grid matches.",
+      "source_paper": "Recursive Inference Machines for Neural Reasoning",
+      "arxiv_id": "2603.05234",
+      "published": "2026-03-05"
+    },
+    {
+      "name": "Abduction-Based Procedural Refinement (ABPR) for Program Debugging",
+      "category": "A",
+      "description": "Couples an LLM with a meta-interpreter that materializes program execution into compact, declarative tree-structured traces. Uses Prolog-style algorithmic debugging to systematically locate and fix errors. Achieves 56.67% Pass@2 on ARC-AGI-2.",
+      "implementation_hint": "For DSL program repair: after a candidate program fails on a test pair, generate an execution trace showing which DSL primitive produced incorrect intermediate results. Present the trace to the LLM as a structured bug report, enabling targeted repair of the specific failing primitive rather than regenerating the entire program.",
+      "source_paper": "Procedural Refinement by LLM-driven Algorithmic Debugging for ARC-AGI-2",
+      "arxiv_id": "2603.20334",
+      "published": "2026-03-20"
+    },
+    {
+      "name": "Recursive Concept Evolution (RCE) for Compositional Reasoning",
+      "category": "A",
+      "description": "Dynamically generates low-rank concept subspaces during inference when representational inadequacy is detected. Uses minimum description length criterion for subspace selection and constrained optimization for stability. Yields 12-18 point gains on ARC-AGI-2 with Mistral-7B.",
+      "implementation_hint": "For DSL evolution: detect when the current DSL primitive library cannot express a transformation (representational inadequacy), then dynamically compose new primitives from existing ones using MDL-guided search. Implement as: try all primitive compositions up to depth 3, select the one with shortest description that matches all examples.",
+      "source_paper": "Recursive Concept Evolution for Compositional Reasoning in Large Language Models",
+      "arxiv_id": "2602.15725",
+      "published": "2026-02-17"
+    },
+    {
+      "name": "Empirical-MCTS with Dual-Experience Memory",
+      "category": "A",
+      "description": "Transforms stateless MCTS search into continuous learning via two mechanisms: Pairwise-Experience-Evolutionary Meta-Prompting (PE-EMP) for real-time meta-prompt evolution, and a Memory Optimization Agent that manages a global repository of high-quality insights across problems. Outperforms stateless MCTS on ARC-AGI-2.",
+      "implementation_hint": "For the codopt loop: maintain a persistent memory bank of successful DSL programs and their reasoning patterns. When encountering a new task, retrieve similar past solutions and use them as meta-prompts. After solving, distill the insight (e.g., 'when grid has bilateral symmetry, try mirror+fill') into the memory bank via atomic insert/merge operations.",
+      "source_paper": "Empirical-MCTS: Continuous Agent Evolution via Dual-Experience Monte Carlo Tree Search",
+      "arxiv_id": "2602.04248",
+      "published": "2026-02-04"
+    },
+    {
+      "name": "Role-Separated Transformer for Grid Reasoning",
+      "category": "A",
+      "description": "Splits global controller tokens from grid workspace tokens, enabling iterative rule execution. The controller tokens serve as a persistent reasoning state separate from the data being transformed. Achieves 62.6% on ARC-1, surpassing average human performance.",
+      "implementation_hint": "For DSL design: separate the 'what to do' (controller/rule specification) from 'where to do it' (grid workspace). Implement grid operations as two-phase: first a selection phase (identify which cells/objects to act on) and then a transformation phase (apply the action). This mirrors the controller-workspace separation.",
+      "source_paper": "Reasoning is a Modality",
+      "arxiv_id": "2601.13562",
+      "published": "2026-01-20"
+    },
+    {
+      "name": "JaxARC: High-Performance RL Environment for ARC",
+      "category": "A",
+      "description": "JAX-based RL environment for ARC achieving 38-5,439x speedup over Gymnasium. Functional stateless architecture enables massive parallelism with peak throughput of 790M steps/second. Supports multiple ARC datasets, flexible action spaces, composable wrappers.",
+      "implementation_hint": "For ARC-AGI-3 (interactive benchmark): use JaxARC as the simulation backend for RL-based exploration. Its massive parallelism allows evaluating thousands of action sequences simultaneously. While the main pipeline uses MLX, JaxARC can run batch evaluations on any GPU/TPU to pre-screen candidate action policies before deploying on Apple Silicon.",
+      "source_paper": "JaxARC: A High-Performance JAX-based Environment for Abstraction and Reasoning Research",
+      "arxiv_id": "2601.17564",
+      "published": "2026-01-24"
+    },
+    {
+      "name": "Refinement Loop Pattern (from ARC Prize 2025 analysis)",
+      "category": "A",
+      "description": "The defining theme of ARC Prize 2025: per-task iterative program optimization guided by feedback signal. Forms include evolutionary program synthesis and application-layer refinements. Top score 24% on ARC-AGI-2. Test-time adaptation and refinement loops are critical success factors. Reasoning remains knowledge-bound.",
+      "implementation_hint": "This validates the codopt approach. Key insight from winners: hundreds of thousands of synthetic examples were needed. Recommendation: scale up synthetic data generation using ARC-TGI generators, maintain refinement loop with execution feedback, and focus on compositional generalization (the consistent 2-3x drop from AGI-1 to AGI-2).",
+      "source_paper": "ARC Prize 2025: Technical Report",
+      "arxiv_id": "2601.10904",
+      "published": "2026-01-15"
+    },
+    {
+      "name": "NeSy Framework: DomiKnowS for Symbolic+Neural Integration",
+      "category": "A",
+      "description": "DomiKnowS framework combines symbolic and sub-symbolic representations for AI-complete problems, integrating symbolic and logical knowledge into deep models and LLMs. Enables spatial and compositional reasoning, grounding language in visual perception.",
+      "implementation_hint": "For DSL design: define grid transformation rules as logical constraints (e.g., 'output cell (i,j) = input cell (i,j) IF input cell is not background AND has neighbor with same color'). Use these constraints to prune the DSL search space: reject candidate programs that violate known logical invariants before execution.",
+      "source_paper": "Complex Reasoning over Vision and Language - Leveraging Neurosymbolic AI",
+      "s2_id": "5219498fae10f7f4cc205c575af8239058fcfb13",
+      "published": "2026-03-14"
+    },
+    {
+      "name": "Mamba-2 Hybrid for Recursive Reasoning",
+      "category": "A",
+      "description": "Replacing Transformer blocks in TRM with Mamba-2 hybrid operators improves pass@2 by +2.0% on ARC-AGI-1 (45.88% vs 43.88%) and pass@100 by +4.75%, with only 6.83M parameters. SSM-based operators preserve reasoning capability within the recursive scaffold.",
+      "implementation_hint": "For small neural ARC solvers: consider Mamba-2 hybrid architecture as the backbone for recursive reasoning models. The state space recurrence naturally supports iterative refinement. Key advantage: better candidate coverage at higher pass@k, meaning more diverse correct solutions are generated.",
+      "source_paper": "Tiny Recursive Reasoning with Mamba-2 Attention Hybrid",
+      "arxiv_id": "2602.12078",
+      "published": "2026-02-12"
+    },
+    {
+      "name": "vllm-mlx: High-Throughput MLX Inference with Continuous Batching",
+      "category": "B",
+      "description": "Native MLX framework for LLM/MLLM inference on Apple Silicon. Achieves 21-87% higher throughput than llama-cpp across models from Qwen3-0.6B to Nemotron-30B. Continuous batching scales to 4.3x aggregate throughput at 16 concurrent requests. Content-based prefix caching eliminates redundant vision encoding.",
+      "implementation_hint": "Replace llama-cpp backend with vllm-mlx for beam search inference. Key optimizations: (1) use continuous batching to run multiple beam candidates simultaneously, (2) enable prefix caching so shared prompt tokens are computed once, (3) on M4 Max expect ~525 tok/s for text models. Install via pip, swap inference backend in codopt runner.",
+      "source_paper": "Native LLM and MLLM Inference at Scale on Apple Silicon",
+      "arxiv_id": "2601.19139",
+      "published": "2026-01-27"
+    },
+    {
+      "name": "Persistent Q4 KV Cache for Multi-Agent Edge Inference",
+      "category": "B",
+      "description": "Persists each agent's KV cache to disk in 4-bit quantized format and reloads directly into attention layer, eliminating redundant prefill computation. On Apple M4 Pro: 136x TTFT reduction for Gemma 3 12B at 4K context. Q4 fits 4x more agent contexts into fixed device memory.",
+      "implementation_hint": "For TurboQuant: implement KV cache persistence in safetensors format with Q4 quantization. When running beam search across multiple ARC tasks, save/restore KV caches per-task to avoid re-prefilling. Use block pool pattern for isolated per-beam caches. On M4 Pro, expect 136x TTFT speedup at 4K context vs re-prefill.",
+      "source_paper": "Agent Memory Below the Prompt: Persistent Q4 KV Cache for Multi-Agent LLM Inference on Edge Devices",
+      "arxiv_id": "2603.04428",
+      "published": "2026-02-17"
+    },
+    {
+      "name": "ITQ3_S: 3-bit Weight Quantization with FWHT Rotation",
+      "category": "B",
+      "description": "Integrates TurboQuant rotation-domain strategy with IQ3_S weight format. Pre-rotates weight space via Fast Walsh-Hadamard Transform before quantization, spreading outlier energy and inducing near-Gaussian distribution. Fused inverse FWHT into CUDA kernel. On RTX 5090: perplexity competitive with FP16, throughput >1.5x that of 4-bit alternatives.",
+      "implementation_hint": "For TurboQuant 3-bit KV cache: apply FWHT rotation before quantization to normalize the distribution. Key implementation: (1) compute FWHT of KV vectors in blocks of 256, (2) quantize the rotated values with ternary coding, (3) fuse inverse FWHT into the dequantization path. For MLX: implement FWHT as a Metal kernel using butterfly decomposition.",
+      "source_paper": "ITQ3_S: High-Fidelity 3-bit LLM Inference via Interleaved Ternary Quantization with Rotation-Domain Smoothing",
+      "arxiv_id": "2603.27914",
+      "published": "2026-03-30"
+    },
+    {
+      "name": "IsoQuant: SO(4) Isoclinic Rotations for KV Cache Compression",
+      "category": "B",
+      "description": "Blockwise rotation framework based on quaternion algebra for KV cache decorrelation before quantization. IsoQuant-Fast reduces rotation cost to 512 FMAs at d=128 (vs 2408 for RotorQuant). Achieves 4.5-4.7x mean kernel speedup over RotorQuant with comparable MSE.",
+      "implementation_hint": "For TurboQuant: replace block-diagonal rotation with quaternion-based SO(4) rotation. Each 4D block is represented as a quaternion, rotation is T(v)=q_L*v*conj(q_R). Implement IsoQuant-Fast variant (single isoclinic factor) for lowest cost. In MLX: implement as vectorized quaternion multiply over (d/4) blocks.",
+      "source_paper": "IsoQuant: Hardware-Aligned SO(4) Isoclinic Rotations for LLM KV Cache Compression",
+      "arxiv_id": "2603.28430",
+      "published": "2026-03-30"
+    },
+    {
+      "name": "TurboAngle: Uniform Angle Quantization in FWHT Domain",
+      "category": "B",
+      "description": "Quantizes angles of KV cache entries in the Fast Walsh-Hadamard domain where consecutive element pairs become approximately uniform on the unit circle. Per-layer early-boost independently configures K and V codebook sizes. Achieves lossless compression on 4/7 models at 3.28-3.67 angle bits per element.",
+      "implementation_hint": "For TurboQuant: after FWHT rotation, convert consecutive pairs to polar coordinates (angle, norm). Quantize angles uniformly (they're nearly uniform post-rotation). Use asymmetric norm quantization: 8-bit for keys, 4-bit log-space for values. Implement per-layer early-boost by profiling which layers are K-dominated vs V-dominated.",
+      "source_paper": "TurboAngle: Near-Lossless KV Cache Compression via Uniform Angle Quantization",
+      "arxiv_id": "2603.27467",
+      "published": "2026-03-29"
+    },
+    {
+      "name": "KVSculpt: KV Cache Compression via Distillation",
+      "category": "B",
+      "description": "Instead of selecting or combining original KV pairs, optimizes a smaller set of unconstrained KV pairs to preserve attention behavior. Keys via L-BFGS, values via closed-form least squares. Adaptive budget allocation across layers using pilot compression run. 3.5-4.1x KL reduction over eviction baselines.",
+      "implementation_hint": "For memory-constrained beam search: after prefill, run KVSculpt to compress the KV cache. Key insight: per-layer compression difficulty varies by 100x, so allocate bits non-uniformly. Implement: (1) pilot pass to measure per-layer MSE, (2) redistribute bit budget proportionally, (3) optimize compressed keys with L-BFGS, solve values analytically.",
+      "source_paper": "KVSculpt: KV Cache Compression as Distillation",
+      "arxiv_id": "2603.27819",
+      "published": "2026-03-29"
+    },
+    {
+      "name": "VQKV: Vector Quantization for KV Cache",
+      "category": "B",
+      "description": "Training-free method using vector quantization to obtain highly compressed KV representations. Represents thousands of floating-point values with a few integer indices. Achieves 82.8% compression on LLaMA3.1-8B retaining 98.6% baseline performance, enabling 4.3x longer generation.",
+      "implementation_hint": "For TurboQuant: build a small codebook (e.g., 256 entries) per layer from the first few tokens' KV vectors using k-means. Subsequent KV vectors are replaced by their nearest codebook index. Decode by looking up the codebook. In MLX: implement codebook as a Metal texture for fast lookup during attention.",
+      "source_paper": "VQKV: High-Fidelity and High-Ratio Cache Compression via Vector-Quantization",
+      "arxiv_id": "2603.16435",
+      "published": "2026-03-17"
+    },
+    {
+      "name": "InnerQ: Hardware-Aware KV Cache Quantization",
+      "category": "B",
+      "description": "Groups KV cache matrices over their inner dimension (vs outer), aligning dequantization with vector-matrix multiplication for scale factor reuse across GPU compute units. Up to 22% speedup over prior work, 88% over FP16 VMM. Hybrid symmetric/asymmetric quantization per group.",
+      "implementation_hint": "For MLX KV cache quantization: group along the inner (head) dimension rather than sequence dimension. This allows scale factors to be reused across the matrix-vector multiply. Implement hybrid quantization: for each group, compute range and decide symmetric vs asymmetric based on skewness. Keep most recent tokens and attention sinks in high precision.",
+      "source_paper": "InnerQ: Hardware-aware Tuning-free Quantization of KV Cache for Large Language Models",
+      "arxiv_id": "2602.23200",
+      "published": "2026-02-26"
+    },
+    {
+      "name": "Self-Indexing KV Cache via 1-bit VQ Keys",
+      "category": "B",
+      "description": "Treats compressed key representation as a self-indexing structure for sparse attention. Sign-based 1-bit vector quantization unifies compression and retrieval. Eliminates need for external indices. Integrates with FlashAttention via custom CUDA kernels.",
+      "implementation_hint": "For TurboQuant sparse attention: quantize keys to 1-bit sign vectors. Use Hamming distance between query signs and cached key signs to cheaply identify top-k relevant tokens, then compute full attention only on those. In MLX: implement sign quantization as a simple comparison (>0), Hamming distance via XOR+popcount.",
+      "source_paper": "Self-Indexing KVCache: Predicting Sparse Attention from Compressed Keys",
+      "arxiv_id": "2603.14224",
+      "published": "2026-03-15"
+    },
+    {
+      "name": "ARKV: Adaptive Per-Layer KV Cache Precision Allocation",
+      "category": "B",
+      "description": "Dynamically allocates precision levels (full, quantized, evicted) per token per layer based on attention entropy, variance, and kurtosis. Preserves ~97% accuracy on long-context benchmarks with 4x KV memory reduction. Tested on LLaMA3 and Qwen3.",
+      "implementation_hint": "For Qwen3.5-9B-4bit: during prefill, compute per-layer attention statistics (entropy, kurtosis). Assign layers with high entropy to lower precision (they attend broadly, less sensitive). Assign layers with peaked attention to higher precision (they attend to specific tokens, precision matters). Implement as a lookup table: layer_id -> (quant_bits, eviction_threshold).",
+      "source_paper": "ARKV: Adaptive and Resource-Efficient KV Cache Management under Limited Memory Budget for Long-Context Inference in LLMs",
+      "arxiv_id": "2603.08727",
+      "published": "2026-02-19"
+    },
+    {
+      "name": "Thin Keys, Full Values: Low-Dimensional Key Projection",
+      "category": "B",
+      "description": "Selection (keys) requires only O(log N) dimensions while value transfer needs full dimensionality. Factorize key projection via truncated SVD: W_K' = A (d x r), absorb B^T into query projection at zero cost. 75% key cache savings at ~2% quality cost. Composes with GQA and quantization for up to 16x compression.",
+      "implementation_hint": "For Qwen3.5-9B-4bit: apply SVD to each layer's W_K, keep top r=d/4 singular vectors. Set W_K' = A[:,:r], fold B[:r,:]^T into W_Q. Keys are now r-dimensional in the cache (75% savings). This composes multiplicatively with existing 4-bit quantization for ~16x total key compression. Fine-tune QK projections on ~1% of training data.",
+      "source_paper": "Thin Keys, Full Values: Reducing KV Cache via Low-Dimensional Attention Selection",
+      "arxiv_id": "2603.04427",
+      "published": "2026-02-16"
+    },
+    {
+      "name": "L2A: Learning When to Attend for Long Context",
+      "category": "B",
+      "description": "Conditional token-wise long-range memory access that decides when to invoke global attention. Extends Qwen 2.5 and Qwen 3 from 32K to 128K context. Skips global attention for ~80% of tokens, achieving 2x training throughput improvement. Enables post-training pruning of sparse attention layers, reducing KV cache by up to 50%.",
+      "implementation_hint": "For Qwen3.5: add a lightweight binary gate per token per layer that predicts whether global attention is needed. Train the gate on a small dataset with long contexts. At inference, tokens where gate=0 use only local sliding window attention (no KV cache needed for distant tokens). This reduces KV cache by ~50% for long DSL program contexts.",
+      "source_paper": "Learning When to Attend: Conditional Memory Access for Long-Context LLMs",
+      "arxiv_id": "2603.17484",
+      "published": "2026-03-18"
+    },
+    {
+      "name": "JanusQuant: 2-bit KV Cache with Runtime Smoothing",
+      "category": "B",
+      "description": "2-bit KV cache quantization achieving both high accuracy and end-to-end efficiency via RtSmooth algorithm that adaptively transforms activations to mitigate outlier-induced accuracy loss. Preserves 99% of FP16 accuracy, 5.3x KV memory reduction, 4.45x faster decoding. Custom mixed-precision attention kernel.",
+      "implementation_hint": "For extreme KV cache compression: implement RtSmooth which computes per-channel smoothing factors adaptively at runtime based on activation statistics. Apply before 2-bit quantization. Key: the smoothing transformation is cheap (element-wise multiply) but dramatically improves quantization fidelity by redistributing outlier magnitudes.",
+      "source_paper": "JanusQuant: Accurate and Efficient 2-bit KV Cache Quantization for Long-Context Inference",
+      "s2_id": "8af181632410c1f4b4328f3d81d2f970b92654d6",
+      "published": "2026-01-28"
+    },
+    {
+      "name": "TurboESM: 3-bit KV Cache with RoPE-first Rotation Pipeline",
+      "category": "B",
+      "description": "Adapts TurboQuant to protein language models by solving incompatibility between RoPE and orthogonal transforms via RoPE-first pipeline. Head-wise SVD calibration, dual LUT for asymmetric K/V distributions, 1-bit QJL residual correction. 7.1x memory reduction with cosine similarity >0.96.",
+      "implementation_hint": "Critical for TurboQuant + Qwen (which uses RoPE): apply RoPE BEFORE the orthogonal rotation, not after. This avoids the fundamental incompatibility. Also: use dual lookup tables (one for keys, one for values) since their distributions are asymmetric. Add 1-bit QJL residual correction for the quantization error tail.",
+      "source_paper": "TurboESM: Ultra-Efficient 3-Bit KV Cache Quantization for Protein Language Models with Orthogonal Rotation and QJL Correction",
+      "arxiv_id": "2603.26110",
+      "published": "2026-03-27"
+    },
+    {
+      "name": "Simple Self-Distillation (SSD) for Code Generation",
+      "category": "C",
+      "description": "Sample solutions from the model with specific temperature/truncation configs, then fine-tune on those samples with standard SFT. Improves Qwen3-30B from 42.4% to 55.3% pass@1 on LiveCodeBench v6. Works across Qwen and Llama at 4B, 8B, 30B scale. Reshapes token distributions context-dependently.",
+      "implementation_hint": "For Qwen3.5-9B-4bit: (1) generate 16-32 candidate DSL programs per ARC task at temperature 0.8-1.0 with top-p 0.95, (2) filter to only correct solutions, (3) fine-tune on the filtered set with standard SFT for 1-2 epochs. This reshapes the model's distribution to favor correct code patterns while preserving exploration diversity where needed.",
+      "source_paper": "Embarrassingly Simple Self-Distillation Improves Code Generation",
+      "arxiv_id": "2604.01193",
+      "published": "2026-04-01"
+    },
+    {
+      "name": "Self-Distillation Degradation: Epistemic Verbalization Matters",
+      "category": "C",
+      "description": "Self-distillation can suppress epistemic verbalization (expressions of uncertainty during reasoning), degrading OOD performance by up to 40% on Qwen3-8B. Rich teacher conditioning suppresses uncertainty expression, harming generalization. Preserving uncertainty expression is crucial for robust reasoning.",
+      "implementation_hint": "When fine-tuning Qwen3.5-9B for ARC: do NOT condition the teacher on rich information (e.g., full solution traces). Instead, use minimal conditioning so the model retains uncertainty expressions like 'this could be X or Y'. For DSL generation, preserve the model's ability to express multiple hypotheses rather than forcing single-answer confidence.",
+      "source_paper": "Why Does Self-Distillation (Sometimes) Degrade the Reasoning Capability of LLMs?",
+      "arxiv_id": "2603.24472",
+      "published": "2026-03-25"
+    },
+    {
+      "name": "ARRoL: Online Rollout Pruning for RLVR",
+      "category": "C",
+      "description": "Trains a lightweight quality head on-the-fly to predict success probability of partial rollouts, enabling early pruning. Improves accuracy +2.3 to +2.99 while achieving 1.7x training speedup on Qwen-3 and LLaMA-3.2 (1B-8B). The quality head also improves test-time scaling by +8.33.",
+      "implementation_hint": "For codopt beam search with Qwen3.5-9B: train a small linear head on the model's hidden states to predict whether a partial DSL program will succeed. During beam search, prune beams with <10% predicted success probability early (after generating first few lines). This saves ~40% compute while improving final accuracy via better beam allocation.",
+      "source_paper": "Prune as You Generate: Online Rollout Pruning for Faster and Better RLVR",
+      "arxiv_id": "2603.24840",
+      "published": "2026-03-25"
+    },
+    {
+      "name": "CircuitProbe: Layer Duplication for Small Models",
+      "category": "C",
+      "description": "Predicts reasoning circuit locations from activation statistics in <5 minutes on CPU. Key finding: layer duplication consistently benefits models under 3B parameters but degrades 7B+ models. For Qwen 2.5 family, this is a practical scaling technique for small LMs.",
+      "implementation_hint": "For Qwen3.5-9B-4bit: since the model is >3B params, layer duplication will likely degrade performance. However, the CircuitProbe diagnostic is still useful: run it to identify which layers are the reasoning bottleneck, then allocate higher precision (e.g., 8-bit) to those critical layers while aggressively quantizing non-critical layers to 2-bit.",
+      "source_paper": "CircuitProbe: Predicting Reasoning Circuits in Transformers via Stability Zone Detection",
+      "arxiv_id": "2604.00716",
+      "published": "2026-04-01"
+    },
+    {
+      "name": "CoT Fine-Tuning for Small Qwen Models",
+      "category": "C",
+      "description": "Fine-tuning small Qwen models with Chain-of-Thought reasoning traces improves accuracy from 36% to 54.5% on NL2SQL (vs 45% without CoT). Small models show significant gains from fine-tuning while large models show negligible returns. Demonstrates that transferring reasoning patterns enables compute-efficient smaller models.",
+      "implementation_hint": "For Qwen3.5-9B-4bit on ARC: create fine-tuning data with explicit CoT reasoning about grid transformations. Format: 'Step 1: identify objects by connected components. Step 2: note the symmetry axis. Step 3: reflect objects across axis. Step 4: fill gaps with background color.' Fine-tune with LoRA (rank 16-32) on ~1K such examples.",
+      "source_paper": "Optimizing Small Language Models for NL2SQL via Chain-of-Thought Fine-Tuning",
+      "arxiv_id": "2603.22942",
+      "published": "2026-03-24"
+    }
+  ]
+}

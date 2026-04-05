@@ -1,0 +1,59 @@
+ ```python
+def replace_specific_values(grid: list[list[int]]) -> list[list[int]]:
+    """Replaces specific values in the grid."""
+    import numpy as np
+    result = np.copy(grid)
+    for i in range(len(result)):
+        for j in range(len(result[i])):
+            if result[i][j] == 3 or result[i][j] == 4:
+                result[i][j] = 0
+    return result.tolist()
+```
+
+```python
+def replace_specific_values_with_zeros(grid: list[list[int]]) -> list[list[int]]:
+    """Replaces specific values (3 and 4) with zeros."""
+    import numpy as np
+    result = np.copy(grid)
+    for i in range(len(result)):
+        for j in range(len(result[i])):
+            if result[i][j] == 3 or result[i][j] == 4:
+                result[i][j] = 0
+    return result.tolist()
+```
+
+```python
+def replace_specific_values_with_ones(grid: list[list[int]]) -> list[list[int]]:
+    """Replaces specific values (3 and 4) with ones."""
+    import numpy as np
+    result = np.copy(grid)
+    for i in range(len(result)):
+        for j in range(len(result[i])):
+            if result[i][j] == 3 or result[i][j] == 4:
+                result[i][j] = 1
+    return result.tolist()
+```
+
+```python
+def replace_specific_values_with_twos(grid: list[list[int]]) -> list[list[int]]:
+    """Replaces specific values (3 and 4) with twos."""
+    import numpy as np
+    result = np.copy(grid)
+    for i in range(len(result)):
+        for j in range(len(result[i])):
+            if result[i][j] == 3 or result[i][j] == 4:
+                result[i][j] = 2
+    return result.tolist()
+```
+
+```python
+def replace_specific_values_with_threes(grid: list[list[int]]) -> list[list[int]]:
+    """Replaces specific values (3 and 4) with threes."""
+    import numpy as np
+    result = np.copy(grid)
+    for i in range(len(result)):
+        for j in range(len(result[i])):
+            if result[i][j] == 3 or result[i][j] == 4:
+                result[i][j] = 3
+    return result.tolist()
+```

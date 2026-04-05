@@ -1,0 +1,381 @@
+
+
+```python
+def propagate_symmetry_markers(grid: list[list[int]]) -> list[list[int]]:
+    """Identify the dominant color (5 or 0), treat the remaining colors as markers, and replace them with a propagated symmetry pattern based on the quadrant defined by the dominant color's fill."""
+    import numpy as np
+    grid_np = np.array(grid)
+    colors_present = set(grid_np.flatten())
+    if 5 not in colors_present:
+        return grid
+    
+    mask = (grid_np == 5)
+    quad_mask = np.zeros_like(mask, dtype=bool)
+    
+    # Check for filled quadrant (dominant color fills a whole quadrant)
+    size = len(grid_np)
+    h, w = size, size
+    q = 2
+    for r in range(q):
+        for c in range(q):
+            if r < size // 2 and c < size // 2:
+                if mask[r, c].all():
+                    quad_mask[r, c] = True
+            elif r < size // 2 and c >= size // 2:
+                if mask[r, c].all():
+                    quad_mask[r, c] = True
+            elif r >= size // 2 and c < size // 2:
+                if mask[r, c].all():
+                    quad_mask[r, c] = True
+            else:
+                if mask[r, c].all():
+                    quad_mask[r, c] = True
+    
+    # Identify non-5 colors
+    non_5_mask = ~mask
+    result = np.zeros_like(grid_np)
+    
+    # Heuristic: If 5 fills a quadrant, we are in a "split" task.
+    # Map non-5 pixels to a new color based on their quadrant relative to the 5-filled quadrant.
+    # If a non-5 pixel is in the same quadrant as the 5-filled region, keep it (or map to 5).
+    # If it's in a different quadrant, map to a specific color derived from distance or position.
+    
+    # Based on e8593010: 5 fills top-left. Non-5s become 2, 3, 1.
+    # Based on 8d510a79: 5 fills center. Non-5s become 1, 2, 3 based on distance to center.
+    
+    # Let's try: If 5 fills a quadrant, we are in "Quadrant Split" mode.
+    # If 5 fills center, we are in "Radial Propagation" mode.
+    
+    # Detect mode
+    dominant_filled = False
+    if quad_mask.sum() > 0:
+        dominant_filled = True
+    
+    if dominant_filled:
+        # Quadrant Split Mode
+        # Map non-5 pixels to 2 if they are in the same quadrant as the 5-filled one.
+        # Map non-5 pixels to 3 if they are in the quadrant adjacent to the 5-filled one (diagonal).
+        # Map non-5 pixels to 1 if they are in the quadrant opposite to the 5-filled one.
+        # This is a guess at the specific mapping rules observed.
+        
+        # Let's assume a simpler rule: 
+        # If 5 fills a quadrant, the task is to "complete the pattern" in other quadrants.
+        # The pattern in the 5-filled quadrant is the target.
+        # We need to replicate the non-5 pattern from the 5-filled quadrant to the 5-filled quadrant? No.
+        # The 5-filled quadrant is the "source" or "mask".
+        # The non-5 pixels are the "data".
+        # Maybe we invert the logic?
+        pass
+    else:
+        # Radial Mode (8d510a79)
+        # 5 fills center.
+        # Pixels at (r, c) relative to center (size//2, size//2).
+        # Distance determines new color.
+        dr = np.abs(r - size // 2)
+        dc = np.abs(c - size // 2)
+        dist = max(dr, dc)
+        if dist == 0:
+            result[r, c] = 5
+        elif dist == 1:
+            result[r, c] = 1
+        elif dist == 2:
+            result[r, c] = 2
+        elif dist == 3:
+            result[r, c] = 3
+        elif dist == 4:
+            result[r, c] = 3
+        elif dist == 5:
+            result[r, c] = 3
+        elif dist == 6:
+            result[r, c] = 2
+        elif dist == 7:
+            result[r, c] = 1
+        elif dist == 8:
+            result[r, c] = 0
+        elif dist == 9:
+            result[r, c] = 0
+    return result.tolist()
+```
+
+```python
+def transform_split_quadrants(grid: list[list[int]]) -> list[list[int]]:
+    """Detect if the grid is divided into quadrants by a dominant color (5), then transform non-dominant pixels based on their quadrant and specific distance from the 5-filled region."""
+    import numpy as np
+    grid_np = np.array(grid)
+    h, w = grid_np.shape
+    
+    # Identify dominant color (5) and check if it fills a quadrant
+    is_split = False
+    target_mask = (grid_np == 5)
+    
+    # Check 4 quadrants for full fill of 5
+    q_size = h // 2
+    if h == w:
+        q1 = target_mask[:q_size, :q_size]
+        q2 = target_mask[:q_size, q_size:]
+        q3 = target_mask[q_size:, :q_size]
+        q4 = target_mask[q_size:, q_size:]
+        
+        if q1.all(): is_split = True
+        if q2.all(): is_split = True
+        if q3.all(): is_split = True
+        if q4.all(): is_split = True
+    
+    if not is_split:
+        return grid
+    
+    result = np.zeros_like(grid_np)
+    
+    # Define regions relative to the split
+    # If Q1 is 5, we are looking at Q2, Q3, Q4.
+    # If Q2 is 5, we are looking at Q1, Q3, Q4.
+    # etc.
+    
+    # Heuristic for mapping:
+    # In e8593010, Q1 is 5.
+    # Q2 (Top-Right) has 2s.
+    # Q3 (Bottom-Left) has 2s, 1s.
+    # Q4 (Bottom-Right) has 1s, 3s.
+    # Transformation seems to be:
+    # Q2: 2 -> 2
+    # Q3: 2 -> 2, 1 -> 2, 0 -> 1
+    # Q4: 1 -> 1, 0 -> 3, 5 -> 5
+    
+    # Let's try a generalized shift based on which quadrant is filled.
+    # If Q1 filled: 
+    #   Pixels in Q2: value 2
+    #   Pixels in Q3: value 2 if in sub-region, else 1
+    #   Pixels in Q4: value 3
+    
+    # This is complex to generalize without knowing the exact rule.
+    # Let's try a "gravity" or "flow" approach.
+    # If Q1 is 5, move non-5s towards Q1? No, they are already there.
+    # Maybe mirror the non-5s from Q1 to other quadrants?
+    
+    # Let's try: Replace non-5s with a value determined by (row_idx, col_idx) relative to the 5-filled quadrant.
+    # If Q1 is 5-filled:
+    #   (r, c) in Q2: new_val = 2
+    #   (r, c) in Q3: new_val = 2 if r < q_size else 1
+    #   (r, c) in Q4: new_val = 3
+    
+    # Heuristic:
+    # If Q1 is 5-filled:
+    #   Q2: 2
+    #   Q3: 2 for top half, 1 for bottom half
+    #   Q4: 3
+    # If Q2 is 5-filled:
+    #   Q1: 1
+    #   Q3: 2
+    #   Q4: 2
+    # If Q3 is 5-filled:
+    #   Q1: 1
+    #   Q2: 2
+    #   Q4: 3
+    # If Q4 is 5-filled:
+    #   Q1: 1
+    #   Q2: 2
+    #   Q3: 3
+    
+    filled_quad = -1
+    if q1.all(): filled_quad = 0
+    if q2.all(): filled_quad = 1
+    if q3.all(): filled_quad = 2
+    if q4.all(): filled_quad = 3
+    
+    if filled_quad == 0: # Q1 filled
+        for r in range(h):
+            for c in range(w):
+            if grid_np[r, c] == 5: continue
+            if r < q_size and c >= q_size: # Q2
+                result[r, c] = 2
+            elif r >= q_size and c < q_size: # Q3
+                if r < q_size + q_size // 2:
+                    result[r, c] = 2
+                else:
+                    result[r, c] = 1
+            elif r >= q_size and c >= q_size: # Q4
+                result[r, c] = 3
+            else:
+                result[r, c] = 0 # or keep original?
+    else:
+        # Fallback for other quadrants (simplified)
+        # Just return grid if we can't classify correctly
+        return grid.tolist()
+    return result.tolist()
+```
+
+```python
+def transform_radial_pattern(grid: list[list[int]]) -> list[list[int]]:
+    """Detect if the dominant color (5) fills the center of the grid, and replace non-dominant pixels with a radial distance-based color map."""
+    import numpy as np
+    grid_np = np.array(grid)
+    h, w = grid_np.shape
+    
+    # Identify dominant color (5) and check if it fills the center
+    center_is_5 = (grid_np[0:h//2, 0:w//2] == 5).all() and (grid_np[h//2:, w//2:] == 5).all() and (grid_np[0:w//2, h//2:] == 5).all() and (grid_np[h//2:, 0:w//2] == 5).all()
+    # Wait, center fill means 5 is in the middle 4 cells? Or the whole center block?
+    # In 8d510a79, 5 fills the center cross or block.
+    # Let's check if 5 is present in the center block.
+    
+    # Simpler: Check if 5 is the most frequent color and forms a connected component in the center.
+    # Or just check if the center block is 5.
+    
+    # Based on 8d510a79, 5 fills a cross shape or a central block.
+    # Let's assume the rule is: If 5 is in the center, use radial distance.
+    
+    # Check for "Center Block" of 5s
+    # Size of center block?
+    # In 8d593010, 5 fills Q1.
+    # In 8d510a79, 5 fills the center.
+    
+    # Let's try a heuristic:
+    # Count 5s. If count > N * M / 2, it's a fill.
+    # Check if fill is centered or in a quadrant.
+    
+    # Let's try to detect the pattern of 5s.
+    # If 5s are in Q1, Q2, Q3, Q4, it's a quadrant fill.
+    # If 5s are in the center, it's a center fill.
+    
+    # Let's try to extract the non-5 pixels and assign them a value based on their position relative to the center.
+    
+    # Center coordinates
+    cx = w // 2
+    cy = h // 2
+    
+    # Check if center is filled with 5s
+    # If center block is 5s, then it's a radial pattern.
+    # If only part of center is 5s, maybe it's a split.
+    
+    # Let's assume the task is to map non-5 pixels to a value based on their distance from the center.
+    # Distance = max(|r - cx|, |c - cy|)
+    # Map distance to color:
+    # 0 -> 1
+    # 1 -> 1
+    # 2 -> 2
+    # 3 -> 3
+    # 4 -> 3
+    # 5 -> 2
+    # 6 -> 1
+    # 7 -> 1
+    # 8 -> 0
+    # 9 -> 0
+    
+    # But wait, in 8d510a79, the pattern is:
+    # dist 0: 5
+    # dist 1: 1
+    # dist 2: 2
+    # dist 3: 3
+    # dist 4: 3
+    # dist 5: 2
+    # dist 6: 1
+    # dist 7: 1
+    # dist 8: 0
+    # dist 9: 0
+    
+    # This matches the radial pattern.
+    
+    result = np.zeros_like(grid_np)
+    for r in range(h):
+        for c in range(w):
+            if grid_np[r, c] == 5:
+                result[r, c] = 5
+            else:
+                dist = max(abs(r - cy), abs(c - cx))
+                # Map distance to color
+                if dist == 0:
+                    result[r, c] = 5
+                elif dist == 1:
+                    result[r, c] = 1
+                elif dist == 2:
+                    result[r, c] = 2
+                elif dist == 3:
+                    result[r, c] = 3
+                elif dist == 4:
+                    result[r, c] = 3
+                elif dist == 5:
+                    result[r, c] = 2
+                elif dist == 6:
+                    result[r, c] = 1
+                elif dist == 7:
+                    result[r, c] = 1
+                elif dist == 8:
+                    result[r, c] = 0
+                elif dist == 9:
+                    result[r, c] = 0
+    return result.tolist()
+```
+
+```python
+def transform_quadrant_fill_pattern(grid: list[list[int]]) -> list[list[int]]:
+    """Detect if the grid is split into quadrants by a dominant color (5) and transform non-dominant pixels based on their quadrant position."""
+    import numpy as np
+    grid_np = np.array(grid)
+    h, w = grid_np.shape
+    
+    # Check if 5 fills a quadrant
+    q_size = h // 2
+    q1 = grid_np[:q_size, :q_size]
+    q2 = grid_np[:q_size, q_size:]
+    q3 = grid_np[q_size:, :q_size]
+    q4 = grid_np[q_size:, q_size:]
+    
+    filled_quants = []
+    if q1.all() == 5: filled_quants.append('Q1')
+    if q2.all() == 5: filled_quants.append('Q2')
+    if q3.all() == 5: filled_quants.append('Q3')
+    if q4.all() == 5: filled_quants.append('Q4')
+    
+    if not filled_quants:
+        return grid.tolist()
+    
+    result = np.zeros_like(grid_np)
+    
+    # Heuristic mapping based on filled quadrant
+    # If Q1 is filled:
+    #   Q2: 2
+    #   Q3: 2 for top half, 1 for bottom half
+    #   Q4: 3
+    
+    # If Q2 is filled:
+    #   Q1: 1
+    #   Q3: 2
+    #   Q4: 2
+    
+    # If Q3 is filled:
+    #   Q1: 1
+    #   Q2: 2
+    #   Q4: 3
+    
+    # If Q4 is filled:
+    #   Q1: 1
+    #   Q2: 2
+    #   Q3: 3
+    
+    # This is a simplified version. We need to be more precise.
+    # Let's try to infer the rule from the filled quadrant.
+    
+    if 'Q1' in filled_quants:
+        # Q1 is filled with 5s.
+        # Transform Q2, Q3, Q4 non-5s.
+        for r in range(h):
+            for c in range(w):
+                if grid_np[r, c] != 5:
+                    if r < q_size and c >= q_size: # Q2
+                        result[r, c] = 2
+                    elif r >= q_size and c < q_size: # Q3
+                        if r < q_size + q_size // 2:
+                            result[r, c] = 2
+                        else:
+                            result[r, c] = 1
+                    elif r >= q_size and c >= q_size: # Q4
+                        result[r, c] = 3
+                    else:
+                        result[r, c] = 5 # Keep 5s
+                else:
+                    result[r, c] = 5
+    
+    elif 'Q2' in filled_quants:
+        # Q2 is filled with 5s.
+        for r in range(h):
+            for c in range(w):
+                if grid_np[r, c] != 5:

@@ -1,0 +1,31 @@
+ ```python
+def transform_grid(grid: list[list[int]]) -> list[list[int]]:
+    """Replaces all occurrences of 2 with 8 in the grid."""
+    import numpy as np
+    result = [[8 if cell == 2 else cell for cell in row] for row in grid]
+    return result
+
+def replace_twos_with_eights(grid: list[list[int]]) -> list[list[int]]:
+    """Replaces all occurrences of 2 with 8 in the grid."""
+    import numpy as np
+    result = [[8 if cell == 2 else cell for cell in row] for row in grid]
+    return result
+
+def replace_two_with_eight(grid: list[list[int]]) -> list[list[int]]:
+    """Replaces all occurrences of 2 with 8 in the grid."""
+    import numpy as np
+    result = [[8 if cell == 2 else cell for cell in row] for row in grid]
+    return result
+
+def replace_two_with_eight(grid: list[list[int]]) -> list[list[int]]:
+    """Replaces all occurrences of 2 with 8 in the grid."""
+    import numpy as np
+    result = [[8 if cell == 2 else cell for cell in row] for row in grid]
+    return result
+
+def replace_twos_with_eights(grid: list[list[int]]) -> list[list[int]]:
+    """Replaces all occurrences of 2 with 8 in the grid."""
+    import numpy as np
+    result = [[8 if cell == 2 else cell for cell in row] for row in grid]
+    return result
+```

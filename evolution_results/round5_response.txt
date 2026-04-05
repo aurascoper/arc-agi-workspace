@@ -1,0 +1,41 @@
+ ```python
+def add_diagonal(grid: list[list[int]]) -> list[list[int]]:
+    """Adds the main diagonal to each row of the grid."""
+    import numpy as np
+    result = [[val + grid[i][i] for i, val in enumerate(row)] for row in grid]
+    return result
+```
+
+```python
+def multiply_by_index(grid: list[list[int]]) -> list[list[int]]:
+    """Multiplies each element by its column index."""
+    import numpy as np
+    result = [[val * (i + 1) for i, val in enumerate(row)] for row in grid]
+    return result
+```
+
+```python
+def shift_rows_up(grid: list[list[int]]) -> list[list[int]]:
+    """Shifts each row up by one position."""
+    import numpy as np
+    result = [row[:-1] + [0] if len(row) > 1 else row for row in grid]
+    return result
+```
+
+```python
+def transpose_and_add(grid: list[list[int]]) -> list[list[int]]:
+    """Transposes the grid and adds each element to its corresponding diagonal neighbor."""
+    import numpy as np
+    transposed = np.transpose(grid).tolist()
+    result = [[val + (transposed[i][j] if j < len(transposed[0]) else 0) for j, val in enumerate(row)] for i, row in enumerate(grid)]
+    return result
+```
+
+```python
+def subtract_anti_diagonal(grid: list[list[int]]) -> list[list[int]]:
+    """Subtracts the anti-diagonal from each element of the grid."""
+    import numpy as np
+    n = len(grid)
+    result = [[val - (grid[i][n-1-i] if i < n else 0) for i, val in enumerate(row)] for row in grid]
+    return result
+```

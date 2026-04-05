@@ -1,0 +1,218 @@
+/no_think
+You are an ARC-AGI DSL engineer. Given failing tasks, output ONLY Python functions. No analysis, no explanation — just code.
+
+Current DSL: 743 functions. Do NOT duplicate existing functions.
+
+## Known Techniques
+Key ARC-AGI solution techniques from the literature:
+
+1. CONNECTED COMPONENTS: Identify connected regions of same-colored cells (4- or
+   8-connected). Used for object isolation, counting, and spatial reasoning.
+
+2. FLOOD FILL: Fill enclosed regions bounded by a specific color. Common in tasks
+   involving containment, boundary detection, and region painting.
+
+3. SYMMETRY DETECTION: Detect reflective (horizontal, vertical, diagonal) and
+   rotational symmetry in grids. Many tasks involve completing symmetric patterns.
+
+4. TOPOLOGICAL SORTING / LAYERING: Tasks involving occlusion or z-ordering require
+   understanding which objects overlap and their relative positions.
+
+5. PATTERN MATCHING / TEMPLATE DETECTION: Find recurring sub-grids (stamps, tiles)
+   within larger grids. Used for tiling, repetition detection, and rule extraction.
+
+6. COLOR HISTOGRAM / FREQUENCY ANALYSIS: Count color occurrences to detect dominant
+   colors, rare colors (markers), or color-based rules (majority vote, XOR).
+
+7. OBJECT RELATION GRAPHS: Build graphs of spatial relationships between objects
+   (above, below, left, right, inside, touching) for compositional reasoning.
+
+8. GRID DECOMPOSITION: Split grids into quadrants, strips, or tiles based on
+   separators (lines of uniform color). Many tasks operate on sub-grids independently.
+
+9. SCALING / RESAMPLING: Enlarge or shrink patterns by integer factors. Tasks
+   frequently involve upscaling a small pattern to fill a larger grid.
+
+10. GRAVITY / MOVEMENT SIMULATION: Move objects in a direction until they hit
+    boundaries or other objects. Used in "drop", "slide", and "gravity" tasks.
+
+## Existing (last 50 signatures, do NOT duplicate)
+  ... (764 more) ...
+  def denoise_4connected_noise(grid: list[list[int]])
+  def clean_grid_noise(grid: list[list[int]])
+  def remove_outliers_by_consensus(grid: list[list[int]])
+  def remove_granular_noise(grid: list[list[int]])
+  def fix_border_noise(grid: list[list[int]])
+  def remove_border_noise(grid: list[list[int]])
+  def fix_isolated_noise(grid: list[list[int]])
+  def remove_outliers_by_consensus(grid: list[list[int]])
+  def denoise_random_noise(grid: list[list[int]])
+  def propagate_symmetry_markers(grid: list[list[int]])
+  def transform_split_quadrants(grid: list[list[int]])
+  def transform_radial_pattern(grid: list[list[int]])
+  def transform_quadrant_fill_pattern(grid: list[list[int]])
+  def detect_2x2_pattern_match(grid: list[list[int]], template: list[list[int]])
+  def find_pattern_in_sliding_window(grid: list[list[int]], pattern: list[list[int]], window_size: int = 2)
+  def extract_matching_regions(grid: list[list[int]], target_value: int, min_area: int = 1)
+  def fill_pattern_with_value(grid: list[list[int]], pattern: list[list[int]], fill_value: int, background: int = 0)
+  def is_pattern_at_position(grid: list[list[int]], pattern: list[list[int]], r: int, c: int)
+  def partition_grid_by_quadrants(grid: list[list[int]])
+  def detect_symmetry_axes(grid: list[list[int]])
+  def is_row_mirror(grid: list[list[int]], r1: int, r2: int)
+  def is_col_mirror(grid: list[list[int]], c1: int, c2: int)
+  def find_dominant_color_in_region(grid: list[list[int]], region_coords: list[tuple[int, int]])
+  def extract_pattern_with_offset(grid: list[list[int]], pattern: list[list[int]], offset: tuple[int, int])
+  def count_pattern_occurrences(grid: list[list[int]], pattern: list[list[int]], ignore_background: bool = True)
+  def fill_pattern_with_background(grid: list[list[int]], pattern: list[list[int]], fill_color: int, background: int = 0)
+  def is_pattern_match(grid: list[list[int]], pattern: list[list[int]], r: int, c: int, ignore_background: bool = True)
+  def extract_pattern_instances(grid: list[list[int]], pattern: list[list[int]])
+  def detect_dominant_pattern(grid: list[list[int]], top_k: int = 1)
+  def transform_pattern_to_full_grid(grid: list[list[int]], target_bg: int = 7)
+  def get_dominant_color(grid: list[list[int]])
+  def get_secondary_color(grid: list[list[int]])
+  def transform_pattern_to_full_grid(grid: list[list[int]], target_bg: int = 7)
+  def execute_symmetric_scaling(grid: list[list[int]])
+  def detect_task_type(grid)
+  def separate_and_refine_quadrants(grid: list[list[int]])
+  def is_separator(r, c)
+  def is_sep_row(r)
+  def is_sep_col(c)
+  def count_color_frequencies(grid: list[list[int]])
+  def get_color_frequency_ratio(grid: list[list[int]], color1: int, color2: int)
+  def count_nonzero_cells(grid: list[list[int]])
+  def get_mode_color(grid: list[list[int]])
+  def get_color_at_position(grid: list[list[int]], row_idx: int, col_idx: int)
+  def get_grid_dimensions(grid: list[list[int]])
+  def count_horizontal_segments(grid: list[list[int]], target: int)
+  def count_vertical_segments(grid: list[list[int]], target: int)
+  def count_isolated_cells(grid: list[list[int]], target: int)
+  def count_2x2_blocks_of_color(grid: list[list[int]], target: int)
+  def get_color_ratio_between_regions(grid: list[list[int]], region1: list, region2: list)
+
+## Previous Experiments ([-] = no improvement, [+] = improved)
+  [-] Round 13: No valid functions proposed () metric 1.000->1.000
+  [-] Round 14: Add replace_twos_with_eights, replace_two_with_eight, replace_two_with_eight, re (replace_twos_with_eights, replace_two_with_eight, replace_two_with_eight) metric 1.000->1.000
+  [-] Round 1: Add replace_specific_values_with_fours (replace_specific_values_with_fours) metric 1.000->1.000
+  [-] Round 1: Add replace_specific_values_with_nines (replace_specific_values_with_nines) metric 1.000->1.000
+  [-] Round 2: Add replace_diagonal_with_ones, replace_with_nines, replace_with_threes (replace_diagonal_with_ones, replace_with_nines, replace_with_threes) metric 1.000->1.000
+  [-] Round 1: Add apply_mirror_and_copy_to_grid_base_and_expand (apply_mirror_and_copy_to_grid_base_and_expand) metric 1.000->1.000
+  [-] Round 2: Add decompose_and_convert_pattern (decompose_and_convert_pattern) metric 1.000->1.000
+  [-] Round 3: Add propagate_symmetry_markers, transform_split_quadrants, transform_radial_patt (propagate_symmetry_markers, transform_split_quadrants, transform_radial_pattern) metric 1.000->1.000
+  [-] Round 1: Add execute_symmetric_scaling (execute_symmetric_scaling) metric 1.000->1.000
+  [-] Round 2: Add separate_and_refine_quadrants (separate_and_refine_quadrants) metric 1.000->1.000
+
+## BLACKLIST — DO NOT propose functions similar to these (already tried, didn't help):
+apply_mirror_and, decompose_and_convert, execute_symmetric_scaling, propagate_symmetry_markers, replace_diagonal_with, replace_specific_values, replace_two_with, replace_twos_with, replace_with_nines, replace_with_threes, separate_and_refine, transform_quadrant_fill, transform_radial_pattern, transform_split_quadrants
+
+## Failure Distribution: SOLVE_FAIL: 2
+
+## Failing Tasks
+### Task: a5313dff.json [SOLVE_FAIL]
+Scores: tier1=1.00 tier2=1.00 tier3(solve)=0.00
+Train 1 Input (8x8):
+00020000
+02020000
+00020000
+22222220
+00200020
+00202020
+00200020
+00222220
+Train 1 Output (8x8):
+00020000
+02020000
+00020000
+22222220
+00211120
+00212120
+00211120
+00222220
+Train 2 Input (8x8):
+00000000
+02222200
+02000200
+02020200
+02000200
+02222200
+00000000
+00000000
+Train 2 Output (8x8):
+00000000
+02222200
+02111200
+02121200
+02111200
+02222200
+00000000
+00000000
+
+### Task: 0692e18c.json [SOLVE_FAIL]
+Scores: tier1=1.00 tier2=1.00 tier3(solve)=0.85
+Train 1 Input (3x3):
+006
+060
+600
+Train 1 Output (9x9):
+000000660
+000000606
+000000066
+000660000
+000606000
+000066000
+660000000
+606000000
+066000000
+Train 2 Input (3x3):
+070
+777
+070
+Train 2 Output (9x9):
+000707000
+000000000
+000707000
+707707707
+000000000
+707707707
+000707000
+000000000
+000707000
+
+
+## What went WRONG (execution traces from failed solve attempts)
+- a5313dff: CRASH
+    Error: expected an indented block after function definition on line 18813 (<string>, line 18845)
+    Traceback:
+      Traceback (most recent call last):
+        File "/Users/aurascoper/Developer/arc_agi/workspace/target_mlx_arc.py", line 245, in try_code_on_task
+          exec(dsl_code + "\n" + code, ns)
+          ~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+        File "<string>", line 18845
+          # Ex1 In
+                  ^
+      IndentationError: expected an indented block after function definition on line 18813
+- 0692e18c: WRONG_ANSWER
+    Pixel accuracy: 0.79
+    Expected shape: (9, 9), Got: (9, 9)
+- 0692e18c: WRONG_ANSWER
+    Pixel accuracy: 0.85
+    Expected shape: (9, 9), Got: (9, 9)
+
+IMPORTANT: Study the input/output pairs carefully. Each task has a UNIQUE transformation rule.
+Do NOT propose generic mirror/pattern/tile functions. Analyze what SPECIFIC operation maps each input to its output.
+
+OUTPUT EXACTLY 3-5 new Python functions in ```python blocks. Each function:
+- Takes `grid: list[list[int]]` as first arg, returns `list[list[int]]`
+- Is self-contained (only stdlib + numpy)
+- Does ONE transformation relevant to the failing tasks above
+- Has a one-line docstring
+- Must be DIFFERENT from blacklisted approaches
+
+```python
+def function_name(grid: list[list[int]]) -> list[list[int]]:
+    """One-line description."""
+    import numpy as np
+    # implementation
+    return result
+```
+
+START WITH ```python IMMEDIATELY. No preamble.

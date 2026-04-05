@@ -1,0 +1,50 @@
+ ```python
+def add_diagonal(grid: list[list[int]]) -> list[list[int]]:
+    """Adds a diagonal pattern to the grid."""
+    import numpy as np
+    n = len(grid)
+    result = [[0] * n for _ in range(n)]
+    for i in range(n):
+        result[i][i] = grid[i][i]
+        result[i][n - 1 - i] = grid[i][n - 1 - i]
+    return result
+```
+
+```python
+def mirror_horizontal(grid: list[list[int]]) -> list[list[int]]:
+    """Mirrors the grid horizontally."""
+    import numpy as np
+    n = len(grid)
+    result = [row[::-1] for row in grid]
+    return result
+```
+
+```python
+def mirror_vertical(grid: list[list[int]]) -> list[list[int]]:
+    """Mirrors the grid vertically."""
+    import numpy as np
+    n = len(grid)
+    result = grid[::-1]
+    return result
+```
+
+```python
+def transpose(grid: list[list[int]]) -> list[list[int]]:
+    """Transposes the grid."""
+    import numpy as np
+    n = len(grid)
+    result = [[grid[j][i] for j in range(n)] for i in range(n)]
+    return result
+```
+
+```python
+def expand_center(grid: list[list[int]]) -> list[list[int]]:
+    """Expands the center of the grid."""
+    import numpy as np
+    n = len(grid)
+    result = [[0] * (n + 2) for _ in range(n + 2)]
+    for i in range(n):
+        for j in range(n):
+            result[i + 1][j + 1] = grid[i][j]
+    return result
+```

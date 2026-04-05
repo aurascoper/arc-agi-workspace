@@ -1,0 +1,223 @@
+/no_think
+You are an ARC-AGI DSL engineer. Given failing tasks, output ONLY Python functions. No analysis, no explanation — just code.
+
+Current DSL: 709 functions. Do NOT duplicate existing functions.
+
+## Known Techniques
+Key ARC-AGI solution techniques from the literature:
+
+1. CONNECTED COMPONENTS: Identify connected regions of same-colored cells (4- or
+   8-connected). Used for object isolation, counting, and spatial reasoning.
+
+2. FLOOD FILL: Fill enclosed regions bounded by a specific color. Common in tasks
+   involving containment, boundary detection, and region painting.
+
+3. SYMMETRY DETECTION: Detect reflective (horizontal, vertical, diagonal) and
+   rotational symmetry in grids. Many tasks involve completing symmetric patterns.
+
+4. TOPOLOGICAL SORTING / LAYERING: Tasks involving occlusion or z-ordering require
+   understanding which objects overlap and their relative positions.
+
+5. PATTERN MATCHING / TEMPLATE DETECTION: Find recurring sub-grids (stamps, tiles)
+   within larger grids. Used for tiling, repetition detection, and rule extraction.
+
+6. COLOR HISTOGRAM / FREQUENCY ANALYSIS: Count color occurrences to detect dominant
+   colors, rare colors (markers), or color-based rules (majority vote, XOR).
+
+7. OBJECT RELATION GRAPHS: Build graphs of spatial relationships between objects
+   (above, below, left, right, inside, touching) for compositional reasoning.
+
+8. GRID DECOMPOSITION: Split grids into quadrants, strips, or tiles based on
+   separators (lines of uniform color). Many tasks operate on sub-grids independently.
+
+9. SCALING / RESAMPLING: Enlarge or shrink patterns by integer factors. Tasks
+   frequently involve upscaling a small pattern to fill a larger grid.
+
+10. GRAVITY / MOVEMENT SIMULATION: Move objects in a direction until they hit
+    boundaries or other objects. Used in "drop", "slide", and "gravity" tasks.
+
+## Existing (last 50 signatures, do NOT duplicate)
+  ... (723 more) ...
+  def replace_specific_values_with_zeros(grid: list[list[int]])
+  def replace_specific_values_with_ones(grid: list[list[int]])
+  def replace_specific_values_with_twos(grid: list[list[int]])
+  def replace_specific_values_with_threes(grid: list[list[int]])
+  def add_border_with_min(grid: list[list[int]])
+  def replace_zeros_with_max_neighbor(grid: list[list[int]])
+  def replace_with_min_max_diff(grid: list[list[int]])
+  def replace_with_sum_of_diagonals(grid: list[list[int]])
+  def detect_symmetry(grid: list[list[int]])
+  def is_symmetric(matrix)
+  def extract_blobs(grid: list[list[int]])
+  def flood_fill(x, y, old_color, new_color)
+  def compact_grid(grid: list[list[int]])
+  def fill_empty_with_color(grid: list[list[int]], color: int)
+  def mirror_vertical(grid: list[list[int]])
+  def expand_center(grid: list[list[int]])
+  def replace_specific_pattern(grid: list[list[int]])
+  def replace_values_based_on_pattern(grid: list[list[int]])
+  def replace_values_based_on_specific_condition(grid: list[list[int]])
+  def replace_values_based_on_specific_row(grid: list[list[int]])
+  def skew_left_to_right(grid: list[list[int]])
+  def anti_diagonal_reflect(grid: list[list[int]])
+  def complete_symmetry(grid: list[list[int]], axis: str)
+  def replace_twos_with_eights(grid: list[list[int]])
+  def replace_two_with_eight(grid: list[list[int]])
+  def replace_two_with_eight(grid: list[list[int]])
+  def replace_twos_with_eights(grid: list[list[int]])
+  def extract_blob_with_color(grid: list[list[int]], color: int)
+  def replace_specific_values_with_fours(grid: list[list[int]])
+  def replace_specific_values_with_nines(grid: list[list[int]])
+  def replace_diagonal_with_ones(grid: list[list[int]])
+  def replace_with_nines(grid: list[list[int]])
+  def replace_with_threes(grid: list[list[int]])
+  def apply_mirror_and_copy_to_grid_base_and_expand(grid: list[list[int]])
+  def decompose_and_convert_pattern(grid: list[list[int]])
+  def remove_noise_pixels(grid: list[list[int]])
+  def denoise_isolated_objects(grid: list[list[int]])
+  def correct_border_inconsistencies(grid: list[list[int]])
+  def clean_outliers_by_majority_vote(grid: list[list[int]])
+  def smooth_granular_noise(grid: list[list[int]])
+  def remove_isolated_singletons(grid: list[list[int]])
+  def denoise_4connected_noise(grid: list[list[int]])
+  def clean_grid_noise(grid: list[list[int]])
+  def remove_outliers_by_consensus(grid: list[list[int]])
+  def remove_granular_noise(grid: list[list[int]])
+  def fix_border_noise(grid: list[list[int]])
+  def remove_border_noise(grid: list[list[int]])
+  def fix_isolated_noise(grid: list[list[int]])
+  def remove_outliers_by_consensus(grid: list[list[int]])
+  def denoise_random_noise(grid: list[list[int]])
+
+## Previous Experiments ([-] = no improvement, [+] = improved)
+  [-] Round 10: Add add_border_with_min, replace_zeros_with_max_neighbor, replace_with_min_max_d (add_border_with_min, replace_zeros_with_max_neighbor, replace_with_min_max_diff) metric 1.000->1.000
+  [-] Round 11: Add mirror_vertical, expand_center (mirror_vertical, expand_center) metric 1.000->1.000
+  [-] Round 12: Add replace_specific_pattern, replace_values_based_on_pattern, replace_values_ba (replace_specific_pattern, replace_values_based_on_pattern, replace_values_based_on_specific_condition) metric 1.000->1.000
+  [-] Round 13: No valid functions proposed () metric 1.000->1.000
+  [-] Round 14: Add replace_twos_with_eights, replace_two_with_eight, replace_two_with_eight, re (replace_twos_with_eights, replace_two_with_eight, replace_two_with_eight) metric 1.000->1.000
+  [-] Round 1: Add replace_specific_values_with_fours (replace_specific_values_with_fours) metric 1.000->1.000
+  [-] Round 1: Add replace_specific_values_with_nines (replace_specific_values_with_nines) metric 1.000->1.000
+  [-] Round 2: Add replace_diagonal_with_ones, replace_with_nines, replace_with_threes (replace_diagonal_with_ones, replace_with_nines, replace_with_threes) metric 1.000->1.000
+  [-] Round 1: Add apply_mirror_and_copy_to_grid_base_and_expand (apply_mirror_and_copy_to_grid_base_and_expand) metric 1.000->1.000
+  [-] Round 2: Add decompose_and_convert_pattern (decompose_and_convert_pattern) metric 1.000->1.000
+
+## BLACKLIST — DO NOT propose functions similar to these (already tried, didn't help):
+add_border_with, apply_mirror_and, decompose_and_convert, expand_center, mirror_vertical, replace_diagonal_with, replace_specific_pattern, replace_specific_values, replace_two_with, replace_twos_with, replace_values_based, replace_with_min, replace_with_nines, replace_with_sum, replace_with_threes, replace_zeros_with
+
+## Failure Distribution: SOLVE_FAIL: 2
+
+## Failing Tasks
+### Task: e8593010.json [SOLVE_FAIL]
+Scores: tier1=1.00 tier2=1.00 tier3(solve)=0.67
+Train 1 Input (10x10):
+5555500555
+0050555550
+5555505005
+5055505555
+5555555505
+5555055555
+0055050050
+5555555055
+0555550550
+0055555505
+Train 1 Output (10x10):
+5555522555
+2253555553
+5555525225
+5355525555
+5555555535
+5555255555
+2255251153
+5555555155
+1555553553
+1155555535
+Train 2 Input (10x10):
+5555055505
+0055555555
+0555550050
+5505555050
+5555005555
+0505555050
+0555005550
+5555555555
+5555555550
+0555555050
+Train 2 Output (10x10):
+5555355535
+1155555555
+1555551152
+5535555152
+5555225555
+2535555352
+2555225552
+5555555555
+5555555552
+3555555352
+
+### Task: 8d510a79.json [SOLVE_FAIL]
+Scores: tier1=1.00 tier2=1.00 tier3(solve)=0.88
+Train 1 Input (10x10):
+0201000000
+0000020100
+0000000000
+5555555555
+0000000000
+0200000002
+0000100000
+0000000000
+0010002010
+0000000000
+Train 1 Output (10x10):
+0201000100
+0200020100
+0200020000
+5555555555
+0200002002
+0200002002
+0000102000
+0000102000
+0010102010
+0010100010
+Train 2 Input (10x10):
+0010000000
+0000001000
+0200000002
+0000000000
+0000000000
+5555555555
+0000000000
+0000000000
+0100020010
+0000000000
+Train 2 Output (10x10):
+0010001000
+0000001000
+0200000002
+0200000002
+0200000002
+5555555555
+0000020000
+0000020000
+0100020010
+0100000010
+
+
+IMPORTANT: Study the input/output pairs carefully. Each task has a UNIQUE transformation rule.
+Do NOT propose generic mirror/pattern/tile functions. Analyze what SPECIFIC operation maps each input to its output.
+
+OUTPUT EXACTLY 3-5 new Python functions in ```python blocks. Each function:
+- Takes `grid: list[list[int]]` as first arg, returns `list[list[int]]`
+- Is self-contained (only stdlib + numpy)
+- Does ONE transformation relevant to the failing tasks above
+- Has a one-line docstring
+- Must be DIFFERENT from blacklisted approaches
+
+```python
+def function_name(grid: list[list[int]]) -> list[list[int]]:
+    """One-line description."""
+    import numpy as np
+    # implementation
+    return result
+```
+
+START WITH ```python IMMEDIATELY. No preamble.

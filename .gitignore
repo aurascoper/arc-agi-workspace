@@ -2,6 +2,6 @@ __pycache__/
 *.pyc
 .venv/
 metric.json
-evolution_results/
+# evolution_results/ — tracked for remote monitoring
 *.egg-info/
 .DS_Store

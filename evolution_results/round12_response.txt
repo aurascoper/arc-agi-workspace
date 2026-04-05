@@ -1,0 +1,80 @@
+ ```python
+def replace_specific_pattern(grid: list[list[int]]) -> list[list[int]]:
+    """Replaces a specific pattern in the grid."""
+    import numpy as np
+    rows = len(grid)
+    cols = len(grid[0]) if rows > 0 else 0
+    
+    # Create a copy of the grid to avoid modifying the original
+    result = [row[:] for row in grid]
+    
+    for r in range(rows):
+        for c in range(cols):
+            if grid[r][c] == 3:
+                result[r][c] = 5  # Replace specific value with another specific value
+                
+    return result
+```
+
+```python
+def replace_specific_values(grid: list[list[int]]) -> list[list[int]]:
+    """Replaces specific values in the grid."""
+    import numpy as np
+    
+    # Create a copy of the grid to avoid modifying the original
+    result = [row[:] for row in grid]
+    
+    for r in range(len(grid)):
+        for c in range(len(grid[0])):
+            if grid[r][c] == 2 or grid[r][c] == 8:
+                result[r][c] = 5  # Replace specific values with another value
+                
+    return result
+```
+
+```python
+def replace_values_based_on_pattern(grid: list[list[int]]) -> list[list[int]]:
+    """Replaces values based on a specific pattern in the grid."""
+    import numpy as np
+    
+    # Create a copy of the grid to avoid modifying the original
+    result = [row[:] for row in grid]
+    
+    for r in range(len(grid)):
+        for c in range(len(grid[0])):
+            if (r + c) % 2 == 0 and grid[r][c] != 0:
+                result[r][c] = 5  # Replace based on a pattern involving sum of indices
+                
+    return result
+```
+
+```python
+def replace_values_based_on_specific_condition(grid: list[list[int]]) -> list[list[int]]:
+    """Replaces values based on a specific condition in the grid."""
+    import numpy as np
+    
+    # Create a copy of the grid to avoid modifying the original
+    result = [row[:] for row in grid]
+    
+    for r in range(len(grid)):
+        for c in range(len(grid[0])):
+            if (r == 0 or r == len(grid) - 1) and grid[r][c] != 0:
+                result[r][c] = 5  # Replace based on a condition involving row index
+                
+    return result
+```
+
+```python
+def replace_values_based_on_specific_row(grid: list[list[int]]) -> list[list[int]]:
+    """Replaces values in the specific row of the grid."""
+    import numpy as np
+    
+    # Create a copy of the grid to avoid modifying the original
+    result = [row[:] for row in grid]
+    
+    for c in range(len(grid[0])):
+        if grid[3][c] != 0:
+            result[3][c] = 5  # Replace based on a condition involving specific row
+                
+    return result
+```

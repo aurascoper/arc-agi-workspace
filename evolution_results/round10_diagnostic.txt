@@ -1,0 +1,324 @@
+/no_think
+You are an ARC-AGI DSL engineer. Given failing tasks, output ONLY Python functions. No analysis, no explanation — just code.
+
+Current DSL: 665 functions. Do NOT duplicate existing functions.
+
+## Known Techniques
+Key ARC-AGI solution techniques from the literature:
+
+1. CONNECTED COMPONENTS: Identify connected regions of same-colored cells (4- or
+   8-connected). Used for object isolation, counting, and spatial reasoning.
+
+2. FLOOD FILL: Fill enclosed regions bounded by a specific color. Common in tasks
+   involving containment, boundary detection, and region painting.
+
+3. SYMMETRY DETECTION: Detect reflective (horizontal, vertical, diagonal) and
+   rotational symmetry in grids. Many tasks involve completing symmetric patterns.
+
+4. TOPOLOGICAL SORTING / LAYERING: Tasks involving occlusion or z-ordering require
+   understanding which objects overlap and their relative positions.
+
+5. PATTERN MATCHING / TEMPLATE DETECTION: Find recurring sub-grids (stamps, tiles)
+   within larger grids. Used for tiling, repetition detection, and rule extraction.
+
+6. COLOR HISTOGRAM / FREQUENCY ANALYSIS: Count color occurrences to detect dominant
+   colors, rare colors (markers), or color-based rules (majority vote, XOR).
+
+7. OBJECT RELATION GRAPHS: Build graphs of spatial relationships between objects
+   (above, below, left, right, inside, touching) for compositional reasoning.
+
+8. GRID DECOMPOSITION: Split grids into quadrants, strips, or tiles based on
+   separators (lines of uniform color). Many tasks operate on sub-grids independently.
+
+9. SCALING / RESAMPLING: Enlarge or shrink patterns by integer factors. Tasks
+   frequently involve upscaling a small pattern to fill a larger grid.
+
+10. GRAVITY / MOVEMENT SIMULATION: Move objects in a direction until they hit
+    boundaries or other objects. Used in "drop", "slide", and "gravity" tasks.
+
+## Existing (last 50 signatures, do NOT duplicate)
+  ... (677 more) ...
+  def replace_with_pattern(grid: list[list[int]])
+  def pattern(n)
+  def nearest_power_of_two(n)
+  def transform_grid(grid: list[list[int]])
+  def replace_with_pattern(grid: list[list[int]])
+  def transpose_matrix(grid: list[list[int]])
+  def rotate_matrix_90(grid: list[list[int]])
+  def count_unique_colors(grid: list[list[int]])
+  def extract_most_frequent_color(grid: list[list[int]])
+  def histogram_of_colors(grid: list[list[int]])
+  def extract_diagonal(grid: list[list[int]])
+  def rotate_matrix_90_degrees(grid: list[list[int]])
+  def detect_symmetry_horizontal(grid: list[list[int]])
+  def find_pattern_tiles(grid: list[list[int]], pattern: list[list[int]])
+  def replace_tiles_with_color(grid: list[list[int]], tiles: list[tuple[int, int]], new_color: int)
+  def add_diagonal(grid: list[list[int]])
+  def subtract_anti_diagonal(grid: list[list[int]])
+  def shift_rows_up(grid: list[list[int]])
+  def shift_columns_left(grid: list[list[int]])
+  def downsample_grid(grid: list[list[int]], factor: int)
+  def upsample_grid(grid: list[list[int]], factor: int)
+  def mirror_horizontal(grid: list[list[int]])
+  def multiply_by_index(grid: list[list[int]])
+  def transpose_and_add(grid: list[list[int]])
+  def scale_down_by_2(grid: list[list[int]])
+  def rotate_90_clockwise(grid: list[list[int]])
+  def extract_blob_with_most_ones(grid: list[list[int]])
+  def flood_fill(x, y)
+  def detect_fractal_symmetry(grid: list[list[int]])
+  def rotate90(matrix)
+  def tile_fractal_pattern(grid: list[list[int]])
+  def generate_fractal(size)
+  def extract_self_similar_subgrid(grid: list[list[int]], size: int)
+  def replace_nonzero_with_pattern(grid: list[list[int]], pattern: list[list[int]])
+  def function_specific_to_task_137eaa0f(grid: list[list[int]])
+  def extract_connected_component(grid: list[list[int]], x: int, y: int)
+  def replace_region(grid: list[list[int]], region: set[tuple[int, int]], replacement: int)
+  def detect_symmetries(grid: list[list[int]])
+  def rotate90(g)
+  def reflect_horizontal(g)
+  def reflect_vertical(g)
+  def tile_pattern(grid: list[list[int]], pattern: list[list[int]])
+  def detect_pattern_repetition(grid: list[list[int]])
+  def complete_symmetry_horizontal(grid: list[list[int]])
+  def extract_unique_colors(grid: list[list[int]])
+  def partition_grid_by_value(grid: list[list[int]], value: int)
+  def replace_specific_values_with_zeros(grid: list[list[int]])
+  def replace_specific_values_with_ones(grid: list[list[int]])
+  def replace_specific_values_with_twos(grid: list[list[int]])
+  def replace_specific_values_with_threes(grid: list[list[int]])
+
+## Previous Experiments ([-] = no improvement, [+] = improved)
+  [-] Round 3: Add transpose_and_flip, replace_with_sums, multiply_by_scalar, add_constant, rep (transpose_and_flip, replace_with_sums, multiply_by_scalar) metric 1.000->1.000
+  [-] Round 1: Add transpose_matrix, rotate_matrix_90 (transpose_matrix, rotate_matrix_90) metric 1.000->1.000
+  [-] Round 2: Add extract_diagonal, rotate_matrix_90_degrees (extract_diagonal, rotate_matrix_90_degrees) metric 1.000->1.000
+  [-] Round 3: Add add_diagonal, subtract_anti_diagonal, shift_rows_up, shift_columns_left (add_diagonal, subtract_anti_diagonal, shift_rows_up) metric 1.000->1.000
+  [-] Round 4: No valid functions proposed () metric 1.000->1.000
+  [-] Round 5: Add multiply_by_index, transpose_and_add (multiply_by_index, transpose_and_add) metric 1.000->1.000
+  [-] Round 6: No valid functions proposed () metric 1.000->1.000
+  [-] Round 7: Add function_specific_to_task_137eaa0f (function_specific_to_task_137eaa0f) metric 1.000->1.000
+  [-] Round 8: No valid functions proposed () metric 1.000->1.000
+  [-] Round 9: Add replace_specific_values_with_zeros, replace_specific_values_with_ones, repla (replace_specific_values_with_zeros, replace_specific_values_with_ones, replace_specific_values_with_twos) metric 1.000->1.000
+
+## BLACKLIST — DO NOT propose functions similar to these (already tried, didn't help):
+add_constant, add_diagonal, extract_diagonal, function_specific_to, multiply_by_index, multiply_by_scalar, replace_specific_values, replace_with_max, replace_with_sums, rotate_matrix_90, shift_columns_left, shift_rows_up, subtract_anti_diagonal, transpose_and_add, transpose_and_flip, transpose_matrix
+
+## Failure Distribution: SOLVE_FAIL: 5
+
+## Failing Tasks
+### Task: 67e8384a.json [SOLVE_FAIL]
+Scores: tier1=1.00 tier2=1.00 tier3(solve)=0.00
+Train 1 Input (3x3):
+252
+264
+222
+Train 1 Output (6x6):
+252252
+264462
+222222
+222222
+264462
+252252
+Train 2 Input (3x3):
+715
+771
+531
+Train 2 Output (6x6):
+715517
+771177
+531135
+531135
+771177
+715517
+
+### Task: 1478ab18.json [SOLVE_FAIL]
+Scores: tier1=1.00 tier2=1.00 tier3(solve)=0.00
+Train 1 Input (8x8):
+57757777
+77777777
+75777777
+77757777
+77777777
+77777777
+77777777
+77777777
+Train 1 Output (8x8):
+57757777
+88777777
+85877777
+88857777
+77777777
+77777777
+77777777
+77777777
+Train 2 Input (8x8):
+77777777
+75777757
+77777777
+77777777
+77777777
+77777577
+75777777
+77777777
+Train 2 Output (8x8):
+77777777
+75777757
+77777887
+77778787
+77787787
+77877587
+75888887
+77777777
+
+### Task: 1b60fb0c.json [SOLVE_FAIL]
+Scores: tier1=1.00 tier2=1.00 tier3(solve)=0.00
+Train 1 Input (10x10):
+0000000000
+0001111100
+0001111100
+0000010011
+0000010011
+0000011111
+0000010011
+0000010011
+0001111100
+0001111100
+Train 1 Output (10x10):
+0000000000
+0001111100
+0001111100
+0220010011
+0220010011
+0222211111
+0220010011
+0220010011
+0001111100
+0001111100
+Train 2 Input (10x10):
+0000000000
+0001110000
+0000110000
+0000100010
+0000111110
+0000110110
+0000010000
+0000110000
+0000111000
+0000000000
+Train 2 Output (10x10):
+0000000000
+0001110000
+0000110000
+0000100010
+0220111110
+0222110110
+0200010000
+0000110000
+0000111000
+0000000000
+
+### Task: 9b4c17c4.json [SOLVE_FAIL]
+Scores: tier1=1.00 tier2=1.00 tier3(solve)=0.00
+Train 1 Input (12x11):
+88888888888
+88888888888
+88228888888
+88228888888
+88888888888
+88888222888
+88888222888
+88888888888
+11111111111
+11122111111
+11122111111
+11111111211
+Train 1 Output (12x11):
+88888888888
+88888888888
+22888888888
+22888888888
+88888888888
+22288888888
+22288888888
+88888888888
+11111111111
+11111111122
+11111111122
+11111111112
+Train 2 Input (11x13):
+1111111888888
+1111111882288
+1111111882288
+1122111882288
+1122111888888
+1111111888888
+1122211888888
+1122211888888
+1111111822888
+1111111822888
+1111111888888
+Train 2 Output (11x13):
+1111111888888
+1111111228888
+1111111228888
+1111122228888
+1111122888888
+1111111888888
+1111222888888
+1111222888888
+1111111228888
+1111111228888
+1111111888888
+
+### Task: 4522001f.json [SOLVE_FAIL]
+Scores: tier1=1.00 tier2=1.00 tier3(solve)=0.67
+Train 1 Input (3x3):
+000
+023
+033
+Train 1 Output (9x9):
+000000000
+033330000
+033330000
+033330000
+033330000
+000003333
+000003333
+000003333
+000003333
+Train 2 Input (3x3):
+330
+320
+000
+Train 2 Output (9x9):
+333300000
+333300000
+333300000
+333300000
+000033330
+000033330
+000033330
+000033330
+000000000
+
+
+IMPORTANT: Study the input/output pairs carefully. Each task has a UNIQUE transformation rule.
+Do NOT propose generic mirror/pattern/tile functions. Analyze what SPECIFIC operation maps each input to its output.
+
+OUTPUT EXACTLY 3-5 new Python functions in ```python blocks. Each function:
+- Takes `grid: list[list[int]]` as first arg, returns `list[list[int]]`
+- Is self-contained (only stdlib + numpy)
+- Does ONE transformation relevant to the failing tasks above
+- Has a one-line docstring
+- Must be DIFFERENT from blacklisted approaches
+
+```python
+def function_name(grid: list[list[int]]) -> list[list[int]]:
+    """One-line description."""
+    import numpy as np
+    # implementation
+    return result
+```
+
+START WITH ```python IMMEDIATELY. No preamble.
