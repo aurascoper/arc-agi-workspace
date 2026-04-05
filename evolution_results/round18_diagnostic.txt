@@ -1,0 +1,251 @@
+/no_think
+You are an ARC-AGI DSL engineer. Given failing tasks, output ONLY Python functions. No analysis, no explanation — just code.
+
+Current DSL: 804 functions. Do NOT duplicate existing functions.
+
+## Known Techniques
+Key ARC-AGI solution techniques from the literature:
+
+1. CONNECTED COMPONENTS: Identify connected regions of same-colored cells (4- or
+   8-connected). Used for object isolation, counting, and spatial reasoning.
+
+2. FLOOD FILL: Fill enclosed regions bounded by a specific color. Common in tasks
+   involving containment, boundary detection, and region painting.
+
+3. SYMMETRY DETECTION: Detect reflective (horizontal, vertical, diagonal) and
+   rotational symmetry in grids. Many tasks involve completing symmetric patterns.
+
+4. TOPOLOGICAL SORTING / LAYERING: Tasks involving occlusion or z-ordering require
+   understanding which objects overlap and their relative positions.
+
+5. PATTERN MATCHING / TEMPLATE DETECTION: Find recurring sub-grids (stamps, tiles)
+   within larger grids. Used for tiling, repetition detection, and rule extraction.
+
+6. COLOR HISTOGRAM / FREQUENCY ANALYSIS: Count color occurrences to detect dominant
+   colors, rare colors (markers), or color-based rules (majority vote, XOR).
+
+7. OBJECT RELATION GRAPHS: Build graphs of spatial relationships between objects
+   (above, below, left, right, inside, touching) for compositional reasoning.
+
+8. GRID DECOMPOSITION: Split grids into quadrants, strips, or tiles based on
+   separators (lines of uniform color). Many tasks operate on sub-grids independently.
+
+9. SCALING / RESAMPLING: Enlarge or shrink patterns by integer factors. Tasks
+   frequently involve upscaling a small pattern to fill a larger grid.
+
+10. GRAVITY / MOVEMENT SIMULATION: Move objects in a direction until they hit
+    boundaries or other objects. Used in "drop", "slide", and "gravity" tasks.
+
+## Hypothesis Type Track Record (win rate by category)
+  connected_components: 100% (1/1) [+]
+  other: 100% (1/1) [+]
+  symmetry: 100% (1/1) [+]
+PREFER types with higher win rates. AVOID types that consistently lose.
+
+## Existing (last 50 signatures, do NOT duplicate)
+  ... (826 more, ranked by task relevance) ...
+  def get_objects(grid, background=None, diag=False)
+  def mirror_h(grid)
+  def rotate_cw(grid)
+  def detect_background_color(grid)
+  def palette(grid)
+  def color_counts(grid)
+  def copy_grid(grid)
+  def shape(grid)
+  def get_objects_by_color(grid, color, diag=False)
+  def get_shapes(grid, background=None, diag=False)
+  def get_bbox(obj_coords)
+  def object_colors(grid, obj)
+  def object_color_counts(grid, obj)
+  def objects_by_color(grid, background=None, diag=False)
+  def object_size(obj)
+  def object_height(obj)
+  def object_width(obj)
+  def object_dimensions(obj)
+  def object_center(obj)
+  def normalize_object(obj)
+  def remove_small_objects(grid, max_size=1, background=None, diag=False)
+  def remove_border_objects_by_size(grid, max_size=None, background=None, diag=False)
+  def crop_object(grid, obj, background=0)
+  def object_to_grid(obj, color=1, background=0)
+  def paint_object(grid, obj, color=None)
+  def erase_object(grid, obj, background=None)
+  def move_object(grid, obj, dr=0, dc=0, background=None, color=None)
+  def transform_object(grid, obj, rotation=None, mirror=None, dr=0, dc=0, background=None, in_place=False)
+  def transform_objects_in_place(grid, objects=None, rotation=None, mirror=None, dr=0, dc=0, background=None, diag=False)
+  def fill_square_enclosed_regions(grid, fill_color=2, wall_color=5, background=0)
+  def largest_object_grid(grid, background=None, diag=False, crop_result=True)
+  def largest_object_in_place(grid, background=None, diag=False)
+  def outline_object(grid, obj, color)
+  def merge_objects(objects)
+  def sort_objects(objects, key="size", reverse=False)
+  def is_square_object(obj)
+  def is_line_object(obj)
+  def is_rectangle_object(obj)
+  def border_objects(grid, objects)
+  def interior_objects(grid, objects)
+  def largest_object(objects)
+  def smallest_object(objects)
+  def topmost_object(objects)
+  def bottommost_object(objects)
+  def leftmost_object(objects)
+  def rightmost_object(objects)
+  def count_objects(grid, background=None, diag=False)
+  def nearest_object(target, objects)
+  def farthest_object(target, objects)
+  def assemble_l_shapes(grid, background=None)
+
+## Previous Experiments ([-] = no improvement, [+] = improved)
+  [-] Round 3: Add propagate_symmetry_markers, transform_split_quadrants, transform_radial_patt (propagate_symmetry_markers, transform_split_quadrants, transform_radial_pattern) metric 1.000->1.000
+  [-] Round 1: Add execute_symmetric_scaling (execute_symmetric_scaling) metric 1.000->1.000
+  [-] Round 2: Add separate_and_refine_quadrants (separate_and_refine_quadrants) metric 1.000->1.000
+  [-] Round 1: Add transform_pattern_to_quarter_scale (transform_pattern_to_quarter_scale) metric 1.000->1.000
+  [-] Round 1: Add apply_hole_fill_pattern (apply_hole_fill_pattern) metric 1.000->1.000
+  [-] Round 2: Add transform_four_color_pattern, transform_pattern_b6afb2da, transform_pattern_ (transform_four_color_pattern, transform_pattern_b6afb2da, transform_pattern_34b99a2b) metric 1.000->1.000
+  [-] Round 3: Add extract_color_zones_by_horizontal_segments, generate_inverted_pattern_zones, (extract_color_zones_by_horizontal_segments, generate_inverted_pattern_zones, transform_quadrant_boundary_patterns) metric 1.000->1.000
+  [-] Round 15 [connected_components]: Add complete_vertical_walls_and_shift_objects (complete_vertical_walls_and_shift_objects) metric 1.000->1.000
+  [-] Round 16 [other]: Add collapse_and_merge_columns (collapse_and_merge_columns) metric 1.000->1.000
+  [-] Round 17 [symmetry]: Add expand_and_mirror_content_and_compress (expand_and_mirror_content_and_compress) metric 1.000->1.000
+
+## BLACKLIST — DO NOT propose functions similar to these (already tried, didn't help):
+apply_hole_fill, apply_symmetry_correction, calculate_quadrant_dominant, collapse_and_merge, complete_vertical_walls, execute_symmetric_scaling, expand_and_mirror, expand_border_with, extract_color_zones, fill_pattern_with, generate_diagonal_patterns, generate_inverted_pattern, propagate_symmetry_markers, separate_and_refine, transform_four_color, transform_pattern_34b99a2b, transform_pattern_b6afb2da, transform_pattern_by, transform_pattern_to, transform_quadrant_boundary, transform_quadrant_fill, transform_radial_pattern, transform_split_quadrants
+
+## Failure Distribution: SOLVE_FAIL: 2
+
+## Failing Tasks
+### Task: 5b6cbef5.json [SOLVE_FAIL]
+Scores: tier1=1.00 tier2=1.00 tier3(solve)=0.86
+Train 1 Input (4x4):
+0000
+0000
+0000
+0000
+Train 1 Output (16x16):
+3303330300003303
+3003300300003003
+0003000300000003
+3303330300003303
+3303000000003303
+3003000000003003
+0003000000000003
+3303000000003303
+0000000000003303
+0000000000003003
+0000000000000003
+0000000000003303
+3303330300003303
+3003300300003003
+0003000300000003
+3303330300003303
+Train 2 Input (4x4):
+0001
+0110
+0000
+0001
+Train 2 Output (16x16):
+0000000000000001
+0000000000000110
+0000000000000000
+0000000000000001
+0000000100010000
+0000011001100000
+0000000000000000
+0000000100010000
+0000000000000000
+0000000000000000
+0000000000000000
+0000000000000000
+0000000000000001
+0000000000000110
+0000000000000000
+0000000000000001
+
+### Task: 516b51b7.json [SOLVE_FAIL]
+Scores: tier1=1.00 tier2=1.00 tier3(solve)=0.91
+Train 1 Input (12x13):
+100100100100100100-100-100-100-100-100-100100
+10010085858585-85-85-85-8585-100100
+100-13858585-85-85-85853-1100
+100-1-138585-85-858535-1100
+100-1-1-1385-8585355-1100
+100-1-1-1-13853555-1100
+100-1-1-1-13853555-1100
+100-1-1-1385-8585355-1100
+100-1-138585-85-858535-1100
+100-13858585-85-85-85853-1100
+10010085858585-85-85-85-8585-100100
+100100100100100100-100-100-100-100-100-100100
+Train 1 Output (12x13):
+0000000000000
+0111111110000
+0122222210000
+0123333210000
+0123223210000
+0123333210000
+0122222210000
+0111111110000
+0000000000000
+0000000011100
+0000000012100
+0000000011100
+Train 2 Input (12x11):
+00000000000
+01111001110
+01111001110
+01111001110
+01111000000
+00000000000
+00111110000
+00111110000
+00111110000
+00111110000
+00111110000
+00111110000
+Train 2 Output (12x11):
+00000000000
+01111001110
+01221001210
+01221001110
+01111000000
+00000000000
+00111110000
+00122210000
+00123210000
+00123210000
+00122210000
+00111110000
+
+
+## What went WRONG (execution traces from failed solve attempts)
+- 5b6cbef5@identity: WRONG_ANSWER
+    Pixel accuracy: 0.81
+    Expected shape: (16, 16), Got: (16, 16)
+- 5b6cbef5@identity: WRONG_ANSWER
+    Pixel accuracy: 0.86
+    Expected shape: (16, 16), Got: (16, 16)
+- 516b51b7@rotate_ccw: WRONG_ANSWER
+    Pixel accuracy: 0.46
+    Expected shape: (13, 12), Got: (13, 12)
+- 516b51b7@rotate_ccw: WRONG_ANSWER
+    Pixel accuracy: 0.91
+    Expected shape: (11, 12), Got: (11, 12)
+
+IMPORTANT: Study the input/output pairs carefully. Each task has a UNIQUE transformation rule.
+Do NOT propose generic mirror/pattern/tile functions. Analyze what SPECIFIC operation maps each input to its output.
+
+OUTPUT EXACTLY 3-5 new Python functions in ```python blocks. Each function:
+- Takes `grid: list[list[int]]` as first arg, returns `list[list[int]]`
+- Is self-contained (only stdlib + numpy)
+- Does ONE transformation relevant to the failing tasks above
+- Has a one-line docstring
+- Must be DIFFERENT from blacklisted approaches
+
+```python
+def function_name(grid: list[list[int]]) -> list[list[int]]:
+    """One-line description."""
+    import numpy as np
+    # implementation
+    return result
+```
+
+START WITH ```python IMMEDIATELY. No preamble.

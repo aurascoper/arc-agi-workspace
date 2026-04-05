@@ -1,0 +1,251 @@
+
+
+Based on the analysis of the failing tasks, the transformation rule involves detecting the "primary" color (the most frequent non-background color) and shifting the grid content significantly.
+
+**Task 1 Analysis (`5b6cbef5.json`):**
+*   **Input:** A 4x4 grid with a sparse pattern of `3`s and `0`s.
+*   **Output:** A 16x16 grid.
+*   **Observation:** The output grid is constructed by tiling the input grid 4x4 times (resulting in 16x16).
+    *   Row 0 of Input: `0000`. Output Row 0 (indices 0-3): `3303`... This doesn't match a direct tiling.
+    *   Let's check the "Primary Color" hypothesis. In Input, `0` is dominant. In Output, `3` is dominant.
+    *   However, looking closely at the structure:
+        *   Input (4x4):
+            ```
+            0000
+            0000
+            0000
+            0000
+            ```
+            (Wait, the input provided in the prompt is all 0s? No, usually ARC tasks have a source object. Let's re-read the prompt carefully).
+            The prompt says "Train 1 Input (4x4): 0000...".
+            The prompt says "Train 1 Output (16x16): 3303330300003303...".
+            If the input is all 0s, and the output is a complex pattern, the rule must be: "If input is empty/zero, generate a specific background pattern (checkerboard-like or specific grid)".
+            *Correction:* Let's look at the raw string again.
+            Input:
+            0000
+            0000
+            0000
+            0000
+            Output:
+            3303330300003303
+            ...
+            This looks like the output is generated based on a *template* derived from the input's dimensions or colors, or it's a specific "fill" operation.
+            Actually, looking at the output pattern `3303330300003303`, repeating `0000` in input doesn't map to `3303...` unless the rule is "Expand grid to 16x16 and fill with a specific pattern based on a hidden constant or the input's 'empty' state".
+            *Re-evaluation:* The input `0000` is likely a placeholder for "Empty Grid". The output is a specific pattern.
+            Let's look at `Train 2`.
+            Input:
+            0001
+            0110
+            0000
+            0001
+            Output:
+            0000000000000001
+            0000000000000110
+            0000000000000000
+            0000000000000001
+            0000000100010000
+            0000011001100000
+            0000000000000000
+            0000000100010000
+            ...
+            The output seems to be a 16x16 grid (implied by the block structure).
+            The non-zero pixels in Input are `1`. The Output contains `1`.
+            The Output seems to be constructed by taking the Input, placing it in the top-left, and then "scaling" or "tiling" it into the 16x16 grid, but with some modification.
+            
+            Let's look at the coordinates of `1`s in Input 2:
+            (0,3), (1,2), (1,3), (3,0), (3,3).
+            Let's map these to the Output.
+            Output has `1` at:
+            (0,15), (1,11), (1,12).
+            (3,15), (3,16)? No, 16x16 grid.
+            Let's check the Output grid provided in text for Task 2.
+            Line 0: `...1` (last col) -> (0, 15).
+            Line 1: `...110` -> (1, 12), (1, 13).
+            Line 2: `...0` -> no 1s.
+            Line 3: `...1` -> (3, 15).
+            Line 4: `...100010000` -> (4, 7), (4, 11).
+            Line 5: `...110011000000` -> (5, 5), (5, 6), (5, 9), (5, 10).
+            Line 6: `...0` -> no 1s.
+            Line 7: `...100010000` -> (7, 7), (7, 11).
+            Line 8: `...0` -> no 1s.
+            Line 9: `...0` -> no 1s.
+            Line 10: `...0` -> no 1s.
+            Line 11: `...1` -> (11, 15).
+            Line 12: `...110` -> (12, 12), (12, 13).
+            Line 13: `...1` -> (13, 15).
+            Line 14: `...0` -> no 1s.
+            Line 15: `...1` -> (15, 15).
+            
+            This is very sparse.
+            Wait, the Input is 12x11. The Output is 12x11 (Wait, the prompt says "Output (12x11)" for Task 2).
+            Let's re-read Task 2 Output.
+            Output (12x11):
+            00000000000
+            01111001110
+            01221001210
+            01221001110
+            01111000000
+            00000000000
+            00111110000
+            00122210000
+            00123210000
+            00123210000
+            00122210000
+            00111110000
+            
+            Input (12x11):
+            00000000000
+            01111001110
+            01111001110
+            01111001110
+            01111000000
+            00000000000
+            00111110000
+            00111110000
+            00111110000
+            00111110000
+            00111110000
+            00111110000
+            
+            Comparison:
+            Row 0: Same.
+            Row 1: Same.
+            Row 2: Input `01111001110`, Output `01221001210`.
+            Row 3: Input `01111001110`, Output `01221001110`.
+            Row 4: Same.
+            Row 5: Same.
+            Row 5-9: Input has `1`s. Output has `1`s and `2`s and `3`s.
+            Specifically, in the bottom block (rows 6-11), the Input has a block of `1`s.
+            The Output introduces `2`s and `3`s inside that block.
+            
+            The transformation seems to be: **Upscale the grid by filling enclosed regions with a gradient or pattern based on the color.**
+            Or, more likely: **Identify the "background" of the object (the color surrounding it) and fill the interior of the object with a sequence of colors (1 -> 2 -> 3).**
+            
+            Let's look at the object in the bottom half of Input 2.
+            It's a block of `1`s.
+            The Output replaces the `1`s with a pattern `1 2 3 2 1` (diamond/gradient) or similar.
+            Row 6: `11111` -> Output `11111` (unchanged).
+            Row 7: `11111` -> Output `12221` (Center changed to 2).
+            Row 8: `11111` -> Output `12321` (Center changed to 3).
+            Row 9: `11111` -> Output `12321`.
+            Row 10: `11111` -> Output `12221`.
+            Row 11: `11111` -> Output `11111`.
+            This looks like a **Flood Fill** or **Gradient Fill** inside the bounding box of the object.
+            Specifically, it fills the interior of the object with a pattern based on distance from the center or border.
+            
+            Now let's look at Task 1 again.
+            Input (4x4) is all 0s.
+            Output (16x16) is a pattern.
+            If the rule is "If object exists, fill interior with gradient", then "If no object, generate default pattern".
+            The default pattern in Task 1 Output is:
+            `3303330300003303`
+            `3003300300003003`
+            `0003000300000003`
+            `3303330300003303`
+            ...
+            This looks like a **symmetry** or **tiling** of a small pattern.
+            Specifically, it looks like the output is a 4x4 tiling of a 4x4 pattern where the pattern itself is defined by the input?
+            But the input is all 0s.
+            Maybe the Input `0000` means "Empty".
+            If Input is Empty -> Output is "Standard Background Pattern".
+            If Input has Objects -> Output is "Upscaled Input with Interior Coloring".
+            
+            Let's refine the "Upscale with Interior Coloring" hypothesis.
+            Task 2 Input: 12x11. Output: 12x11. No scaling.
+            Wait, if Input is 12x11 and Output is 12x11, it's not scaling.
+            It's **Color Modification**.
+            The object is made of `1`s. The output changes some `1`s to `2`, some to `3`.
+            The changes happen in the **interior** of the contiguous region of `1`s.
+            Border of `1`s remains `1`.
+            Center becomes `2` or `3`.
+            
+            Now Task 1. Input 4x4. Output 16x16.
+            Input is all 0s.
+            Output is 16x16.
+            If the rule is "Upscale by 4x", then 4x4 -> 16x16.
+            But the content changes.
+            Input:
+            0000
+            0000
+            0000
+            0000
+            Output:
+            3303330300003303
+            3003300300003003
+            0003000300000003
+            3303330300003303
+            ...
+            This looks like the output is generated by **tiling a 4x4 template** into the 16x16 grid.
+            The template is:
+            3303
+            3003
+            0003
+            3303
+            Wait, the input is 4x4.
+            If the Input is all 0s, maybe the output is the "Default Pattern" for a 4x4 grid.
+            If the Input has objects, maybe the output is the Input scaled up?
+            But in Task 2, Input and Output are the same size (12x11).
+            So the behavior depends on the Input.
+            
+            **Hypothesis:**
+            1. Detect if the grid contains non-background objects.
+            2. If **NO objects** (all background):
+               Generate a specific **symmetric pattern** (checkerboard / cross / etc.) of size **Input_Size * 4**.
+               Actually, looking at Task 1 Output (16x16), it looks like 4x4 blocks of a specific 4x4 pattern.
+               The 4x4 pattern is:
+               3303
+               3003
+               0003
+               3303
+               (Rows 0-3).
+               Row 4:
+               3303
+               3003
+               0003
+               3303
+               It repeats every 4 rows.
+               So the Output is a **4x4 tiling** of the pattern:
+               [[3,3,0,3], [3,0,0,3], [0,0,0,3], [3,3,0,3]].
+               Wait, Row 0 is `33033303...`.
+               Row 1 is `30033003...`.
+               Row 2 is `00030003...`.
+               Row 3 is `33033303...`.
+               Row 4 is `33033303...`.
+               Row 5 is `30030000...`
+               This implies a larger period or a specific structure.
+               
+            3. If **OBJECTS EXIST**:
+               Transform the grid to fill the **interior** of the connected components with a **radial/gradient** fill (1 -> 2 -> 3).
+               The grid size remains the same (Task 2).
+               Task 2 Input has a block of 1s. Output has the same shape, but 1s are replaced by a gradient (1, 2, 3) inside the block.
+               Specifically, it fills the "hole" or "interior" of the shape.
+               
+            **The Function Should:**
+            1. Identify if there are any non-background objects.
+            2. If **No objects**: Return a tiling of a specific "Empty" pattern (e.g. a fractal or symmetric pattern).
+            3. If **Objects exist**: Return a grid where the objects' interiors are filled with a gradient (1, 2, 3) based on distance from center/border.
+            
+            Wait, Task 1 Input is 4x4. Output is 16x16.
+            Task 2 Input is 12x11. Output is 12x11.
+            This suggests the "No objects" case triggers a **Resize** (4x4 -> 16x16).
+            The "Objects exist" case triggers a **Fill** (No resize).
+            
+            **Refined Plan:**
+            We need a function `transform_empty_to_pattern` (if no objects) and `fill_object_interior` (if objects exist).
+            However, the prompt asks for **ONE** function (or 3-5 functions) that solves the failing tasks.
+            Since the logic is conditional (No Objects vs Objects), we can write a function that handles both cases.
+            
+            But wait, the user asks for "3-5 new Python functions".
+            I should extract the core logic.
+            Logic A: `detect_objects` (Check if grid has non-background).
+            Logic B: `generate_empty_pattern` (If no objects, generate the specific 16x16 pattern).
+            Logic C: `fill_interior_gradient` (If objects exist, fill the interior with 1, 2, 3).
+            
+            Actually, looking at Task 1 Output again.
+            Rows 0-3: `3303...`
+            Rows 4-7: `3303...`
+            Rows 8-11: `0000...` (Wait, Row 8 is `0000000000003303`).
+            Row 9: `0000000000003003`.
+            Row 10: `0000000000000003`.
+            Row 11: `0000000000003303`.
+            This looks like a **Symmetry**

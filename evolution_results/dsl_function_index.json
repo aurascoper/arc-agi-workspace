@@ -1,5 +1,5 @@
 {
- "dsl_hash": "7ee5187dba07561e9bbcc0a1fc86e370",
+ "dsl_hash": "ecdfa74aa6797a7418f176bf8477b837",
  "functions": [
   {
    "name": "get_objects",
@@ -7181,6 +7181,122 @@
     "color_logic",
     "spatial_relation"
    ]
+  },
+  {
+   "name": "collapse_and_merge_columns",
+   "signature": "def collapse_and_merge_columns(grid: list[list[int]])",
+   "docstring": "Collapse columns by finding matching column pairs based on vertical symmetry of non-zero elements.",
+   "categories": [
+    "symmetry"
+   ]
+  },
+  {
+   "name": "flood_fill_path",
+   "signature": "def flood_fill_path(grid: list[list[int]])",
+   "docstring": "Flood fills all cells reachable from the first non-background cell with a new marker.",
+   "categories": [
+    "flood_fill"
+   ]
+  },
+  {
+   "name": "shortest_path_breadth_first",
+   "signature": "def shortest_path_breadth_first(grid: list[list[int]], start: tuple, end: tuple, wall: int)",
+   "docstring": "Performs BFS to find the shortest path from start to end avoiding walls.",
+   "categories": [
+    "general"
+   ]
+  },
+  {
+   "name": "solve_maze_dfs",
+   "signature": "def solve_maze_dfs(grid: list[list[int]], wall: int, start: tuple, end: tuple)",
+   "docstring": "Uses DFS to find a path from start to end avoiding walls.",
+   "categories": [
+    "general"
+   ]
+  },
+  {
+   "name": "find_maze_entry_exit",
+   "signature": "def find_maze_entry_exit(grid: list[list[int]], wall: int, target: int)",
+   "docstring": "Identifies the start and end points of a maze by finding entry/exit markers.",
+   "categories": [
+    "general"
+   ]
+  },
+  {
+   "name": "carve_path_along_route",
+   "signature": "def carve_path_along_route(grid: list[list[int]], path: list[tuple], fill_color: int)",
+   "docstring": "Overwrites the path coordinates in the grid with a specific fill color.",
+   "categories": [
+    "flood_fill",
+    "color_logic"
+   ]
+  },
+  {
+   "name": "count_steps_to_target",
+   "signature": "def count_steps_to_target(grid: list[list[int]], target: int, wall: int)",
+   "docstring": "Returns the number of steps (Manhattan distance or BFS distance) to the nearest target.",
+   "categories": [
+    "counting_arithmetic"
+   ]
+  },
+  {
+   "name": "expand_and_mirror_content_and_compress",
+   "signature": "def expand_and_mirror_content_and_compress(grid: list[list[int]], background: int = 0)",
+   "docstring": "Expands internal objects in each quadrant horizontally to 3x the width, mirrors the result vertically, then compresses the bottom rows back to original height by averaging columns.",
+   "categories": [
+    "symmetry",
+    "connected_components"
+   ]
+  },
+  {
+   "name": "detect_horizontal_periodicity",
+   "signature": "def detect_horizontal_periodicity(grid: list[list[int]])",
+   "docstring": "Check if rows repeat horizontally; if so, return the repeating unit.",
+   "categories": [
+    "pattern_tile"
+   ]
+  },
+  {
+   "name": "detect_vertical_periodicity",
+   "signature": "def detect_vertical_periodicity(grid: list[list[int]])",
+   "docstring": "Check if columns repeat vertically; if so, return the repeating unit.",
+   "categories": [
+    "pattern_tile"
+   ]
+  },
+  {
+   "name": "extract_tile_from_origin",
+   "signature": "def extract_tile_from_origin(grid: list[list[int]], tile_h: int, tile_w: int)",
+   "docstring": "Extract a tile from the top-left corner of the grid.",
+   "categories": [
+    "pattern_tile"
+   ]
+  },
+  {
+   "name": "tile_grid_by_periodicity",
+   "signature": "def tile_grid_by_periodicity(grid: list[list[int]])",
+   "docstring": "If horizontal or vertical periodicity detected, return the repeating unit; else return grid.",
+   "categories": [
+    "pattern_tile"
+   ]
+  },
+  {
+   "name": "complete_symmetry_from_quadrant",
+   "signature": "def complete_symmetry_from_quadrant(grid: list[list[int]])",
+   "docstring": "Complete 4-fold symmetry by reflecting the top-left quadrant.",
+   "categories": [
+    "symmetry",
+    "grid_decompose"
+   ]
+  },
+  {
+   "name": "count_unique_colors_in_quadrants",
+   "signature": "def count_unique_colors_in_quadrants(grid: list[list[int]])",
+   "docstring": "Return a list of lists, where each inner list contains unique colors in that quadrant.",
+   "categories": [
+    "color_logic",
+    "grid_decompose"
+   ]
   }
  ],
  "category_index": {
@@ -7291,7 +7407,10 @@
    "detect_symmetry_vertical",
    "detect_symmetry_4fold",
    "apply_reflective_shift_and_merge",
-   "extract_and_mirror_vertical_pattern"
+   "extract_and_mirror_vertical_pattern",
+   "collapse_and_merge_columns",
+   "expand_and_mirror_content_and_compress",
+   "complete_symmetry_from_quadrant"
   ],
   "flood_fill": [
    "flood_fill",
@@ -7439,7 +7558,9 @@
    "find_3x3_pattern_matches",
    "detect_symmetry_vertical",
    "detect_symmetry_4fold",
-   "extract_and_mirror_vertical_pattern"
+   "extract_and_mirror_vertical_pattern",
+   "flood_fill_path",
+   "carve_path_along_route"
   ],
   "connected_components": [
    "get_objects",
@@ -7546,7 +7667,8 @@
    "fill_pattern_with_specific_component",
    "count_connected_components",
    "find_largest_connected_component",
-   "complete_vertical_walls_and_shift_objects"
+   "complete_vertical_walls_and_shift_objects",
+   "expand_and_mirror_content_and_compress"
   ],
   "color_logic": [
    "get_objects_by_color",
@@ -7770,7 +7892,9 @@
    "scale_grid_by_unique_color_count_contracted",
    "clean_minority_color_spikes",
    "smooth_random_dots",
-   "denoise_minority_color"
+   "denoise_minority_color",
+   "carve_path_along_route",
+   "count_unique_colors_in_quadrants"
   ],
   "spatial_relation": [
    "neighbors4",
@@ -7931,7 +8055,11 @@
    "transform_pattern_by_row_reflection",
    "generate_diagonal_patterns_from_corners",
    "find_2x2_pattern",
-   "find_3x3_pattern_matches"
+   "find_3x3_pattern_matches",
+   "detect_horizontal_periodicity",
+   "detect_vertical_periodicity",
+   "extract_tile_from_origin",
+   "tile_grid_by_periodicity"
   ],
   "transform_geom": [
    "rotate_cw",
@@ -8050,7 +8178,9 @@
    "partition_grid_by_quadrants",
    "separate_and_refine_quadrants",
    "is_separator",
-   "b6afb2da_transform"
+   "b6afb2da_transform",
+   "complete_symmetry_from_quadrant",
+   "count_unique_colors_in_quadrants"
   ],
   "topology": [
    "solve_occlusion",
@@ -8125,7 +8255,8 @@
    "count_2x2_blocks_of_color",
    "find_rectangles",
    "scale_grid_by_nonzero_count_expanded",
-   "scale_grid_by_nonzero_count_contracted"
+   "scale_grid_by_nonzero_count_contracted",
+   "count_steps_to_target"
   ],
   "boundary_edge": [
    "remove_border_objects_by_size",
@@ -8355,7 +8486,10 @@
    "is_sep_row",
    "is_sep_col",
    "get_grid_dimensions",
-   "transform_quad"
+   "transform_quad",
+   "shortest_path_breadth_first",
+   "solve_maze_dfs",
+   "find_maze_entry_exit"
   ]
  }
 }

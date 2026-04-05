@@ -421,10 +421,69 @@ def _fallback_prompt(task_data):
     return prompt
 
 
+# ---------------------------------------------------------------------------
+# COLOR CANONICALIZATION — removes color permutation as confounding variable
+# ---------------------------------------------------------------------------
+
+def _build_color_mapping(task_data):
+    """Build a frequency-ordered color mapping from training data.
+
+    Returns (forward_map, inverse_map) where forward_map remaps original→canonical
+    and inverse_map remaps canonical→original.  Canonical order: most frequent color
+    across ALL training grids = 0, next = 1, etc.
+    """
+    from collections import Counter
+    freq = Counter()
+    for pair in task_data.get("train", []):
+        for row in pair.get("input", []):
+            freq.update(row)
+        for row in pair.get("output", []):
+            freq.update(row)
+    # Sort by descending frequency, then ascending value for ties
+    sorted_colors = sorted(freq.keys(), key=lambda c: (-freq[c], c))
+    forward = {orig: canon for canon, orig in enumerate(sorted_colors)}
+    inverse = {canon: orig for orig, canon in forward.items()}
+    return forward, inverse
+
+
+def _remap_grid(grid, color_map):
+    """Remap all cell values in a grid using color_map dict."""
+    return [[color_map.get(c, c) for c in row] for row in grid]
+
+
+def _canonicalize_task(task_data):
+    """Canonicalize colors in a task. Returns (canon_task, inverse_map).
+
+    The LLM sees frequency-ordered colors (0=most common, 1=next, ...).
+    After solving, inverse_map converts canonical output back to originals.
+    """
+    from copy import deepcopy
+    forward, inverse = _build_color_mapping(task_data)
+    # Identity mapping — skip canonicalization overhead
+    if all(k == v for k, v in forward.items()):
+        return task_data, None
+    canon = deepcopy(task_data)
+    for pair in canon.get("train", []):
+        pair["input"] = _remap_grid(pair["input"], forward)
+        pair["output"] = _remap_grid(pair["output"], forward)
+    for pair in canon.get("test", []):
+        pair["input"] = _remap_grid(pair["input"], forward)
+        if "output" in pair:
+            pair["output"] = _remap_grid(pair["output"], forward)
+    return canon, inverse
+
+
+def _decanonicalize_grid(grid, inverse_map):
+    """Map canonical colors back to originals. No-op if inverse_map is None."""
+    if inverse_map is None or not grid:
+        return grid
+    return _remap_grid(grid, inverse_map)
+
+
 SUCCESSFUL_PROGRAMS_PATH = WORKSPACE / "evolution_results" / "successful_programs.jsonl"
 LORA_STATE_PATH = RESULTS_DIR / "lora_state.json"
 LORA_ADAPTERS_DIR = RESULTS_DIR / "lora_adapters"
-LORA_MIN_PROGRAMS = 50
+LORA_MIN_PROGRAMS = 15
 LORA_MIN_ROUNDS_BETWEEN = 5
 LORA_SKIP_FIRST_ROUNDS = 3
 LORA_MAX_KEPT_ADAPTERS = 3
@@ -448,6 +507,30 @@ def _log_successful_program(task_name: str, task_data: dict, code: str, prompt: 
         pass  # never break the evolution loop for logging
 
 
+NEAR_MISS_THRESHOLD = 0.92  # Minimum mean pixel accuracy for near-miss logging
+
+
+def _log_near_miss_program(task_name: str, task_data: dict, code: str,
+                           prompt: str, pixel_accuracy: float):
+    """Log a high-accuracy near-miss transform() for LoRA training data."""
+    import time as _time
+    entry = {
+        "task_name": task_name,
+        "timestamp": _time.time(),
+        "code": code,
+        "prompt": prompt,
+        "num_train": len(task_data.get("train", [])),
+        "num_test": len(task_data.get("test", [])),
+        "source": "near_miss",
+        "pixel_accuracy": pixel_accuracy,
+    }
+    try:
+        with open(SUCCESSFUL_PROGRAMS_PATH, "a") as f:
+            f.write(json.dumps(entry) + "\n")
+    except Exception:
+        pass
+
+
 def _truncate_traceback(tb: str, max_lines: int = 8) -> str:
     """Keep last N lines of traceback (the most informative part)."""
     lines = tb.strip().split("\n")
@@ -457,16 +540,24 @@ def _truncate_traceback(tb: str, max_lines: int = 8) -> str:
 
 
 def solve_task_single(task_data, task_name="unknown"):
-    """Tier 3: One-shot solve attempt via MLX. Returns (pixel_accuracy, traces)."""
+    """Tier 3: One-shot solve attempt via MLX. Returns (pixel_accuracy, traces).
+
+    Uses color canonicalization: remaps colors by frequency so the LLM sees
+    cleaner patterns (0=most common, 1=next, ...). Evaluation uses the same
+    canonical space, so no inverse mapping is needed for correctness.
+    """
     from target_mlx_arc import try_code_on_task, extract_python_code, calculate_pixel_accuracy
+
+    # Canonicalize colors — LLM sees frequency-ordered colors
+    canon_data, _inv = _canonicalize_task(task_data)
 
     ns = load_dsl_namespace()
     bp = ns.get("build_prompt")
     if bp:
-        prompt_result, prompt_err = _run_with_timeout(bp, (task_data,), timeout=10)
-        prompt = prompt_result if (not prompt_err and prompt_result) else _fallback_prompt(task_data)
+        prompt_result, prompt_err = _run_with_timeout(bp, (canon_data,), timeout=10)
+        prompt = prompt_result if (not prompt_err and prompt_result) else _fallback_prompt(canon_data)
     else:
-        prompt = _fallback_prompt(task_data)
+        prompt = _fallback_prompt(canon_data)
 
     response = generate(prompt, temperature=0.0, max_tokens=1024)
     code = extract_python_code(response)
@@ -474,7 +565,8 @@ def solve_task_single(task_data, task_name="unknown"):
         return 0.0, [{"task_name": task_name, "failure_type": "NO_TRANSFORM",
                        "error_message": f"LLM response had no transform ({len(response)} chars)"}]
 
-    passed, failures = try_code_on_task(code, task_data, abpr_trace=True)
+    # Evaluate against canonical data (both input and expected output are canonical)
+    passed, failures = try_code_on_task(code, canon_data, abpr_trace=True)
     if passed:
         # Log successful program for future LoRA fine-tuning
         _log_successful_program(task_name, task_data, code, prompt)
@@ -501,7 +593,58 @@ def solve_task_single(task_data, task_name="unknown"):
             trace_entry["abpr_trace"] = abpr[:10]  # limit to 10 calls
         traces.append(trace_entry)
     best_pa = max(t["pixel_accuracy"] for t in traces) if traces else 0.0
+    # Log near-miss for LoRA (mean accuracy across all pairs, no crashes)
+    if traces:
+        mean_pa = sum(t["pixel_accuracy"] for t in traces) / len(traces)
+        if mean_pa >= NEAR_MISS_THRESHOLD and all(t["failure_type"] == "WRONG_ANSWER" for t in traces):
+            _log_near_miss_program(task_name, task_data, code, prompt, mean_pa)
+    # Collect synthetic task from failed program (TransCoder-style)
+    try:
+        from synthetic_tasks import collect_from_beam_failure
+        if collect_from_beam_failure(task_data, code, task_name):
+            print(f"  [synthetic] {task_name}: collected training pair")
+    except Exception:
+        pass
     return best_pa, traces
+
+
+ENHANCED_SOLVE = True  # Enable H2 (D4 symmetry) + H3 (MDL composition)
+
+
+def solve_task_enhanced(task_data, task_name="unknown"):
+    """Enhanced solve: H3 composition search -> H2 D4 ensemble -> fallback single.
+
+    Returns (pixel_accuracy, traces) -- same interface as solve_task_single.
+    """
+    if not ENHANCED_SOLVE:
+        return solve_task_single(task_data, task_name)
+
+    # Phase 1: H3 -- fast composition search (no LLM, ~2-5s)
+    try:
+        from mdl_compose import compose_search
+        from target_mlx_arc import try_code_on_task
+        ns = load_dsl_namespace()
+        canon_data, _inv = _canonicalize_task(task_data)
+        code = compose_search(canon_data, ns, timeout=5.0)
+        if code:
+            passed, _ = try_code_on_task(code, canon_data)
+            if passed:
+                _log_successful_program(task_name, task_data, code, "composition_search")
+                print(f"  [H3] {task_name}: SOLVED by composition")
+                return 1.0, []
+    except Exception as e:
+        print(f"  [H3] {task_name}: error {e}")
+
+    # Phase 2: H2 -- D4 symmetry ensemble (up to 8 LLM calls, ~40-80s)
+    try:
+        from d4_ensemble import solve_task_d4
+        score, traces = solve_task_d4(task_data, task_name)
+        return score, traces
+    except Exception as e:
+        print(f"  [H2] {task_name}: error {e}")
+
+    # Fallback: original single solve
+    return solve_task_single(task_data, task_name)
 
 
 def find_failing_tasks(sample_size=50, tier3_count=None, seed=42):
@@ -550,7 +693,7 @@ def find_failing_tasks(sample_size=50, tier3_count=None, seed=42):
             print(f"[evolve] Tier 3: solving {len(tier3_targets)} worst tasks...")
             for tf, td, t1, t2, combined in tier3_targets:
                 try:
-                    solve_score, traces = solve_task_single(td, task_name=tf.stem)
+                    solve_score, traces = solve_task_enhanced(td, task_name=tf.stem)
                 except Exception as e:
                     print(f"  [tier3] {tf.name}: error {e}")
                     solve_score, traces = 0.0, [{"task_name": tf.stem, "failure_type": "CRASH", "error_message": str(e)}]
@@ -578,7 +721,7 @@ def find_failing_tasks(sample_size=50, tier3_count=None, seed=42):
         print(f"[evolve] Tier 1+2 all perfect. Tier 3: solving {len(tier3_targets)} tasks to find LLM failures...")
         for tf, td, t1, t2, combined in tier3_targets:
             try:
-                solve_score, traces = solve_task_single(td, task_name=tf.stem)
+                solve_score, traces = solve_task_enhanced(td, task_name=tf.stem)
             except Exception as e:
                 print(f"  [tier3] {tf.name}: error {e}")
                 solve_score, traces = 0.0, [{"task_name": tf.stem, "failure_type": "CRASH", "error_message": str(e)}]
@@ -634,7 +777,7 @@ def compute_holdout_score():
         with open(tf) as f:
             task_data = json.load(f)
         try:
-            score, _ = solve_task_single(task_data, task_name=tf.stem)
+            score, _ = solve_task_single(task_data, task_name=tf.stem)  # no D4 on holdout (too slow)
         except Exception:
             score = 0.0
         per_task[tf.stem] = round(score, 4)
@@ -889,11 +1032,25 @@ def build_diagnostic_prompt(failing_results):
     helper_code = ns.get("HELPER_CODE_PREFIX", "")
     num_functions = helper_code.count("\ndef ") + 1
 
-    # Function signatures — show last 50 to avoid prompt explosion
-    sigs = _extract_function_signatures(helper_code)
-    sig_lines = [f"  {s}" for s in sigs[-50:]]
-    if len(sigs) > 50:
-        sig_lines.insert(0, f"  ... ({len(sigs) - 50} more) ...")
+    # Task descriptions with failure categories (computed first for relevance ranking)
+    shown = [r for r in failing_results if r["tier3"] is not None][:TASKS_PER_DIAGNOSTIC]
+    if not shown:
+        shown = failing_results[:TASKS_PER_DIAGNOSTIC]
+
+    # Function signatures — ranked by relevance to failing tasks
+    all_sigs = _extract_function_signatures(helper_code)
+    try:
+        from dsl_recognition import get_relevant_signatures
+        task_grids = [r["task_data"] for r in shown]
+        ranked = get_relevant_signatures(helper_code, task_grids, n=50)
+        sig_lines = [f"  {s}" for s in ranked]
+        if len(all_sigs) > 50:
+            sig_lines.insert(0, f"  ... ({len(all_sigs) - 50} more, ranked by task relevance) ...")
+    except Exception:
+        # Fallback to last-50 if recognition model fails
+        sig_lines = [f"  {s}" for s in all_sigs[-50:]]
+        if len(all_sigs) > 50:
+            sig_lines.insert(0, f"  ... ({len(all_sigs) - 50} more) ...")
     sig_text = "\n".join(sig_lines) if sig_lines else "  (none)"
 
     # Hypothesis history + blacklist
@@ -901,11 +1058,6 @@ def build_diagnostic_prompt(failing_results):
     history_text = _format_hypothesis_history(recent)
     blacklist = _build_blacklist(recent)
     blacklist_text = ", ".join(blacklist) if blacklist else "(none yet)"
-
-    # Task descriptions with failure categories
-    shown = [r for r in failing_results if r["tier3"] is not None][:TASKS_PER_DIAGNOSTIC]
-    if not shown:
-        shown = failing_results[:TASKS_PER_DIAGNOSTIC]
 
     # Category distribution for awareness
     categories = {}
@@ -1109,6 +1261,13 @@ def inject_functions_into_dsl(new_functions: list[str]) -> str:
     for func in new_functions:
         injection += "\n" + func + "\n"
 
+    # Invalidate recognition model cache so new functions are indexed next round
+    try:
+        from dsl_recognition import invalidate_cache
+        invalidate_cache()
+    except ImportError:
+        pass
+
     return dsl_code[:last_close] + injection + "\n" + dsl_code[last_close:]
 
 
@@ -1163,6 +1322,14 @@ def run_codopt_round():
 # GIT COMMIT — auto-commit winning mutations
 # ---------------------------------------------------------------------------
 
+def _get_model_path():
+    """Lazily fetch MODEL_PATH from target_mlx_arc (avoids top-level import)."""
+    try:
+        from target_mlx_arc import MODEL_PATH
+        return MODEL_PATH
+    except ImportError:
+        return "unknown"
+
 def git_commit_if_improved(round_num, pre_score, post_score, hypothesis="",
                            solve_before=0.0, solve_after=0.0):
     """Compare scores and commit if improved. Returns (new_score, commit_hash).
@@ -1186,7 +1353,7 @@ def git_commit_if_improved(round_num, pre_score, post_score, hypothesis="",
         f"evolve: round {round_num} results [keep] score={post_score:.4f}\n\n"
         f"Solve score: {solve_before:.4f} -> {solve_after:.4f}\n"
         f"Hypothesis: {hypothesis[:200]}\n"
-        f"Model: {MODEL_PATH}\n"
+        f"Model: {_get_model_path()}\n"
         f"Timestamp: {timestamp}"
     )
 
@@ -1239,15 +1406,29 @@ def _count_successful_programs() -> int:
 
 
 def should_trigger_lora_training(round_num: int, state: dict) -> bool:
-    """Check if LoRA training should run this round."""
+    """Check if LoRA training should run this round.
+
+    Counts real programs fully and synthetic tasks at 0.5x weight toward
+    the LORA_MIN_PROGRAMS threshold (synthetic are easier, worth less).
+    """
     if round_num <= LORA_SKIP_FIRST_ROUNDS:
         return False
     rounds_since = round_num - state.get("last_training_round", 0)
     if rounds_since < LORA_MIN_ROUNDS_BETWEEN:
         return False
+    # Count real programs
     prog_count = _count_successful_programs()
     new_progs = prog_count - state.get("programs_at_last_training", 0)
-    return new_progs >= LORA_MIN_PROGRAMS
+    # Count synthetic tasks (each counts as 0.5 toward threshold)
+    try:
+        from synthetic_tasks import get_synthetic_stats
+        synth_count = get_synthetic_stats().get("total", 0)
+        synth_at_last = state.get("synthetic_at_last_training", 0)
+        new_synth = synth_count - synth_at_last
+        effective_new = new_progs + new_synth * 0.5
+    except Exception:
+        effective_new = new_progs
+    return effective_new >= LORA_MIN_PROGRAMS
 
 
 def run_lora_training_cycle(round_num: int, state: dict) -> dict:
@@ -1293,6 +1474,12 @@ def run_lora_training_cycle(round_num: int, state: dict) -> dict:
         state["last_training_round"] = round_num
         state["programs_at_last_training"] = _count_successful_programs()
         state["active_adapter"] = adapter_path
+        # Track synthetic count for threshold gating
+        try:
+            from synthetic_tasks import get_synthetic_stats
+            state["synthetic_at_last_training"] = get_synthetic_stats().get("total", 0)
+        except Exception:
+            pass
         state["adapter_history"].append(timestamp)
         state["post_lora_scores"] = []  # reset regression tracking
 
@@ -1703,6 +1890,16 @@ def evolve(rounds=None, diagnose_only=False, never_stop=False, tier3_tasks=None,
             print(f"[evolve] Auto-push error: {e}")
 
         print(f"\n[evolve] Round {round_num} done. Score: {current_score:.4f} [{status}]")
+
+        # Periodic dead function pruning (every 10 rounds)
+        if round_num % 10 == 0:
+            try:
+                from dsl_prune import prune_dsl
+                removed = prune_dsl(dry_run=False)
+                if removed > 0:
+                    print(f"[evolve] Pruned {removed} dead functions from dsl.py")
+            except Exception as e:
+                print(f"[evolve] Prune skipped: {e}")
 
     print(f"\n{'='*60}")
     print(f"  EVOLUTION COMPLETE — Final Score: {current_score:.4f}")

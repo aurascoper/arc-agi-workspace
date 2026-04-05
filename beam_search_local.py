@@ -82,8 +82,12 @@ class NodeResult:
 # OLLAMA INTERACTION
 # ---------------------------------------------------------------------------
 
-def ollama_generate(prompt: str, config: BeamConfig) -> str:
+EVAL_TEMPERATURE = 0.1  # Low temp for judge/eval consistency (arXiv 2603.28304)
+
+
+def ollama_generate(prompt: str, config: BeamConfig, temperature: Optional[float] = None) -> str:
     """Send a chat completion to Ollama and return the response text."""
+    temp = temperature if temperature is not None else config.temperature
     url = f"{OLLAMA_URL}/api/chat"
     payload = {
         "model": config.model,
@@ -91,7 +95,7 @@ def ollama_generate(prompt: str, config: BeamConfig) -> str:
         "stream": False,
         "think": False,  # Qwen 3 compat; harmless for other models
         "options": {
-            "temperature": config.temperature,
+            "temperature": temp,
             "num_predict": 2048,
         },
     }
@@ -114,13 +118,14 @@ def ollama_generate(prompt: str, config: BeamConfig) -> str:
         return ""
 
 
-def mlx_generate(prompt: str, config: BeamConfig) -> str:
+def mlx_generate(prompt: str, config: BeamConfig, temperature: Optional[float] = None) -> str:
     """Generate via MLX (reuses target_mlx_arc's loaded model + TurboQuant KV cache)."""
     import gc
+    temp = temperature if temperature is not None else config.temperature
     sys.path.insert(0, str(config.workspace))
     try:
         from target_mlx_arc import call_model
-        result = call_model(prompt, temperature=config.temperature, max_tokens=2048)
+        result = call_model(prompt, temperature=temp, max_tokens=2048)
         # Flush KV cache between generations to prevent Metal memory fragmentation
         try:
             import mlx.core as mx
@@ -137,19 +142,37 @@ def mlx_generate(prompt: str, config: BeamConfig) -> str:
             sys.path.remove(str(config.workspace))
 
 
-def generate(prompt: str, config: BeamConfig) -> str:
-    """Dispatch to MLX or Ollama based on config.backend."""
+def generate(prompt: str, config: BeamConfig, temperature: Optional[float] = None) -> str:
+    """Dispatch to MLX or Ollama based on config.backend.
+
+    If temperature is given, it overrides config.temperature for this call only.
+    """
     if config.backend == "mlx":
-        return mlx_generate(prompt, config)
-    return ollama_generate(prompt, config)
+        return mlx_generate(prompt, config, temperature=temperature)
+    return ollama_generate(prompt, config, temperature=temperature)
 
 
 # ---------------------------------------------------------------------------
 # PROMPT & PARSING
 # ---------------------------------------------------------------------------
 
-def _extract_helper_summary(dsl_code: str, max_sigs: int = 50) -> str:
-    """Extract function signatures from HELPER_CODE_PREFIX for prompt context."""
+def _extract_helper_summary(dsl_code: str, max_sigs: int = 50, task_data: list = None) -> str:
+    """Extract function signatures from HELPER_CODE_PREFIX for prompt context.
+
+    If task_data is provided, uses the recognition model to rank by relevance.
+    Otherwise falls back to showing the last max_sigs signatures.
+    """
+    if task_data:
+        try:
+            from dsl_recognition import get_relevant_signatures
+            ranked = get_relevant_signatures(dsl_code, task_data, n=max_sigs)
+            total = len(re.findall(r"def \w+\(", dsl_code))
+            lines = [f"  {s}" for s in ranked]
+            if total > max_sigs:
+                lines.insert(0, f"  ... ({total - max_sigs} more, ranked by task relevance) ...")
+            return "\n".join(lines) if lines else "  (none)"
+        except Exception:
+            pass  # fallback below
     sigs = re.findall(r"(def \w+\([^)]*\))", dsl_code)
     shown = sigs[-max_sigs:]
     if len(sigs) > max_sigs:
@@ -449,11 +472,33 @@ def _mini_solve_eval(worktree_path: str, config: BeamConfig) -> float:
     for tf in sample:
         try:
             td = json.loads(tf.read_text())
+            # Canonicalize colors — LLM sees frequency-ordered colors
+            try:
+                from evolve_qwen_arc import _canonicalize_task
+                td, _inv = _canonicalize_task(td)
+            except ImportError:
+                pass
+            # H3: Try composition search before LLM (fast, no tokens)
+            try:
+                from mdl_compose import compose_search
+                comp_code = compose_search(td, dsl_ns, timeout=3.0)
+                if comp_code:
+                    comp_passed, _ = try_code_on_task(comp_code, td)
+                    if comp_passed:
+                        scores.append(1.0)
+                        try:
+                            from evolve_qwen_arc import _log_successful_program
+                            _log_successful_program(tf.stem, td, comp_code, "composition_search")
+                        except Exception:
+                            pass
+                        continue
+            except Exception:
+                pass
             prompt = build_prompt(td)
             if not prompt:
                 scores.append(0.0)
                 continue
-            response = generate(prompt, config)
+            response = generate(prompt, config, temperature=EVAL_TEMPERATURE)
             code = extract_python_code(response)
             if not code or "def transform" not in code:
                 scores.append(0.0)
@@ -469,8 +514,28 @@ def _mini_solve_eval(worktree_path: str, config: BeamConfig) -> float:
                     pass
             elif failures:
                 pair_scores = [calculate_pixel_accuracy(f[1], f[2]) if f[2] is not None else 0.0 for f in failures]
-                scores.append(sum(pair_scores) / len(pair_scores))
+                avg_pa = sum(pair_scores) / len(pair_scores)
+                # Log near-miss for LoRA fine-tuning
+                if avg_pa >= 0.92 and all(f[2] is not None for f in failures):
+                    try:
+                        from evolve_qwen_arc import _log_near_miss_program
+                        _log_near_miss_program(tf.stem, td, code, prompt, avg_pa)
+                    except Exception:
+                        pass
+                # Collect synthetic task from failed program (TransCoder-style)
+                try:
+                    from synthetic_tasks import collect_from_beam_failure
+                    collect_from_beam_failure(td, code, tf.stem)
+                except Exception:
+                    pass
+                scores.append(avg_pa)
             else:
+                # Even total failures can generate synthetic tasks
+                try:
+                    from synthetic_tasks import collect_from_beam_failure
+                    collect_from_beam_failure(td, code, tf.stem)
+                except Exception:
+                    pass
                 scores.append(0.0)
         except Exception:
             scores.append(0.0)

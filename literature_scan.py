@@ -51,6 +51,12 @@ DEFAULT_QUERIES = [
     '"program synthesis" AND "grid"',
     '"inductive logic programming" AND "visual"',
     '"domain specific language" AND "program induction"',
+    # Neuroevolutionary & symbolic/symbiotic AI (added 2026-04-05)
+    '"neuroevolution" AND "program synthesis"',
+    '"neurosymbolic" AND "reasoning"',
+    '"evolutionary" AND "domain specific language"',
+    '"genetic programming" AND "abstraction"',
+    '"symbiotic" AND "neural" AND "symbolic"',
 ]
 
 # OpenAlex uses free-text search (no boolean), so separate query list
@@ -60,10 +66,16 @@ OPENALEX_QUERIES = [
     "program synthesis grid transformation",
     "inductive logic programming visual reasoning",
     "domain specific language program induction",
+    # Neuroevolutionary & symbolic/symbiotic AI (added 2026-04-05)
+    "neuroevolution program synthesis",
+    "neurosymbolic reasoning abstraction",
+    "evolutionary domain specific language",
+    "genetic programming abstraction reasoning",
+    "symbiotic neural symbolic AI",
 ]
 
 MAX_RESULTS_PER_QUERY = 5
-MAX_PAPERS_TOTAL = 20
+MAX_PAPERS_TOTAL = 40
 DAYS_LOOKBACK = 90  # only consider papers from the last N days
 ALL_SOURCES = ["arxiv", "openalex"]
 

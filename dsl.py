@@ -19192,6 +19192,118 @@ def count_unique_colors_in_quadrants(grid: list[list[int]]) -> list[list[int]]:
                 result[3].append(grid[i][j])
     return result
 
+
+
+# --- BEAM SEARCH EVOLVED FUNCTIONS ---
+
+def detect_rectangle_of_color(grid: list[list[int]]) -> list[list[int]]:
+    """Extract all maximal rectangular blocks of a single non-background color."""
+    if not grid or not grid[0]:
+        return grid
+    h, w = len(grid), len(grid[0])
+    background = 0
+    result = [[0] * w for _ in range(h)]
+    for r in range(h):
+        for c in range(w):
+            if grid[r][c] != background:
+                color = grid[r][c]
+                if color == 0:
+                    result[r][c] = 0
+                    continue
+                # Find bounding box of this color
+                min_r, max_r = r, r
+                min_c, max_c = c, c
+                for rr in range(r, h):
+                    for cc in range(c, w):
+                        if grid[rr][cc] == color:
+                            min_r = min(min_r, rr)
+                            max_r = max(max_r, rr)
+                            min_c = min(min_c, cc)
+                            max_c = max(max_c, cc)
+                        elif grid[rr][cc] != background:
+                            break
+                    if grid[rr][cc] != background:
+                        break
+                # Check if this is a rectangle (all cells in bounding box are this color)
+                is_rect = True
+                for rr in range(min_r, max_r + 1):
+                    for cc in range(min_c, max_c + 1):
+                        if grid[rr][cc] != color:
+                            is_rect = False
+                            break
+                    if not is_rect:
+                        break
+                if is_rect:
+                    for rr in range(min_r, max_r + 1):
+                        for cc in range(min_c, max_c + 1):
+                            result[rr][cc] = color
+    return result
+
+def find_l_shape(grid: list[list[int]]) -> list[list[int]]:
+    """Detect and extract L-shaped patterns of a specific color."""
+    if not grid or not grid[0]:
+        return grid
+    h, w = len(grid), len(grid[0])
+    background = 0
+    result = [[0] * w for _ in range(h)]
+    for r in range(h):
+        for c in range(w):
+            if grid[r][c] != background:
+                color = grid[r][c]
+                # Check for L-shape: 3 cells of same color in L formation
+                # L-shape can be vertical line of 3 with one arm, or horizontal line of 3 with one arm
+                # Check vertical L: 3 in column, 1 in adjacent column at top or bottom
+                l_found = False
+                # Check vertical L (top-left to bottom-left, with right arm at top or bottom)
+                if r + 1 < h and c + 1 < w:
+                    if grid[r][c] == color and grid[r+1][c] == color and grid[r+2][c] == color:
+                        # Check for right arm at top or bottom
+                        if (grid[r][c+1] == color and grid[r+1][c+1] == color and grid[r+2][c+1] == color) or \
+                           (grid[r][c+1] == color and grid[r+1][c+1] != color and grid[r+2][c+1] == color):
+                            l_found = True
+                # Check horizontal L (left to right, with bottom arm at left or right)
+                if r + 1 < h and c + 1 < w:
+                    if grid[r][c] == color and grid[r][c+1] == color and grid[r][c+2] == color:
+                        # Check for bottom arm at left or right
+                        if (grid[r+1][c] == color and grid[r+1][c+1] == color and grid[r+1][c+2] == color) or \
+                           (grid[r+1][c] == color and grid[r+1][c+1] != color and grid[r+1][c+2] == color):
+                            l_found = True
+                if l_found:
+                    for rr in range(r, r + 3):
+                        for cc in range(c, c + 3):
+                            result[rr][cc] = color
+    return result
+
+def detect_symmetry_axis(grid: list[list[int]]) -> tuple:
+    """Detect if grid has horizontal, vertical, or diagonal symmetry and return the axis."""
+    if not grid or not grid[0]:
+        return (0, 0)
+    h, w = len(grid), len(grid[0])
+    background = 0
+    
+    # Check for vertical symmetry axis
+    has_v_symmetry = False
+    axis = 0
+    for col in range(w // 2):
+        if grid[0][col] != grid[0][w - 1 - col]:
+            has_v_symmetry = False
+            break
+        if grid[1][col] != grid[1][w - 1 - col]:
+            has_v_symmetry = False
+            break
+        if grid[h-1][col] != grid[h-1][w - 1 - col]:
+            has_v_symmetry = False
+            break
+        if grid[h-1][col] != grid[h-1][w - 1 - col]:
+            has_v_symmetry = False
+            break
+        if grid[h-1][col] != grid[h-1][w - 1 - col]:
+            has_v_symmetry = False
+            break
+        if grid[h-1][col] != grid[h-1][w - 1 - col]:
+            has_v_symmetry = False
+            break
+
 '''
 
 exec(HELPER_CODE_PREFIX, globals())

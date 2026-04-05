@@ -17,9 +17,16 @@ import sys
 import traceback
 import random
 import threading
-import numpy as np
 from pathlib import Path
 from copy import deepcopy
+
+# Ensure turboquant-mlx venv site-packages are on sys.path (mlx_lm lives there)
+_tq_venv = Path(__file__).resolve().parent.parent / "turboquant-mlx" / ".venv"
+_tq_sp = next(_tq_venv.glob("lib/python*/site-packages"), None)
+if _tq_sp and str(_tq_sp) not in sys.path:
+    sys.path.insert(0, str(_tq_sp))
+
+import numpy as np
 
 # ---------------------------------------------------------------------------
 # CONFIGURATION
@@ -362,6 +369,30 @@ def try_code_on_task(code: str, task_data: dict, evaluate_on_test=False, abpr_tr
             failures.append(("", "", None, str(e), tb, None))
 
     return len(failures) == 0, failures
+
+
+def run_code_on_inputs(code: str, inputs: list) -> list:
+    """Execute transform code on a list of input grids. Returns predictions (None on crash).
+
+    Used by D4 ensemble to get test predictions for voting.
+    """
+    ns = dict(HELPER_FUNCTIONS)
+    try:
+        dsl_code = open("dsl.py").read()
+    except Exception:
+        dsl_code = ""
+    exec(dsl_code + "\n" + code, ns)
+    transform_fn = ns.get("transform")
+    if not transform_fn:
+        return [None] * len(inputs)
+    results = []
+    for inp in inputs:
+        try:
+            pred = run_with_timeout(transform_fn, (inp,), timeout_sec=5)
+            results.append([list(row) for row in pred] if pred else None)
+        except Exception:
+            results.append(None)
+    return results
 
 
 def calculate_pixel_accuracy(expected, predicted) -> float:

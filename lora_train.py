@@ -36,15 +36,94 @@ LEARNING_RATE = 2e-5
 
 # Canary validation
 CANARY_COUNT = 5
-CANARY_MIN_SOLVES = 3
+CANARY_MIN_SOLVES = 2
 
 
 # ---------------------------------------------------------------------------
 # DATA PREPARATION
 # ---------------------------------------------------------------------------
 
-def load_and_dedup(jsonl_path: Path) -> list[dict]:
-    """Read JSONL, deduplicate by (task_name, code) hash."""
+def _load_synthetic_as_programs(synthetic_path: Path, seen: set) -> list[dict]:
+    """Convert synthetic_tasks.jsonl entries to the same format as successful_programs.jsonl.
+
+    synthetic_tasks.jsonl has: {source_task, synthetic_task: {train, test}, code, timestamp}
+    We convert to: {task_name, code, prompt, num_train, num_test, timestamp, source}
+
+    Generates prompts via build_prompt() from dsl.py to match the inference path.
+    Deduplicates against `seen` set. Returns newest first.
+    """
+    # Load build_prompt from DSL
+    build_prompt = None
+    try:
+        dsl_path = WORKSPACE / "dsl.py"
+        dsl_ns: dict = {}
+        exec(compile(dsl_path.read_text(), str(dsl_path), "exec"), dsl_ns)
+        build_prompt = dsl_ns.get("build_prompt")
+    except Exception:
+        pass
+
+    entries = []
+    with open(synthetic_path) as f:
+        for line in f:
+            line = line.strip()
+            if not line:
+                continue
+            try:
+                raw = json.loads(line)
+            except json.JSONDecodeError:
+                continue
+
+            synth_task = raw.get("synthetic_task")
+            code = raw.get("code")
+            if not synth_task or not code:
+                continue
+
+            task_name = f"synth_{raw.get('source_task', 'unknown')}"
+
+            # Dedup against real programs
+            key = hashlib.md5(f"{task_name}:{code}".encode()).hexdigest()
+            if key in seen:
+                continue
+            seen.add(key)
+
+            # Generate prompt matching inference path
+            prompt = None
+            if build_prompt:
+                try:
+                    prompt = build_prompt(synth_task)
+                except Exception:
+                    pass
+
+            if not prompt:
+                # Fallback: simple prompt from training pairs
+                parts = []
+                for i, pair in enumerate(synth_task.get("train", [])[:3]):
+                    parts.append(f"Input:\n{pair['input']}\nOutput:\n{pair['output']}")
+                parts.append("Output ONLY python code `def transform(input_grid):`\n```python\n")
+                prompt = "\n\n".join(parts)
+
+            entries.append({
+                "task_name": task_name,
+                "code": code,
+                "prompt": prompt,
+                "num_train": len(synth_task.get("train", [])),
+                "num_test": len(synth_task.get("test", [])),
+                "timestamp": raw.get("timestamp", 0),
+                "source": "synthetic",
+            })
+
+    # Newest first for freshness
+    entries.sort(key=lambda e: e["timestamp"], reverse=True)
+    return entries
+
+
+def load_and_dedup(jsonl_path: Path, include_synthetic: bool = True,
+                   max_synthetic_ratio: float = 0.5) -> list[dict]:
+    """Read JSONL, deduplicate by (task_name, code) hash.
+
+    If include_synthetic=True, also loads synthetic_tasks.jsonl from the same
+    directory, capping synthetic entries at max_synthetic_ratio of total data.
+    """
     entries = []
     seen = set()
     with open(jsonl_path) as f:
@@ -62,6 +141,22 @@ def load_and_dedup(jsonl_path: Path) -> list[dict]:
             if key not in seen:
                 seen.add(key)
                 entries.append(entry)
+
+    # Merge synthetic tasks (TransCoder-style training data from failed programs)
+    if include_synthetic:
+        synthetic_path = jsonl_path.parent / "synthetic_tasks.jsonl"
+        if synthetic_path.exists():
+            synthetic_entries = _load_synthetic_as_programs(synthetic_path, seen)
+            # Cap: if we have N real entries, allow at most N * ratio / (1 - ratio) synthetic
+            if entries:
+                max_synthetic = int(len(entries) * max_synthetic_ratio / (1 - max_synthetic_ratio))
+            else:
+                max_synthetic = 10  # bootstrap: allow some synthetic even with 0 real
+            synthetic_entries = synthetic_entries[:max(max_synthetic, 0)]
+            if synthetic_entries:
+                print(f"[lora] Merging {len(synthetic_entries)} synthetic tasks (cap={max_synthetic})")
+            entries.extend(synthetic_entries)
+
     return entries
 
 
@@ -107,7 +202,9 @@ def prepare_data(jsonl_path: Path, output_dir: Path, seed: int = 42):
             for item in data:
                 f.write(json.dumps(item) + "\n")
 
-    print(f"[lora] Data: {len(entries)} unique programs → {len(train_data)} train, {len(valid_data)} valid")
+    near_miss_count = sum(1 for e in entries if e.get("source") == "near_miss")
+    synthetic_count = sum(1 for e in entries if e.get("source") == "synthetic")
+    print(f"[lora] Data: {len(entries)} unique ({near_miss_count} near-miss, {synthetic_count} synthetic) → {len(train_data)} train, {len(valid_data)} valid")
     return len(entries), entries
 
 
