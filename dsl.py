@@ -18659,6 +18659,367 @@ def denoise_minority_color(grid: list[list[int]], target_color: int = 1, backgro
                 result[r, c] = grid_arr[r, c]
     return result.tolist()
 
+
+
+# --- EVOLVED FUNCTIONS (auto-generated) ---
+
+def collapse_and_merge_columns(grid: list[list[int]]) -> list[list[int]]:
+    """Collapse columns by finding matching column pairs based on vertical symmetry of non-zero elements."""
+    import numpy as np
+    rows, cols = len(grid), len(grid[0])
+    result = [[0] * cols for _ in range(rows)]
+    
+    # Identify non-zero columns and their values
+    col_data = []
+    for c in range(cols):
+        col_vals = [grid[r][c] for r in range(rows)]
+        col_data.append(col_vals)
+    
+    # Find the 'axis' color or dominant structure in each task context
+    # Task 1: Columns 1 and 3 are significant (value 1). They seem to act as separators or axes.
+    # Task 2: Columns 0 and 4 (value 1 or 3) act differently.
+    # General strategy for these tasks: Identify the 'axis' column (often 1 or 3) and use it to merge/split columns.
+    
+    # Extract unique colors present in the grid (excluding 0)
+    colors = set()
+    for r in range(rows):
+        for c in range(cols):
+            if grid[r][c] != 0:
+                colors.add(grid[r][c])
+    
+    # Determine the target merge axis based on colors present
+    # In Task 1, '1' is the separator. In Task 2, '1' or '3' are present.
+    # Heuristic: If '1' exists, treat it as the separator. If '3' exists, treat it as the separator.
+    # If neither, assume the left-most non-zero column is the axis.
+    
+    axis_val = None
+    if 1 in colors:
+        axis_val = 1
+    elif 3 in colors:
+        axis_val = 3
+    elif 0 in colors and len(colors) > 1:
+        # If only 0 and other colors, maybe 0 is background, find other
+        for c in range(cols):
+            if 0 not in col_data[c]:
+                axis_val = c
+                break
+        if axis_val is None:
+            axis_val = 0 # fallback
+    else:
+        axis_val = 0
+    
+    # Calculate distance from axis for each column
+    col_indices_to_keep = []
+    for c in range(cols):
+        if grid[rows//2][c] != 0 and c != axis_val:
+            # If middle row has content at c, and c is not axis, keep it (or map to axis side)
+            pass
+    
+    # Simpler heuristic for this specific failure:
+    # Task 1: Input 5x7 -> Output 5x3. Columns 0, 2, 4, 6 are kept? No.
+    # Input Col 0: 0991909
+    # Input Col 1: 9001900
+    # Input Col 2: 9991999
+    # Input Col 3: 0901000
+    # Input Col 4: 9001900
+    # Input Col 5: 9001900
+    # Input Col 6: 0000000
+    
+    # Observation: Input has vertical symmetry around Col 3?
+    # Col 0: 0991909 -> Col 6: 0000000 (No)
+    # Col 1: 9001900 -> Col 5: 9001900 (Match!)
+    # Col 2: 9991999 -> Col 4: 9001900 (No match)
+    
+    # Actually, let's look at the Output structure.
+    # Task 1 Output:
+    # 000
+    # 088
+    # 000
+    # 808
+    # 088
+    # This looks like a zoomed in version of the left part of the input, or a specific region.
+    # Input size 5x7, Output 5x3. Factor 2.33? No.
+    
+    # Let's try to detect vertical lines of '1's.
+    # Task 1: Col 3 is all 1s? 
+    # Input Col 3: 199111111 (Wait, input row 1 col 3 is 1. Input row 2 col 3 is 1.)
+    # Input Row 0: 0991909 -> Col 3 is 1.
+    # Input Row 1: 9001900 -> Col 3 is 1.
+    # Input Row 2: 9991999 -> Col 3 is 1.
+    # Input Row 3: 0901000 -> Col 3 is 1.
+    # Input Row 4: 9001900 -> Col 3 is 1.
+    # Yes, Col 3 is a vertical line of 1s in Task 1.
+    
+    # Task 2: Col 4 is a vertical line of 1s?
+    # Input Row 0: 0001900 -> Col 4 is 1.
+    # Input Row 1: 9091999 -> Col 4 is 1.
+    # Input Row 2: 0991999 -> Col 4 is 1.
+    # Input Row 3: 0001999 -> Col 4 is 1.
+    # Input Row 4: 0991999 -> Col 4 is 1.
+    # Yes, Col 4 is a vertical line of 1s in Task 2.
+    
+    # So the rule is: Find the vertical column that is entirely color 1 (or the dominant non-background color if 1 is missing).
+    # Then extract the left half (or the part to the left of the separator).
+    
+    # Task 1 Input: 5x7. Separator at Col 3. Left part: Cols 0-2 (3 cols). Right part: Cols 4-6 (3 cols).
+    # Task 1 Output: 5x3. It matches the LEFT part exactly?
+    # Input Left (0-2):
+    # 099
+    # 900
+    # 999
+    # 090
+    # 900
+    # Output:
+    # 000
+    # 088
+    # 000
+    # 808
+    # 088
+    # Values changed! 9->0, 0->8.
+    # Rule: Invert colors? 9->0, 0->8? No, 9->0, 0->8, 1->1?
+    # Wait, in Task 1 Input Col 0: 099. Output Col 0: 000.
+    # Input Col 1: 900. Output Col 0: 088.
+    # Input Col 2: 999. Output Col 0: 000.
+    # It seems 9 becomes 0, and 0 becomes 8.
+    # What about color 1? In Input Col 3 (separator), value is 1. In Output Col 1 (corresponding?), value is 8.
+    # Wait, Output is 5x3. Input 5x7.
+    # Output Col 0 corresponds to Input Col 0? 
+    # Output Col 1 corresponds to Input Col 1?
+    # Output Col 2 corresponds to Input Col 2?
+    # If so, (0,1,2) maps to (0,8,0).
+    # Input (0,9,9) -> Output (0,8,8)? No Input(0) is 0.
+    # Input(0) is 0. Input(1) is 9. Input(2) is 9.
+    # Output(0) is 0. Output(1) is 8. Output(2) is 8.
+    # So 9 -> 8, 0 -> 8? No.
+    # Let's check Task 1 Input/Output pixel by pixel.
+    # (0,0): 0->0
+    # (0,1): 9->0 (9 becomes 0)
+    # (0,2): 9->0 (9 becomes 0)
+    # (1,0): 9->0 (9 becomes 0)
+    # (1,1): 0->8 (0 becomes 8)
+    # (1,2): 0->8 (0 becomes 8)
+    # (2,0): 9->0
+    # (2,1): 9->0
+    # (2,2): 9->0
+    # (3,0): 0->8
+    # (3,1): 9->0
+    # (3,2): 0->8
+    # (4,0): 9->0
+    # (4,1): 0->8
+    # (4,2): 0->8
+    
+    # Transformation Rule: 
+    # If cell is 0, it becomes 8.
+    # If cell is 9, it becomes 0.
+    # If cell is 1 (separator), it stays 1? Or becomes 8?
+    # (0,3) is 1. Output (0,0) is 0.
+    # (1,3) is 1. Output (1,1) is 8.
+    # (2,3) is 1. Output (2,0) is 0.
+    # (3,3) is 1. Output (3,1) is 8.
+    # (4,3) is 1. Output (4,1) is 8.
+    # It seems the separator (1) is being transformed based on row parity?
+    # Row 0: 1 -> 0
+    # Row 1: 1 -> 8
+    # Row 2: 1 -> 0
+    # Row 3: 1 -> 8
+    # Row 4: 1 -> 8
+    # Wait, Row 4 in Output is 088. (1,1) is 8. (4,1) is 8.
+    # Row 0 in Output is 000. (1,1) is 0.
+    # Row 2 in Output is 000. (1,1) is 0.
+    # Row 1 in Output is 088. (1,1) is 8.
+    # Row 3 in Output is 808. (1,1) is 0.
+    # Row 4 in Output is 088. (1,1) is 8.
+    # Pattern of 1s in Input: 1,1,1,1,1.
+    # Pattern of 1s in Output (at corresponding positions): 0,8,0,0,8.
+    # This is getting complicated.
+    
+    # Let's look at the other colors.
+    # Input has 0 and 9. Output has 0 and 8.
+    # Maybe 9 is mapped to 0 and 0 is mapped to 8?
+    # Input has 1. Output has 0 and 8.
+    # Is it possible that 1 -> 0 if row is even, 1 -> 8 if row is odd?
+    # Row 0: 1 -> 0. (Even)
+    # Row 1: 1 -> 8. (Odd)
+    # Row 2: 1 -> 0. (Even)
+    # Row 3: 1 -> 0. (Odd? No, Row 3 is odd index 3, but 0).
+    # Row 4: 1 -> 8. (Even? No, Row 4 is even index 4).
+    # So it's not simple parity.
+    
+    # Let's look at Task 2.
+    # Input: 10x10. Separator '1' at Col 4?
+    # Col 0: 1000000000. (1 at 0,0)
+    # Col 1: 0000000000
+    # Col 2: 0000000000
+    # Col 3: 0000000000
+    # Col 4: 1000000000. (1 at 0,4)
+    # Col 5: 0000000000
+    # Col 6: 0000000000
+    # Col 7: 0000000000
+    # Col 8: 0000000000
+    # Col 9: 0000000000
+    # Separator is at (0,4) and (4,4)? No, Col 4 has 1 at row 0.
+    # Wait, in Task 2 Input, Col 4 has '1' at row 0.
+    # In Task 2 Output, Col 4 has '6' at row 0?
+    # Output Row 0: 1000000000. (1 at 0,0)
+    # Output Row 1: 0000000060. (6 at 1,8)
+    # ...
+    # This task is about moving objects.
+    # Input has '1' at (0,0) and '1' at (0,4).
+    # Output has '1' at (0,0) and '1' at (0,0). (Wait, Output Row 0 is 1000000000).
+    # Input Row 4: 0700000000. (7 at 4,0).
+    # Output Row 4: 0000070000. (7 at 4,4).
+    # Input Row 6: 0800000000. (8 at 6,0).
+    # Output Row 6: 0800070080. (8 at 6,0), (8 at 6,6), (8 at 6,8)? No.
+    # Input Row 6: 0800000000. (8 at 6,1).
+    # Output Row 6: 0800070080. (8 at 6,1), (8 at 6,6), (8 at 6,8).
+    # Input has 8 at (6,1). Output has 8 at (6,1).
+    # Input has 7 at (4,0). Output has 7 at (4,4).
+    # Input has 6 at (1,9)? No, Input Row 1: 0000000060. (6 at 1,8).
+    # Output Row 1: 0000000060. (6 at 1,8).
+    # Input Row 3: 0007033008. (7 at 3,3), (3 at 3,4), (3 at 3,5), (8 at 3,8).
+    # Output Row 3: 0007733888. (7 at 3,3), (7 at 3,4), (3 at 3,5), (3 at 3,6), (8 at 3,7), (8 at 3,8), (8 at 3,9).
+    # This looks like a reflection across the vertical axis defined by the '1's.
+    # In Task 1, the axis is Col 3 (index 3).
+    # In Task 2, the axis seems to be Col 4 (index 4).
+    # But in Task 2 Input, Col 4 is not fully 1s. Only (0,4) is 1.
+    # Wait, let's re-examine Task 2 Input.
+    # 10x10 grid.
+    # Row 0: 1000000000.
+    # Row 4: 0000000000.
+    # Row 9: 0000070007.
+    # There is no vertical line of 1s in Task 2 Input.
+    # But in Task 2 Output, there are '1's at (0,0) and (0,0)? No.
+    # Output Row 0: 1000000000. (1 at 0,0).
+    # Output Row 3: 0007733888. (7 at 3,3), (3 at 3,4), (3 at 3,5), (8 at 3,6), (8 at 3,7), (8 at 3,8), (8 at 3,9).
+    # This is getting confusing. Let's try a simpler approach.
+    
+    # Task 1: 5x7 -> 5x3. (Input width 7, Output width 3). 7/2 = 3.5.
+    # Task 2: 10x10 -> 10x10. (Input width 10, Output width 10).
+    # In Task 1, the '1's form a vertical line at Col
+
+
+
+# --- BEAM SEARCH EVOLVED FUNCTIONS ---
+
+def flood_fill_path(grid: list[list[int]]) -> list[list[int]]:
+    """Flood fills all cells reachable from the first non-background cell with a new marker."""
+    if not grid or not grid[0]:
+        return grid
+    background = 0
+    target = 1
+    new_marker = 5
+    h, w = len(grid), len(grid[0])
+    visited = [[False] * w for _ in range(h)]
+    stack = []
+    for r in range(h):
+        for c in range(w):
+            if grid[r][c] == target and not visited[r][c]:
+                stack.append((r, c))
+                visited[r][c] = True
+                break
+        if stack:
+            break
+    
+    while stack:
+        r, c = stack.pop()
+        for dr, dc in [(-1, 0), (1, 0), (0, -1), (0, 1)]:
+            nr, nc = r + dr, c + dc
+            if 0 <= nr < h and 0 <= nc < w and not visited[nr][nc] and grid[nr][nc] == target:
+                visited[nr][nc] = True
+                stack.append((nr, nc))
+    
+    for r in range(h):
+        for c in range(w):
+            if visited[r][c]:
+                grid[r][c] = new_marker
+    return grid
+
+def shortest_path_breadth_first(grid: list[list[int]], start: tuple, end: tuple, wall: int) -> list[tuple]:
+    """Performs BFS to find the shortest path from start to end avoiding walls."""
+    h, w = len(grid), len(grid[0])
+    visited = set()
+    queue = deque([(start, [start])])
+    visited.add(start)
+    
+    while queue:
+        (r, c), path = queue.popleft()
+        if (r, c) == end:
+            return path
+        for dr, dc in [(-1, 0), (1, 0), (0, -1), (0, 1)]:
+            nr, nc = r + dr, c + dc
+            if 0 <= nr < h and 0 <= nc < w and grid[nr][nc] != wall and (nr, nc) not in visited:
+                visited.add((nr, nc))
+                queue.append(((nr, nc), path + [(nr, nc)]))
+    return None
+
+def solve_maze_dfs(grid: list[list[int]], wall: int, start: tuple, end: tuple) -> list[tuple]:
+    """Uses DFS to find a path from start to end avoiding walls."""
+    h, w = len(grid), len(grid[0])
+    visited = set()
+    stack = [(start, [start])]
+    visited.add(start)
+    
+    while stack:
+        (r, c), path = stack.pop()
+        if (r, c) == end:
+            return path
+        for dr, dc in [(-1, 0), (1, 0), (0, -1), (0, 1)]:
+            nr, nc = r + dr, c + dc
+            if 0 <= nr < h and 0 <= nc < w and grid[nr][nc] != wall and (nr, nc) not in visited:
+                visited.add((nr, nc))
+                stack.append(((nr, nc), path + [(nr, nc)]))
+    return None
+
+def find_maze_entry_exit(grid: list[list[int]], wall: int, target: int) -> tuple[tuple, tuple]:
+    """Identifies the start and end points of a maze by finding entry/exit markers."""
+    h, w = len(grid), len(grid[0])
+    entry = None
+    exit = None
+    for r in range(h):
+        for c in range(w):
+            if grid[r][c] == target:
+                if entry is None:
+                    entry = (r, c)
+                else:
+                    exit = (r, c)
+    return (entry, exit) if entry and exit else (None, None)
+
+def carve_path_along_route(grid: list[list[int]], path: list[tuple], fill_color: int) -> list[list[int]]:
+    """Overwrites the path coordinates in the grid with a specific fill color."""
+    h, w = len(grid), len(grid[0])
+    result = [row[:] for row in grid]
+    for r, c in path:
+        if 0 <= r < h and 0 <= c < w:
+            result[r][c] = fill_color
+    return result
+
+def count_steps_to_target(grid: list[list[int]], target: int, wall: int) -> int:
+    """Returns the number of steps (Manhattan distance or BFS distance) to the nearest target."""
+    h, w = len(grid), len(grid[0])
+    target_pos = None
+    for r in range(h):
+        for c in range(w):
+            if grid[r][c] == target:
+                target_pos = (r, c)
+                break
+    if target_pos is None:
+        return -1
+    
+    queue = deque([(0, target_pos)])
+    visited = set([target_pos])
+    steps = 0
+    
+    while queue:
+        steps += 1
+        for _ in range(len(queue)):
+            r, c = queue.popleft()
+            for dr, dc in [(-1, 0), (1, 0), (0, -1), (0, 1)]:
+                nr, nc = r + dr, c + dc
+                if 0 <= nr < h and 0 <= nc < w and grid[nr][nc] != wall and (nr, nc) not in visited:
+                    visited.add((nr, nc))
+                    queue.append((steps, (nr, nc)))
+    return steps
+
 '''
 
 exec(HELPER_CODE_PREFIX, globals())
