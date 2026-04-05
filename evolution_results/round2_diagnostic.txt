@@ -1,7 +1,7 @@
 /no_think
 You are an ARC-AGI DSL engineer. Given failing tasks, output ONLY Python functions. No analysis, no explanation — just code.
 
-Current DSL: 731 functions. Do NOT duplicate existing functions.
+Current DSL: 744 functions. Do NOT duplicate existing functions.
 
 ## Known Techniques
 Key ARC-AGI solution techniques from the literature:
@@ -37,23 +37,7 @@ Key ARC-AGI solution techniques from the literature:
     boundaries or other objects. Used in "drop", "slide", and "gravity" tasks.
 
 ## Existing (last 50 signatures, do NOT duplicate)
-  ... (749 more) ...
-  def replace_twos_with_eights(grid: list[list[int]])
-  def extract_blob_with_color(grid: list[list[int]], color: int)
-  def replace_specific_values_with_fours(grid: list[list[int]])
-  def replace_specific_values_with_nines(grid: list[list[int]])
-  def replace_diagonal_with_ones(grid: list[list[int]])
-  def replace_with_nines(grid: list[list[int]])
-  def replace_with_threes(grid: list[list[int]])
-  def apply_mirror_and_copy_to_grid_base_and_expand(grid: list[list[int]])
-  def decompose_and_convert_pattern(grid: list[list[int]])
-  def remove_noise_pixels(grid: list[list[int]])
-  def denoise_isolated_objects(grid: list[list[int]])
-  def correct_border_inconsistencies(grid: list[list[int]])
-  def clean_outliers_by_majority_vote(grid: list[list[int]])
-  def smooth_granular_noise(grid: list[list[int]])
-  def remove_isolated_singletons(grid: list[list[int]])
-  def denoise_4connected_noise(grid: list[list[int]])
+  ... (765 more) ...
   def clean_grid_noise(grid: list[list[int]])
   def remove_outliers_by_consensus(grid: list[list[int]])
   def remove_granular_noise(grid: list[list[int]])
@@ -88,10 +72,24 @@ Key ARC-AGI solution techniques from the literature:
   def transform_pattern_to_full_grid(grid: list[list[int]], target_bg: int = 7)
   def execute_symmetric_scaling(grid: list[list[int]])
   def detect_task_type(grid)
+  def separate_and_refine_quadrants(grid: list[list[int]])
+  def is_separator(r, c)
+  def is_sep_row(r)
+  def is_sep_col(c)
+  def count_color_frequencies(grid: list[list[int]])
+  def get_color_frequency_ratio(grid: list[list[int]], color1: int, color2: int)
+  def count_nonzero_cells(grid: list[list[int]])
+  def get_mode_color(grid: list[list[int]])
+  def get_color_at_position(grid: list[list[int]], row_idx: int, col_idx: int)
+  def get_grid_dimensions(grid: list[list[int]])
+  def count_horizontal_segments(grid: list[list[int]], target: int)
+  def count_vertical_segments(grid: list[list[int]], target: int)
+  def count_isolated_cells(grid: list[list[int]], target: int)
+  def count_2x2_blocks_of_color(grid: list[list[int]], target: int)
+  def get_color_ratio_between_regions(grid: list[list[int]], region1: list, region2: list)
+  def transform_pattern_to_quarter_scale(grid: list[list[int]])
 
 ## Previous Experiments ([-] = no improvement, [+] = improved)
-  [-] Round 12: Add replace_specific_pattern, replace_values_based_on_pattern, replace_values_ba (replace_specific_pattern, replace_values_based_on_pattern, replace_values_based_on_specific_condition) metric 1.000->1.000
-  [-] Round 13: No valid functions proposed () metric 1.000->1.000
   [-] Round 14: Add replace_twos_with_eights, replace_two_with_eight, replace_two_with_eight, re (replace_twos_with_eights, replace_two_with_eight, replace_two_with_eight) metric 1.000->1.000
   [-] Round 1: Add replace_specific_values_with_fours (replace_specific_values_with_fours) metric 1.000->1.000
   [-] Round 1: Add replace_specific_values_with_nines (replace_specific_values_with_nines) metric 1.000->1.000
@@ -100,40 +98,15 @@ Key ARC-AGI solution techniques from the literature:
   [-] Round 2: Add decompose_and_convert_pattern (decompose_and_convert_pattern) metric 1.000->1.000
   [-] Round 3: Add propagate_symmetry_markers, transform_split_quadrants, transform_radial_patt (propagate_symmetry_markers, transform_split_quadrants, transform_radial_pattern) metric 1.000->1.000
   [-] Round 1: Add execute_symmetric_scaling (execute_symmetric_scaling) metric 1.000->1.000
+  [-] Round 2: Add separate_and_refine_quadrants (separate_and_refine_quadrants) metric 1.000->1.000
+  [-] Round 1: Add transform_pattern_to_quarter_scale (transform_pattern_to_quarter_scale) metric 1.000->1.000
 
 ## BLACKLIST — DO NOT propose functions similar to these (already tried, didn't help):
-apply_mirror_and, decompose_and_convert, execute_symmetric_scaling, propagate_symmetry_markers, replace_diagonal_with, replace_specific_pattern, replace_specific_values, replace_two_with, replace_twos_with, replace_values_based, replace_with_nines, replace_with_threes, transform_quadrant_fill, transform_radial_pattern, transform_split_quadrants
+apply_mirror_and, decompose_and_convert, execute_symmetric_scaling, propagate_symmetry_markers, replace_diagonal_with, replace_specific_values, replace_two_with, replace_twos_with, replace_with_nines, replace_with_threes, separate_and_refine, transform_pattern_to, transform_quadrant_fill, transform_radial_pattern, transform_split_quadrants
 
 ## Failure Distribution: SOLVE_FAIL: 2
 
 ## Failing Tasks
-### Task: 34b99a2b.json [SOLVE_FAIL]
-Scores: tier1=1.00 tier2=1.00 tier3(solve)=0.00
-Train 1 Input (5x9):
-080040550
-880845005
-880045005
-080840050
-008040505
-Train 1 Output (5x4):
-0020
-0200
-0202
-0222
-0222
-Train 2 Input (5x9):
-080045050
-080845055
-080840005
-080840505
-000840050
-Train 2 Output (5x4):
-2220
-2220
-0200
-0000
-0022
-
 ### Task: b6afb2da.json [SOLVE_FAIL]
 Scores: tier1=1.00 tier2=1.00 tier3(solve)=0.00
 Train 1 Input (10x10):
@@ -181,38 +154,52 @@ Train 2 Output (10x10):
 0000004224
 0000001441
 
+### Task: 34b99a2b.json [SOLVE_FAIL]
+Scores: tier1=1.00 tier2=1.00 tier3(solve)=0.77
+Train 1 Input (5x9):
+080040550
+880845005
+880045005
+080840050
+008040505
+Train 1 Output (5x4):
+0020
+0200
+0202
+0222
+0222
+Train 2 Input (5x9):
+080045050
+080845055
+080840005
+080840505
+000840050
+Train 2 Output (5x4):
+2220
+2220
+0200
+0000
+0022
+
 
 ## What went WRONG (execution traces from failed solve attempts)
-- 34b99a2b: CRASH
-    Error: list index out of range
+- b6afb2da: CRASH
+    Error: expected an indented block after function definition on line 19091 (<string>, line 19091)
     Traceback:
-      ...
-          pred = run_with_timeout(transform_fn, (pair["input"],), timeout_sec=5)
-        File "/Users/aurascoper/Developer/arc_agi/workspace/target_mlx_arc.py", line 229, in run_with_timeout
-          raise error[0]
-        File "/Users/aurascoper/Developer/arc_agi/workspace/target_mlx_arc.py", line 219, in target
-          result[0] = fn(*args)
-                      ~~^^^^^^^
-        File "<string>", line 18421, in transform
-      IndexError: list index out of range
-- 34b99a2b: CRASH
-    Error: list index out of range
-    Traceback:
-      ...
-          pred = run_with_timeout(transform_fn, (pair["input"],), timeout_sec=5)
-        File "/Users/aurascoper/Developer/arc_agi/workspace/target_mlx_arc.py", line 229, in run_with_timeout
-          raise error[0]
-        File "/Users/aurascoper/Developer/arc_agi/workspace/target_mlx_arc.py", line 219, in target
-          result[0] = fn(*args)
-                      ~~^^^^^^^
-        File "<string>", line 18421, in transform
-      IndexError: list index out of range
-- b6afb2da: WRONG_ANSWER
-    Pixel accuracy: 0.00
-    Expected shape: (10, 10), Got: None
-- b6afb2da: WRONG_ANSWER
-    Pixel accuracy: 0.00
-    Expected shape: (10, 10), Got: None
+      Traceback (most recent call last):
+        File "/Users/aurascoper/Developer/arc_agi/workspace/target_mlx_arc.py", line 245, in try_code_on_task
+          exec(dsl_code + "\n" + code, ns)
+          ~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+        File "<string>", line 19091
+          def is_v_line_down(r, c):
+                                   ^
+      IndentationError: expected an indented block after function definition on line 19091
+- 34b99a2b: WRONG_ANSWER
+    Pixel accuracy: 0.64
+    Expected shape: (5, 4), Got: (5, 4)
+- 34b99a2b: WRONG_ANSWER
+    Pixel accuracy: 0.50
+    Expected shape: (5, 4), Got: (5, 4)
 
 IMPORTANT: Study the input/output pairs carefully. Each task has a UNIQUE transformation rule.
 Do NOT propose generic mirror/pattern/tile functions. Analyze what SPECIFIC operation maps each input to its output.

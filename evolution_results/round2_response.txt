@@ -1,250 +1,198 @@
 
 
 ```python
-def separate_and_refine_quadrants(grid: list[list[int]]) -> list[list[int]]:
-    """Split grid into 4 symmetric quadrants and return a 2x2 grid of transformed quadrants, handling horizontal/vertical separators."""
-    def is_separator(r, c):
-        return grid[r] == 0 and grid[0] == 0 and grid[5] == 0 and grid[8] == 0 and c == 0
+def b6afb2da_transform(grid: list[list[int]]) -> list[list[int]]:
+    """Extract 5x5 subgrids from quadrants and map colors to transformed palette (0->1, 5->4, 6->2, 7->2) based on specific quadrant positions."""
+    import numpy as np
+    b, w = len(grid), len(grid[0])
+    # Assume 10x10 split into 4 equal quadrants (5x5)
+    if b == 10 and w == 10:
+        q1 = grid[:5][:5]
+        q2 = grid[:5][5:]
+        q3 = grid[5:][5:]
+        q4 = grid[5:][:5]
+        
+        # Transform 5x5 grids
+        def transform_quad(q):
+            res = np.zeros((5, 5), dtype=int)
+            for r in range(5):
+                for c in range(5):
+                    if q[r][c] == 0:
+                        res[r][c] = 0 if r > 4 else 0 if c > 5 else 0 # Placeholder logic needs refinement based on mapping
+                    elif q[r][c] == 5:
+                        res[r][c] = 4 if r % 2 == 0 else 2
+                    elif q[r][c] == 1:
+                        res[r][c] = 0
+                    elif q[r][c] == 2:
+                        res[r][c] = 2
+                    elif q[r][c] == 3:
+                        res[r][c] = 0
+                    elif q[r][c] == 4:
+                        res[r][c] = 4
+                    elif q[r][c] == 6:
+                        res[r][c] = 2
+                    elif q[r][c] == 7:
+                        res[r][c] = 2
+            return res
 
-    def is_sep_row(r):
-        return all(grid[r][c] == 0 for c in range(5))
-
-    def is_sep_col(c):
-        return all(grid[r][c] == 0 for r in range(5)) if len(grid) > 5 else False
-
-    h_sep, v_sep = -1, -1
-    height, width = len(grid), len(grid[0])
-    
-    # Find horizontal separator (row of zeros in middle)
-    if height > 1:
-        mid_h = height // 2
-        if all(grid[mid_h][c] == 0 for c in range(width)):
-            h_sep = mid_h
-        elif height > 2 and all(grid[mid_h-1][c] == 0 for c in range(width)) and all(grid[mid_h+1][c] == 0 for c in range(width)):
-             h_sep = mid_h - 1
-
-    # Find vertical separator (col of zeros)
-    v_sep = -1
-    if width > 1:
-        mid_v = width // 2
-        if all(grid[r][mid_v] == 0 for r in range(height)):
-            v_sep = mid_v
-
-    # Determine quadrants based on separators
-    # Task 34b99a2b: 5x9 -> 5x4. Input has 0s in col 3, 4, 5? No, col 3 is 0. Col 4 is 4.
-    # Actually looking at input: 
-    # 080040550
-    # 880845005
-    # 880045005
-    # 080840050
-    # 008040505
-    # Output 5x4:
-    # 0020
-    # 0200
-    # 0202
-    # 0222
-    # 0222
-    # It seems like we are extracting regions based on specific colors and transforming them.
-    # The output is smaller (5x4). Input is 5x9.
-    # It looks like we are splitting the input into two halves (cols 0-3 and 4-8) or something similar?
-    # Actually, Input width 9, Output width 4. 9 // 2 = 4.5. Maybe it's taking columns 0-3?
-    # Let's check col 0-3 of Input:
-    # 0800
-    # 8808
-    # 8800
-    # 0808
-    # 0080
-    # Output:
-    # 0020
-    # 0200
-    # 0202
-    # 0222
-    # 0222
-    # Is there a mapping?
-    # Input: 0 -> Output 0? (0->0)
-    # Input: 8 -> Output 0? (8->0)
-    # Input: 4 -> Output 2? (4->2)
-    # Input: 5 -> Output 0? (5->0)
-    # Input: 0 -> Output 2? (0->2) - Wait, 0->2 and 0->0.
-    
-    # Wait, Task 2 (b6afb2da): 10x10 -> 10x10.
-    # Input has 5s. Output has 1, 4, 2, 4, 1.
-    # Input 5s are arranged in a box. Output changes colors but keeps shape?
-    # Input 5s at (0,0)-(4,4). Output 1s and 4s.
-    # Input 5s at (6,7)-(9,8)? No, (6,6) is 0. 
-    # Input:
-    # 5555550000
-    # 5555550000
-    # 5555550000
-    # 5555550000
-    # 5555550000
-    # 0000000000
-    # 0000555555
-    # 0000555555
-    # 0000555555
-    # 0000555555
-    # Output:
-    # 1444410000
-    # 4222240000
-    # 4222240000
-    # 4222240000
-    # 1444410000
-    # 0000000000
-    # ...
-    # It seems to be filling the borders of the 5-regions with 1s and 4s?
-    # Or maybe it's a convolution?
-    # Or maybe it's extracting the "inside" of the 5-region?
-    # Input 5s form a block. Output 1s are on the corners/border of the block?
-    # Input (0,0) is 5. Output (0,0) is 1.
-    # Input (0,1) is 5. Output (0,1) is 4.
-    # Input (0,2) is 5. Output (0,2) is 4.
-    # Input (0,3) is 5. Output (0,3) is 4.
-    # Input (0,4) is 5. Output (0,4) is 4.
-    # Input (0,5) is 5. Output (0,5) is 1.
-    # So 5s on the edge become 1? 5s inside become 4?
-    # (0,5) is on the right edge of the block (width 6). So it's an edge.
-    # (1,0) is on the left edge. Output (1,0) is 4?
-    # Wait, Input (1,0) is 5. Output (1,0) is 4.
-    # (1,1) is 5. Output (1,1) is 2.
-    # (2,0) is 5. Output (2,0) is 4.
-    # (2,1) is 5. Output (2,1) is 2.
-    # (4,0) is 5. Output (4,0) is 1.
-    # (4,5) is 5. Output (4,5) is 1.
-    # (4,4) is 5. Output (4,4) is 4.
-    
-    # It seems like:
-    # 5 -> 1 if it's on the border of the connected component of 5s
-    # 5 -> 4 if it's on the border? Or maybe 2 is inside?
-    # Let's check (1,1). Inside. Output 2.
-    # Let's check (1,5). Border (top row, right side of block). Output 4.
-    # Let's check (4,1). Border (bottom row, left side of block). Output 1.
-    # This is getting complicated.
-    
-    # Let's look at Task 1 again.
-    # Input has 0, 4, 5, 8.
-    # Output has 0, 2.
-    # Input: 0s, 4s, 5s, 8s.
-    # Output: 0s, 2s.
-    # 4 -> 2.
-    # 0 -> 0 (in some places) -> 2 (in other places).
-    # 8 -> 0.
-    # 5 -> 0.
-    # It seems like we are extracting the '4' regions and transforming them to '2'.
-    # But wait, 0s are also in the output.
-    # Input: 0s are everywhere.
-    # Output: 0s are in some places.
-    # Maybe we are removing noise (0s) and replacing 4s with 2s?
-    # But we keep some 0s.
-    # Which 0s?
-    # Input (0,0)=0 -> Output (0,0)=0.
-    # Input (0,1)=8 -> Output (0,1)=0.
-    # Input (0,2)=0 -> Output (0,2)=0.
-    # Input (0,3)=0 -> Output (0,3)=0.
-    # Input (0,4)=4 -> Output (0,4)=2.
-    # Input (0,5)=0 -> Output (0,5)=? Output row 0 is 0020. Wait.
-    # Output row 0: 0 0 2 0.
-    # Input row 0: 0 8 0 0 4 0 5 5 0.
-    # Indices: 0 1 2 3 4 5 6 7 8.
-    # Output cols: 0 1 2 3.
-    # Output (0,0)=0. Input (0,0)=0.
-    # Output (0,1)=0. Input (0,1)=8.
-    # Output (0,2)=2. Input (0,4)=4.
-    # Output (0,3)=0. Input (0,6)=5. Input (0,7)=5.
-    # So Output (0,2) comes from Input (0,4)? (Shift?)
-    # Output (0,3) comes from Input (0,6)? (Shift?)
-    # Output (0,0) comes from Input (0,0)?
-    # Output (0,1) comes from Input (0,1)?
-    # Output (0,4) doesn't exist in output row 0?
-    # Wait, Output is 5x4. Input is 5x9.
-    # We are losing columns.
-    # Maybe we are taking columns 0, 2, 4, 6, 8? No, that would be 5 cols.
-    # Maybe we are taking columns 0, 1, 2, 3?
-    # If we take columns 0, 1, 2, 3 from Input:
-    # Row 0: 0 8 0 0. Output: 0 0 2 0.
-    # Row 1: 8 8 0 8. Output: 0 2 0 0.
-    # Row 2: 8 8 0 0. Output: 0 2 0 2.
-    # Row 3: 0 8 0 8. Output: 0 2 2 2.
-    # Row 4: 0 0 8 0. Output: 0 2 2 2.
-    # Matches!
-    # So for Task 1, we take columns 0, 1, 2, 3.
-    # And we map colors:
-    # 0 -> 0 (if it was 0 in output? No, Input 0->Output 0 or 2).
-    # 8 -> 0.
-    # 4 -> 2.
-    # 5 -> 0.
-    # Wait, Input (0,4)=4 -> Output (0,2)=2.
-    # Input (0,6)=5 -> Output (0,3)=0.
-    # Input (1,3)=8 -> Output (1,3)=0.
-    # Input (1,4)=5 -> Output (1,3)=0.
-    # Input (2,3)=0 -> Output (2,3)=2.
-    # Input (2,4)=5 -> Output (2,3)=2.
-    # Input (3,4)=0 -> Output (3,3)=2.
-    # Input (3,5)=0 -> (Ignored?)
-    # Input (3,6)=0 -> (Ignored?)
-    # Input (4,4)=0 -> Output (4,3)=2.
-    # Input (4,5)=0 -> (Ignored?)
-    # Input (4,6)=5 -> (Ignored?)
-    # So it seems we are selecting columns 0, 1, 2, 3.
-    # And for each cell in output, we look at Input(r, c).
-    # If Input(r, c) == 4, Output(r, c) = 2.
-    # If Input(r, c) == 8, Output(r, c) = 0.
-    # If Input(r, c) == 5, Output(r, c) = 0.
-    # If Input(r, c) == 0, Output(r, c) = 2?
-    # Let's check:
-    # (0,0)=0 -> 0. OK.
-    # (0,1)=8 -> 0. OK.
-    # (0,2)=0 -> 0. OK.
-    # (0,3)=0 -> 0. OK.
-    # (0,4)=4 -> 2. (At (0,2)).
-    # (0,5)=0 -> 0. (At (0,3)).
-    # (0,6)=5 -> 0. (At (0,3)).
-    # Wait, (0,3) in Input is 0. (0,2) in Input is 0.
-    # So Output (0,3) is 0.
-    # Output (0,2) is 2. Input (0,2) is 0. Input (0,4) is 4.
-    # So (0,2) output is determined by Input (0,4).
-    # (0,3) output is determined by Input (0,3)?? No, Input (0,3) is 0. Output is 0.
-    # (1,1) output is 2. Input (1,1) is 8. Input (1,3) is 8.
-    # Wait, if Input (1,1)=8 and Output (1,1)=2.
-    # If Input (1,3)=8 and Output (1,3)=0.
-    # Contradiction. 8 -> 2 in some places, 8 -> 0 in others.
-    
-    # Let's look at the structure again.
-    # Input: 5x9. Output: 5x4.
-    # Input has 4 columns of interest?
-    # Cols 0, 1, 2, 3 of Input:
-    # 0 8 0 0
-    # 8 8 0 8
-    # 8 8 0 0
-    # 0 8 0 8
-    # 0 0 8 0
-    
-    # Output:
-    # 0 0 2 0
-    # 0 2 0 0
-    # 0 2 0 2
-    # 0 2 2 2
-    # 0 2 2 2
-    
-    # It seems like we are taking columns 0, 1, 2, 3 of Input, but shifting them?
-    # Or maybe taking columns 0, 1, 2, 3 of Output?
-    # Wait, Input is 5x9. Output is 5x4.
-    # Maybe we are taking columns 0-3, 4-7, 8?
-    # 5x9 input.
-    # 5x4 output.
-    # Maybe we are downsampling?
-    # If we take 0, 1, 2, 3, 4, 5, 6, 7, 8.
-    # If we map 0->0, 8->0, 4->2, 5->0.
-    # Then we have a grid of values.
-    # But we need to reduce width from 9 to 4.
-    # Maybe we are grouping columns?
-    # (0,0), (0,1), (0,2), (0,3) -> (0,0) in output?
-    # (0,4), (0,5), (0,6), (0,7) -> (0,1) in output?
-    # (0,8) -> (0,2) in output?
-    # (0,0) is 0. (0,8) is 0. Output (0,0) is 0. Output (0,2) is 2.
-    # So (0,8)=0 -> 2?
-    # (0,1) is 8. (0,1) in output is 0.
-    # (0,4) is 4. (0,1) in output is 0.
-    # (0,5) is 0. (0,1) in output is 0.
-    # (0,6) is 5. (0,2) in output is 2.
-    # (0,7) is 5. (0,2) in output is 2.
-    # (0,3) is 0. (0,3) in output is 0.
+        # Mapping input quadrants to output quadrants
+        # Input: Q1 full, Q2 empty, Q3 empty, Q4 empty (from Train 1, but wait, Train 1 has 5x5 filled)
+        # Actually Input is 10x10.
+        # Train 1 Input: Left 5x5 block is 5s. Right/Bottom are 0s (mostly).
+        # Wait, looking at Train 1 Input again:
+        # Rows 0-4: 555555 0000 (First 6 cols are 5s, last 4 are 0s)
+        # Rows 5-9: 000000 0000 (Row 5 empty), Rows 6-9: 0000 555555 (Cols 4-9 are 5s)
+        # This is not 4 quadrants. It's specific regions.
+        # Let's re-examine Train 1 Input/Output structure.
+        # Train 1: Input has 5s in a "Z" or "S" shape? No.
+        # Input: Block of 5s top-left (5 rows), then bottom-right block of 5s (5 rows).
+        # Output: Top-left mapped to 1s and 4s. Bottom-right mapped to 1s and 4s.
+        # Train 2: Input has 5s in left strip (rows 2-5) and right strip (rows 5-9).
+        # Output: Left strip mapped to 1s and 4s. Right strip mapped to 1s and 4s.
+        
+        # Transformation Rule:
+        # For any connected component of color 5:
+        # - If it is in the top-left region (rows < height/2), convert to pattern A (1s and 4s).
+        # - If it is in the bottom-right region (rows > height/2), convert to pattern B (1s and 4s).
+        # - If it is in the middle row?
+        # Let's analyze the pattern in Output 1 (Top-Left 5s -> Output):
+        # Input:
+        # 5 5 5 5 5 5 0 0 0 0
+        # 5 5 5 5 5 5 0 0 0 0
+        # 5 5 5 5 5 5 0 0 0 0
+        # 5 5 5 5 5 5 0 0 0 0
+        # 5 5 5 5 5 5 0 0 0 0
+        # 0 0 0 0 0 0 0 0 0 0
+        # 0 0 0 0 5 5 5 5 5 5
+        # 0 0 0 0 5 5 5 5 5 5
+        # 0 0 0 0 5 5 5 5 5 5
+        # 0 0 0 0 5 5 5 5 5 5
+        
+        # Output:
+        # 1 4 4 4 4 1 0 0 0 0
+        # 4 2 2 2 2 4 0 0 0 0
+        # 4 2 2 2 2 4 0 0 0 0
+        # 4 2 2 2 2 4 0 0 0 0
+        # 1 4 4 4 4 1 0 0 0 0
+        # 0 0 0 0 0 0 0 0 0 0
+        # 0 0 0 0 1 4 4 4 4 1
+        # 0 0 0 0 4 2 2 2 2 4
+        # 0 0 0 0 4 2 2 2 2 4
+        # 0 0 0 0 1 4 4 4 4 1
+        
+        # The transformation applies to the 5s.
+        # Top-left 5s -> Outer ring 1, Inner 4x22224 becomes 422224? Wait.
+        # Input Top-Left: 5s. Output Top-Left: 1 on border, 4s inside?
+        # Input (0,0) is 5 -> Output (0,0) is 1.
+        # Input (0,1) is 5 -> Output (0,1) is 4.
+        # Input (1,1) is 5 -> Output (1,1) is 4.
+        # Input (1,4) is 5 -> Output (1,4) is 4.
+        # Input (2,4) is 5 -> Output (2,4) is 2.
+        # Input (4,4) is 5 -> Output (4,4) is 1.
+        
+        # It seems the Top-Left 5s are replaced by a pattern where:
+        # Corners are 1.
+        # Border is 4.
+        # Inside is 2.
+        # But wait, Input is 5s. Output has 1, 4, 2.
+        # Maybe the output is generated based on the shape of the 5s?
+        # Or is it a fixed template?
+        # In Train 1, the 5s form a 5x6 block and a 5x6 block (shifted).
+        # Actually, looking at Input 1:
+        # 5s are at: (0..4, 0..5) and (6..9, 4..9).
+        # Output 1 has the same shape, but filled with 1s, 4s, 2s.
+        # The pattern seems to be:
+        # Row 0: 1, 4, 4, 4, 4, 1
+        # Row 1: 4, 2, 2, 2, 2, 4
+        # Row 4: 1, 4, 4, 4, 4, 1
+        # Row 5: 0, 0, 0, 0, 0, 0 (Wait, Input row 5 is all 0s).
+        # Row 6: 0, 0, 0, 0, 1, 4, 4, 4, 4, 1
+        # Row 7: 0, 0, 0, 0, 4, 2, 2, 2, 2, 4
+        # Row 9: 0, 0, 0, 0, 1, 4, 4, 4, 4, 1
+        
+        # Wait, Row 4 Input is 5s. Row 5 Input is 0s.
+        # Output Row 4 is 1s and 4s.
+        # Output Row 5 is 0s.
+        # Output Row 6 is 1s and 4s.
+        
+        # So, the transformation is:
+        # Identify contiguous blocks of 5s.
+        # Replace them with a specific pattern based on their position (Top vs Bottom).
+        # Top blocks (rows < 5):
+        #   Replace 5s with:
+        #     Row 0: [1, 4, 4, 4, 4, 1]
+        #     Rows 1-3: [4, 2, 2, 2, 2, 4]
+        #     Row 4: [1, 4, 4, 4, 4, 1]
+        # Bottom blocks (rows > 5):
+        #   Replace 5s with:
+        #     Row 0 relative: [1, 4, 4, 4, 4, 1]
+        #     Rows 1-2 relative: [4, 2, 2, 2, 2, 4]
+        #     Row 3 relative: [1, 4, 4, 4, 4, 1]
+        #     Row 4 relative: [1, 4, 4, 4, 4, 1]
+        # Wait, let's check Input 2.
+        # Input 2:
+        # 0s everywhere.
+        # Rows 2-4: 5s at cols 1-4. (3x4 block of 5s).
+        # Rows 5-9: 5s at cols 5-9. (5x5 block of 5s).
+        # Output 2:
+        # Rows 2-4: 0 1 4 4 1 0 0 0 0 0 ? No.
+        # Output 2 Row 2: 0 1 4 4 1 0 0 0 0 0
+        # Output 2 Row 3: 0 4 2 2 4 0 0 0 0 0
+        # Output 2 Row 4: 0 4 2 2 4 0 0 0 0 0
+        # Output 2 Row 5: 0 1 4 4 1 1 4 4 1 0
+        # Output 2 Row 6: 0 0 0 0 0 4 2 2 4 0
+        # Output 2 Row 7: 0 0 0 0 0 4 2 2 4 0
+        # Output 2 Row 8: 0 0 0 0 0 4 2 2 4 0
+        # Output 2 Row 9: 0 0 0 0 0 1 4 4 1 0
+        
+        # Observation:
+        # The 5s are replaced by a pattern that depends on their dimensions.
+        # If block is WxH.
+        # If block is in Top (rows < H/2):
+        #   Corners are 1.
+        #   Border is 4.
+        #   Inside is 2.
+        #   BUT the width is expanded?
+        #   Input block 1 (Top-Left): 5x6. Output: 5x6.
+        #   Input block 2 (Bot-Right): 5x5. Output: 5x5.
+        #   Input block 3 (Bot-Mid): 5x5. Output: 5x5.
+        #   Wait, in Input 1, the top block is 5x6.
+        #   In Output 1, the top block is 5x6.
+        #   In Input 2, there is a block at Left (rows 2-4, cols 1-4). Size 3x4.
+        #   In Output 2, this block is transformed to 3x4.
+        #   Wait, Output 2 Row 2 is 0 1 4 4 1 0 0 0 0 0.
+        #   Wait, Input 2 Row 2 is 0 8 0 0 4 5 0 5 0.
+        #   Ah, there are other colors (8, 4).
+        #   The 5s are just one part.
+        #   Let's look at the transformation of 5s specifically.
+        #   Input 2: 5s form a 3x4 block at (2,1)-(4,4).
+        #   Input 2: 5s form a 5x5 block at (5,5)-(9,9).
+        #   Output 2: The 3x4 block becomes:
+        #     Row 2: 1 4 4 1 (Wait, 4 cols. Output has 4 cols of non-zero?)
+        #     Row 2: 0 1 4 4 1 0 -> 5s are at indices 1,2,3,4. Output has 1 at 1, 4,4 at 2,3, 1 at 4.
+        #     Row 3: 0 4 2 2 4 0 -> 5s at 1,2,3,4. Output 4 at 1, 2 at 2, 2 at 3, 4 at 4.
+        #     Row 4: 0 4 2 2 4 0 -> 5s at 1,2,3,4. Output 4 at 1, 2 at 2, 2 at 3, 4 at 4.
+        #     Wait, Output Row 4 has 0 at 0, 4 at 1, 2 at 2, 2 at 3, 4 at 4, 0 at 5.
+        #     So for the 3x4 block, the output is:
+        #     Row 2: 1 4 4 1 (Wait, input 5s are at 1,2,3,4. Output 1 at 1, 4 at 2, 3 is missing 4? No, 4 at 3 is 0. Wait.
+        #     Let's re-read Output 2 Row 2: 0 1 4 4 1 0 0 0 0 0.
+        #     Indices: 0=0, 1=1, 2=4, 3=4, 4=1, 5=0.
+        #     So for a 3x4 block of 5s:
+        #     Row 0: 1, 4, 4, 1
+        #     Row 1: 4, 2, 2, 4
+        #     Row 2: 4, 2, 2, 4
+        #     Wait, Input block is 3 rows high.
+        #     Row 0 (of block): 1 4 4 1.
+        #     Row 1 (of block): 4 2 2 4.
+        #     Row 2 (of block): 4 2 2 4.
+        #     So the pattern is symmetric vertically? 1441 / 4224 / 4224? No, input 3 rows.
+        #     Let's check Input 2 Output again.
+        #     Output 2 Row 2: 0 1 4 4 1 0 ...
+        #     Output 2 Row 3: 0 4 2 2 4 0 ...
+        #     Output 2 Row 4: 0 4 2 2 4 0 ...
+        #     Output 2 Row 5: 0 1 4 4 1 1 4 4 1 0. (Here is the second block).
+        #     Wait, the second block in Input 2 is 5s at (5,5)-(9,9). Size 5x5.
+        #     Output 2 Row 5 cols 5-9: 0 1 4 4 1 0. (Wait, col 5 is 1, 6 is 4, 7 is 4, 8 is 1, 9 is 0).
+        #     Output 2 Row 6 cols 5-9: 0 0 0 0 4 2 2 2 4. (Wait, Output Row 6 is 0000004224).
+        #     Output 2 Row 7 cols 5-9: 0 0 0 0 4 2 2 2 4.
+        #     Output 2 Row 8 cols 5-9: 0 0 0 0 
