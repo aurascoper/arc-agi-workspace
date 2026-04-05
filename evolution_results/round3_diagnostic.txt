@@ -1,7 +1,7 @@
 /no_think
 You are an ARC-AGI DSL engineer. Given failing tasks, output ONLY Python functions. No analysis, no explanation — just code.
 
-Current DSL: 709 functions. Do NOT duplicate existing functions.
+Current DSL: 756 functions. Do NOT duplicate existing functions.
 
 ## Known Techniques
 Key ARC-AGI solution techniques from the literature:
@@ -37,78 +37,78 @@ Key ARC-AGI solution techniques from the literature:
     boundaries or other objects. Used in "drop", "slide", and "gravity" tasks.
 
 ## Existing (last 50 signatures, do NOT duplicate)
-  ... (723 more) ...
-  def replace_specific_values_with_zeros(grid: list[list[int]])
-  def replace_specific_values_with_ones(grid: list[list[int]])
-  def replace_specific_values_with_twos(grid: list[list[int]])
-  def replace_specific_values_with_threes(grid: list[list[int]])
-  def add_border_with_min(grid: list[list[int]])
-  def replace_zeros_with_max_neighbor(grid: list[list[int]])
-  def replace_with_min_max_diff(grid: list[list[int]])
-  def replace_with_sum_of_diagonals(grid: list[list[int]])
-  def detect_symmetry(grid: list[list[int]])
-  def is_symmetric(matrix)
-  def extract_blobs(grid: list[list[int]])
-  def flood_fill(x, y, old_color, new_color)
-  def compact_grid(grid: list[list[int]])
-  def fill_empty_with_color(grid: list[list[int]], color: int)
-  def mirror_vertical(grid: list[list[int]])
-  def expand_center(grid: list[list[int]])
-  def replace_specific_pattern(grid: list[list[int]])
-  def replace_values_based_on_pattern(grid: list[list[int]])
-  def replace_values_based_on_specific_condition(grid: list[list[int]])
-  def replace_values_based_on_specific_row(grid: list[list[int]])
-  def skew_left_to_right(grid: list[list[int]])
-  def anti_diagonal_reflect(grid: list[list[int]])
-  def complete_symmetry(grid: list[list[int]], axis: str)
-  def replace_twos_with_eights(grid: list[list[int]])
-  def replace_two_with_eight(grid: list[list[int]])
-  def replace_two_with_eight(grid: list[list[int]])
-  def replace_twos_with_eights(grid: list[list[int]])
-  def extract_blob_with_color(grid: list[list[int]], color: int)
-  def replace_specific_values_with_fours(grid: list[list[int]])
-  def replace_specific_values_with_nines(grid: list[list[int]])
-  def replace_diagonal_with_ones(grid: list[list[int]])
-  def replace_with_nines(grid: list[list[int]])
-  def replace_with_threes(grid: list[list[int]])
-  def apply_mirror_and_copy_to_grid_base_and_expand(grid: list[list[int]])
-  def decompose_and_convert_pattern(grid: list[list[int]])
-  def remove_noise_pixels(grid: list[list[int]])
-  def denoise_isolated_objects(grid: list[list[int]])
-  def correct_border_inconsistencies(grid: list[list[int]])
-  def clean_outliers_by_majority_vote(grid: list[list[int]])
-  def smooth_granular_noise(grid: list[list[int]])
-  def remove_isolated_singletons(grid: list[list[int]])
-  def denoise_4connected_noise(grid: list[list[int]])
-  def clean_grid_noise(grid: list[list[int]])
-  def remove_outliers_by_consensus(grid: list[list[int]])
-  def remove_granular_noise(grid: list[list[int]])
-  def fix_border_noise(grid: list[list[int]])
-  def remove_border_noise(grid: list[list[int]])
-  def fix_isolated_noise(grid: list[list[int]])
-  def remove_outliers_by_consensus(grid: list[list[int]])
-  def denoise_random_noise(grid: list[list[int]])
+  ... (778 more) ...
+  def find_pattern_in_sliding_window(grid: list[list[int]], pattern: list[list[int]], window_size: int = 2)
+  def extract_matching_regions(grid: list[list[int]], target_value: int, min_area: int = 1)
+  def fill_pattern_with_value(grid: list[list[int]], pattern: list[list[int]], fill_value: int, background: int = 0)
+  def is_pattern_at_position(grid: list[list[int]], pattern: list[list[int]], r: int, c: int)
+  def partition_grid_by_quadrants(grid: list[list[int]])
+  def detect_symmetry_axes(grid: list[list[int]])
+  def is_row_mirror(grid: list[list[int]], r1: int, r2: int)
+  def is_col_mirror(grid: list[list[int]], c1: int, c2: int)
+  def find_dominant_color_in_region(grid: list[list[int]], region_coords: list[tuple[int, int]])
+  def extract_pattern_with_offset(grid: list[list[int]], pattern: list[list[int]], offset: tuple[int, int])
+  def count_pattern_occurrences(grid: list[list[int]], pattern: list[list[int]], ignore_background: bool = True)
+  def fill_pattern_with_background(grid: list[list[int]], pattern: list[list[int]], fill_color: int, background: int = 0)
+  def is_pattern_match(grid: list[list[int]], pattern: list[list[int]], r: int, c: int, ignore_background: bool = True)
+  def extract_pattern_instances(grid: list[list[int]], pattern: list[list[int]])
+  def detect_dominant_pattern(grid: list[list[int]], top_k: int = 1)
+  def transform_pattern_to_full_grid(grid: list[list[int]], target_bg: int = 7)
+  def get_dominant_color(grid: list[list[int]])
+  def get_secondary_color(grid: list[list[int]])
+  def transform_pattern_to_full_grid(grid: list[list[int]], target_bg: int = 7)
+  def execute_symmetric_scaling(grid: list[list[int]])
+  def detect_task_type(grid)
+  def separate_and_refine_quadrants(grid: list[list[int]])
+  def is_separator(r, c)
+  def is_sep_row(r)
+  def is_sep_col(c)
+  def count_color_frequencies(grid: list[list[int]])
+  def get_color_frequency_ratio(grid: list[list[int]], color1: int, color2: int)
+  def count_nonzero_cells(grid: list[list[int]])
+  def get_mode_color(grid: list[list[int]])
+  def get_color_at_position(grid: list[list[int]], row_idx: int, col_idx: int)
+  def get_grid_dimensions(grid: list[list[int]])
+  def count_horizontal_segments(grid: list[list[int]], target: int)
+  def count_vertical_segments(grid: list[list[int]], target: int)
+  def count_isolated_cells(grid: list[list[int]], target: int)
+  def count_2x2_blocks_of_color(grid: list[list[int]], target: int)
+  def get_color_ratio_between_regions(grid: list[list[int]], region1: list, region2: list)
+  def transform_pattern_to_quarter_scale(grid: list[list[int]])
+  def b6afb2da_transform(grid: list[list[int]])
+  def transform_quad(q)
+  def apply_hole_fill_pattern(grid: list[list[int]], target_color: int = 2)
+  def find_rectangles(grid: list[list[int]])
+  def detect_l_shapes(grid: list[list[int]])
+  def detect_rectangles_by_color(grid: list[list[int]])
+  def find_symmetry_axes(grid: list[list[int]])
+  def extract_connected_components(grid: list[list[int]])
+  def find_rectangular_regions(grid: list[list[int]])
+  def detect_l_shapes_precise(grid: list[list[int]])
+  def transform_four_color_pattern(grid: list[list[int]])
+  def transform_pattern_b6afb2da(grid: list[list[int]])
+  def transform_pattern_34b99a2b(grid: list[list[int]])
 
 ## Previous Experiments ([-] = no improvement, [+] = improved)
-  [-] Round 10: Add add_border_with_min, replace_zeros_with_max_neighbor, replace_with_min_max_d (add_border_with_min, replace_zeros_with_max_neighbor, replace_with_min_max_diff) metric 1.000->1.000
-  [-] Round 11: Add mirror_vertical, expand_center (mirror_vertical, expand_center) metric 1.000->1.000
-  [-] Round 12: Add replace_specific_pattern, replace_values_based_on_pattern, replace_values_ba (replace_specific_pattern, replace_values_based_on_pattern, replace_values_based_on_specific_condition) metric 1.000->1.000
-  [-] Round 13: No valid functions proposed () metric 1.000->1.000
-  [-] Round 14: Add replace_twos_with_eights, replace_two_with_eight, replace_two_with_eight, re (replace_twos_with_eights, replace_two_with_eight, replace_two_with_eight) metric 1.000->1.000
-  [-] Round 1: Add replace_specific_values_with_fours (replace_specific_values_with_fours) metric 1.000->1.000
   [-] Round 1: Add replace_specific_values_with_nines (replace_specific_values_with_nines) metric 1.000->1.000
   [-] Round 2: Add replace_diagonal_with_ones, replace_with_nines, replace_with_threes (replace_diagonal_with_ones, replace_with_nines, replace_with_threes) metric 1.000->1.000
   [-] Round 1: Add apply_mirror_and_copy_to_grid_base_and_expand (apply_mirror_and_copy_to_grid_base_and_expand) metric 1.000->1.000
   [-] Round 2: Add decompose_and_convert_pattern (decompose_and_convert_pattern) metric 1.000->1.000
+  [-] Round 3: Add propagate_symmetry_markers, transform_split_quadrants, transform_radial_patt (propagate_symmetry_markers, transform_split_quadrants, transform_radial_pattern) metric 1.000->1.000
+  [-] Round 1: Add execute_symmetric_scaling (execute_symmetric_scaling) metric 1.000->1.000
+  [-] Round 2: Add separate_and_refine_quadrants (separate_and_refine_quadrants) metric 1.000->1.000
+  [-] Round 1: Add transform_pattern_to_quarter_scale (transform_pattern_to_quarter_scale) metric 1.000->1.000
+  [-] Round 1: Add apply_hole_fill_pattern (apply_hole_fill_pattern) metric 1.000->1.000
+  [-] Round 2: Add transform_four_color_pattern, transform_pattern_b6afb2da, transform_pattern_ (transform_four_color_pattern, transform_pattern_b6afb2da, transform_pattern_34b99a2b) metric 1.000->1.000
 
 ## BLACKLIST — DO NOT propose functions similar to these (already tried, didn't help):
-add_border_with, apply_mirror_and, decompose_and_convert, expand_center, mirror_vertical, replace_diagonal_with, replace_specific_pattern, replace_specific_values, replace_two_with, replace_twos_with, replace_values_based, replace_with_min, replace_with_nines, replace_with_sum, replace_with_threes, replace_zeros_with
+apply_hole_fill, apply_mirror_and, decompose_and_convert, execute_symmetric_scaling, propagate_symmetry_markers, replace_diagonal_with, replace_specific_values, replace_with_nines, replace_with_threes, separate_and_refine, transform_four_color, transform_pattern_34b99a2b, transform_pattern_b6afb2da, transform_pattern_to, transform_quadrant_fill, transform_radial_pattern, transform_split_quadrants
 
 ## Failure Distribution: SOLVE_FAIL: 2
 
 ## Failing Tasks
 ### Task: e8593010.json [SOLVE_FAIL]
-Scores: tier1=1.00 tier2=1.00 tier3(solve)=0.67
+Scores: tier1=1.00 tier2=1.00 tier3(solve)=0.00
 Train 1 Input (10x10):
 5555500555
 0050555550
@@ -155,7 +155,7 @@ Train 2 Output (10x10):
 3555555352
 
 ### Task: 8d510a79.json [SOLVE_FAIL]
-Scores: tier1=1.00 tier2=1.00 tier3(solve)=0.88
+Scores: tier1=1.00 tier2=1.00 tier3(solve)=0.89
 Train 1 Input (10x10):
 0201000000
 0000020100
@@ -201,6 +201,38 @@ Train 2 Output (10x10):
 0100020010
 0100000010
 
+
+## What went WRONG (execution traces from failed solve attempts)
+- e8593010: CRASH
+    Error: name 'in_rows' is not defined
+    Traceback:
+      ...
+          pred = run_with_timeout(transform_fn, (pair["input"],), timeout_sec=5)
+        File "/Users/aurascoper/Developer/arc_agi/workspace/target_mlx_arc.py", line 254, in run_with_timeout
+          raise error[0]
+        File "/Users/aurascoper/Developer/arc_agi/workspace/target_mlx_arc.py", line 244, in target
+          result[0] = fn(*args)
+                      ~~^^^^^^^
+        File "<string>", line 19873, in transform
+      NameError: name 'in_rows' is not defined
+- e8593010: CRASH
+    Error: name 'in_rows' is not defined
+    Traceback:
+      ...
+          pred = run_with_timeout(transform_fn, (pair["input"],), timeout_sec=5)
+        File "/Users/aurascoper/Developer/arc_agi/workspace/target_mlx_arc.py", line 254, in run_with_timeout
+          raise error[0]
+        File "/Users/aurascoper/Developer/arc_agi/workspace/target_mlx_arc.py", line 244, in target
+          result[0] = fn(*args)
+                      ~~^^^^^^^
+        File "<string>", line 19873, in transform
+      NameError: name 'in_rows' is not defined
+- 8d510a79: WRONG_ANSWER
+    Pixel accuracy: 0.87
+    Expected shape: (10, 10), Got: (10, 10)
+- 8d510a79: WRONG_ANSWER
+    Pixel accuracy: 0.89
+    Expected shape: (10, 10), Got: (10, 10)
 
 IMPORTANT: Study the input/output pairs carefully. Each task has a UNIQUE transformation rule.
 Do NOT propose generic mirror/pattern/tile functions. Analyze what SPECIFIC operation maps each input to its output.

@@ -1,0 +1,321 @@
+#!/usr/bin/env python3
+"""
+lora_train.py — Self-distillation LoRA training on successful ARC programs.
+
+Reads successful_programs.jsonl, deduplicates, formats as Qwen3.5 chat template,
+trains a LoRA adapter via mlx_lm.lora, validates on canary tasks, and exits 0/1.
+
+Run as subprocess from evolve_qwen_arc.py to isolate MLX memory.
+
+Usage:
+  python3 lora_train.py --data evolution_results/successful_programs.jsonl \
+                        --output evolution_results/lora_adapters/20260405_060000/
+"""
+
+import argparse
+import gc
+import hashlib
+import json
+import os
+import random
+import subprocess
+import sys
+from collections import Counter
+from pathlib import Path
+
+WORKSPACE = Path(__file__).resolve().parent
+MODEL_PATH = os.environ.get("ARC_MODEL_PATH", "mlx-community/Qwen3.5-9B-4bit")
+
+# LoRA hyperparameters
+LORA_RANK = 4
+LORA_LAYERS = 8
+BATCH_SIZE = 1
+MAX_SEQ_LENGTH = 1024
+ITERS = 200
+LEARNING_RATE = 2e-5
+
+# Canary validation
+CANARY_COUNT = 5
+CANARY_MIN_SOLVES = 3
+
+
+# ---------------------------------------------------------------------------
+# DATA PREPARATION
+# ---------------------------------------------------------------------------
+
+def load_and_dedup(jsonl_path: Path) -> list[dict]:
+    """Read JSONL, deduplicate by (task_name, code) hash."""
+    entries = []
+    seen = set()
+    with open(jsonl_path) as f:
+        for line in f:
+            line = line.strip()
+            if not line:
+                continue
+            try:
+                entry = json.loads(line)
+            except json.JSONDecodeError:
+                continue
+            key = hashlib.md5(
+                f"{entry['task_name']}:{entry['code']}".encode()
+            ).hexdigest()
+            if key not in seen:
+                seen.add(key)
+                entries.append(entry)
+    return entries
+
+
+def format_as_chat(entries: list[dict]) -> list[dict]:
+    """Format entries as Qwen3.5 chat messages.
+
+    No system prompt — matches inference path in target_mlx_arc.py which sends
+    raw prompts to mlx_lm.generate() without chat template wrapping.
+    The tokenizer's apply_chat_template handles <|im_start|>/<|im_end|> boundaries.
+    """
+    formatted = []
+    for e in entries:
+        formatted.append({
+            "messages": [
+                {"role": "user", "content": e["prompt"]},
+                {"role": "assistant", "content": f"```python\n{e['code']}\n```"},
+            ]
+        })
+    return formatted
+
+
+def prepare_data(jsonl_path: Path, output_dir: Path, seed: int = 42):
+    """Load, dedup, split, and write train/valid JSONL files."""
+    entries = load_and_dedup(jsonl_path)
+    if not entries:
+        print(f"[lora] No entries in {jsonl_path}")
+        return 0, []
+
+    formatted = format_as_chat(entries)
+
+    random.seed(seed)
+    random.shuffle(formatted)
+    split = max(1, int(len(formatted) * 0.9))
+    train_data = formatted[:split]
+    valid_data = formatted[split:] or formatted[:1]  # at least 1 validation example
+
+    output_dir.mkdir(parents=True, exist_ok=True)
+    train_path = output_dir / "train.jsonl"
+    valid_path = output_dir / "valid.jsonl"
+
+    for path, data in [(train_path, train_data), (valid_path, valid_data)]:
+        with open(path, "w") as f:
+            for item in data:
+                f.write(json.dumps(item) + "\n")
+
+    print(f"[lora] Data: {len(entries)} unique programs → {len(train_data)} train, {len(valid_data)} valid")
+    return len(entries), entries
+
+
+# ---------------------------------------------------------------------------
+# TRAINING
+# ---------------------------------------------------------------------------
+
+def run_training(data_dir: Path, adapter_output: Path):
+    """Run LoRA training via mlx_lm.lora CLI (subprocess for clean memory)."""
+    adapter_output.mkdir(parents=True, exist_ok=True)
+
+    cmd = [
+        sys.executable, "-m", "mlx_lm.lora",
+        "--model", MODEL_PATH,
+        "--train",
+        "--data", str(data_dir),
+        "--adapter-path", str(adapter_output),
+        "--batch-size", str(BATCH_SIZE),
+        "--num-layers", str(LORA_LAYERS),
+        "--lora-rank", str(LORA_RANK),
+        "--iters", str(ITERS),
+        "--learning-rate", str(LEARNING_RATE),
+        "--max-seq-length", str(MAX_SEQ_LENGTH),
+        "--val-batches", "10",
+        "--steps-per-report", "20",
+        "--steps-per-eval", "50",
+    ]
+
+    print(f"[lora] Training: {' '.join(cmd)}")
+    result = subprocess.run(cmd, capture_output=True, text=True, timeout=1800)
+
+    if result.returncode != 0:
+        print(f"[lora] Training FAILED (exit {result.returncode})")
+        print(f"[lora] stderr: {result.stderr[-500:]}")
+        return False
+
+    print(f"[lora] Training complete. Adapter saved to {adapter_output}")
+    if result.stdout:
+        # Print last few lines of training output
+        lines = result.stdout.strip().split("\n")
+        for line in lines[-10:]:
+            print(f"  {line}")
+    return True
+
+
+# ---------------------------------------------------------------------------
+# CANARY VALIDATION
+# ---------------------------------------------------------------------------
+
+def select_canary_tasks(entries: list[dict], count: int = CANARY_COUNT,
+                        min_solves: int = CANARY_MIN_SOLVES) -> list[str]:
+    """Pick tasks that were solved most frequently — reliable canaries."""
+    task_counts = Counter(e["task_name"] for e in entries)
+    reliable = [(name, cnt) for name, cnt in task_counts.items() if cnt >= min_solves]
+    reliable.sort(key=lambda x: -x[1])
+
+    if len(reliable) >= count:
+        return [name for name, _ in reliable[:count]]
+
+    # Fall back: take most-solved tasks even if < min_solves
+    all_sorted = sorted(task_counts.items(), key=lambda x: -x[1])
+    return [name for name, _ in all_sorted[:count]]
+
+
+def validate_adapter(adapter_path: Path, canary_task_names: list[str]) -> bool:
+    """Load model+adapter, run canary tasks, check all pass.
+
+    Uses mx.eval() barriers and clears Metal cache on exit (C3).
+    """
+    import mlx.core as mx
+    from mlx_lm import load, generate
+    from mlx_lm.sample_utils import make_sampler
+
+    arc_data = WORKSPACE / "arc_data"
+    if not arc_data.exists():
+        arc_data = WORKSPACE / "arc_agi_2_data" / "training"
+
+    print(f"[lora] Validating adapter on {len(canary_task_names)} canary tasks...")
+
+    model, tokenizer = load(MODEL_PATH, adapter_path=str(adapter_path))
+
+    # Load DSL namespace for build_prompt
+    dsl_path = WORKSPACE / "dsl.py"
+    dsl_ns = {}
+    try:
+        exec(compile(dsl_path.read_text(), str(dsl_path), "exec"), dsl_ns)
+    except Exception as e:
+        print(f"[lora] WARNING: DSL load failed: {e}")
+
+    build_prompt = dsl_ns.get("build_prompt")
+    all_passed = True
+
+    for task_name in canary_task_names:
+        task_path = arc_data / f"{task_name}.json"
+        if not task_path.exists():
+            print(f"  [canary] {task_name}: SKIP (file not found)")
+            continue
+
+        task_data = json.loads(task_path.read_text())
+
+        # Build prompt
+        if build_prompt:
+            try:
+                prompt = build_prompt(task_data)
+            except Exception:
+                prompt = None
+        else:
+            prompt = None
+
+        if not prompt:
+            # Fallback prompt
+            prompt = "Output ONLY python code `def transform(input_grid):`\n```python\n"
+            for pair in task_data.get("train", [])[:2]:
+                prompt = f"Input:\n{pair['input']}\nOutput:\n{pair['output']}\n\n" + prompt
+
+        # Generate
+        sampler = make_sampler(temp=1e-6)
+        response = generate(model, tokenizer, prompt=prompt, max_tokens=1024, sampler=sampler)
+        mx.eval(model.parameters())  # force eager evaluation
+
+        # Extract and test code
+        import re
+        code_match = re.search(r"```python\s*(.*?)```", response, re.DOTALL)
+        if not code_match or "def transform" not in response:
+            print(f"  [canary] {task_name}: FAIL (no transform in response)")
+            all_passed = False
+            continue
+
+        code = code_match.group(1).strip()
+        ns = dict(dsl_ns)
+        try:
+            exec(dsl_ns.get("HELPER_CODE_PREFIX", "") + "\n" + code, ns)
+            transform_fn = ns.get("transform")
+            if not transform_fn:
+                print(f"  [canary] {task_name}: FAIL (no transform function)")
+                all_passed = False
+                continue
+
+            passed = True
+            for pair in task_data.get("train", []):
+                pred = transform_fn(pair["input"])
+                pred_list = [list(row) for row in pred] if pred else []
+                out_list = [list(row) for row in pair["output"]]
+                if pred_list != out_list:
+                    passed = False
+                    break
+
+            status = "PASS" if passed else "FAIL"
+            print(f"  [canary] {task_name}: {status}")
+            if not passed:
+                all_passed = False
+
+        except Exception as e:
+            print(f"  [canary] {task_name}: FAIL ({e})")
+            all_passed = False
+
+    # C3: Clean up — clear all state before exit
+    del model, tokenizer
+    gc.collect()
+    mx.clear_cache()
+
+    # Save validation results
+    results = {"passed": all_passed, "tasks": canary_task_names}
+    (adapter_path / "validation_results.json").write_text(json.dumps(results, indent=2))
+
+    return all_passed
+
+
+# ---------------------------------------------------------------------------
+# MAIN
+# ---------------------------------------------------------------------------
+
+def main():
+    parser = argparse.ArgumentParser(description="LoRA self-distillation on successful ARC programs")
+    parser.add_argument("--data", type=Path, required=True, help="Path to successful_programs.jsonl")
+    parser.add_argument("--output", type=Path, required=True, help="Adapter output directory")
+    args = parser.parse_args()
+
+    if not args.data.exists():
+        print(f"[lora] Data file not found: {args.data}")
+        sys.exit(1)
+
+    # Step 1: Prepare data
+    data_dir = WORKSPACE / "evolution_results" / "lora_data"
+    count, entries = prepare_data(args.data, data_dir)
+    if count < 10:
+        print(f"[lora] Only {count} unique programs — need at least 10 for training")
+        sys.exit(1)
+
+    # Step 2: Train
+    success = run_training(data_dir, args.output)
+    if not success:
+        sys.exit(1)
+
+    # Step 3: Validate on canary tasks
+    canary_tasks = select_canary_tasks(entries)
+    if not canary_tasks:
+        print("[lora] No canary tasks available — accepting adapter without validation")
+        sys.exit(0)
+
+    passed = validate_adapter(args.output, canary_tasks)
+    if passed:
+        print(f"[lora] Adapter VALIDATED — all {len(canary_tasks)} canary tasks passed")
+        sys.exit(0)
+    else:
+        print(f"[lora] Adapter REJECTED — canary task regression detected")
+        sys.exit(1)
+
+
+if __name__ == "__main__":
+    main()

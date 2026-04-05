@@ -9,10 +9,12 @@ Usage:
   python target_mlx_arc.py path/to/task.json     # single task
 """
 
+import gc
 import json
 import re
 import os
 import sys
+import traceback
 import random
 import threading
 import numpy as np
@@ -42,14 +44,20 @@ TQ_FP16_LAYERS = int(os.environ.get("TQ_FP16_LAYERS", "4"))
 
 _model = None
 _tokenizer = None
+_adapter_path = None
 
 
 def _init_backend():
     global _model, _tokenizer
 
     from mlx_lm import load
-    print(f"[backend] Loading {MODEL_PATH} via MLX...", flush=True)
-    _model, _tokenizer = load(MODEL_PATH)
+    load_kwargs = {}
+    if _adapter_path:
+        load_kwargs["adapter_path"] = _adapter_path
+        print(f"[backend] Loading {MODEL_PATH} via MLX with adapter {_adapter_path}...", flush=True)
+    else:
+        print(f"[backend] Loading {MODEL_PATH} via MLX...", flush=True)
+    _model, _tokenizer = load(MODEL_PATH, **load_kwargs)
 
     if USE_TURBOQUANT:
         print(f"[backend] KV quantization: {TQ_BITS}-bit (mlx-lm built-in)", flush=True)
@@ -57,7 +65,25 @@ def _init_backend():
     print("[backend] MLX ready.", flush=True)
 
 
-def _generate(prompt: str, temperature: float) -> str:
+def unload_model():
+    """Free model memory (including Metal cache) before LoRA training subprocess."""
+    import mlx.core as mx
+    global _model, _tokenizer
+    _model = _tokenizer = None
+    gc.collect()
+    mx.clear_cache()
+    print("[backend] Model unloaded, Metal cache cleared.", flush=True)
+
+
+def reload_with_adapter(adapter_path=None):
+    """Reload model, optionally with a LoRA adapter."""
+    global _adapter_path
+    _adapter_path = adapter_path
+    unload_model()
+    _init_backend()
+
+
+def _generate(prompt: str, temperature: float, max_tokens: int = None) -> str:
     """Generate a single response."""
     if _model is None:
         _init_backend()
@@ -66,7 +92,7 @@ def _generate(prompt: str, temperature: float) -> str:
     from mlx_lm.sample_utils import make_sampler
 
     kwargs = {
-        "max_tokens": MAX_NEW_TOKENS,
+        "max_tokens": max_tokens or MAX_NEW_TOKENS,
         "sampler": make_sampler(temp=max(temperature, 1e-6)),
     }
     if USE_TURBOQUANT:
@@ -81,8 +107,8 @@ def _generate(prompt: str, temperature: float) -> str:
     return response
 
 
-def call_model(prompt: str, temperature: float = 0.0) -> str:
-    text = _generate(prompt, temperature)
+def call_model(prompt: str, temperature: float = 0.0, max_tokens: int = None) -> str:
+    text = _generate(prompt, temperature, max_tokens=max_tokens)
     print(f"[model] {len(text)} chars. Preview: {repr(text[:120])}", flush=True)
     return text
 
@@ -244,7 +270,7 @@ def try_code_on_task(code: str, task_data: dict, evaluate_on_test=False):
         exec(dsl_code + "\n" + code, ns)
         transform_fn = ns.get("transform")
         if not transform_fn:
-            return False, [(pairs[0]["input"], pairs[0]["output"], None, "No 'transform' function")]
+            return False, [(pairs[0]["input"], pairs[0]["output"], None, "No 'transform' function", None)]
 
         for pair in pairs:
             try:
@@ -252,15 +278,16 @@ def try_code_on_task(code: str, task_data: dict, evaluate_on_test=False):
                 pred_list = [list(row) for row in pred] if pred else []
                 out_list = [list(row) for row in pair["output"]]
                 if pred_list != out_list:
-                    failures.append((pair["input"], pair["output"], pred_list, None))
+                    failures.append((pair["input"], pair["output"], pred_list, None, None))
             except Exception as e:
-                failures.append((pair["input"], pair["output"], None, str(e)))
+                failures.append((pair["input"], pair["output"], None, str(e), traceback.format_exc()))
 
     except Exception as e:
+        tb = traceback.format_exc()
         if pairs:
-            failures.append((pairs[0]["input"], pairs[0]["output"], None, str(e)))
+            failures.append((pairs[0]["input"], pairs[0]["output"], None, str(e), tb))
         else:
-            failures.append(("", "", None, str(e)))
+            failures.append(("", "", None, str(e), tb))
 
     return len(failures) == 0, failures
 

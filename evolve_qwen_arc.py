@@ -27,12 +27,15 @@ Usage:
 """
 
 import json
+import gc
 import os
 import re
+import signal
 import sys
 import subprocess
 import random
 import threading
+import traceback
 from pathlib import Path
 from datetime import datetime
 from copy import deepcopy
@@ -58,8 +61,105 @@ CODOPT_TIME = int(os.environ.get("CODOPT_TIME", "120"))
 TIER3_TASKS = int(os.environ.get("TIER3_TASKS", "2"))
 
 # ---------------------------------------------------------------------------
+# CRASH RESILIENCE — log fatal signals so overnight runs leave a trace
+# ---------------------------------------------------------------------------
+
+def _crash_handler(signum, frame):
+    """Log crash info before dying so we know what killed overnight runs."""
+    crash_file = RESULTS_DIR / "crash.log"
+    try:
+        with open(crash_file, "a") as f:
+            f.write(f"\n{'='*60}\n")
+            f.write(f"CRASH at {datetime.now().isoformat()} — signal {signum}\n")
+            if frame:
+                f.write("".join(traceback.format_stack(frame)))
+            f.write(f"{'='*60}\n")
+    except Exception:
+        pass
+    sys.exit(128 + signum)
+
+for _sig in (signal.SIGTERM, signal.SIGHUP):
+    signal.signal(_sig, _crash_handler)
+
+
+# ---------------------------------------------------------------------------
 # RESEARCH CONTEXT — curated ARC technique summaries for diagnostic grounding
 # ---------------------------------------------------------------------------
+
+HYPOTHESIS_TYPES_FILE = RESULTS_DIR / "hypothesis_type_scores.json"
+
+# Mapping from keyword patterns in function names/hypotheses to type categories
+HYPOTHESIS_TYPE_KEYWORDS = {
+    "symmetry": ["symmetr", "mirror", "reflect", "flip"],
+    "flood_fill": ["flood", "fill", "paint", "region"],
+    "connected_components": ["connect", "component", "object", "blob", "segment"],
+    "color_logic": ["color", "palette", "histogram", "frequency", "recolor"],
+    "spatial_relation": ["spatial", "relation", "adjacen", "neighbor", "touching", "overlap"],
+    "pattern_tile": ["pattern", "tile", "repeat", "stamp", "template", "period"],
+    "transform_geom": ["rotate", "scale", "resize", "crop", "translate", "shift", "gravity", "drop", "slide"],
+    "grid_decompose": ["decompos", "split", "quadrant", "strip", "partition", "separator"],
+    "topology": ["topology", "layer", "occlu", "z_order", "stack"],
+    "counting_arithmetic": ["count", "arith", "sum", "multiply", "sort", "rank", "max", "min"],
+    "boundary_edge": ["boundar", "edge", "border", "contour", "outline", "perimete"],
+    "masking_boolean": ["mask", "boolean", "xor", "intersection", "union", "overlay"],
+}
+
+
+def classify_hypothesis_type(hypothesis: str, func_names: list[str]) -> str:
+    """Classify a hypothesis into a type category based on keywords."""
+    text = (hypothesis + " " + " ".join(func_names)).lower()
+    best_type, best_count = "other", 0
+    for htype, keywords in HYPOTHESIS_TYPE_KEYWORDS.items():
+        hits = sum(1 for kw in keywords if kw in text)
+        if hits > best_count:
+            best_type, best_count = htype, hits
+    return best_type
+
+
+def _load_hypothesis_type_scores() -> dict:
+    """Load hypothesis type win/loss tallies."""
+    if HYPOTHESIS_TYPES_FILE.exists():
+        try:
+            return json.loads(HYPOTHESIS_TYPES_FILE.read_text())
+        except (json.JSONDecodeError, OSError):
+            pass
+    return {}
+
+
+def _save_hypothesis_type_scores(scores: dict):
+    HYPOTHESIS_TYPES_FILE.write_text(json.dumps(scores, indent=2))
+
+
+def update_hypothesis_type_scores(htype: str, improved: bool):
+    """Record a win or loss for a hypothesis type."""
+    scores = _load_hypothesis_type_scores()
+    if htype not in scores:
+        scores[htype] = {"wins": 0, "losses": 0, "total": 0}
+    scores[htype]["total"] += 1
+    if improved:
+        scores[htype]["wins"] += 1
+    else:
+        scores[htype]["losses"] += 1
+    _save_hypothesis_type_scores(scores)
+
+
+def format_hypothesis_type_guidance() -> str:
+    """Format hypothesis type win rates for injection into diagnostic prompt."""
+    scores = _load_hypothesis_type_scores()
+    if not scores:
+        return ""
+    lines = ["## Hypothesis Type Track Record (win rate by category)"]
+    sorted_types = sorted(scores.items(), key=lambda x: x[1]["wins"] / max(x[1]["total"], 1), reverse=True)
+    for htype, s in sorted_types:
+        total = s["total"]
+        if total == 0:
+            continue
+        rate = s["wins"] / total
+        bar = "+" * s["wins"] + "-" * s["losses"]
+        lines.append(f"  {htype}: {rate:.0%} ({s['wins']}/{total}) [{bar}]")
+    lines.append("PREFER types with higher win rates. AVOID types that consistently lose.")
+    return "\n".join(lines)
+
 
 RESEARCH_CONTEXT = """\
 Key ARC-AGI solution techniques from the literature:
@@ -104,7 +204,15 @@ EVOLVE_BACKEND = os.environ.get("EVOLVE_BACKEND", "mlx")  # "mlx" or "ollama"
 def _generate_mlx(prompt: str, temperature: float, max_tokens: int | None) -> str:
     """Generate via MLX (reuses target_mlx_arc's loaded model + TurboQuant KV cache)."""
     from target_mlx_arc import call_model
-    return call_model(prompt, temperature=temperature, max_tokens=max_tokens or MAX_NEW_TOKENS)
+    result = call_model(prompt, temperature=temperature, max_tokens=max_tokens or MAX_NEW_TOKENS)
+    # Flush Metal cache between generations to prevent memory fragmentation
+    try:
+        import mlx.core as mx
+        gc.collect()
+        mx.clear_cache()
+    except Exception:
+        pass
+    return result
 
 
 def _generate_ollama(prompt: str, temperature: float, max_tokens: int | None) -> str:
@@ -151,10 +259,13 @@ def log_hypothesis(round_num, hypothesis, source, proposed_functions,
                    status, commit_hash=None):
     """Append one experiment record to hypotheses.jsonl."""
     RESULTS_DIR.mkdir(exist_ok=True)
+    htype = classify_hypothesis_type(hypothesis, proposed_functions)
+    improved = status == "keep"
     entry = {
         "round": round_num,
         "ts": datetime.now().isoformat(timespec="seconds"),
         "hypothesis": hypothesis,
+        "hypothesis_type": htype,
         "source": source,
         "proposed_functions": proposed_functions,
         "metric_before": round(metric_before, 4),
@@ -166,6 +277,8 @@ def log_hypothesis(round_num, hypothesis, source, proposed_functions,
     }
     with open(HYPOTHESES_FILE, "a") as f:
         f.write(json.dumps(entry) + "\n")
+    # Cross-run learning: track which hypothesis types win/lose
+    update_hypothesis_type_scores(htype, improved)
 
 
 def load_recent_hypotheses(n=10):
@@ -274,6 +387,33 @@ def _fallback_prompt(task_data):
     return prompt
 
 
+SUCCESSFUL_PROGRAMS_PATH = WORKSPACE / "evolution_results" / "successful_programs.jsonl"
+LORA_STATE_PATH = RESULTS_DIR / "lora_state.json"
+LORA_ADAPTERS_DIR = RESULTS_DIR / "lora_adapters"
+LORA_MIN_PROGRAMS = 50
+LORA_MIN_ROUNDS_BETWEEN = 5
+LORA_SKIP_FIRST_ROUNDS = 3
+LORA_MAX_KEPT_ADAPTERS = 3
+
+
+def _log_successful_program(task_name: str, task_data: dict, code: str, prompt: str):
+    """Append a successful transform() to JSONL for future LoRA fine-tuning."""
+    import time as _time
+    entry = {
+        "task_name": task_name,
+        "timestamp": _time.time(),
+        "code": code,
+        "prompt": prompt,
+        "num_train": len(task_data.get("train", [])),
+        "num_test": len(task_data.get("test", [])),
+    }
+    try:
+        with open(SUCCESSFUL_PROGRAMS_PATH, "a") as f:
+            f.write(json.dumps(entry) + "\n")
+    except Exception:
+        pass  # never break the evolution loop for logging
+
+
 def _truncate_traceback(tb: str, max_lines: int = 8) -> str:
     """Keep last N lines of traceback (the most informative part)."""
     lines = tb.strip().split("\n")
@@ -302,6 +442,8 @@ def solve_task_single(task_data, task_name="unknown"):
 
     passed, failures = try_code_on_task(code, task_data)
     if passed:
+        # Log successful program for future LoRA fine-tuning
+        _log_successful_program(task_name, task_data, code, prompt)
         return 1.0, []
 
     traces = []
@@ -519,6 +661,91 @@ def analyze_task_deeply(task_data: dict) -> str:
 START WITH ```python IMMEDIATELY. No preamble."""
 
 
+def _targeted_literature_hints(categories: dict) -> str:
+    """Query Semantic Scholar for papers relevant to current failure categories.
+
+    Cherry-pick 1 from AutoResearchClaw: instead of generic literature scans
+    only on stagnation, do targeted queries every round based on what's failing.
+    Results are cached to evolution_results/literature_cache.json with 24h TTL.
+    """
+    import urllib.request
+    import urllib.parse
+
+    # Map failure categories to search queries
+    CATEGORY_QUERIES = {
+        "CRASH": "program synthesis robust grid transformation error handling",
+        "PROMPT_FAIL": "visual reasoning prompt engineering grid puzzle",
+        "WRONG_ANSWER": "ARC abstraction reasoning inductive program synthesis",
+        "SOLVE_FAIL": "ARC-AGI program induction grid transformation",
+        "UNTESTED": None,  # skip
+    }
+
+    # Pick query based on dominant failure category
+    if not categories:
+        return ""
+    dominant = max(categories, key=categories.get)
+    query = CATEGORY_QUERIES.get(dominant)
+    if not query:
+        return ""
+
+    # Check cache (24h TTL)
+    cache_file = RESULTS_DIR / "literature_cache.json"
+    cache = {}
+    if cache_file.exists():
+        try:
+            cache = json.loads(cache_file.read_text())
+        except (json.JSONDecodeError, OSError):
+            pass
+
+    cache_key = dominant
+    if cache_key in cache:
+        cached = cache[cache_key]
+        age_hours = (datetime.now().timestamp() - cached.get("ts", 0)) / 3600
+        if age_hours < 24 and cached.get("hints"):
+            return cached["hints"]
+
+    # Query Semantic Scholar (free, no API key needed, 100 req/5min)
+    try:
+        params = urllib.parse.urlencode({
+            "query": query,
+            "limit": 5,
+            "fields": "title,abstract,year",
+            "year": "2024-2026",
+        })
+        url = f"https://api.semanticscholar.org/graph/v1/paper/search?{params}"
+        req = urllib.request.Request(url, headers={"User-Agent": "arc-agi-evolution/1.0"})
+        with urllib.request.urlopen(req, timeout=10) as resp:
+            data = json.loads(resp.read())
+    except Exception as e:
+        print(f"  [literature] Semantic Scholar query failed: {e}")
+        return ""
+
+    papers = data.get("data", [])
+    if not papers:
+        return ""
+
+    lines = [f"## Targeted Literature (for {dominant} failures, from Semantic Scholar)"]
+    for p in papers[:3]:
+        title = p.get("title", "")
+        abstract = (p.get("abstract") or "")[:200]
+        year = p.get("year", "")
+        if abstract:
+            lines.append(f"- **{title}** ({year}): {abstract}...")
+    lines.append("Consider techniques from these papers when designing new helper functions.")
+
+    hints = "\n".join(lines)
+
+    # Cache result
+    cache[cache_key] = {"ts": datetime.now().timestamp(), "hints": hints}
+    try:
+        RESULTS_DIR.mkdir(exist_ok=True)
+        cache_file.write_text(json.dumps(cache, indent=2))
+    except Exception:
+        pass
+
+    return hints
+
+
 def _extract_function_signatures(helper_code):
     """Extract 'def name(args):' lines from HELPER_CODE_PREFIX."""
     return re.findall(r"(def \w+\([^)]*\))", helper_code)
@@ -533,8 +760,10 @@ def _format_hypothesis_history(entries):
         improved = e["metric_after"] > e["metric_before"]
         icon = "+" if improved else "-"
         funcs = ", ".join(e.get("proposed_functions", [])[:3])
+        htype = e.get("hypothesis_type", "")
+        type_tag = f" [{htype}]" if htype else ""
         lines.append(
-            f"  [{icon}] Round {e['round']}: {e['hypothesis'][:80]} "
+            f"  [{icon}] Round {e['round']}{type_tag}: {e['hypothesis'][:80]} "
             f"({funcs}) metric {e['metric_before']:.3f}->{e['metric_after']:.3f}"
         )
     return "\n".join(lines)
@@ -629,9 +858,20 @@ def build_diagnostic_prompt(failing_results):
                 tdesc += f"\n    Expected shape: {t.get('output_shape')}, Got: {t.get('predicted_shape')}"
             trace_descs.append(tdesc)
 
+    # Cherry-pick 2: Inject hypothesis type win/loss guidance
+    type_guidance = format_hypothesis_type_guidance()
+    research = RESEARCH_CONTEXT.strip()
+    if type_guidance:
+        research = research + "\n\n" + type_guidance
+
+    # Cherry-pick 1: Targeted literature search based on failure categories
+    lit_hints = _targeted_literature_hints(categories)
+    if lit_hints:
+        research = research + "\n\n" + lit_hints
+
     return DIAGNOSTIC_PROMPT.format(
         num_functions=num_functions,
-        research_context=RESEARCH_CONTEXT.strip(),
+        research_context=research,
         existing_signatures=sig_text,
         hypothesis_history=history_text,
         blacklist=blacklist_text,
@@ -861,15 +1101,170 @@ def git_commit_if_improved(round_num, pre_score, post_score, hypothesis="",
 
 
 # ---------------------------------------------------------------------------
+# LORA SELF-DISTILLATION ORCHESTRATION
+# ---------------------------------------------------------------------------
+
+def _load_lora_state() -> dict:
+    """Load LoRA training state from JSON file."""
+    if LORA_STATE_PATH.exists():
+        try:
+            return json.loads(LORA_STATE_PATH.read_text())
+        except (json.JSONDecodeError, OSError):
+            pass
+    return {
+        "last_training_round": 0,
+        "programs_at_last_training": 0,
+        "active_adapter": None,
+        "adapter_history": [],
+        "post_lora_scores": [],
+    }
+
+
+def _save_lora_state(state: dict):
+    """Persist LoRA state to JSON."""
+    LORA_STATE_PATH.write_text(json.dumps(state, indent=2))
+
+
+def _count_successful_programs() -> int:
+    """Count lines in successful_programs.jsonl."""
+    if not SUCCESSFUL_PROGRAMS_PATH.exists():
+        return 0
+    with open(SUCCESSFUL_PROGRAMS_PATH) as f:
+        return sum(1 for line in f if line.strip())
+
+
+def should_trigger_lora_training(round_num: int, state: dict) -> bool:
+    """Check if LoRA training should run this round."""
+    if round_num <= LORA_SKIP_FIRST_ROUNDS:
+        return False
+    rounds_since = round_num - state.get("last_training_round", 0)
+    if rounds_since < LORA_MIN_ROUNDS_BETWEEN:
+        return False
+    prog_count = _count_successful_programs()
+    new_progs = prog_count - state.get("programs_at_last_training", 0)
+    return new_progs >= LORA_MIN_PROGRAMS
+
+
+def run_lora_training_cycle(round_num: int, state: dict) -> dict:
+    """Orchestrate: unload model → train subprocess → validate → reload."""
+    from target_mlx_arc import unload_model, reload_with_adapter
+    import time as _time
+
+    timestamp = _time.strftime("%Y%m%d_%H%M%S")
+    adapter_dir = LORA_ADAPTERS_DIR / timestamp
+
+    print(f"[lora] Starting training cycle (adapter: {timestamp})")
+
+    # Unload model to free GPU memory
+    unload_model()
+
+    # Run training as subprocess for memory isolation
+    try:
+        result = subprocess.run(
+            [sys.executable, str(WORKSPACE / "lora_train.py"),
+             "--data", str(SUCCESSFUL_PROGRAMS_PATH),
+             "--output", str(adapter_dir)],
+            capture_output=True, text=True, timeout=1800,
+            cwd=str(WORKSPACE),
+        )
+        print(result.stdout[-2000:] if result.stdout else "")
+        if result.stderr:
+            print(f"[lora] stderr: {result.stderr[-500:]}")
+    except subprocess.TimeoutExpired:
+        print("[lora] Training timed out (30min limit)")
+        reload_with_adapter(state.get("active_adapter"))
+        return state
+    except Exception as e:
+        print(f"[lora] Training error: {e}")
+        reload_with_adapter(state.get("active_adapter"))
+        return state
+
+    if result.returncode == 0:
+        # Adapter validated — reload with it
+        adapter_path = str(adapter_dir)
+        reload_with_adapter(adapter_path)
+
+        # Update state
+        state["last_training_round"] = round_num
+        state["programs_at_last_training"] = _count_successful_programs()
+        state["active_adapter"] = adapter_path
+        state["adapter_history"].append(timestamp)
+        state["post_lora_scores"] = []  # reset regression tracking
+
+        # Create 'active' symlink
+        active_link = LORA_ADAPTERS_DIR / "active"
+        if active_link.is_symlink() or active_link.exists():
+            active_link.unlink()
+        active_link.symlink_to(adapter_dir.name)
+
+        # Prune old adapters (keep last N)
+        if len(state["adapter_history"]) > LORA_MAX_KEPT_ADAPTERS:
+            old = state["adapter_history"][:-LORA_MAX_KEPT_ADAPTERS]
+            for old_ts in old:
+                old_dir = LORA_ADAPTERS_DIR / old_ts
+                if old_dir.exists():
+                    import shutil
+                    shutil.rmtree(old_dir, ignore_errors=True)
+                    print(f"[lora] Pruned old adapter: {old_ts}")
+            state["adapter_history"] = state["adapter_history"][-LORA_MAX_KEPT_ADAPTERS:]
+
+        print(f"[lora] Adapter {timestamp} active. History: {state['adapter_history']}")
+    else:
+        # Adapter rejected — reload previous (or base model)
+        print(f"[lora] Adapter rejected (exit {result.returncode}). Reverting.")
+        reload_with_adapter(state.get("active_adapter"))
+
+    _save_lora_state(state)
+    return state
+
+
+def check_lora_regression(state: dict, solve_score: float) -> dict:
+    """Track post-LoRA solve scores; rollback if 2 consecutive regressions."""
+    if not state.get("active_adapter"):
+        return state
+
+    scores = state.get("post_lora_scores", [])
+    scores.append(solve_score)
+    state["post_lora_scores"] = scores
+
+    # Check for 2 consecutive regressions
+    if len(scores) >= 3:
+        if scores[-1] < scores[-3] and scores[-2] < scores[-3]:
+            print(f"[lora] REGRESSION detected: {scores[-3]:.4f} → {scores[-2]:.4f} → {scores[-1]:.4f}")
+            # Rollback to previous adapter or base model
+            history = state.get("adapter_history", [])
+            if len(history) >= 2:
+                prev = str(LORA_ADAPTERS_DIR / history[-2])
+                print(f"[lora] Rolling back to previous adapter: {history[-2]}")
+                from target_mlx_arc import reload_with_adapter
+                reload_with_adapter(prev)
+                state["active_adapter"] = prev
+                state["adapter_history"].pop()
+            else:
+                print("[lora] Rolling back to base model (no previous adapter)")
+                from target_mlx_arc import reload_with_adapter
+                reload_with_adapter(None)
+                state["active_adapter"] = None
+                state["adapter_history"] = []
+            state["post_lora_scores"] = []
+            _save_lora_state(state)
+
+    return state
+
+
+# ---------------------------------------------------------------------------
 # MAIN AUTORESEARCH LOOP
 # ---------------------------------------------------------------------------
 
-def evolve(rounds=None, diagnose_only=False, never_stop=False, tier3_tasks=None):
+def evolve(rounds=None, diagnose_only=False, never_stop=False, tier3_tasks=None, no_lora=False):
     if rounds is None:
         rounds = OUTER_ROUNDS
     if tier3_tasks is not None:
         global TIER3_TASKS
         TIER3_TASKS = tier3_tasks
+
+    lora_enabled = not no_lora
+    lora_state = _load_lora_state() if lora_enabled else None
 
     RESULTS_DIR.mkdir(exist_ok=True)
 
@@ -896,6 +1291,16 @@ def evolve(rounds=None, diagnose_only=False, never_stop=False, tier3_tasks=None)
         print(f"\n{'='*60}")
         print(f"  AUTORESEARCH ROUND {label}")
         print(f"{'='*60}")
+
+        # --- 0. LORA CHECK ---
+        if lora_enabled and should_trigger_lora_training(round_num, lora_state):
+            print(f"\n[0/9] LORA — self-distillation training triggered")
+            lora_state = run_lora_training_cycle(round_num, lora_state)
+        elif lora_enabled:
+            prog_count = _count_successful_programs()
+            new_progs = prog_count - (lora_state.get("programs_at_last_training", 0))
+            rounds_since = round_num - lora_state.get("last_training_round", 0)
+            print(f"\n[0/9] LORA — skip (new_programs={new_progs}, rounds_since={rounds_since})")
 
         # --- 1. EVALUATE ---
         print("\n[1/9] EVALUATE — three-tier task scoring...")
@@ -951,7 +1356,8 @@ def evolve(rounds=None, diagnose_only=False, never_stop=False, tier3_tasks=None)
         mode_label = "PROMPT-FIX" if use_prompt_fix_mode else "PRIMITIVES"
         print(f"\n[3/9] HYPOTHESIZE — generating with {EVOLVE_BACKEND} (temp={temp:.2f}, stagnant={stagnant_streak}, mode={mode_label})...")
 
-        # When stagnation is high, inject literature hints for fresh ideas
+        # Literature hints are now injected every round via _targeted_literature_hints()
+        # in build_diagnostic_prompt(). On high stagnation, also add the broader scan hints.
         if stagnant_streak >= 5:
             try:
                 from literature_scan import load_hints
@@ -961,7 +1367,7 @@ def evolve(rounds=None, diagnose_only=False, never_stop=False, tier3_tasks=None)
                         "## Failing Tasks",
                         f"{lit_hints}\n\n## Failing Tasks",
                     )
-                    print(f"  [literature] Injected hints into prompt (stagnant={stagnant_streak})")
+                    print(f"  [literature] Extra broad hints injected (stagnant={stagnant_streak})")
             except ImportError:
                 pass
 
@@ -1104,6 +1510,10 @@ def evolve(rounds=None, diagnose_only=False, never_stop=False, tier3_tasks=None)
             status, commit_hash,
         )
 
+        # --- LoRA regression check ---
+        if lora_enabled and lora_state:
+            lora_state = check_lora_regression(lora_state, solve_after)
+
         # --- AUTO-PUSH — sync results to GitHub for remote monitoring ---
         try:
             subprocess.run(
@@ -1145,10 +1555,12 @@ if __name__ == "__main__":
     parser.add_argument("--diagnose-only", action="store_true", help="Only print diagnostics")
     parser.add_argument("--never-stop", action="store_true", help="Run continuously until killed")
     parser.add_argument("--tier3-tasks", type=int, default=None, help="Tier 3 solve task count")
+    parser.add_argument("--no-lora", action="store_true", help="Disable LoRA self-distillation")
     args = parser.parse_args()
     evolve(
         rounds=args.rounds,
         diagnose_only=args.diagnose_only,
         never_stop=args.never_stop,
         tier3_tasks=args.tier3_tasks,
+        no_lora=args.no_lora,
     )

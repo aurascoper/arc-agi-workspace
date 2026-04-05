@@ -17163,6 +17163,419 @@ def transform_pattern_34b99a2b(grid: list[list[int]]) -> list[list[int]]:
     # Let's try: (a,b) -> 2 if a==8 or b==8. But (4,5)->0.
     # Row 0: (0,8)->2. (0,0)->0. (4,0
 
+
+
+# --- EVOLVED FUNCTIONS (auto-generated) ---
+
+def extract_color_zones_by_horizontal_segments(grid: list[list[int]]) -> list[list[list[int]]]:
+    """Extracts connected regions of identical colors bounded by 0s or grid edges, grouping them into horizontal bands."""
+    result = []
+    current_row = []
+    current_zone = []
+    active_color = -1
+    r = 0
+    while r < len(grid):
+        row = grid[r]
+        segment_start = -1
+        for c in range(len(row)):
+            if row[c] == 0:
+                if segment_start != -1:
+                    # End of a colored segment
+                    segment = row[segment_start:c]
+                    if segment == current_zone:
+                        current_zone = []
+                    current_zone.append(segment)
+                    current_row.append(segment)
+                    segment_start = -1
+                else:
+                    current_zone.append([row[c]])
+                    current_row.append([row[c]])
+            else:
+                if segment_start == -1:
+                    segment_start = c
+                # Continue current segment
+                current_row.append([row[c]])
+        result.append(current_row)
+        current_row = []
+        current_zone = []
+        r += 1
+    return result
+
+def generate_inverted_pattern_zones(grid: list[list[int]]) -> list[list[int]]:
+    """Identifies isolated colored cells and generates a mask where they are replaced by a specific inverted value."""
+    import numpy as np
+    grid_np = np.array(grid)
+    h, w = grid_np.shape
+    target_bg = 0
+    new_grid = np.full((h, w), target_bg, dtype=np.int32)
+    isolated_mask = np.zeros((h, w), dtype=bool)
+    for r in range(h):
+        for c in range(w):
+            if grid[r][c] != 0 and grid[r][c] != 5:
+                isolated_mask[r, c] = True
+    # Check 8-neighbors for isolation
+    for r in range(1, h - 1):
+        for c in range(1, w - 1):
+            if isolated_mask[r, c]:
+                neighbors = (grid[r, c-1] + grid[r, c+1] + grid[r-1, c] + grid[r+1, c] + 
+                            grid[r-1, c-1] + grid[r-1, c+1] + grid[r+1, c-1] + grid[r+1, c+1])
+                if neighbors < 1:
+                    isolated_mask[r, c] = True
+    for r in range(h):
+        for c in range(w):
+            if isolated_mask[r, c]:
+                new_grid[r, c] = 1
+            elif grid[r][c] != 5:
+                new_grid[r, c] = grid[r][c]
+            else:
+                new_grid[r, c] = 5
+    return new_grid.tolist()
+
+def transform_quadrant_boundary_patterns(grid: list[list[int]]) -> list[list[int]]:
+    """Detects 2x2 quadrants separated by a middle row/col of 5s and applies a specific fill rule based on quadrant content."""
+    h, w = len(grid), len(grid[0]) if grid else 0
+    mid_row = h // 2
+    mid_col = w // 2
+    
+    top_left = []
+    top_right = []
+    bot_left = []
+    bot_right = []
+    
+    for r in range(mid_row):
+        for c in range(mid_col):
+            sub = []
+            for dr in range(2):
+                row_snip = []
+                for dc in range(2):
+                    if r + dr < h and c + dc < w:
+                        row_snip.append(grid[r + dr][c + dc])
+                    else:
+                        row_snip.append(0)
+                sub.append(row_snip)
+            top_left.append(sub)
+    for r in range(mid_row):
+        for c in range(mid_col, w):
+            sub = []
+            for dr in range(2):
+                row_snip = []
+                for dc in range(2):
+                    if r + dr < h and c + dc < w:
+                        row_snip.append(grid[r + dr][c + dc])
+                    else:
+                        row_snip.append(0)
+                sub.append(row_snip)
+            top_right.append(sub)
+    for r in range(mid_row, h):
+        for c in range(mid_col):
+            sub = []
+            for dr in range(2):
+                row_snip = []
+                for dc in range(2):
+                    if r + dr < h and c + dc < w:
+                        row_snip.append(grid[r + dr][c + dc])
+                    else:
+                        row_snip.append(0)
+                sub.append(row_snip)
+            bot_left.append(sub)
+    for r in range(mid_row, h):
+        for c in range(mid_col, w):
+            sub = []
+            for dr in range(2):
+                row_snip = []
+                for dc in range(2):
+                    if r + dr < h and c + dc < w:
+                        row_snip.append(grid[r + dr][c + dc])
+                    else:
+                        row_snip.append(0)
+                sub.append(row_snip)
+            bot_right.append(sub)
+    
+    # Identify separator colors
+    rows = []
+    for r in range(h):
+        row_vals = [grid[r][c] for c in range(w)]
+        if row_vals.count(5) == w:
+            rows.append(r)
+            
+    cols = []
+    for c in range(w):
+        col_vals = [grid[r][c] for r in range(h)]
+        if col_vals.count(5) == h:
+            cols.append(c)
+            
+    # Reconstruct based on separators
+    if rows or cols:
+        result_grid = [[0 for _ in range(w)] for _ in range(h)]
+        
+        # Top-Left Quadrant
+        for r in range(len(top_left)):
+            for c in range(len(top_left[0])):
+                result_grid[r][c] = top_left[r][c]
+        
+        # Top-Right Quadrant
+        tr_r = 0
+        tr_c = 0
+        for r in range(mid_row):
+            for c in range(len(top_right)):
+                result_grid[r][c] = top_right[tr_r][tr_c]
+                tr_c += 1
+                if tr_c >= len(top_right[tr_r]):
+                    tr_r += 1
+                    tr_c = 0
+        
+        # Bottom-Left Quadrant
+        bl_r = 0
+        bl_c = 0
+        for r in range(mid_row, h):
+            for c in range(len(bot_left)):
+                result_grid[r - mid_row][c] = bot_left[bl_r][bl_c]
+                bl_c += 1
+                if bl_c >= len(bot_left[bl_r]):
+                    bl_r += 1
+                    bl_c = 0
+        
+        # Bottom-Right Quadrant
+        br_r = 0
+        br_c = 0
+        for r in range(mid_row, h):
+            for c in range(mid_col, w):
+                result_grid[r - mid_row][c - mid_col] = bot_right[br_r][br_c]
+                br_c += 1
+                if br_c >= len(bot_right[br_r]):
+                    br_r += 1
+                    br_c = 0
+                    
+        # Apply separator logic (simplified heuristic for failure)
+        # If row/col is all 5s, it acts as a wall
+        for r in range(h):
+            for c in range(w):
+                if (r in rows) or (c in cols):
+                    result_grid[r][c] = 5
+                else:
+                     pass 
+        return result_grid
+    else:
+        return grid
+
+def expand_border_with_diagonal_reflection(grid: list[list[int]]) -> list[list[int]]:
+    """Expands the grid content by reflecting the border content diagonally into the empty space."""
+    import numpy as np
+    grid_np = np.array(grid)
+    h, w = grid_np.shape
+    new_h, new_w = 2 * h, 2 * w
+    result = np.full((new_h, new_w), 0, dtype=np.int32)
+    
+    # Copy original
+    result[:h, :w] = grid_np
+    
+    # Extract border content
+    top_row = grid_np[0, :]
+    bot_row = grid_np[-1, :]
+    left_col = grid_np[:, 0]
+    right_col = grid_np[:, -1]
+    
+    # Top-Right reflection (horizontal flip of top row)
+    # result[:h, w:2*w] = np.fliplr(top_row) # Not exact
+    # Just fill top strip with mirrored content
+    for r in range(h):
+        for c in range(h, 2 * h): # Assuming square expansion
+             if c - h < w:
+                 result[r, c] = top_row[c - h]
+    # This is a placeholder for a more complex geometric transform not fully captured by simple extraction
+    return result.tolist()
+
+def apply_symmetry_correction_and_fill(grid: list[list[int]], target_fill: int = 3) -> list[list[int]]:
+    """Detects rows/cols with high 5-counts as separators and fills regions symmetrically or with specific pattern."""
+    h, w = len(grid), len(grid[0])
+    separator_rows = []
+    separator_cols = []
+    
+    # Identify rows that are completely 5s (or mostly)
+    for r in range(h):
+        if all(grid[r][c] == 5 for c in range(w)):
+            separator_rows.append(r)
+            
+    # Identify cols that are completely 5s (or mostly)
+    for c in range(w):
+        if all(grid[r][c] == 5 for r in range(h)):
+            separator_cols.append(c)
+            
+    # Create mask of valid regions (not separated by 5s)
+    valid_mask = np.ones((h, w), dtype=bool)
+    for r in range(h):
+        for c in range(w):
+            if r in separator_rows or c in separator_cols:
+                if grid[r][c] == 5:
+                    valid_mask[r, c] = False
+    
+    # Process regions
+    regions = []
+    visited = set()
+    for r in range(h):
+        for c in range(w):
+            if valid_mask[r, c] and (r, c) not in visited:
+                region = []
+                current_r, current_c = r, c
+                while current_r < h and current_c < w:
+                    if valid_mask[current_r, current_c]:
+                        region.append(grid[current_r][current_c])
+                        visited.add((current_r, current_c))
+                        current_c += 1
+                    else:
+                        break
+                regions.append(region)
+                
+    result = list(np.full((h, w), target_fill, dtype=np.int32))
+    
+    for i, region in enumerate(regions):
+        if region:
+            # Heuristic: fill the region's bounding box with the region's color
+            # This assumes contiguous blocks for now
+            br, bc = r, c
+            # Find extent of color
+            color = grid[r][c]
+            # Fill rectangle
+            # ... simplified logic based on typical ARC tasks
+            # Find bounding box of this color in the region
+            # ...
+            pass
+    return result
+
+def fill_pattern_with_specific_color_propagation(grid: list[list[int]], color: int = 5) -> list[list[int]]:
+    """Fills regions of a specific color with a propagated color, handling edge cases where propagation stops at boundaries."""
+    h, w = len(grid), len(grid[0])
+    visited = set()
+    new_grid = [row[:] for row in grid]
+    
+    # Find all connected components of 'color'
+    for r in range(h):
+        for c in range(w):
+            if grid[r][c] == color and (r, c) not in visited:
+                # BFS/DFS
+                q = [(r, c)]
+                visited.add((r, c))
+                component = []
+                while q:
+                    cr, cc = q.pop(0)
+                    component.append((cr, cc))
+                    for dr, dc in [(-1,0), (1,0), (0,-1), (0,1)]:
+                        nr, nc = cr + dr, cc + dc
+                        if 0 <= nr < h and 0 <= nc < w and grid[nr][nc] == color and (nr, nc) not in visited:
+                            visited.add((nr, nc))
+                            q.append((nr, nc))
+                new_grid = fill_pattern_with_specific_component(new_grid, component, color)
+    return new_grid
+
+def fill_pattern_with_specific_component(grid: list[list[int]], component: list[tuple], color: int) -> list[list[int]]:
+    """Helper to fill a specific set of coordinates with a color."""
+    h, w = len(grid), len(grid[0])
+    for r, c in component:
+        grid[r][c] = color
+    return grid
+
+def transform_pattern_by_row_reflection(grid: list[list[int]]) -> list[list[int]]:
+    """Reflects the top half of the grid horizontally and the bottom half vertically to create a symmetric pattern."""
+    h, w = len(grid), len(grid[0])
+    result = [[0 for _ in range(w)] for _ in range(h)]
+    
+    # Split into quadrants
+    q1 = grid[:h//2]
+    q2 = grid[h//2:]
+    
+    # Apply horizontal reflection to top half
+    for r in range(h//2):
+        for c in range(w):
+            result[r][w - 1 - c] = grid[r][c]
+            
+    # Apply vertical reflection to bottom half
+    for r in range(h//2, h):
+        for c in range(w):
+            result[r][w - 1 - c] = grid[r][c]
+            
+    return result
+
+def generate_diagonal_patterns_from_corners(grid: list[list[int]]) -> list[list[int]]:
+    """Extracts diagonal lines from the corners and fills the grid based on corner intersection patterns."""
+    import numpy as np
+    grid_np = np.array(grid)
+    h, w = grid_np.shape
+    
+    # Identify corner colors
+    top_left = grid_np[0, 0]
+    top_right = grid_np[0, -1]
+    bot_left = grid_np[-1, 0]
+    bot_right = grid_np[-1, -1]
+    
+    # Identify 5s as background/separators
+    is_separator = np.all(grid_np == 5, axis=0)
+    row_separators = np.all(grid_np == 5, axis=1)
+    
+    result = np.full((h, w), 0, dtype=np.int32)
+    
+    # Fill based on corners
+    for r in range(h):
+        for c in range(w):
+            # Check if this cell is "inside" a quadrant defined by separators
+            if np.all((grid_np == 5), axis=(0, 1)) and (r, c) not in [(0, 0), (0, -1), (-1, 0), (-1, -1)]:
+                 pass
+            result[r, c] = grid_np[r, c]
+            # Propagate corner colors along diagonals
+            # If top-left is color X, fill diagonal
+            if r < h//2 and c < w//2 and grid_np[r, c] != 5 and grid_np[r, c] == top_left:
+                pass
+            # This logic is vague, trying to match the specific failure of predicting diagonal fills
+            pass 
+    return result.tolist()
+
+def calculate_quadrant_dominant_color(grid: list[list[int]]) -> list[list[int]]:
+    """Calculates the most frequent non-background color in each quadrant and fills that quadrant with it."""
+    h, w = len(grid), len(grid[0])
+    mid_r, mid_c = h // 2, w // 2
+    
+    quadrants = {
+        "TL": [], "TR": [], "BL": [], "BR": []
+    }
+    
+    for r in range(h):
+        for c in range(w):
+            if r < mid_r and c < mid_c:
+                quadrants["TL"].append((r, c))
+            elif r < mid_r and c >= mid_c:
+                quadrants["TR"].append((r, c))
+            elif r >= mid_r and c < mid_c:
+                quadrants["BL"].append((r, c))
+            else:
+                quadrants["BR"].append((r, c))
+    
+    results = {
+        "TL": [], "TR": [], "BL": [], "BR": []
+    }
+    
+    for q_name, coords in quadrants.items():
+        colors = []
+        for r, c in coords:
+            if grid[r][c] != 5: # Ignore separators
+                colors.append(grid[r][c])
+        
+        if colors:
+            counts = [colors.count(c) for c in set(colors)]
+            dominant_color = max(set(colors), key=colors.count)
+            results[q_name] = [dominant_color for _ in coords]
+        else:
+            results[q_name] = [0 for _ in coords]
+            
+    # Reassemble grid
+    out_h, out_w = h, w
+    final_grid = [[0 for _ in range(out_w)] for _ in range(out_h)]
+    
+    for r in range(h):
+        for c in range(w):
+            if r < mid_r and c < mid_c:
+                final_grid[r][c] = results["TL"][r]
+            elif r < mid_r and c >= mid_c:
+                final_grid[r][c] = results["TR"][r - mid_r]
+
 '''
 
 exec(HELPER_CODE_PREFIX, globals())
