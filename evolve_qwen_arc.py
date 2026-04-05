@@ -48,17 +48,14 @@ METRIC_FILE = WORKSPACE / "metric.json"
 RESULTS_DIR = WORKSPACE / "evolution_results"
 HYPOTHESES_FILE = RESULTS_DIR / "hypotheses.jsonl"
 
-MODEL_PATH = os.environ.get("ARC_MODEL_PATH", "mlx-community/Qwen3.5-9B-4bit")
+OLLAMA_MODEL = os.environ.get("OLLAMA_MODEL", "deepseek-coder-v2")
+OLLAMA_URL = os.environ.get("OLLAMA_URL", "http://localhost:11434")
 MAX_NEW_TOKENS = int(os.environ.get("EVOLVE_MAX_TOKENS", "4096"))
 TASKS_PER_DIAGNOSTIC = int(os.environ.get("TASKS_PER_DIAGNOSTIC", "5"))
 OUTER_ROUNDS = int(os.environ.get("EVOLVE_ROUNDS", "3"))
 CODOPT_BRANCHES = int(os.environ.get("CODOPT_BRANCHES", "3"))
 CODOPT_TIME = int(os.environ.get("CODOPT_TIME", "120"))
-TIER3_TASKS = int(os.environ.get("TIER3_TASKS", "5"))
-
-USE_TURBOQUANT = os.environ.get("USE_TURBOQUANT", "1") == "1"
-TQ_BITS = int(os.environ.get("TQ_BITS", "3"))
-TQ_FP16_LAYERS = int(os.environ.get("TQ_FP16_LAYERS", "4"))
+TIER3_TASKS = int(os.environ.get("TIER3_TASKS", "2"))
 
 # ---------------------------------------------------------------------------
 # RESEARCH CONTEXT — curated ARC technique summaries for diagnostic grounding
@@ -98,41 +95,51 @@ Key ARC-AGI solution techniques from the literature:
     boundaries or other objects. Used in "drop", "slide", and "gravity" tasks."""
 
 # ---------------------------------------------------------------------------
-# MLX BACKEND
+# LLM BACKEND — MLX (default) or Ollama fallback
 # ---------------------------------------------------------------------------
 
-_model = None
-_tokenizer = None
+EVOLVE_BACKEND = os.environ.get("EVOLVE_BACKEND", "mlx")  # "mlx" or "ollama"
 
 
-def init_mlx():
-    global _model, _tokenizer
-    if _model is not None:
-        return
-
-    from mlx_lm import load
-    print(f"[evolve] Loading {MODEL_PATH}...", flush=True)
-    _model, _tokenizer = load(MODEL_PATH)
-
-    if USE_TURBOQUANT:
-        print(f"[evolve] KV quantization: {TQ_BITS}-bit (mlx-lm built-in)", flush=True)
-
-    print("[evolve] MLX ready.", flush=True)
+def _generate_mlx(prompt: str, temperature: float, max_tokens: int | None) -> str:
+    """Generate via MLX (reuses target_mlx_arc's loaded model + TurboQuant KV cache)."""
+    from target_mlx_arc import call_model
+    return call_model(prompt, temperature=temperature, max_tokens=max_tokens or MAX_NEW_TOKENS)
 
 
-def generate(prompt: str, temperature: float = 0.3) -> str:
-    init_mlx()
-    from mlx_lm import generate as mlx_generate
-    from mlx_lm.sample_utils import make_sampler
-
-    kwargs = {
-        "max_tokens": MAX_NEW_TOKENS,
-        "sampler": make_sampler(temp=max(temperature, 1e-6)),
+def _generate_ollama(prompt: str, temperature: float, max_tokens: int | None) -> str:
+    """Generate via Ollama HTTP API (fallback)."""
+    import requests
+    payload = {
+        "model": OLLAMA_MODEL,
+        "messages": [{"role": "user", "content": prompt}],
+        "stream": False,
+        "think": False,
+        "options": {
+            "temperature": max(temperature, 1e-6),
+            "num_predict": max_tokens or MAX_NEW_TOKENS,
+        },
     }
-    if USE_TURBOQUANT:
-        kwargs["kv_bits"] = TQ_BITS
+    try:
+        resp = requests.post(
+            f"{OLLAMA_URL}/api/chat", json=payload, timeout=600,
+        )
+        resp.raise_for_status()
+        msg = resp.json().get("message", {})
+        content = msg.get("content", "")
+        if not content.strip() and msg.get("thinking"):
+            content = msg["thinking"]
+        return content
+    except Exception as e:
+        print(f"[evolve] Ollama error: {e}")
+        return ""
 
-    return mlx_generate(_model, _tokenizer, prompt=prompt, **kwargs)
+
+def generate(prompt: str, temperature: float = 0.3, max_tokens: int | None = None) -> str:
+    """Dispatch to MLX or Ollama based on EVOLVE_BACKEND."""
+    if EVOLVE_BACKEND == "mlx":
+        return _generate_mlx(prompt, temperature, max_tokens)
+    return _generate_ollama(prompt, temperature, max_tokens)
 
 
 # ---------------------------------------------------------------------------
@@ -267,8 +274,16 @@ def _fallback_prompt(task_data):
     return prompt
 
 
-def solve_task_single(task_data):
-    """Tier 3: One-shot solve attempt via MLX. Returns pixel accuracy 0.0-1.0."""
+def _truncate_traceback(tb: str, max_lines: int = 8) -> str:
+    """Keep last N lines of traceback (the most informative part)."""
+    lines = tb.strip().split("\n")
+    if len(lines) <= max_lines:
+        return tb.strip()
+    return "...\n" + "\n".join(lines[-max_lines:])
+
+
+def solve_task_single(task_data, task_name="unknown"):
+    """Tier 3: One-shot solve attempt via MLX. Returns (pixel_accuracy, traces)."""
     from target_mlx_arc import try_code_on_task, extract_python_code, calculate_pixel_accuracy
 
     ns = load_dsl_namespace()
@@ -279,20 +294,37 @@ def solve_task_single(task_data):
     else:
         prompt = _fallback_prompt(task_data)
 
-    response = generate(prompt, temperature=0.0)
+    response = generate(prompt, temperature=0.0, max_tokens=1024)
     code = extract_python_code(response)
     if not code or "def transform" not in code:
-        return 0.0
+        return 0.0, [{"task_name": task_name, "failure_type": "NO_TRANSFORM",
+                       "error_message": f"LLM response had no transform ({len(response)} chars)"}]
 
     passed, failures = try_code_on_task(code, task_data)
     if passed:
-        return 1.0
-    if failures and failures[0][2] is not None:
-        return calculate_pixel_accuracy(failures[0][1], failures[0][2])
-    return 0.0
+        return 1.0, []
+
+    traces = []
+    for idx, fail in enumerate(failures):
+        inp, expected, predicted, err_msg = fail[0], fail[1], fail[2], fail[3]
+        tb = fail[4] if len(fail) > 4 else None
+        ftype = "CRASH" if predicted is None else "WRONG_ANSWER"
+        pa = calculate_pixel_accuracy(expected, predicted) if predicted else 0.0
+        traces.append({
+            "task_name": task_name,
+            "failure_type": ftype,
+            "error_message": err_msg[:200] if err_msg else None,
+            "stack_trace": _truncate_traceback(tb) if tb else None,
+            "pixel_accuracy": pa,
+            "input_shape": (len(inp), len(inp[0])) if isinstance(inp, list) and inp else (0, 0),
+            "output_shape": (len(expected), len(expected[0])) if isinstance(expected, list) and expected else (0, 0),
+            "predicted_shape": (len(predicted), len(predicted[0])) if isinstance(predicted, list) and predicted else None,
+        })
+    best_pa = max(t["pixel_accuracy"] for t in traces) if traces else 0.0
+    return best_pa, traces
 
 
-def find_failing_tasks(sample_size=50, tier3_count=None):
+def find_failing_tasks(sample_size=50, tier3_count=None, seed=42):
     """Three-tier evaluation. Returns list of dicts with path, task_data, scores, category."""
     if tier3_count is None:
         tier3_count = TIER3_TASKS
@@ -308,7 +340,7 @@ def find_failing_tasks(sample_size=50, tier3_count=None):
         print(f"[evolve] No tasks found in {ARC_DATA}")
         return []
 
-    random.seed(42)
+    random.seed(seed)
     sample = random.sample(task_files, min(sample_size, len(task_files)))
 
     # Tier 1 + Tier 2 on all tasks
@@ -329,33 +361,62 @@ def find_failing_tasks(sample_size=50, tier3_count=None):
     perfect = len(scored) - len(failing_tuples)
     print(f"[evolve] Tier 1+2: {len(failing_tuples)} imperfect, {perfect} perfect out of {len(sample)}")
 
-    # Tier 3 on worst N tasks (requires model)
-    tier3_targets = failing_tuples[:tier3_count]
     results = []
-    if tier3_targets:
-        print(f"[evolve] Tier 3: solving {len(tier3_targets)} worst tasks...")
+
+    if failing_tuples:
+        # Tier 3 on worst N tasks with tier1+tier2 failures (requires model)
+        tier3_targets = failing_tuples[:tier3_count]
+        if tier3_targets:
+            print(f"[evolve] Tier 3: solving {len(tier3_targets)} worst tasks...")
+            for tf, td, t1, t2, combined in tier3_targets:
+                try:
+                    solve_score, traces = solve_task_single(td, task_name=tf.stem)
+                except Exception as e:
+                    print(f"  [tier3] {tf.name}: error {e}")
+                    solve_score, traces = 0.0, [{"task_name": tf.stem, "failure_type": "CRASH", "error_message": str(e)}]
+                category = "CRASH" if t1 < 1.0 else ("PROMPT_FAIL" if t2 < 1.0 else "WRONG_ANSWER")
+                results.append({
+                    "path": tf, "task_data": td, "category": category,
+                    "tier1": t1, "tier2": t2, "tier3": solve_score, "combined": combined,
+                    "traces": traces,
+                })
+                print(f"  [tier3] {tf.name}: {category} t1={t1:.2f} t2={t2:.2f} t3={solve_score:.2f}")
+
+        # Include remaining failures without tier3 score
+        tier3_paths = {r["path"] for r in results}
+        for tf, td, t1, t2, combined in failing_tuples:
+            if tf not in tier3_paths:
+                category = "CRASH" if t1 < 1.0 else ("PROMPT_FAIL" if t2 < 1.0 else "UNTESTED")
+                results.append({
+                    "path": tf, "task_data": td, "category": category,
+                    "tier1": t1, "tier2": t2, "tier3": None, "combined": combined,
+                })
+    else:
+        # All tier1+tier2 perfect — the bottleneck is tier3 (LLM solve).
+        # Evaluate tier3 on a sample to find tasks the LLM still can't solve.
+        tier3_targets = scored[:tier3_count]
+        print(f"[evolve] Tier 1+2 all perfect. Tier 3: solving {len(tier3_targets)} tasks to find LLM failures...")
         for tf, td, t1, t2, combined in tier3_targets:
             try:
-                solve_score = solve_task_single(td)
+                solve_score, traces = solve_task_single(td, task_name=tf.stem)
             except Exception as e:
                 print(f"  [tier3] {tf.name}: error {e}")
-                solve_score = 0.0
-            category = "CRASH" if t1 < 1.0 else ("PROMPT_FAIL" if t2 < 1.0 else "WRONG_ANSWER")
+                solve_score, traces = 0.0, [{"task_name": tf.stem, "failure_type": "CRASH", "error_message": str(e)}]
             results.append({
-                "path": tf, "task_data": td, "category": category,
+                "path": tf, "task_data": td, "category": "SOLVE_FAIL",
                 "tier1": t1, "tier2": t2, "tier3": solve_score, "combined": combined,
+                "traces": traces,
             })
-            print(f"  [tier3] {tf.name}: {category} t1={t1:.2f} t2={t2:.2f} t3={solve_score:.2f}")
+            print(f"  [tier3] {tf.name}: SOLVE_FAIL t1={t1:.2f} t2={t2:.2f} t3={solve_score:.2f}")
 
-    # Include remaining failures without tier3 score
-    tier3_paths = {r["path"] for r in results}
-    for tf, td, t1, t2, combined in failing_tuples:
-        if tf not in tier3_paths:
-            category = "CRASH" if t1 < 1.0 else ("PROMPT_FAIL" if t2 < 1.0 else "UNTESTED")
-            results.append({
-                "path": tf, "task_data": td, "category": category,
-                "tier1": t1, "tier2": t2, "tier3": None, "combined": combined,
-            })
+        # Only return tasks the LLM actually failed on (tier3 < 1.0)
+        results = [r for r in results if r["tier3"] < 1.0]
+        # Sort by tier3 ascending so worst failures come first
+        results.sort(key=lambda r: r["tier3"])
+        if results:
+            print(f"[evolve] Found {len(results)} tier3 failures out of {len(tier3_targets)} evaluated")
+        else:
+            print(f"[evolve] All {len(tier3_targets)} evaluated tasks also pass tier3 — truly perfect!")
 
     return results
 
@@ -384,17 +445,29 @@ Current DSL: {num_functions} functions. Do NOT duplicate existing functions.
 ## Existing (last 50 signatures, do NOT duplicate)
 {existing_signatures}
 
-## Previous Experiments
+## Previous Experiments ([-] = no improvement, [+] = improved)
 {hypothesis_history}
+
+## BLACKLIST — DO NOT propose functions similar to these (already tried, didn't help):
+{blacklist}
+
+## Failure Distribution: {category_summary}
 
 ## Failing Tasks
 {task_descriptions}
+
+## What went WRONG (execution traces from failed solve attempts)
+{execution_traces}
+
+IMPORTANT: Study the input/output pairs carefully. Each task has a UNIQUE transformation rule.
+Do NOT propose generic mirror/pattern/tile functions. Analyze what SPECIFIC operation maps each input to its output.
 
 OUTPUT EXACTLY 3-5 new Python functions in ```python blocks. Each function:
 - Takes `grid: list[list[int]]` as first arg, returns `list[list[int]]`
 - Is self-contained (only stdlib + numpy)
 - Does ONE transformation relevant to the failing tasks above
 - Has a one-line docstring
+- Must be DIFFERENT from blacklisted approaches
 
 ```python
 def function_name(grid: list[list[int]]) -> list[list[int]]:
@@ -402,6 +475,45 @@ def function_name(grid: list[list[int]]) -> list[list[int]]:
     import numpy as np
     # implementation
     return result
+```
+
+START WITH ```python IMMEDIATELY. No preamble."""
+
+
+PROMPT_FIX_DIAGNOSTIC = """\
+/no_think
+You are an ARC-AGI DSL engineer. The bottleneck is `build_prompt()` — it crashes or returns empty on {prompt_fail_pct}% of tasks.
+Your job: fix `analyze_task_deeply()` and `build_prompt()` to handle more task types without crashing.
+
+Current `build_prompt` calls `analyze_task_deeply(task_data)` and `find_exact_programs(task_data)`.
+These crash on tasks with unusual grid sizes, color distributions, or transformation types.
+
+## Current build_prompt code (abridged)
+{build_prompt_code}
+
+## Current analyze_task_deeply code (abridged)
+{analyze_code}
+
+## Example tasks where build_prompt CRASHES (tier2=0.00)
+{crash_examples}
+
+## Previous Experiments ([-] = no improvement, [+] = improved)
+{hypothesis_history}
+
+FIX the crash by outputting a REPLACEMENT `analyze_task_deeply` function and/or `build_prompt` function.
+The fix must:
+- Handle all grid sizes (1x1 to 30x30)
+- Not crash on empty grids or unusual color distributions
+- Wrap risky operations in try/except
+- Return a valid string even on edge cases
+
+Output the fixed function(s) in ```python blocks.
+
+```python
+def analyze_task_deeply(task_data: dict) -> str:
+    \"\"\"Analyze an ARC task and return a text description of patterns found.\"\"\"
+    # robust implementation
+    return analysis_text
 ```
 
 START WITH ```python IMMEDIATELY. No preamble."""
@@ -418,13 +530,41 @@ def _format_hypothesis_history(entries):
         return "No previous experiments."
     lines = []
     for e in entries:
-        icon = "+" if e["status"] == "keep" else "-"
+        improved = e["metric_after"] > e["metric_before"]
+        icon = "+" if improved else "-"
         funcs = ", ".join(e.get("proposed_functions", [])[:3])
         lines.append(
             f"  [{icon}] Round {e['round']}: {e['hypothesis'][:80]} "
             f"({funcs}) metric {e['metric_before']:.3f}->{e['metric_after']:.3f}"
         )
     return "\n".join(lines)
+
+
+def _build_blacklist(entries):
+    """Extract tried function name prefixes to avoid repetition."""
+    tried = set()
+    for e in entries:
+        for fname in e.get("proposed_functions", []):
+            # Extract the core concept: extract_and_mirror_patterns -> extract_mirror_pattern
+            words = fname.replace("_", " ").split()
+            # Keep 2-3 word combos as blacklist keys
+            if len(words) >= 2:
+                tried.add("_".join(words[:3]))
+    return sorted(tried)
+
+
+def _count_stagnant_streak(entries):
+    """Count consecutive stagnant rounds at the end.
+    Uses the status field (which accounts for beam search wins) rather than
+    just metric_before/after (both 1.0 when base benchmark is at ceiling).
+    """
+    streak = 0
+    for e in reversed(entries):
+        if e.get("status", "stagnant") != "keep":
+            streak += 1
+        else:
+            break
+    return streak
 
 
 def build_diagnostic_prompt(failing_results):
@@ -440,14 +580,22 @@ def build_diagnostic_prompt(failing_results):
         sig_lines.insert(0, f"  ... ({len(sigs) - 50} more) ...")
     sig_text = "\n".join(sig_lines) if sig_lines else "  (none)"
 
-    # Hypothesis history
+    # Hypothesis history + blacklist
     recent = load_recent_hypotheses(10)
     history_text = _format_hypothesis_history(recent)
+    blacklist = _build_blacklist(recent)
+    blacklist_text = ", ".join(blacklist) if blacklist else "(none yet)"
 
     # Task descriptions with failure categories
     shown = [r for r in failing_results if r["tier3"] is not None][:TASKS_PER_DIAGNOSTIC]
     if not shown:
         shown = failing_results[:TASKS_PER_DIAGNOSTIC]
+
+    # Category distribution for awareness
+    categories = {}
+    for r in failing_results:
+        categories[r["category"]] = categories.get(r["category"], 0) + 1
+    category_summary = ", ".join(f"{k}: {v}" for k, v in sorted(categories.items()))
 
     task_descs = []
     for r in shown:
@@ -463,13 +611,85 @@ def build_diagnostic_prompt(failing_results):
             desc += f"Train {i+1} Output ({len(out)}x{len(out[0])}):\n{grid_to_str(out)}\n"
         task_descs.append(desc)
 
+    # Build execution trace summaries from ABPR data
+    trace_descs = []
+    for r in shown:
+        traces = r.get("traces", [])
+        if not traces:
+            continue
+        for t in traces[:2]:  # max 2 traces per task
+            tdesc = f"- {t.get('task_name', '?')}: {t['failure_type']}"
+            if t.get("error_message"):
+                tdesc += f"\n    Error: {t['error_message']}"
+            if t.get("stack_trace"):
+                indented = t["stack_trace"].replace("\n", "\n      ")
+                tdesc += f"\n    Traceback:\n      {indented}"
+            if t["failure_type"] == "WRONG_ANSWER":
+                tdesc += f"\n    Pixel accuracy: {t.get('pixel_accuracy', 0):.2f}"
+                tdesc += f"\n    Expected shape: {t.get('output_shape')}, Got: {t.get('predicted_shape')}"
+            trace_descs.append(tdesc)
+
     return DIAGNOSTIC_PROMPT.format(
         num_functions=num_functions,
         research_context=RESEARCH_CONTEXT.strip(),
         existing_signatures=sig_text,
         hypothesis_history=history_text,
+        blacklist=blacklist_text,
+        category_summary=category_summary,
         task_descriptions="\n".join(task_descs),
+        execution_traces="\n".join(trace_descs) if trace_descs else "(no traces captured)",
     )
+
+
+def build_prompt_fix_diagnostic(failing_results, prompt_fail_pct):
+    """Build diagnostic prompt focused on fixing build_prompt/analyze_task_deeply crashes."""
+    dsl_code = DSL_PATH.read_text()
+
+    # Extract analyze_task_deeply source (up to 80 lines)
+    analyze_match = re.search(
+        r"(def analyze_task_deeply\(.*?\n(?:(?:    .*|)\n){0,80})",
+        dsl_code, re.MULTILINE,
+    )
+    analyze_code = analyze_match.group(1)[:3000] if analyze_match else "(not found)"
+
+    # Extract build_prompt source (up to 50 lines)
+    bp_match = re.search(
+        r"(def build_prompt\(.*?\n(?:(?:    .*|)\n){0,50})",
+        dsl_code, re.MULTILINE,
+    )
+    build_prompt_code = bp_match.group(1)[:2000] if bp_match else "(not found)"
+
+    # Show PROMPT_FAIL tasks
+    prompt_fails = [r for r in failing_results if r["category"] == "PROMPT_FAIL"][:3]
+    crash_examples = []
+    for r in prompt_fails:
+        td = r["task_data"]
+        desc = f"### {r['path'].name}\n"
+        pair = td["train"][0]
+        desc += f"Input ({len(pair['input'])}x{len(pair['input'][0])}): "
+        desc += f"{len(td['train'])} train pairs\n"
+        desc += f"Grid snippet:\n{grid_to_str(pair['input'][:5])}\n"
+        crash_examples.append(desc)
+
+    recent = load_recent_hypotheses(10)
+    history_text = _format_hypothesis_history(recent)
+
+    return PROMPT_FIX_DIAGNOSTIC.format(
+        prompt_fail_pct=int(prompt_fail_pct),
+        build_prompt_code=build_prompt_code,
+        analyze_code=analyze_code,
+        crash_examples="\n".join(crash_examples) if crash_examples else "(none)",
+        hypothesis_history=history_text,
+    )
+
+
+def get_prompt_score():
+    """Read current prompt_score from metric.json."""
+    try:
+        with open(METRIC_FILE) as f:
+            return json.load(f).get("prompt_score", None)
+    except Exception:
+        return None
 
 
 # ---------------------------------------------------------------------------
@@ -477,19 +697,46 @@ def build_diagnostic_prompt(failing_results):
 # ---------------------------------------------------------------------------
 
 def extract_functions_from_response(response: str) -> list[str]:
-    """Extract Python function definitions from LLM response."""
+    """Extract Python function definitions from LLM response.
+
+    Handles truncated responses (no closing ```) and functions with nested defs.
+    """
     functions = []
-    blocks = re.findall(r"```python\s*(.*?)\s*```", response, re.DOTALL)
+    # Match code blocks, including truncated ones that hit max_tokens
+    blocks = re.findall(r"```python\s*(.*?)(?:\s*```|\Z)", response, re.DOTALL)
     if not blocks:
-        blocks = re.findall(r"```\s*(.*?)\s*```", response, re.DOTALL)
+        blocks = re.findall(r"```\s*(.*?)(?:\s*```|\Z)", response, re.DOTALL)
 
     for block in blocks:
+        # Split only on top-level (unindented) def — preserves nested defs
         parts = re.split(r"(?=\ndef )", block)
         for part in parts:
             part = part.strip()
             if part.startswith("def "):
-                functions.append(part)
+                healed = _heal_truncated(part)
+                if healed:
+                    functions.append(healed)
     return functions
+
+
+def _heal_truncated(func_code: str) -> str | None:
+    """If func_code doesn't compile (e.g. truncated), trim lines until it does."""
+    try:
+        compile(func_code, "<proposed>", "exec")
+        return func_code
+    except SyntaxError:
+        pass
+    lines = func_code.split('\n')
+    for i in range(len(lines) - 1, 0, -1):
+        candidate = '\n'.join(lines[:i]).rstrip()
+        if not candidate:
+            continue
+        try:
+            compile(candidate, "<proposed>", "exec")
+            return candidate
+        except SyntaxError:
+            continue
+    return None
 
 
 def validate_function(func_code: str) -> bool:
@@ -531,46 +778,50 @@ def inject_functions_into_dsl(new_functions: list[str]) -> str:
 
 
 # ---------------------------------------------------------------------------
-# CODOPT INNER LOOP
+# BEAM SEARCH INNER LOOP (local Ollama, replaces codopt)
 # ---------------------------------------------------------------------------
 
 def run_codopt_round():
-    """Run one codopt tournament round on dsl.py."""
-    cmd = [
-        "codopt", "run",
-        "--edit", "dsl.py",
-        "--metric", "metric.json",
-        "--metric-key", "score",
-        "--command", "python3 benchmark_dsl.py",
-        "--test", "python3 tests_dsl.py",
-        "--info", "INFO.md",
-        "--branch", str(CODOPT_BRANCHES),
-        "--time", str(CODOPT_TIME),
-        "--rounds", "1",
-        "--max-agents", "4",
-        "--dockerfile", "Dockerfile",
-        "--no-open-ui",
-    ]
+    """Run one local beam-search tournament round on dsl.py via Ollama.
 
-    print(f"[evolve] Running codopt: {' '.join(cmd[:6])}...")
+    Returns (ok: bool, improved: bool, blended_score: float).
+    - ok: beam search ran without errors
+    - improved: a candidate beat the baseline (dsl.py was updated)
+    - blended_score: the winning score (includes tier 3 solve component)
+    """
+    from beam_search_local import run_beam_search, BeamConfig
+
+    config = BeamConfig(
+        rounds=1,
+        branch_factor=CODOPT_BRANCHES,
+        max_agents=4,
+        time_limit=CODOPT_TIME,
+        model=os.environ.get("BEAM_MODEL", "mlx"),
+        workspace=WORKSPACE,
+    )
+
+    print(f"[evolve] Running local beam search: model={config.model} "
+          f"branch={config.branch_factor} time={config.time_limit}s...")
+
     try:
-        result = subprocess.run(
-            cmd, cwd=str(WORKSPACE), capture_output=True, text=True, timeout=600,
-        )
-    except subprocess.TimeoutExpired:
-        print("[evolve] codopt timed out (600s)")
-        return False
+        result = run_beam_search(config)
+    except Exception as e:
+        print(f"[evolve] beam search failed: {e}")
+        return False, False, 0.0
 
-    if result.returncode == 0:
-        print("[evolve] codopt round complete")
-        if result.stdout:
-            for line in result.stdout.split("\n"):
-                if "score" in line.lower() or "metric" in line.lower():
-                    print(f"  {line.strip()}")
-    else:
-        print(f"[evolve] codopt failed: {result.stderr[:300]}")
+    if result is None:
+        print("[evolve] beam search returned no result")
+        return False, False, 0.0
 
-    return result.returncode == 0
+    if result.score is not None:
+        # A winner beat baseline if its node_id is not "baseline"
+        beam_improved = result.node_id != "baseline"
+        print(f"[evolve] beam search complete: best={result.node_id} score={result.score:.4f}"
+              f"{' [IMPROVED]' if beam_improved else ''}")
+        return True, beam_improved, result.score
+
+    print("[evolve] beam search: no valid candidates")
+    return False, False, 0.0
 
 
 # ---------------------------------------------------------------------------
@@ -580,9 +831,8 @@ def run_codopt_round():
 def git_commit_if_improved(round_num, pre_score, post_score, hypothesis="",
                            solve_before=0.0, solve_after=0.0):
     """Compare scores and commit if improved. Returns (new_score, commit_hash)."""
-    if post_score <= pre_score and solve_after <= solve_before:
-        print(f"[evolve] No improvement: metric {pre_score:.4f}->{post_score:.4f}, "
-              f"solve {solve_before:.4f}->{solve_after:.4f}")
+    if post_score <= pre_score:
+        print(f"[evolve] No improvement: metric {pre_score:.4f}->{post_score:.4f}")
         return pre_score, None
 
     timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
@@ -649,16 +899,15 @@ def evolve(rounds=None, diagnose_only=False, never_stop=False, tier3_tasks=None)
 
         # --- 1. EVALUATE ---
         print("\n[1/9] EVALUATE — three-tier task scoring...")
-        failing = find_failing_tasks(tier3_count=TIER3_TASKS)
+        failing = find_failing_tasks(tier3_count=TIER3_TASKS, seed=round_num)
         if not failing:
-            print("[evolve] No failing tasks — DSL is perfect!")
+            print("[evolve] No failing tasks (all tiers pass) — DSL may be perfect!")
             if not never_stop:
                 break
-            # Re-seed for a fresh sample
-            random.seed(datetime.now().microsecond)
-            failing = find_failing_tasks(tier3_count=TIER3_TASKS)
+            # Re-seed with a different sample — different tasks may still fail tier3
+            failing = find_failing_tasks(tier3_count=TIER3_TASKS, seed=round_num * 1000 + datetime.now().microsecond)
             if not failing:
-                print("[evolve] Still perfect after re-seed. Sleeping 60s...")
+                print("[evolve] Still perfect after re-seed. Sleeping 60s before next round...")
                 import time
                 time.sleep(60)
                 continue
@@ -667,8 +916,26 @@ def evolve(rounds=None, diagnose_only=False, never_stop=False, tier3_tasks=None)
         print(f"[evolve] Pre-round solve score: {solve_before:.4f}")
 
         # --- 2. DIAGNOSE ---
-        print(f"\n[2/9] DIAGNOSE — analyzing {len(failing)} failures...")
-        diag_prompt = build_diagnostic_prompt(failing)
+        # Decide mode: fix build_prompt (prompt_score bottleneck) vs new primitives
+        prompt_score = get_prompt_score()
+        prompt_fail_count = sum(1 for r in failing if r["category"] == "PROMPT_FAIL")
+        prompt_fail_pct = prompt_fail_count / max(len(failing), 1) * 100
+
+        # Use prompt-fix mode on even rounds when prompt_score < 0.5 and most failures are PROMPT_FAIL
+        use_prompt_fix_mode = (
+            prompt_score is not None
+            and prompt_score < 0.5
+            and prompt_fail_pct > 60
+            and round_num % 2 == 0
+        )
+
+        if use_prompt_fix_mode:
+            print(f"\n[2/9] DIAGNOSE — PROMPT-FIX MODE (prompt_score={prompt_score:.2f}, {prompt_fail_pct:.0f}% PROMPT_FAIL)...")
+            diag_prompt = build_prompt_fix_diagnostic(failing, prompt_fail_pct)
+        else:
+            print(f"\n[2/9] DIAGNOSE — analyzing {len(failing)} failures...")
+            diag_prompt = build_diagnostic_prompt(failing)
+
         diag_path = RESULTS_DIR / f"round{round_num}_diagnostic.txt"
         diag_path.write_text(diag_prompt)
 
@@ -678,8 +945,29 @@ def evolve(rounds=None, diagnose_only=False, never_stop=False, tier3_tasks=None)
             continue
 
         # --- 3. HYPOTHESIZE ---
-        print("\n[3/9] HYPOTHESIZE — generating with MLX...")
-        response = generate(diag_prompt, temperature=0.4)
+        recent = load_recent_hypotheses(10)
+        stagnant_streak = _count_stagnant_streak(recent)
+        temp = min(0.6 + stagnant_streak * 0.1, 0.9)  # 0.6 -> 0.7 -> 0.8 -> 0.9
+        mode_label = "PROMPT-FIX" if use_prompt_fix_mode else "PRIMITIVES"
+        print(f"\n[3/9] HYPOTHESIZE — generating with {EVOLVE_BACKEND} (temp={temp:.2f}, stagnant={stagnant_streak}, mode={mode_label})...")
+
+        # When stagnation is high, inject literature hints for fresh ideas
+        if stagnant_streak >= 5:
+            try:
+                from literature_scan import load_hints
+                lit_hints = load_hints(max_hints=5)
+                if lit_hints:
+                    diag_prompt = diag_prompt.replace(
+                        "## Failing Tasks",
+                        f"{lit_hints}\n\n## Failing Tasks",
+                    )
+                    print(f"  [literature] Injected hints into prompt (stagnant={stagnant_streak})")
+            except ImportError:
+                pass
+
+        # Prompt-fix needs more tokens (replacing whole functions with nested helpers)
+        gen_max = MAX_NEW_TOKENS * 3 if use_prompt_fix_mode else None
+        response = generate(diag_prompt, temperature=temp, max_tokens=gen_max)
         resp_path = RESULTS_DIR / f"round{round_num}_response.txt"
         resp_path.write_text(response)
         print(f"[evolve] Response ({len(response)} chars) saved to {resp_path}")
@@ -687,39 +975,75 @@ def evolve(rounds=None, diagnose_only=False, never_stop=False, tier3_tasks=None)
         # --- 4. INJECT ---
         print("\n[4/9] INJECT — extracting and validating functions...")
         new_functions = extract_functions_from_response(response)
-        validated = [f for f in new_functions if validate_function(f)]
-        func_names = []
-        for v in validated:
-            m = re.match(r"def\s+(\w+)", v)
-            if m:
-                func_names.append(m.group(1))
-        print(f"[evolve] Proposed {len(new_functions)}, valid {len(validated)}: {func_names}")
 
-        hypothesis = f"Add {', '.join(func_names)}" if func_names else "No valid functions proposed"
+        if use_prompt_fix_mode:
+            # In prompt-fix mode, replace existing analyze_task_deeply / build_prompt
+            replacement_funcs = {}
+            for func in new_functions:
+                m = re.match(r"def\s+(\w+)", func)
+                if m and m.group(1) in ("analyze_task_deeply", "build_prompt"):
+                    try:
+                        compile(func, "<proposed>", "exec")
+                        replacement_funcs[m.group(1)] = func
+                    except SyntaxError:
+                        print(f"  [skip] {m.group(1)} has syntax error")
+            func_names = list(replacement_funcs.keys())
+            print(f"[evolve] Prompt-fix replacements: {func_names}")
+            hypothesis = f"Fix {', '.join(func_names)}" if func_names else "No valid prompt fixes"
 
-        if validated:
-            mutated_dsl = inject_functions_into_dsl(validated)
-            DSL_PATH.write_text(mutated_dsl)
-            print(f"[evolve] Injected {len(validated)} functions into dsl.py")
+            if replacement_funcs:
+                dsl_code = DSL_PATH.read_text()
+                for fname, new_code in replacement_funcs.items():
+                    # Replace the existing function in dsl.py
+                    pattern = re.compile(
+                        rf"(def {fname}\(.*?\n)"       # function signature
+                        rf"((?:    .*\n|[ \t]*\n)*)",   # indented body
+                        re.MULTILINE,
+                    )
+                    if pattern.search(dsl_code):
+                        # Use lambda to prevent re.sub from interpreting \n etc in replacement
+                        dsl_code = pattern.sub(lambda m: new_code + "\n\n", dsl_code, count=1)
+                        print(f"  [replaced] {fname}")
+                    else:
+                        print(f"  [skip] {fname} not found in dsl.py for replacement")
+                DSL_PATH.write_text(dsl_code)
+        else:
+            # Normal mode: append new primitives
+            validated = [f for f in new_functions if validate_function(f)]
+            func_names = []
+            for v in validated:
+                m = re.match(r"def\s+(\w+)", v)
+                if m:
+                    func_names.append(m.group(1))
+            print(f"[evolve] Proposed {len(new_functions)}, valid {len(validated)}: {func_names}")
+            hypothesis = f"Add {', '.join(func_names)}" if func_names else "No valid functions proposed"
 
-            # Verify tests still pass
+            if validated:
+                mutated_dsl = inject_functions_into_dsl(validated)
+                DSL_PATH.write_text(mutated_dsl)
+                print(f"[evolve] Injected {len(validated)} functions into dsl.py")
+
+        # Verify tests still pass (both modes)
+        if func_names:
             test_result = subprocess.run(
-                ["python3", str(WORKSPACE / "tests_dsl.py")],
+                [sys.executable, str(WORKSPACE / "tests_dsl.py")],
                 cwd=str(WORKSPACE), capture_output=True, text=True,
             )
             if test_result.returncode != 0:
-                print("[evolve] WARNING: Tests failed after injection, reverting")
+                print(f"[evolve] WARNING: Tests failed after injection (rc={test_result.returncode}), reverting")
+                print(f"  [test stdout] {(test_result.stdout or '').strip()[:800]}")
+                print(f"  [test stderr] {(test_result.stderr or '').strip()[:800]}")
                 subprocess.run(["git", "checkout", "dsl.py"], cwd=str(WORKSPACE))
                 log_hypothesis(
-                    round_num, hypothesis, "diagnostic", func_names,
-                    current_score, current_score, solve_before, solve_before, "crash",
+                    round_num, hypothesis, "prompt-fix" if use_prompt_fix_mode else "diagnostic",
+                    func_names, current_score, current_score, solve_before, solve_before, "crash",
                 )
                 continue
 
         # --- 5. EXPERIMENT ---
         print("\n[5/9] EXPERIMENT — running codopt tournament...")
         pre_score = current_score
-        codopt_ok = run_codopt_round()
+        codopt_ok, beam_improved, beam_score = run_codopt_round()
 
         # Read post-codopt fast score
         try:
@@ -740,17 +1064,27 @@ def evolve(rounds=None, diagnose_only=False, never_stop=False, tier3_tasks=None)
             with open(METRIC_FILE) as f:
                 full_metric = json.load(f)
                 post_score = full_metric.get("score", post_score)
-                solve_after = full_metric.get("compose_score", 0.0)
         except Exception:
-            solve_after = 0.0
+            pass
+
+        # Use the beam search blended score (includes tier 3 solve) as solve_after
+        solve_after = beam_score if codopt_ok else 0.0
 
         print(f"[evolve] Results: metric {pre_score:.4f}->{post_score:.4f}, "
               f"solve {solve_before:.4f}->{solve_after:.4f}")
 
         # --- 7. DECIDE ---
-        improved = post_score > pre_score or solve_after > solve_before
-        status = "keep" if improved else "discard"
-        print(f"\n[7/9] DECIDE — {status}")
+        # Use beam search improvement signal when base metric is at ceiling.
+        # beam_improved means a candidate beat baseline on the blended score
+        # (which includes tier 3 solve accuracy).
+        if post_score >= 0.999 and beam_improved:
+            improved = True
+            status = "keep"
+            print(f"\n[7/9] DECIDE — {status} (beam search found winner: {beam_score:.4f})")
+        else:
+            improved = post_score > pre_score
+            status = "keep" if improved else "stagnant"
+            print(f"\n[7/9] DECIDE — {status} (metric {pre_score:.4f}->{post_score:.4f})")
 
         # --- 8. RECORD ---
         commit_hash = None
@@ -765,10 +1099,35 @@ def evolve(rounds=None, diagnose_only=False, never_stop=False, tier3_tasks=None)
             print(f"\n[8/9] RECORD (no commit)")
 
         log_hypothesis(
-            round_num, hypothesis, "diagnostic", func_names,
-            pre_score, post_score, solve_before, solve_after,
+            round_num, hypothesis, "prompt-fix" if use_prompt_fix_mode else "diagnostic",
+            func_names, pre_score, post_score, solve_before, solve_after,
             status, commit_hash,
         )
+
+        # --- AUTO-PUSH — sync results to GitHub for remote monitoring ---
+        try:
+            subprocess.run(
+                ["git", "add", "evolution_results/", "dsl.py", ".gitignore"],
+                cwd=str(WORKSPACE), capture_output=True,
+            )
+            subprocess.run(
+                ["git", "diff", "--cached", "--quiet"],
+                cwd=str(WORKSPACE), capture_output=True,
+            ).returncode != 0 and subprocess.run(
+                ["git", "commit", "-m",
+                 f"evolve: round {round_num} results [{status}] score={current_score:.4f}"],
+                cwd=str(WORKSPACE), capture_output=True,
+            )
+            push_result = subprocess.run(
+                ["git", "push", "--quiet"],
+                cwd=str(WORKSPACE), capture_output=True, text=True, timeout=30,
+            )
+            if push_result.returncode == 0:
+                print(f"[evolve] Pushed round {round_num} to GitHub")
+            else:
+                print(f"[evolve] Push failed: {push_result.stderr.strip()[:200]}")
+        except Exception as e:
+            print(f"[evolve] Auto-push error: {e}")
 
         print(f"\n[evolve] Round {round_num} done. Score: {current_score:.4f} [{status}]")
 
