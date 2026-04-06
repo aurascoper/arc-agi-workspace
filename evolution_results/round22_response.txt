@@ -1,0 +1,307 @@
+
+
+```python
+def grow_and_pad_pattern(grid: list[list[int]]) -> list[list[int]]:
+    """Expand the identified non-zero pattern by 2 cells in every direction, padding with background, preserving internal connectivity."""
+    import numpy as np
+    bg = 0
+    if not grid:
+        return []
+    h, w = len(grid), len(grid[0])
+    # Step 1: Detect objects (all non-background)
+    threshold = bg + 1
+    objects = [] # List of (r, c, color)
+    visited = set()
+    head = [[False] * w for _ in range(h)]
+    for r in range(h):
+        for c in range(w):
+            if grid[r][c] != bg and grid[r][c] not in visited:
+                # Start BFS
+                q = [(r, c)]
+                visited.add((r, c))
+                region = [(r, c)]
+                color = grid[r][c]
+                while q:
+                    cr, cc = q.pop(0)
+                    head[cr][cc] = True
+                    for dr, dc in [(-1,0),(1,0),(0,-1),(0,1),(0,0)]: # Include self for continuity
+                        nr, nc = cr + dr, cc + dc
+                        if 0 <= nr < h and 0 <= nc < w:
+                            if grid[nr][nc] == color and (nr, nc) not in visited:
+                                q.append((nr, nc))
+                                region.append((nr, nc))
+                                visited.add((nr, nc))
+                objects.append((r, c, color, region))
+    
+    # Step 2: Pad the grid dimensions (Output is 2 rows/cols larger than input)
+    out_h, out_w = h + 2, w + 2
+    target = [[bg] * out_w for _ in range(out_h)]
+    
+    # Step 3: Fill objects into the expanded grid (shifted by +1)
+    for obj_r, obj_c, color, region in objects:
+        # Find bounding box
+        min_r = min(r for r, c in region)
+        max_r = max(r for r, c in region)
+        min_c = min(c for r, c in region)
+        max_c = max(c for r, c in region)
+        
+        # Check if the object fits (will not fit if output is just padding, but logic handles fail-safe)
+        # Actually, e633a9e5 expands INWARD (3x3 -> 5x5).
+        # Let's reverse: Input is small, Output is larger. The content is expanded.
+        # Wait, e633a9e5: Input 3x3, Output 5x5. Pattern grows.
+        # e40b9e2f: Input 10x10, Output 10x10. Pattern shrinks/fills holes?
+        
+        # Let's implement a scaler that generalizes the growth.
+        # If grid is small (e.g. < 10), expand. If large, shrink.
+        if h < out_h and h < w: # Actually we need to know target size.
+            # Since out_h is not passed, we must assume the pattern size dictates output size
+            # But input size is fixed in task.
+            # We need a rule: Output size = Input size + margin? Or Output size = object diameter * multiplier?
+            # In e633a9e5, the output is a "padded" version of input where each pixel is replicated.
+            pass
+            
+    return target
+```
+
+```python
+def adaptive_gradient_fill(grid: list[list[int]]) -> list[list[int]]:
+    """Detect the minimal bounding box containing all non-background pixels and extend the grid to that size (or double), scaling the pattern."""
+    import numpy as np
+    if not grid: return [[]]
+    h, w = len(grid), len(grid[0])
+    bg = detect_background_color(grid)
+    
+    # Detect objects/boundaries to find the extent of the "active" zone
+    min_r, max_r = h, -1
+    min_c, max_c = w, -1
+    
+    for r in range(h):
+        for c in range(w):
+            if grid[r][c] != bg:
+                if r < min_r: min_r = r
+                if r > max_r: max_r = r
+                if c < min_c: min_c = c
+                if c > max_c: c
+                # Check if this creates a new object or existing object
+                pass
+    
+    width = max_r - min_r + 1
+    height = max_c - min_c + 1 # Wait, r is row, c is col.
+    # Correct bounds:
+    # rows: min_r to max_r
+    # cols: min_c to max_c
+    # height = max_r - min_r + 1
+    # width = max_c - min_c + 1
+    
+    # Determine extension logic
+    # e633a9e5: 3x3 -> 5x5. (2N - 1)? 2*3 - 1 = 5.
+    # e40b9e2f: 10x10 -> 10x10.
+    target_h = 2 * h
+    
+    # Actually, let's use the bounding box expansion.
+    # In e633a9e5, the 3x3 input becomes 5x5.
+    # If the bounding box of non-zeros in Input 2 is 3x3, output is 5x5.
+    # If no non-zeros, output is 0s.
+    
+    final_h, final_w = width + 2, height + 2
+    target = [[bg] * final_w for _ in range(final_h)]
+    
+    # Map input content to output
+    for r in range(h):
+        for c in range(w):
+            if grid[r][c] != bg:
+                target[(r + min_r)][(c + min_c)] = grid[r][c]
+    
+    return target
+```
+
+```python
+def expand_grid_dimensions_and_remap(grid: list[list[int]]) -> list[list[int]]:
+    """Calculate new grid size based on object distribution heuristic; if grid is small, expand; if large, keep or shrink based on object density."""
+    import numpy as np
+    if not grid: return []
+    bg = detect_background_color(grid)
+    
+    h, w = len(grid), len(grid[0])
+    
+    # Find bounding box of non-background pixels
+    has_objects = False
+    min_r, max_r = h, -1
+    min_c, max_c = w, -1
+    obj_count = 0
+    
+    for r in range(h):
+        for c in range(w):
+            if grid[r][c] != bg:
+                has_objects = True
+                obj_count += 1
+                if r < min_r: min_r = r
+                if r > max_r: max_r = r
+                if c < min_c: min_c = c
+                if c > max_c: max_c = c
+    
+    # Heuristic: e633a9e5 has sparse objects (0,0 to 2,2) and expands.
+    # e40b9e2f has mixed background and objects inside.
+    # Let's check if bounding box is small (e.g. density < 0.8 or size < 6)
+    
+    # Strategy: If the grid is fully populated or dense, do nothing.
+    # If sparse (lots of 0s), expand by +2 in columns and +2 in rows.
+    
+    target_h, target_w = h, w
+    if not has_objects or (max_r == h - 1 and max_c == w - 1): 
+        # Full grid (dense), just return input or copy?
+        # Actually, e40b9e2f is 10x10 -> 10x10, Input has objects scattered.
+        # e633a9e5 is 3x3 -> 5x5, Input has objects.
+        pass
+        
+    # Let's try a specific logic for the TASKS.
+    # Task 1: 10x10. Objects: (3,1) color 3, (5,1) color 6, etc.
+    # Task 2: 3x3. Objects: (0,1) 1, (0,2) 5, (1,1) 2...
+    
+    # If Input Size < 6: Expand to 2*Size.
+    # If Input Size >= 6: Expand to Input Size (do nothing) or Expand by some logic?
+    # In e40b9e2f, objects are NOT filling the whole grid.
+    # But output matches input size.
+    
+    # Let's just copy the grid structure but maybe fill holes?
+    # Task 1 Input: 0s and some colors. Task 1 Output: Some filled 0s.
+    # Task 2 Input: Colors. Task 2 Output: Colors expanded.
+    
+    # Function: If grid is small (<6x6), Pad to 2*N. If grid is large, Transform internally?
+    
+    target_h = h if h > 6 else 2 * h
+    
+    target = [[bg] * w if h > 6 else [[bg] * (2*w)] * 2 * h for _ in range(2*h)] # Simplified
+    # Actually, let's just return grid copy if size >= 6
+    if h >= 6: 
+        return grid.copy() # Assuming task 2 logic is "no-op" or simple copy if large enough
+    
+    # If small: Pad and Scale.
+    target_grid = [[bg] * target_w for _ in range(target_h)]
+    
+    # Copy content
+    # For T2: Input (3,3). Output (5,5).
+    # T2 Input Row 0: 6 5 5 -> T2 Output Row 0: 6 6 5 5 5
+    # This is a center-row-to-center-row transform?
+    # Or: Center column of Input (col 1) becomes left column of Output?
+    # T2 Input Col 1: 1 4 5 5 6. Output Col 1: 4 4 5 5 5 5 7 7?
+    
+    # Let's map coord (r, c) in small grid to (c, r) in large grid?
+    # T2 Input (0,0)=6 -> Output (0,0)=6
+    # T2 Input (0,2)=5 -> Output (0,1)=5, (0,3)=5?
+    # Output 0: 6 6 5 5 5
+    # Input 0: 6 5 5
+    # It looks like Input[0] -> Output[0...0] (pad left)
+    # Input[1] -> Output[3...3]
+    # Input[2] -> Output[2...4]
+    
+    # Wait, look at T2 Input:
+    # 6 5 5
+    # 5 1 7
+    # 4 5 2
+    # T2 Output:
+    # 6 6 5 5 5
+    # 6 6 5 5 5
+    # 5 5 1 7 7
+    # 4 4 5 2 2
+    # 4 4 5 2 2
+    # This looks like reflection or convolution.
+    # Input (0,0)=6. Output (0,0)=6, (0,1)=6. (Replicated horizontally)
+    # Input (0,1)=5. Output (0,2)=5, (0,3)=5, (0,4)=5. (Replicated horizontally 3x)
+    # Input (1,1)=1. Output (1,2)=1, (1,3)=1. (Replicated 2x)
+    # Input (2,2)=2. Output (2,4)=2, (2,5)=2. (Replicated 2x)
+    
+    # The rule: 
+    # If pixel at (r,c) is V (val), and grid is small.
+    # The value V is counted? Or the pixel is part of a "cluster"?
+    # The "objects" in T2 seem to be connected components.
+    # (0,0)-(0,1): 6s.
+    # (1,0)-(1,1): 5s.
+    # (1,2): 7.
+    # (2,0): 4. (2,1): 5. (2,2): 2.
+    # Wait, Input T2:
+    # 6 5 5
+    # 5 1 7
+    # 4 5 2
+    # The 6s are connected? No, 6 at (0,0). 5s at (0,1),(0,2),(1,0),(2,1).
+    # Actually, T2 Output suggests a mirroring logic.
+    # Row 0: 6 5 5 -> 6 6 5 5 5.
+    # Row 1: 5 1 7 -> 5 5 1 7 7.
+    # Row 2: 4 5 2 -> 4 4 5 2 2.
+    
+    # Hypothesis: Take the top-left 3x3.
+    # Row 0: 6 5 5. Count of 6=1. Count of 5=2.
+    # Output Row 0 starts with 6s (count 1), then 5s (count 2).
+    # 1 + 2 = 3 pixels? 6 5 5.
+    # Output Row 0: 6 6 5 5 5.
+    # Wait. 6 appears once in input row 0. Output has two 6s.
+    # 5 appears twice in input row 0. Output has three 5s.
+    # This is NOT direct count.
+    
+    # Look at columns?
+    # Col 0: 6, 5, 4, 8... (in input)
+    # Col 0: 6 6 5 5 5.
+    # Col 1: 6, 5, 5, 8... (in input)
+    # Col 2: 5, 1, 5... (in input). Output: 6 6 5 5 5. (Same as col 1?)
+    
+    # Let's try a function that expands the bounding box of non-zero objects by padding with 'left' and 'top' counts?
+    pass 
+```
+
+```python
+def analyze_and_dilate_cluster(grid: list[list[int]]) -> list[list[int]]:
+    """Extract connected objects, calculate their bounding box dimensions, and generate an output by expanding each object based on its size (width/height)."""
+    import numpy as np
+    
+    # Helper to detect background
+    if not grid: return [[]]
+    bg = detect_background_color(grid)
+    
+    h, w = len(grid), len(grid[0])
+    
+    # Identify connected components (objects)
+    # Standard BFS/DFS
+    visited = set()
+    objects = [] # List of (color, r_start, c_start, r_end, c_end, area)
+    
+    for r in range(h):
+        for c in range(w):
+            if grid[r][c] != bg and (r, c) not in visited:
+                color = grid[r][c]
+                # New component
+                q = deque([(r, c)])
+                comp = []
+                visited.add((r, c))
+                while q:
+                    cr, cc = q.popleft()
+                    comp.append((cr, cc))
+                    # Check 4-neighbors
+                    for nr, nc in [(cr+1, cc), (cr-1, cc), (cr, cc+1), (cr, cc-1)]:
+                        if 0 <= nr < h and 0 <= nc < w:
+                            if grid[nr][nc] == color and (nr, nc) not in visited:
+                                q.append((nr, nc))
+                                visited.add((nr, nc))
+                objects.append((color, r, c, max(r for r, c in comp), max(c for r, c in comp), len(comp)))
+                # Update r, c bounds for this component
+                actual_min_r = min(row for row, col in comp)
+                actual_max_r = max(row for row, col in comp)
+                actual_min_c = min(col for row, col in comp)
+                actual_max_c = max(col for row, col in comp)
+                objects[-1] = (color, actual_min_r, actual_max_r, actual_min_c, actual_max_c, len(comp))
+    
+    # Transform Logic:
+    # e633a9e5: 3x3 In -> 5x5 Out.
+    # Input:
+    # [1, 3, 5]
+    # [1, 2, 8]
+    # [8, 3, 8]
+    # Output:
+    # [1, 1, 3, 3, 5, 5] # Expanded?
+    # [1, 1, 3, 3, 5, 5]
+    # [8, 8, 3, 3, 8, 8]
+    # [8, 8, 3, 3, 8, 8]
+    # [8, 8, 3, 3, 8, 8]
+    # It looks like "Project to Quadrants".
+    # The small grid is cut into quadrants?
+    # 3x3 -> 2.5x2.5?
+    # 3x3 -> 5x5 (Split in half? 1.5x grid size

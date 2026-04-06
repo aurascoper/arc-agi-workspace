@@ -18,5 +18,10 @@
     "wins": 1,
     "losses": 3,
     "total": 4
+  },
+  "flood_fill": {
+    "wins": 0,
+    "losses": 1,
+    "total": 1
   }
 }
