@@ -1,0 +1,7 @@
+{
+  "last_training_round": 0,
+  "programs_at_last_training": 0,
+  "active_adapter": null,
+  "adapter_history": [],
+  "post_lora_scores": []
+}
