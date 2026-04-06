@@ -41,7 +41,7 @@ LEARNING_RATE = 2e-5
 # PB2 hyperparameter search bounds
 PB2_HISTORY_PATH = Path(__file__).resolve().parent / "evolution_results" / "pb2_history.jsonl"
 PB2_LR_BOUNDS = (1e-6, 1e-4)    # log scale
-PB2_ITERS_BOUNDS = (50, 400)     # linear
+PB2_ITERS_BOUNDS = (50, 100)     # capped at 100 — fits 30min timeout on M4
 PB2_MIX_BOUNDS = (0.0, 1.0)     # synthetic data ratio
 
 # Canary validation
@@ -89,6 +89,13 @@ def _load_synthetic_as_programs(synthetic_path: Path, seen: set) -> list[dict]:
                 continue
 
             task_name = f"synth_{raw.get('source_task', 'unknown')}"
+
+            # Save synthetic task as JSON so canary validation can find it
+            synth_json_dir = WORKSPACE / "evolution_results" / "synthetic_task_json"
+            synth_json_dir.mkdir(exist_ok=True)
+            synth_json_path = synth_json_dir / f"{task_name}.json"
+            if not synth_json_path.exists():
+                synth_json_path.write_text(json.dumps(synth_task))
 
             # Dedup against real programs
             key = hashlib.md5(f"{task_name}:{code}".encode()).hexdigest()
@@ -337,9 +344,21 @@ def validate_adapter(adapter_path: Path, canary_task_names: list[str]) -> bool:
     from mlx_lm import load, generate
     from mlx_lm.sample_utils import make_sampler
 
-    arc_data = WORKSPACE / "arc_data"
-    if not arc_data.exists():
-        arc_data = WORKSPACE / "arc_agi_2_data" / "training"
+    # Search multiple directories for task JSON files
+    arc_search_dirs = [
+        WORKSPACE / "arc_agi_2_data" / "training",
+        WORKSPACE / "arc_agi_2_data" / "evaluation",
+        WORKSPACE / "arc_data" / "data" / "training",
+        WORKSPACE / "arc_data" / "data" / "evaluation",
+        WORKSPACE / "evolution_results" / "synthetic_task_json",
+    ]
+
+    def find_task_json(task_name: str) -> Path | None:
+        for d in arc_search_dirs:
+            p = d / f"{task_name}.json"
+            if p.exists():
+                return p
+        return None
 
     print(f"[lora] Validating adapter on {len(canary_task_names)} canary tasks...")
 
@@ -357,8 +376,8 @@ def validate_adapter(adapter_path: Path, canary_task_names: list[str]) -> bool:
     all_passed = True
 
     for task_name in canary_task_names:
-        task_path = arc_data / f"{task_name}.json"
-        if not task_path.exists():
+        task_path = find_task_json(task_name)
+        if task_path is None:
             print(f"  [canary] {task_name}: SKIP (file not found)")
             continue
 
