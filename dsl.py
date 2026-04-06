@@ -19304,6 +19304,382 @@ def detect_symmetry_axis(grid: list[list[int]]) -> tuple:
             has_v_symmetry = False
             break
 
+
+
+# --- EVOLVED FUNCTIONS (auto-generated) ---
+
+def expand_pattern_in_quadrants_and_merge(grid: list[list[int]]) -> list[list[int]]:
+    """Expand a 4x4 input into a 16x16 grid by duplicating rows and columns, then filling empty regions with a derived pattern based on the expanded quadrant content."""
+    import numpy as np
+    
+    if len(grid) != 4 or len(grid[0]) != 4:
+        return grid
+    
+    target_h, target_w = 16, 16
+    h = len(grid)
+    w = len(grid[0])
+    scale_h, scale_w = target_h // h, target_w // w
+    
+    # Step 1: Expand the 4x4 grid by repeating rows and columns
+    expanded = np.full((target_h, target_w), 0, dtype=int)
+    for i in range(h):
+        for j in range(w):
+            r = (i // scale_h) * scale_h + i % scale_h
+            c = (j // scale_w) * scale_w + j % scale_w
+            expanded[r, c] = grid[i, j]
+            
+    # Step 2: Define the pattern for the remaining 12x12 area (rows 4-15, cols 4-15)
+    # Based on 5b6cbef5, the bottom-right 12x12 is filled with a specific pattern (3s and 0s)
+    # The pattern seems to be a 3x3 block of 0s and 3s, repeated.
+    # Let's analyze the 12x12 region of the output for 5b6cbef5
+    # Output rows 4-15, cols 4-15 (0-indexed)
+    
+    # Pattern derived from the bottom-right quadrant of the output in 5b6cbef5
+    # It looks like a repeating pattern of 0s and 3s.
+    # Let's create a helper to generate this specific pattern based on coordinates.
+    # Pattern: 3 3 0 3 3 3 0 3 ...
+    # Row 0 of the 12x12 block: 0,0,0,3,0,0,0,3,0,0,0,3 (from output row 4: 330333030000) -> Wait, output row 4 is 3303330300003303
+    # Let's look at the structure.
+    # The output is 16x16.
+    # Top 4x16: 4 copies of the input row.
+    # Bottom 12x16: A pattern of 3s and 0s.
+    
+    # Let's try to detect the pattern in the 12x12 bottom-right region.
+    # Actually, looking at 5b6cbef5:
+    # Input is all 0s. Output is a pattern of 0s and 3s.
+    # The pattern in the bottom 12x12 seems to be a specific design.
+    # Let's try to generate the pattern from the input if input is not all 0s.
+    # But input is all 0s, output has 3s.
+    # Wait, looking at 516b51b7: Input has 1s and 85s. Output has 1s, 2s, 3s.
+    # The output seems to be an expansion where the pattern is generated based on the input content.
+    
+    # Let's try a simpler expansion approach.
+    # The output grid size is 4x input_h, 4x input_w.
+    # The top-left 4x4 is the input.
+    # The top-right 4xW is filled with a pattern.
+    # The bottom-left 4xW is filled with a pattern.
+    # The bottom-right 4xW is filled with a pattern.
+    
+    # Let's analyze the specific outputs.
+    # Task 1 (5b6cbef5): Input 4x4 of 0s. Output 16x16.
+    # Top 4 rows: 3303330300003303 (repeated 4 times)
+    # Middle 8 rows: 3303330300003303 (repeated 2 times)
+    # Bottom 4 rows: 3303330300003303 (repeated 2 times)
+    # Wait, the output provided in the prompt is 16x16.
+    # Let's re-examine the output for 5b6cbef5.
+    # Rows 0-3: 3303330300003303
+    # Rows 4-11: 3303330300003303
+    # Rows 12-15: 3303330300003303
+    # It seems the output is just repeating the same row pattern 16 times?
+    # Row 0: 3303330300003303
+    # Row 1: 3003300300003003
+    # Row 2: 0003000300000003
+    # Row 3: 3303330300003303
+    # Row 4: 3303000000003303
+    # Row 5: 3003000000003003
+    # Row 6: 0003000000000003
+    # Row 7: 3303000000003303
+    # Row 8: 0000000000003303
+    # Row 9: 0000000000003003
+    # Row 10: 0000000000000003
+    # Row 11: 0000000000003303
+    # Row 12: 3303330300003303
+    # Row 13: 3003300300003003
+    # Row 13 matches Row 1.
+    # Row 12 matches Row 0.
+    # So the pattern repeats every 4 rows.
+    # The row pattern is 3303330300003303.
+    # Let's check the columns.
+    # Col 0: 33333333000000003333 -> Wait, Row 0 Col 0 is 3, Row 1 Col 0 is 3, Row 2 Col 0 is 0, Row 3 Col 0 is 3.
+    # It seems the grid is composed of 4x4 blocks.
+    # Block (0,0): 4x4 of 0s.
+    # Block (0,1): 4x4 of 3s.
+    # Block (0,2): 4x4 of 0s.
+    # Block (0,3): 4x4 of 3s.
+    # Block (1,0): 4x4 of 0s.
+    # Block (1,1): 4x4 of 0s.
+    # Block (1,2): 4x4 of 0s.
+    # Block (1,3): 4x4 of 0s.
+    # Wait, looking at the output rows again.
+    # Row 0: 3303 3303 0000 3303
+    # Row 1: 3003 3003 0000 3003
+    # Row 2: 0003 0003 0000 0003
+    # Row 3: 3303 3303 0000 3303
+    # Row 4: 3303 3303 0000 3303
+    # ...
+    # It seems the top 4 rows are a specific pattern.
+    # The bottom 12 rows are a different pattern?
+    # Rows 4-11: 3303330300003303
+    # Rows 12-15: 3303330300003303
+    # So rows 4-15 are identical.
+    # Rows 0-3:
+    # 0: 3303330300003303
+    # 1: 3003300300003003
+    # 2: 0003000300000003
+    # 3: 3303330300003303
+    # This is weird.
+    # Let's check the columns of the top 4 rows.
+    # Col 0: 3, 3, 0, 3, 3, 3, 0, 3, 0, 0, 0, 0, 3, 3, 3, 3 -> 4x[3,3,0,3] repeated?
+    # No, Row 0 is 3, Row 1 is 3, Row 2 is 0, Row 3 is 3. Row 4 is 3, Row 5 is 3, Row 6 is 0, Row 7 is 3.
+    # It seems the left 4 columns are repeating [3, 3, 0, 3] 4 times.
+    # The middle 4 columns are repeating [3, 3, 0, 3] 4 times.
+    # The next 4 columns are repeating [0, 0, 0, 0] 4 times.
+    # The last 4 columns are repeating [3, 3, 0, 3] 4 times.
+    # So the top 4 rows form a 16x16 grid where:
+    # Q00: 4x4 of 3s and 0s (pattern 3303 repeated)
+    # Q01: 4x4 of 3s and 0s (pattern 3303 repeated)
+    # Q02: 4x4 of 0s
+    # Q03: 4x4 of 3s and 0s (pattern 3303 repeated)
+    # Q10: 4x4 of 3s and 0s (pattern 3303 repeated)
+    # Q11: 4x4 of 3s and 0s (pattern 3303 repeated)
+    # Q12: 4x4 of 0s
+    # Q13: 4x4 of 3s and 0s (pattern 3303 repeated)
+    # Q20: 4x4 of 0s
+    # Q21: 4x4 of 0s
+    # Q22: 4x4 of 0s
+    # Q23: 4x4 of 0s
+    # Q30: 4x4 of 3s and 0s (pattern 3303 repeated)
+    # Q31: 4x4 of 3s and 0s (pattern 3303 repeated)
+    # Q32: 4x4 of 0s
+    # Q33: 4x4 of 3s and 0s (pattern 3303 repeated)
+    # So the input 4x4 (all 0s) generates a specific 16x16 grid.
+    # The 16x16 grid is divided into 4x4 quadrants.
+    # If input is all 0s, the output is a fixed pattern.
+    # If input is not all 0s, maybe the output changes.
+    
+    # Let's look at Task 2 (516b51b7).
+    # Input 12x13. Output 12x13.
+    # Input has 1s and 85s.
+    # Output has 0s, 1s, 2s, 3s.
+    # The output seems to be filling regions with a pattern based on the input.
+    # The input 12x13 is divided into 4x4 blocks?
+    # 12x13 is not divisible by 4x4.
+    # 12 is divisible by 3. 13 is not.
+    # Let's assume the input is divided into 3x3 blocks or something.
+    # But 12x13.
+    # Let's check the output grid for Task 2.
+    # It seems to be filling regions.
+    # The input has a border of 1s.
+    # Inside the border, there are 85s and 1s.
+    # The output seems to fill the 85 regions with 2s and 3s.
+    # Specifically, the 85s form a pattern.
+    # The output replaces the 85s with a pattern of 2s and 3s.
+    # The 1s in the input are preserved or modified.
+    # In the output, 1s are preserved in some places, 2s and 3s appear.
+    # It looks like a flood fill or pattern generation inside a boundary.
+    
+    # Let's focus on the transformation rule.
+    # Task 1: Input 4x4 of 0s. Output 16x16.
+    # Task 2: Input 12x13. Output 12x13.
+    # The output in Task 1 is 4x larger in both dimensions than the input.
+    # The output in Task 2 is the same size as the input.
+    # This suggests the transformation depends on the grid size.
+    # If grid size is 4x4, scale up to 16x16.
+    # If grid size is 12x13, keep 12x13.
+    
+    # How does the content change?
+    # Task 1: Input all 0s. Output has 3s and 0s.
+    # Task 2: Input has 1s and 85s. Output has 1s, 2s, 3s.
+    # It seems like a coloring task.
+    # If a cell in the input is 0, it becomes 0 in the output.
+    # If a cell in the input is not 0, it gets colored with a pattern.
+    # The pattern seems to be a gradient or a specific design.
+    
+    # Let's look at the pattern in Task 1 output.
+    # 3s appear in a specific structure.
+    # 0s appear in a specific structure.
+    # It looks like a "grid within a grid".
+    # The 3s form a pattern that looks like a grid of 3s and 0s.
+    # The 0s form a pattern that looks like a grid of 0s and 3s.
+    # Actually, it looks like the 3s are forming a shape.
+    # The shape is repeated.
+    # It seems like the output is a tiling of the input.
+    # But the input is all 0s.
+    # So the output is a fixed pattern.
+    
+    # Let's look at Task 2 output.
+    # Input has 1s and 85s.
+    # Output has 1s, 2s, 3s.
+    # The 1s in the input are on the border and in some internal positions.
+    # The 85s are internal.
+    # The output replaces the 85s with a pattern of 2s and 3s.
+    # The 1s are preserved or modified.
+    # In the output, 1s are preserved in some places, but some 1s become 2s or 3s?
+    # Let's check the positions.
+    # Input (0,0) is 1. Output (0,0) is 0.
+    # Input (0,1) is 0. Output (0,1) is 0.
+    # Input (1,0) is 0. Output (1,0) is 0.
+    # Input (1,1) is 1. Output (1,1) is 1.
+    # Input (0, 12) is 1. Output (0, 12) is 0.
+    # Input (11, 0) is 1. Output (11, 0) is 0.
+    # Input (11, 12) is 1. Output (11, 12) is 0.
+    # Input (1, 1) is 1. Output (1, 1) is 1.
+    # Input (1, 2) is 0. Output (1, 2) is 1.
+    # Input (1, 3) is 0. Output (1, 3) is 1.
+    # Input (1, 4) is 0. Output
+
+
+
+# --- BEAM SEARCH EVOLVED FUNCTIONS ---
+
+def detect_periodicity_horizontal(grid: list[list[int]]) -> list[list[int]]:
+    """Detect if rows repeat horizontally with a given period."""
+    import numpy as np
+    n_rows = len(grid)
+    n_cols = len(grid[0]) if grid else 0
+    
+    # Find smallest period p >= 1 such that grid[i][j] == grid[i][j+p] for all valid i,j
+    for p in range(1, n_cols // 2 + 1):
+        is_periodic = True
+        for r in range(n_rows):
+            for c in range(n_cols - p):
+                if grid[r][c] != grid[r][c + p]:
+                    is_periodic = False
+                    break
+            if not is_periodic:
+                break
+        if is_periodic:
+            return detect_horizontal_periodic_strip(grid, period=p)
+    return grid
+
+def detect_periodicity_vertical(grid: list[list[int]]) -> list[list[int]]:
+    """Detect if columns repeat vertically with a given period."""
+    import numpy as np
+    n_rows = len(grid)
+    n_cols = len(grid[0]) if grid else 0
+    
+    # Find smallest period p >= 1 such that grid[r][c] == grid[r+p][c] for all valid r,c
+    for p in range(1, n_rows // 2 + 1):
+        is_periodic = True
+        for r in range(n_rows - p):
+            for c in range(n_cols):
+                if grid[r][c] != grid[r + p][c]:
+                    is_periodic = False
+            if not is_periodic:
+                break
+        if is_periodic:
+            return detect_vertical_periodic_strip(grid, period=p)
+    return grid
+
+def detect_horizontal_periodic_strip(grid: list[list[int]], period: int) -> list[list[int]]:
+    """Extract one horizontal period strip."""
+    n_rows = len(grid)
+    n_cols = len(grid[0])
+    period = period
+    if n_cols < period:
+        return grid
+    
+    output = [[0 for _ in range(period)] for _ in range(n_rows)]
+    for r in range(n_rows):
+        for c in range(period):
+            output[r][c] = grid[r][c]
+    return output
+
+def detect_vertical_periodic_strip(grid: list[list[int]], period: int) -> list[list[int]]:
+    """Extract one vertical period strip."""
+    n_rows = len(grid)
+    n_cols = len(grid[0]) if grid else 0
+    period = period
+    if n_rows < period:
+        return grid
+    
+    output = [[0 for _ in range(n_cols)] for _ in range(period)]
+    for r in range(period):
+        for c in range(n_cols):
+            output[r][c] = grid[r][c]
+    return output
+
+def expand_horizontal_periodic_pattern(grid: list[list[int]], period: int) -> list[list[int]]:
+    """Expand grid by repeating horizontal period pattern."""
+    n_rows = len(grid)
+    n_cols = len(grid[0])
+    if n_cols < period:
+        return grid
+    
+    output = []
+    for r in range(n_rows):
+        new_row = []
+        for c in range(n_cols):
+            idx = c % period
+            new_row.append(grid[r][idx])
+        output.append(new_row)
+    return output
+
+def expand_vertical_periodic_pattern(grid: list[list[int]], period: int) -> list[list[int]]:
+    """Expand grid by repeating vertical period pattern."""
+    n_rows = len(grid)
+    n_cols = len(grid[0]) if grid else 0
+    if n_rows < period:
+        return grid
+    
+    output = []
+    for r in range(n_rows):
+        idx = r % period
+        new_row = [grid[idx][c] for c in range(n_cols)]
+        output.append(new_row)
+    return output
+
+def extract_periodic_unit_horizontal(grid: list[list[int]]) -> list[list[int]]:
+    """Extract the smallest repeating horizontal unit."""
+    n_rows = len(grid)
+    n_cols = len(grid[0])
+    best_period = n_cols
+    
+    for p in range(1, n_cols // 2 + 1):
+        is_periodic = True
+        for r in range(n_rows):
+            for c in range(n_cols - p):
+                if grid[r][c] != grid[r][c + p]:
+                    is_periodic = False
+                    break
+            if not is_periodic:
+                break
+        if is_periodic:
+            best_period = p
+            break
+    
+    if best_period == n_cols:
+        return grid
+    
+    output = []
+    for r in range(n_rows):
+        new_row = []
+        for c in range(best_period):
+            new_row.append(grid[r][c])
+        output.append(new_row)
+    return output
+
+def extract_periodic_unit_vertical(grid: list[list[int]]) -> list[list[int]]:
+    """Extract the smallest repeating vertical unit."""
+    n_rows = len(grid)
+
+def detect_symmetry_diagonal_main(grid: list[list[int]]) -> bool:
+    """Check if grid has diagonal symmetry (top-left to bottom-right)."""
+    n_rows = len(grid)
+    n_cols = len(grid[0])
+    if n_rows != n_cols:
+        return False
+    
+    for r in range(n_rows):
+        for c in range(n_cols):
+            if grid[r][c] != grid[n_rows - 1 - c][n_rows - 1 - r]:
+                return False
+    return True
+
+def detect_symmetry_diagonal_anti(grid: list[list[int]]) -> bool:
+    cardinality
+    """Check if grid has anti-diagonal symmetry (top-right to bottom-left)."""
+    n_rows = len(grid)
+    n_cols = len(grid[0])
+    if n_rows != n_cols:
+        return False
+    
+    for r in range(n_rows):
+        for c in range(n_cols):
+            if grid[r][c] != grid[n_rows - 1 - c][n_rows - 1 - r]:
+                return False
+    return True
+
 '''
 
 exec(HELPER_CODE_PREFIX, globals())

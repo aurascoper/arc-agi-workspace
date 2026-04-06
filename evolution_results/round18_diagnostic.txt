@@ -1,7 +1,7 @@
 /no_think
 You are an ARC-AGI DSL engineer. Given failing tasks, output ONLY Python functions. No analysis, no explanation — just code.
 
-Current DSL: 804 functions. Do NOT duplicate existing functions.
+Current DSL: 807 functions. Do NOT duplicate existing functions.
 
 ## Known Techniques
 Key ARC-AGI solution techniques from the literature:
@@ -42,8 +42,25 @@ Key ARC-AGI solution techniques from the literature:
   symmetry: 100% (1/1) [+]
 PREFER types with higher win rates. AVOID types that consistently lose.
 
+## COVERAGE GAPS — underrepresented function types (PRIORITIZE these)
+  topology: only 2 functions (median=60). Keywords: topology, layer, occlu, z_order
+  spatial_relation: only 8 functions (median=60). Keywords: spatial, relation, adjacen, neighbor
+  masking_boolean: only 10 functions (median=60). Keywords: mask, boolean, xor, intersection
+  boundary_edge: only 19 functions (median=60). Keywords: boundar, edge, border, contour
+  grid_decompose: only 20 functions (median=60). Keywords: decompos, split, quadrant, strip
+  counting_arithmetic: only 29 functions (median=60). Keywords: count, arith, sum, multiply
+Propose functions that fill these gaps. The DSL is over-indexed on common types.
+
+## MAP-Elites COVERAGE GAPS — prioritize filling these niches:
+  EMPTY [spatial_relation x small]: No function exists for spatial, relation, adjacen on small grids. Propose one!
+  EMPTY [spatial_relation x large]: No function exists for spatial, relation, adjacen on large grids. Propose one!
+  EMPTY [grid_decompose x large]: No function exists for decompos, split, quadrant on large grids. Propose one!
+  EMPTY [topology x small]: No function exists for topology, layer, occlu on small grids. Propose one!
+  EMPTY [topology x large]: No function exists for topology, layer, occlu on large grids. Propose one!
+  (9 empty + 0 weak out of 39 total cells)
+
 ## Existing (last 50 signatures, do NOT duplicate)
-  ... (826 more, ranked by task relevance) ...
+  ... (829 more, ranked by task relevance) ...
   def get_objects(grid, background=None, diag=False)
   def mirror_h(grid)
   def rotate_cw(grid)
@@ -217,16 +234,16 @@ Train 2 Output (12x11):
 
 
 ## What went WRONG (execution traces from failed solve attempts)
-- 5b6cbef5@identity: WRONG_ANSWER
+- 5b6cbef5@rotate_180: WRONG_ANSWER
     Pixel accuracy: 0.81
     Expected shape: (16, 16), Got: (16, 16)
-- 5b6cbef5@identity: WRONG_ANSWER
+- 5b6cbef5@rotate_180: WRONG_ANSWER
     Pixel accuracy: 0.86
     Expected shape: (16, 16), Got: (16, 16)
-- 516b51b7@rotate_ccw: WRONG_ANSWER
-    Pixel accuracy: 0.46
+- 516b51b7@rotate_cw: WRONG_ANSWER
+    Pixel accuracy: 0.62
     Expected shape: (13, 12), Got: (13, 12)
-- 516b51b7@rotate_ccw: WRONG_ANSWER
+- 516b51b7@rotate_cw: WRONG_ANSWER
     Pixel accuracy: 0.91
     Expected shape: (11, 12), Got: (11, 12)
 

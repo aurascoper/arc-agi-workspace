@@ -201,11 +201,13 @@
     {
       "hypothesis_type": "flood_fill",
       "grid_size_bin": "large",
-      "func_name": "fill_largest_zero_rect_with_6",
-      "code": "def fill_largest_zero_rect_with_6(grid, background=0, fill_color=6):\n    \"\"\"Find the largest area all-background rectangle in non-marker rows (rows\n    containing only 0 or 1) and fill it with fill_color (6). Uses histogram method.\"\"\"\n    rows, cols = len(grid), len(grid[0])\n    normal_vals = {0, 1}\n    marker_rows = set()\n    for r in range(rows):\n        for c in range(cols):\n            if grid[r][c] not in normal_vals:\n                marker_rows.add(r)\n                break\n\n    def max_rect_hist(heights):\n        stack, max_area, best = [], 0, None\n        for i in range(len(heights) + 1):\n            h = heights[i] if i < len(heights) else 0\n            start = i\n            while stack and stack[-1][1] >= h:\n                idx, height = stack.pop()\n                area = height * (i - idx)\n                if area > max_area:\n                    max_area = area\n                    best = (area, idx, i - 1, height)\n                start = idx\n            stack.append((start, h))\n        return best\n\n    heights = [0] * cols\n    best_area, best_region = 0, None\n    for r in range(rows):\n        if r in marker_rows:\n            heights = [0] * cols\n        else:\n            for c in range(cols):\n                heights[c] = heights[c] + 1 if grid[r][c] == background else 0\n            result = max_rect_hist(heights)\n            if result and result[0] > best_area:\n                area, left, right, height = result\n                best_area = area\n                best_region = (r - height + 1, r, left, right)\n\n    if not best_region:\n        return [row[:] for row in grid]\n    out = [row[:] for row in grid]\n    top, bot, left, right = best_region\n    for r in range(top, bot + 1):\n        for c in range(left, right + 1):\n            out[r][c] = fill_color\n    return out\n\n",
-      "score": 0.5,
-      "timestamp": 1775430507.875871,
-      "metadata": {}
+      "func_name": "expand_pattern_in_quadrants_and_merge",
+      "code": "def expand_pattern_in_quadrants_and_merge(grid: list[list[int]]) -> list[list[int]]:\n    \"\"\"Expand a 4x4 input into a 16x16 grid by duplicating rows and columns, then filling empty regions with a derived pattern based on the expanded quadrant content.\"\"\"\n    import numpy as np\n    \n    if len(grid) != 4 or len(grid[0]) != 4:\n        return grid\n    \n    target_h, target_w = 16, 16\n    h = len(grid)\n    w = len(grid[0])\n    scale_h, scale_w = target_h // h, target_w // w\n    \n    # Step 1: Expand the 4x4 grid by repeating rows and columns\n    expanded = np.full((target_h, target_w), 0, dtype=int)\n    for i in range(h):\n        for j in range(w):\n            r = (i // scale_h) * scale_h + i % scale_h\n            c = (j // scale_w) * scale_w + j % scale_w\n            expanded[r, c] = grid[i, j]\n            \n    # Step 2: Define the pattern for the remaining 12x12 area (rows 4-15, cols 4-15)\n    # Based on 5b6cbef5, the bottom-right 12x12 is filled with a specific pattern (3s and 0s)\n    # The pattern seems to be a 3x3 block of 0s and 3s, repeated.\n    # Let's analyze the 12x12 region of the output for 5b6cbef5\n    # Output rows 4-15, cols 4-15 (0-indexed)\n    \n    # Pattern derived from the bottom-right quadrant of the output in 5b6cbef5\n    # It looks like a repeating pattern of 0s and 3s.\n    # Let's create a helper to generate this specific pattern based on coordinates.\n    # Pattern: 3 3 0 3 3 3 0 3 ...\n    # Row 0 of the 12x12 block: 0,0,0,3,0,0,0,3,0,0,0,3 (from output row 4: 330333030000) -> Wait, output row 4 is 3303330300003303\n    # Let's look at the structure.\n    # The output is 16x16.\n    # Top 4x16: 4 copies of the input row.\n    # Bottom 12x16: A pattern of 3s and 0s.\n    \n    # Let's try to detect the pattern in the 12x12 bottom-right region.\n    # Actually, looking at 5b6cbef5:\n    # Input is all 0s. Output is a pattern of 0s and 3s.\n    # The pattern in the bottom 12x12 seems to be a specific design.\n    # Let's try to generate the pattern from the in",
+      "score": 0.79057229824782,
+      "timestamp": 1775438885.562467,
+      "metadata": {
+        "round": 18
+      }
     },
     {
       "hypothesis_type": "boundary_edge",
@@ -271,5 +273,5 @@
       "metadata": {}
     }
   ],
-  "updated": 1775430507.967336
+  "updated": 1775438885.57757
 }
