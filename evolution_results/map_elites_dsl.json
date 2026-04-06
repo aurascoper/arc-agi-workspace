@@ -83,11 +83,13 @@
     {
       "hypothesis_type": "counting_arithmetic",
       "grid_size_bin": "medium",
-      "func_name": "infer_noise_color",
-      "code": "def infer_noise_color(grid, background=None):\n    if background is None:\n        background = detect_background_color(grid)\n    counts = color_counts(grid)\n    candidates = [color for color in counts if color != background]\n    if not candidates:\n        return background\n    rows, cols = len(grid), len(grid[0])\n    border_counts = Counter()\n    for c in range(cols):\n        border_counts[grid[0][c]] += 1\n        border_counts[grid[rows - 1][c]] += 1\n    for r in range(1, rows - 1):\n        border_counts[grid[r][0]] += 1\n        border_counts[grid[r][cols - 1]] += 1\n    objects = objects_by_color(grid, background=background)\n    ranked = []\n    for color in candidates:\n        comps = objects.get(color, [])\n        interior_mass = sum(\n            1 for obj in comps for r, c in obj\n            if 0 < r < rows - 1 and 0 < c < cols - 1\n        )\n        ranked.append((\n            -border_counts[color],\n            counts[color] - border_counts[color],\n            -len(comps),\n            interior_mass,\n            max((len(obj) for obj in comps), default=0),\n            color,\n        ))\n    return min(ranked)[-1]\n",
-      "score": 0.5,
-      "timestamp": 1775430507.816499,
-      "metadata": {}
+      "func_name": "extract_and_scale_core_pattern",
+      "code": "def extract_and_scale_core_pattern(grid: list[list[int]]) -> list[list[int]]:\n    \"\"\"Extract the smallest non-background object, extract its bounding box, and scale it up to a fixed 6x7 grid by repeating pixels.\"\"\"\n    import numpy as np\n    grid_np = np.array(grid)\n    bg = 0\n    coords = np.argwhere(grid_np != bg)\n    if coords.size == 0:\n        return [[0] * 7 for _ in range(6)]\n    \n    # Find the object that appears in the input (non-background)\n    # In task d56f2372, we have two distinct objects (color 2 and color 3)\n    # The output seems to be a composite or a specific transformation of these.\n    # Let's try to extract the top-left-most non-background object first.\n    # Sort coordinates by row, then col.\n    sorted_coords = sorted(coords)\n    \n    # Identify the first object (contiguous block)\n    first_obj_coords = [sorted_coords[0]]\n    current_obj_coords = [sorted_coords[0]]\n    for i in range(1, coords.size):\n        curr_r, curr_c = sorted_coords[i]\n        prev_r, prev_c = sorted_coords[i-1]\n        if curr_r == prev_r + 1 and curr_c == prev_c + 1:\n            current_obj_coords.append(sorted_coords[i])\n        else:\n            first_obj_coords.append(current_obj_coords)\n            current_obj_coords = [sorted_coords[i]]\n        # Check if it's a new object (gap in row or col)\n        if curr_r != prev_r + 1 or curr_c != prev_c + 1:\n            first_obj_coords.append(current_obj_coords)\n            current_obj_coords = [sorted_coords[i]]\n    \n    # Actually, let's just extract the bounding box of the first non-background object\n    # In d56f2372, input has objects at (2,1) [val 2] and (7,3) [val 3]. \n    # Output 1 (6x7) looks like a pattern. Output 2 (4x5) looks like a pattern.\n    # Wait, the task has Train 1, Train 2. The function should process a single grid.\n    # Let's assume we are processing the Input grid to get the Output grid.\n    # The Output grid seems to be a scaled version of the Input grid's non-background content.\n    \n    # Let",
+      "score": 0.7350416666666666,
+      "timestamp": 1775516815.5758321,
+      "metadata": {
+        "round": 29
+      }
     },
     {
       "hypothesis_type": "connected_components",
@@ -289,5 +291,5 @@
       }
     }
   ],
-  "updated": 1775509861.148741
+  "updated": 1775516815.5758579
 }

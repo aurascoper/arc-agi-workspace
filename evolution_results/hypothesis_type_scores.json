@@ -15,9 +15,9 @@
     "total": 4
   },
   "pattern_tile": {
-    "wins": 1,
+    "wins": 2,
     "losses": 3,
-    "total": 4
+    "total": 5
   },
   "flood_fill": {
     "wins": 0,

@@ -1,10 +1,8 @@
 {
   "last_training_round": 26,
   "programs_at_last_training": 20,
-  "active_adapter": "/Users/aurascoper/Developer/arc_agi/workspace/evolution_results/lora_adapters/20260406_103724",
-  "adapter_history": [
-    "20260406_103724"
-  ],
+  "active_adapter": null,
+  "adapter_history": [],
   "post_lora_scores": [],
   "fused_model_path": "/Users/aurascoper/Developer/arc_agi/workspace/evolution_results/lora_adapters/20260406_103724/fused_model",
   "synthetic_at_last_training": 64
