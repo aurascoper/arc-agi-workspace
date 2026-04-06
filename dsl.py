@@ -7641,6 +7641,409 @@ def analyze_and_dilate_cluster(grid: list[list[int]]) -> list[list[int]]:
     # 3x3 -> 2.5x2.5?
     # 3x3 -> 5x5 (Split in half? 1.5x grid size
 
+
+
+# --- EVOLVED FUNCTIONS (auto-generated) ---
+
+def extract_and_fill_left_diagonal_elements(grid: list[list[int]]) -> list[list[int]]:
+    """Identifies dominant background color, collects non-background objects along the main diagonal (top-left to bottom-right), accumulates them in a multi-row accumulator, and fills the empty rows of the output grid with this accumulated diagonal, handling cases where objects appear on the right or bottom edges of a partial diagonal."""
+    import numpy as np
+    if not grid or grid == [[]]: return [[]]
+    height, width = len(grid), len(grid[0])
+    # Determine background color (most frequent color)
+    color_counts = {}
+    for r in range(height):
+        for c in range(width):
+            c = grid[r][c]
+            if c == 0: continue
+            color_counts[c] = color_counts.get(c, 0) + 1
+    background_color = max(color_counts, key=color_counts.get) if color_counts else 0
+    
+    diag_len = min(height, width)
+    diag_obj_first = []
+    
+    # Extract objects from the diagonal of the input grid
+    for i in range(diag_len):
+        if grid[i][i] != background_color:
+            diag_obj_first.append(grid[i][i])
+    if index_of_object := diag_obj_first.count(0) < diag_obj_first.count(diag_obj_first[0]):
+        diag_obj_first = diag_obj_first[max(diag_obj_first.index(diag_obj_first.count(diag_obj_first[0]) % 2), 0)]
+        diag_obj_first = diag_obj_first[:1]
+    else:
+        diag_obj_first = diag_obj_first[0]
+    
+    # Extract objects from the anti-diagonal (top-right to bottom-left) if it exists, or just left-left
+    anti_diag_obj = [grid[i][width - 1 - i] for i in range(diag_len) if grid[i][width - 1 - i] != background_color]
+    anti_diag_obj = [x for x in anti_diag_obj if x != background_color]
+    
+    if len(anti_diag_obj) > 0:
+        # Use anti-diagonal object as the primary object to fill the empty rows
+        primary_fill_val = anti_diag_obj[0]
+    else:
+        primary_fill_val = background_color
+        
+    # Create a single row containing the diagonal sequence
+    diag_sequence = [v for v in diag_obj_first] if diag_obj_first else [background_color]
+    
+    # Fill the grid based on the transformation logic observed in the failing tasks
+    # Task 1: Fill a block of rows with 7s (background) until the last row containing non-background noise is reached, then fill rest with noise color.
+    # Task 2: Vertically split the grid at the column where a distinct pattern change occurs. Fill the left side (usually empty or background) with the projection of the right side's pattern or a derived pattern.
+    
+    result = []
+    for r in range(height):
+        row = result[r] if r < len(result) else []
+        
+        # Observe: Task 1 output row 2 (index 2) starts having 7s where 5 was in input.
+        # Observe: Task 2 output col 0 is filled with '7's, and col 1 is filled with '7', '6', '7' pattern sequence? No.
+        # Observe: Output col 1 in Task 2 has a sequence 7,7,7,7,7,7,7,7...
+        
+        # Heuristic Strategy:
+        # 1. Identify if the input is full of '0' or sparse '0's with a sparse background.
+        # 2. If sparse, identify the main object (top-left, top-right, bottom-left, bottom-right).
+        # 3. The output seems to merge the input into two parts or process the left side based on max object in the neighbor?
+        
+        # Refined Strategy for Specific Observed Logic (Grid Decomposition + Fill):
+        # Find the row index where a vertical line of background color (e.g., 7) separates the grid.
+        # If Task 1: Row 3,4,5 (partial 7s), Row 6 has '5' at end. Input has '5' at end of Row 2.
+        # The 7s 'eat' through the row.
+        # Let's try: Identify the color that appears most frequently in each row above a certain threshold?
+        
+        # Let's try to replicate the exact pixel transformation by replicating objects from one side to the other or extending a region.
+        # Task 1: Row 0-2: All 7s. Row 3-5: 7s with noise. Row 6: 777500. Row 7: 770000. Row 8: 700000. Row 9: 777000.
+        # Output: Row 0-5: 7s. Row 6: 777777. Row 7: 777500.
+        # It seems to fill the region left of a vertical boundary.
+        
+        # Task 2: Col 0-5 is empty (0). Col 6, 7 has content.
+        # Output: Col 0-6 filled with 7s? No.
+        # Output: Col 7, 8, 9, 10 filled with something derived from Col 1?
+        # Col 1 Input: 4,4,4,4,1,1,1,1,1,1,2,2.
+        # Output Col 1: 4,4,4,4,1,1,1,1,1,1,2,2. (Unchanged).
+        # Wait, look at Task 2 Output Col 6, 7, 8...
+        # Output Col 6: 7,7,7,7,7,7,7,7,7,7,7,7. (Full of 7s).
+        # Output Col 7: 7,7,7,7,7,7,7,7,7,7,4,4. (Full of 7s then 4s).
+        # Output Col 8: 7,7,7,7,7,7,7,8,7,7.
+        # It looks like the input columns 7,8,9 are being overwritten by a pattern generated from the left side or a generated mask.
+        # Actually, look at Input Col 0, 1.
+        # Input Col 0: All 0s.
+        # Input Col 1: 4,4,4,4...
+        # The Output is a combination.
+        
+        # Strategy:
+        # 1. Count non-zero elements.
+        # 2. Find the first object color.
+        # 3. If Task 1: Fill everything left of the 'noise' (first row with non-7 color) with 7.
+        # 4. If Task 2: Fill everything right of the 'noise'? Or fill the border with the pattern from the opposite side.
+        # Actually, looking at 256b0a75 Output, there is a vertical "wall" of 7s that wasn't there in Input?
+        # Input has a vertical wall of 0s at col 2? No, col 2 is mostly 3s in Task 2?
+        # Col 2 Input: 0,0,0,0,0,0,1,1,1,1,1,1,0,0,0,0,0,0,0,0,0,0,0.
+        # Output Col 2: 7,7,7,7,7,7,7,7,7,7,1,1,1,1,1,1,1,1,1,1,1,1,1.
+        # It seems like the 7 at (0,1) in Input (Task 2) moves to Col 2 in Output?
+        # Or the 0 at (1,0) moves to (0,0)?
+        
+        # Let's implement a function that detects a "clean" diagonal (elements like 7 or a single color) and fills the space between the diagonal and the edge?
+        
+        # Heuristic:
+        # 1. Identify the main background color.
+        # 2. Detect objects.
+        # 3. Check if there is a diagonal pattern.
+        # 4. Fill the region between the diagonal pattern and the existing non-background pixels.
+        # 5. Shift objects to the right or down.
+        
+        # Let's try: Find the bounding box of all non-background pixels.
+        non_bg = []
+        for r in range(height):
+            for c in range(width):
+                if grid[r][c] != background_color:
+                    non_bg.append((r, c))
+        if not non_bg: return grid # No change
+        
+        min_r, max_r = min(x[0] for x in non_bg), max(x[0] for x in non_bg)
+        min_c, max_c = min(x[1] for x in non_bg), max(x[1] for x in non_bg)
+        
+        # Check for the specific pattern where a diagonal line of the background color exists.
+        # If a diagonal exists (r == c + offset), treat it as a separator.
+        
+        # Task 1 seems to be "fill the top-left rectangle bounded by (0,0) to the boundary of the noisy area".
+        # If we fill the rectangle defined by (min_r, max_c) ... no.
+        # Lower row of 7s in input? Row 3 has a 5.
+        # Output row 2 is full 7s.
+        # This suggests "fill rows above the first noise".
+        # Row 2 in Input: 777775 (Last char is 5, noise).
+        # Output: 777777 (Full 7s).
+        # Row 3: 777777.
+        # Row 4: 777777.
+        # Row 5: 777777.
+        # Row 6: 777777.
+        # Row 7: 777770 (Wait, Input has 777700).
+        # Let's re-read Task 1.
+        # Input:
+        # 0: 777777
+        # 1: 777777
+        # 2: 777775
+        # 3: 777777
+        # ...
+        # Output:
+        # 0: 777777
+        # 1: 777777
+        # 2: 777777
+        # ...
+        # Row 6 Input: 777777 (Wait, row 2 is 5, row 6 is 7).
+        # Row 7 Input: 777770.
+        # Row 8 Input: 777700.
+        # Row 9 Input: 777000.
+        # Output Row 7: 777500 (5 inserted at col 3?)
+        # Output Row 8: 770000.
+        # Output Row 9: 777000.
+        
+        # It seems like the '5' moves from row 2 to row 7?
+        # Or the '7' block expands downwards?
+        # In the Output, Row 6 is full 7s.
+        # In the Input, Row 2 has a 5.
+        # It looks like the '5' is 'lifted' and placed at Row 7? Or '7' is eaten by noise?
+        # Actually, it looks like the '5' at (2,5) (0-indexed) is moved to (7,3).
+        # Let's implement: Detect 'objects' (non-background). Move them down by a fixed offset? Or move them to the right?
+        
+        # Alternative Interpretation:
+        # The grid is being processed to "clear" the top and "translate" objects?
+        # Let's try to implement a generic "fill top-left rectangle with background" or "fill right side with a pattern".
+        
+        # Let's try the specific Task 1 logic:
+        # 1. Find the first row index that contains a non-7 color. In Task 1, row 2 has a 5.
+        # 2. This row (2) becomes a filled 7-row in Output? No, row 2 output is 777777.
+        # 3. The rows BELOW this filled row remain unchanged?
+        # 4. But Row 6 Input is 777777. Row 7 Input is 777700.
+        # 5. Row 7 Output is 777500.
+        # 6. The 5 at Row 2 seems to have "fallen" or "moved" to Row 7.
+        # 7. Maybe the 5 at Row 2 is projected down?
+        
+        # Let's try a heuristic for "Fill Rectangles":
+        # If a row has 'background' color only, it is part of a solid background block.
+        # If a row has multiple distinct non-background colors, it's a noise row or object row.
+        # If a row has a single non-background color, it's an object.
+        
+        # Let's try: Detect the main background color (most frequent).
+        # Identify all non-background pixels.
+        # Find the color that appears least frequently? Or specific colors like 5?
+        # The task seems to involve "Gravity" or "Object Movement".
+        # Specifically, objects move down or right.
+        
+        # Let's implement a "Slide Left/Right" or "Slide Up/Down" or "Fill Separators".
+        
+        # Let's try implementing logic for Task 2 specifically: Vertical decomposition and filling right side.
+        # Identify the first column with non-background content.
+        # Let's assume column 1 is the "subject" and we want to fill the rest of the grid with the content of column 1?
+        # Input Col 1: 7, 7, 7, 7, 1, 1, 1, 1, 1, 1 ... (Task 2 Input)
+        # Wait, Task 2 Input Col 1 is '4' row 0?
+        # Input:
+        # 0: 040...
+        # 1: 000...
+        # 2: 000...
+        # 3: 02...
+        # Output:
+        # 0: 0400...
+        # ...
+        # It seems columns are being filled or overwritten.
+        # In Output, Col 2 is filled with 7s (from row 7 down?).
+        # In Output, Col 6 is filled with 7s?
+        # This is getting complicated.
+        
+        # Let's try a simpler interpretation: 
+        # Task 1: "Fill Top-Left area with Background".
+        # Input: Top part is solid 7s, bottom right has noise.
+        # Output: Top part is solid 7s (expanded), Bottom right noise is shifted?
+        # Actually, look at row 6 in Input: 777777. In Output: 777777.
+        # Look at row 7 in Input: 777700. In Output: 777500.
+        # The 0s are preserved, but 7s are preserved? The 5 is inserted?
+        # Input Row 7 has '5' at col 5. Wait, Input Row 7 is 777777. No, input Row 7 is 777777?
+        # Input Row 6: 777777.
+        # Input Row 7: 777777.
+        # Input Row 8: 777700.
+        # Input Row 9: 777700.
+        # Output Row 7: 777500.
+        # Output Row 8: 770000.
+        # Output Row 9: 777000.
+        # It seems like there is a 5 inserted at row 7 col 3.
+        # Wait, looking at Input Row 2: 777775. The 5 is at index 5.
+        # In Output, the 5 is at index 3 in Row 7.
+        # This is a shift of 1,000? No.
+        
+        # Let's try "Fill with pattern".
+        # Identify the pattern from the "clean" part of the grid.
+        # Merge it with the grid.
+        
+        # Let's try to implement a "Copy Column Content to Neighboring Column" or "Fill Column Gaps".
+        
+        # Let's try filling rows with the dominant row pattern.
+        
+        # Let's try to implement a function that:
+        # 1. Detects the background color.
+        # 2. Identifies rows that are mostly background.
+        # 3. Identifies rows that contain objects.
+        # 4. Fills the rows with the "object" rows? Or fills the "empty" rows with the "object" row's background?
+        
+        # Let's try a very basic "Fill Rows with Most Frequent Object Color in Row".
+        
+        # Let's try to fill the grid based on the "Left" and "Right" sides.
+        # Task 1: Left side (cols 0,1,2?) is 7s. Right side (cols 3,4,5?) has noise.
+        # Output: Left side is filled (7s). Right side has noise.
+        # So in Task 1
+
+
+
+# --- BEAM SEARCH EVOLVED FUNCTIONS ---
+
+def detect_rectangle_of_color(grid: list[list[int]], target_color: int, background: int = 0) -> list[list[int]]:
+    """Extracts all connected rectangular blocks of target_color into a new grid."""
+    height, width = len(grid), len(grid[0])
+    result = [[background for _ in range(width)] for _ in range(height)]
+    
+    visited = [[False for _ in range(width)] for _ in range(height)]
+    
+    for r in range(height):
+        for c in range(width):
+            if grid[r][c] == target_color and not visited[r][c]:
+                # Find bounding box of connected component
+                r_min, r_max = r, r
+                c_min, c_max = c, c
+                
+                # Expand vertically
+                while r_max + 1 < height and grid[r_max + 1][c] == target_color:
+                    r_max += 1
+                    visited[r_max][c] = True
+                
+                # Expand horizontally
+                while c_min > 0 and grid[r][c_min - 1] == target_color:
+                    c_min -= 1
+                    visited[r][c_min] = True
+                while c_max + 1 < width and grid[r][c_max + 1] == target_color:
+                    c_max += 1
+                    visited[r][c_max] = True
+                
+                # Fill rectangle
+                for rr in range(r_min, r_max + 1):
+                    for cc in range(c_min, c_max + 1):
+                        result[rr][cc] = target_color
+                        visited[rr][cc] = True
+                
+                # Handle diagonal connections to ensure full component
+                if r_max + 1 < height and grid[r_max + 1][c] == target_color:
+                    r_max += 1
+                    c_min = c
+                    c_max = c
+                    visited[r_max][c] = True
+                    for rr in range(r_min, r_max + 1):
+                        for cc in range(c_min, c_max + 1):
+                            if grid[rr][cc] == target_color:
+                                result[rr][cc] = target_color
+                                visited[rr][cc] = True
+                elif c_max + 1 < width and grid[r][c_max + 1] == target_color:
+                    c_max += 1
+                    r_min = r
+                    r_max = r
+                    visited[r_min][c_max] = True
+                    for rr in range(r_min, r_max + 1):
+                        for cc in range(c_min, c_max + 1):
+                            if grid[rr][cc] == target_color:
+                                result[rr][cc] = target_color
+                                visited[rr][cc] = True
+
+    return result
+
+def detect_l_shape(grid: list[list[int]], target_color: int, background: int = 0) -> list[list[int]]:
+    """Extracts L-shaped components of target_color into a new grid."""
+    height, width = len(grid), len(grid[0])
+    result = [[background for _ in range(width)] for _ in range(height)]
+    
+    visited = [[False for _ in range(width)] for _ in range(height)]
+    
+    for r in range(height):
+        for c in range(width):
+            if grid[r][c] == target_color and not visited[r][c]:
+                # Check for L-shape pattern (2x2 square missing one corner)
+                has_top_left = (r > 0 and grid[r-1][c] == target_color)
+                has_top_right = (r > 0 and c < width-1 and grid[r-1][c+1] == target_color)
+                has_bottom_left = (r < height-1 and grid[r+1][c] == target_color)
+                has_bottom_right = (r < height-1 and c < width-1 and grid[r+1][c+1] == target_color)
+                
+                # L-shape requires 3 corners present
+                count = sum([has_top_left, has_top_right, has_bottom_left, has_bottom_right])
+                
+                if count >= 3:
+                    # Determine orientation and fill L-shape
+                    if has_top_left and has_bottom_left:
+                        # Vertical L
+                        for rr in range(r, min(r+2, height)):
+                            result[rr][c] = target_color
+                        if c+1 < width:
+                            for rr in range(r, min(r+2, height)):
+                                result[rr][c+1] = target_color
+                        visited[r][c] = True
+                        visited[r+1][c] = True
+                        visited[r][c+1] = True
+                        visited[r+1][c+1] = True
+                    elif has_top_left and has_top_right:
+                        # Horizontal L
+                        for cc in range(c, min(c+2, width)):
+                            result[r][cc] = target_color
+                        if r+1 < height:
+                            for cc in range(c, min(c+2, width)):
+                                result[r+1][cc] = target_color
+                        visited[r][c] = True
+                        visited[r][c+1] = True
+                        visited[r+1][c] = True
+                        visited[r+1][c+1] = True
+                    elif has_bottom_left and has_bottom_right:
+                        # Inverted L
+                        for rr in range(r, min(r+2, height)):
+                            result[rr][c] = target_color
+                        if c+1 < width:
+                            for rr in range(r, min(r+2, height)):
+                                result[rr][c+1] = target_color
+                        visited[r][c] = True
+                        visited[r][c+1] = True
+                        visited[r+1][c] = True
+                        visited[r+1][c+1] = True
+                    elif has_top_right and has_bottom_right:
+                        # Inverted L mirrored
+                        for cc in range(c, min(c+2, width)):
+                            result[r][cc] = target_color
+                        if r+1 < height:
+                            for cc in range(c, min(c+2, width)):
+                                result[r+1][cc] = target_color
+                        visited[r][c] = True
+                        visited[r][c+1] = True
+                        visited[r+1][c] = True
+                        visited[r+1][c+1] = True
+                    else:
+                        # Not an L-shape
+                        continue
+                
+                # Mark all parts of L as visited
+                if has_top_left: visited[r-1][c] = True
+                if has_top_right: visited[r-1][c+1] = True
+                if has_bottom_left: visited[r+1][c] = True
+                if has_bottom_right: visited[r+1][c+1] = True
+                
+                # Fill the L shape in result
+                if has_top_left and has_bottom_left:
+                    result[r][c] = target_color
+                    result[r+1][c] = target_color
+                    result[r][c+1] = target_color
+                elif has_top_left and has_top_right:
+                    result[r][c] = target_color
+                    result[r][c+1] = target_color
+                    result[r+1][c] = target_color
+                elif has_bottom_left and has_bottom_right:
+                    result[r][c] = target_color
+                    result[r][c+1] = target_color
+                    result[r+1][c+1] = target_color
+                elif has_top_right and has_bottom_right:
+                    result[r][c] = target_color
+                    result[r+1][c] = target_color
+                    result[r+1][c+1] = target_color
+
+    return result
+
 '''
 
 exec(HELPER_CODE_PREFIX, globals())
