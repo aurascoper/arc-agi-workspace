@@ -247,20 +247,30 @@ def run_training(data_dir: Path, adapter_output: Path):
         "-c", str(lora_config),
     ]
 
+    log_file = adapter_output / "training.log"
     print(f"[lora] Training: {' '.join(cmd)}")
-    result = subprocess.run(cmd, capture_output=True, text=True, timeout=1800)
+    print(f"[lora] Live log: tail -f {log_file}")
+    with open(log_file, "w") as lf:
+        result = subprocess.run(cmd, stdout=lf, stderr=subprocess.STDOUT, text=True, timeout=1800)
 
     if result.returncode != 0:
         print(f"[lora] Training FAILED (exit {result.returncode})")
-        print(f"[lora] stderr: {result.stderr[-500:]}")
+        # Print tail of log for diagnostics
+        try:
+            lines = log_file.read_text().strip().split("\n")
+            for line in lines[-10:]:
+                print(f"  {line}")
+        except Exception:
+            pass
         return False
 
     print(f"[lora] Training complete. Adapter saved to {adapter_output}")
-    if result.stdout:
-        # Print last few lines of training output
-        lines = result.stdout.strip().split("\n")
-        for line in lines[-10:]:
+    try:
+        lines = log_file.read_text().strip().split("\n")
+        for line in lines[-5:]:
             print(f"  {line}")
+    except Exception:
+        pass
     return True
 
 
@@ -573,19 +583,29 @@ def run_training_pb2(data_dir: Path, adapter_output: Path,
         "-c", str(lora_config),
     ]
 
+    log_file = adapter_output / "training.log"
     print(f"[pb2] Training: lr={lr:.2e}, iters={iters}, data_mix={pb2_config['data_mix']:.2f}")
-    result = subprocess.run(cmd, capture_output=True, text=True, timeout=1800)
+    print(f"[pb2] Live log: tail -f {log_file}")
+    with open(log_file, "w") as lf:
+        result = subprocess.run(cmd, stdout=lf, stderr=subprocess.STDOUT, text=True, timeout=1800)
 
     if result.returncode != 0:
         print(f"[pb2] Training FAILED (exit {result.returncode})")
-        print(f"[pb2] stderr: {result.stderr[-500:]}")
+        try:
+            lines = log_file.read_text().strip().split("\n")
+            for line in lines[-10:]:
+                print(f"  {line}")
+        except Exception:
+            pass
         return False
 
     print(f"[pb2] Training complete. Adapter saved to {adapter_output}")
-    if result.stdout:
-        lines = result.stdout.strip().split("\n")
+    try:
+        lines = log_file.read_text().strip().split("\n")
         for line in lines[-5:]:
             print(f"  {line}")
+    except Exception:
+        pass
     return True
 
 
