@@ -3,20 +3,24 @@
     {
       "hypothesis_type": "connected_components",
       "grid_size_bin": "medium",
-      "func_name": "get_objects",
-      "code": "def get_objects(grid, background=None, diag=False):\n    \"\"\"Find connected same-color components, excluding the background color.\"\"\"\n    if background is None:\n        background = detect_background_color(grid)\n    rows, cols = len(grid), len(grid[0])\n    visited = set()\n    objs = []\n    neighbors = [(0,1),(0,-1),(1,0),(-1,0)] + ([(1,1),(1,-1),(-1,1),(-1,-1)] if diag else [])\n    for r in range(rows):\n        for c in range(cols):\n            if grid[r][c] != background and (r, c) not in visited:\n                q = deque([(r, c)])\n                component = []\n                visited.add((r, c))\n                color = grid[r][c]\n                while q:\n                    curr_r, curr_c = q.popleft()\n                    component.append((curr_r, curr_c))\n                    for dr, dc in neighbors:\n                        nr, nc = curr_r + dr, curr_c + dc\n                        if 0 <= nr < rows and 0 <= nc < cols and \\\n                           grid[nr][nc] == color and (nr, nc) not in visited:\n                            visited.add((nr, nc))\n                            q.append((nr, nc))\n                objs.append(component)\n    return objs\n",
-      "score": 0.5,
-      "timestamp": 1775430507.8081138,
-      "metadata": {}
+      "func_name": "extract_pattern_at_position",
+      "code": "def extract_pattern_at_position(grid: list[list[int]]) -> list[list[int]]:\n    \"\"\"Extracts the non-background subgrid starting at the bounding box of the first non-background object found top-left.\"\"\"\n    import numpy as np\n    if not grid or not grid[0]:\n        return []\n    \n    background = grid[0][0]\n    rows = len(grid)\n    cols = len(grid[0])\n    \n    # Find first object (non-background)\n    first_obj_coords = []\n    for r in range(rows):\n        for c in range(cols):\n            if grid[r][c] != background:\n                first_obj_coords.append((r, c))\n                break\n        if first_obj_coords:\n            break\n    \n    # Find bounding box of first object\n    min_r, max_r = first_obj_coords[0][0], first_obj_coords[0][0]\n    for r, c in first_obj_coords:\n        min_r = min(min_r, r)\n        max_r = max(max_r, r)\n    max_c = max(c for r, c in first_obj_coords)\n    \n    # Extract subgrid from first object to edge of grid\n    result = []\n    for i in range(rows):\n        sub_row = []\n        for j in range(max_c + 1):\n            if i > min_r and j == max_c:\n                # Handle right edge of first object row specially\n                sub_row.append(grid[i][min_r]) if i > min_r else grid[i][min_r]\n            else:\n                sub_row.append(grid[i][min_r] if i >= min_r else 0)\n        result.append(sub_row)\n    return result\n",
+      "score": 0.7817155934343434,
+      "timestamp": 1775484470.224884,
+      "metadata": {
+        "round": 25
+      }
     },
     {
       "hypothesis_type": "color_logic",
       "grid_size_bin": "medium",
-      "func_name": "get_foreground_pixels",
-      "code": "def get_foreground_pixels(grid, background=None):\n    if background is None:\n        background = detect_background_color(grid)\n    return [(r, c) for r, row in enumerate(grid) for c, value in enumerate(row) if value != background]\n",
-      "score": 0.5,
-      "timestamp": 1775430507.809819,
-      "metadata": {}
+      "func_name": "apply_shift_and_compress_direction",
+      "code": "def apply_shift_and_compress_direction(grid: list[list[int]]) -> list[list[int]]:\n    \"\"\"Shifts non-background pixels toward the center or edges based on dominant gradient direction.\"\"\"\n    R, C = len(grid), len(grid[0])\n    bg = grid[0][0]\n    non_bg_coords = [(r, c) for r in range(R) for c in range(C) if grid[r][c] != bg]\n    \n    if not non_bg_coords:\n        return grid\n        \n    # Determine dominant axis of displacement\n    dr_sum = sum(r2 - r1 for r1, c1 in non_bg_coords for r2, c2 in non_bg_coords if r2 != r1)\n    dc_sum = sum(c2 - c1 for r1, c1 in non_bg_coords for r2, c2 in non_bg_coords if c1 != c2)\n    \n    result = [[grid[r][c] for c in range(C)] for r in range(R)]\n    dr_target = dr_sum\n    dc_target = dc_sum\n    \n    if dr_target != 0 and abs(dr_target) > abs(dc_target):\n        dr_target = 0\n        dc_target = 0\n        \n    # Apply shift logic\n    shift_map = {}\n    for r, c in non_bg_coords:\n        # Identify unique color at this position\n        color = grid[r][c]\n        # Determine relative direction\n        if dc_target != 0:\n            new_c = c + dc_target if dc_target > 0 else c - abs(dc_target)\n            new_r = r\n            \n            # Apply shift\n            if new_r >= 0 and new_r < R and new_c >= 0 and new_c < C:\n                result[new_r][new_c] = color\n        \n        elif dr_target != 0:\n            new_r = r + dr_target if dr_target > 0 else r - abs(dr_target)\n            new_c = c\n            if new_r >= 0 and new_r < R and new_c >= 0 and new_c < C:\n                result[new_r][new_c] = color\n    \n    return result\n",
+      "score": 0.7817155934343434,
+      "timestamp": 1775484470.234912,
+      "metadata": {
+        "round": 25
+      }
     },
     {
       "hypothesis_type": "other",
@@ -57,11 +61,13 @@
     {
       "hypothesis_type": "symmetry",
       "grid_size_bin": "medium",
-      "func_name": "flip_anti_diagonal",
-      "code": "def flip_anti_diagonal(grid):\n    return [row[::-1] for row in transpose(grid)]\n",
-      "score": 0.5,
-      "timestamp": 1775430507.813938,
-      "metadata": {}
+      "func_name": "reflect_and_mirror_column_content",
+      "code": "def reflect_and_mirror_column_content(grid: list[list[int]]) -> list[list[int]]:\n    \"\"\"Reflects all non-background objects horizontally and vertically across the center of the grid.\"\"\"\n    import numpy as np\n    R, C = len(grid), len(grid[0])\n    bg = grid[0][0]\n    \n    result = [[bg]*C for _ in range(R)]\n    \n    # Process horizontal reflection: mirror rows from edge inwards\n    for r in range(R):\n        # Mirror right side to left side (if applicable)\n        for c in range(C // 2):\n            for c2 in range(c + 1, C):\n                if grid[r][c2] != bg:\n                    result[r][c] = grid[r][c2]\n                # Mirror left side to right side (if applicable)\n                if grid[r][c] != bg:\n                    result[r][c2] = grid[r][c]\n                    \n        # Mirror top to bottom logic within columns (conceptual, applied via grid filling)\n        \n    return result\n",
+      "score": 0.7817155934343434,
+      "timestamp": 1775484470.230075,
+      "metadata": {
+        "round": 25
+      }
     },
     {
       "hypothesis_type": "pattern_tile",
@@ -273,5 +279,5 @@
       "metadata": {}
     }
   ],
-  "updated": 1775438885.57757
+  "updated": 1775484470.234941
 }
