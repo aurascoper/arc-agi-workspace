@@ -32,9 +32,9 @@ MLX_PYTHON = str(_VENV_PYTHON) if _VENV_PYTHON.exists() else sys.executable
 
 # LoRA hyperparameters (defaults; PB2 may override LR, ITERS, DATA_MIX)
 LORA_RANK = 4
-LORA_LAYERS = 8
+LORA_LAYERS = 4       # reduced from 8 — fits 16GB M4 with 9B model
 BATCH_SIZE = 1
-MAX_SEQ_LENGTH = 1024
+MAX_SEQ_LENGTH = 512   # reduced from 1024 — OOM at 1024 on 16GB
 ITERS = 200
 LEARNING_RATE = 2e-5
 
