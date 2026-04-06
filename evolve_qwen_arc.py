@@ -1559,8 +1559,8 @@ def should_trigger_lora_training(round_num: int, state: dict) -> bool:
 
 
 def run_lora_training_cycle(round_num: int, state: dict) -> dict:
-    """Orchestrate: unload model → train subprocess → validate → reload."""
-    from target_mlx_arc import unload_model, reload_with_adapter
+    """Orchestrate: unload model → train subprocess → validate → fuse → reload."""
+    from target_mlx_arc import unload_model, reload_with_adapter, reload_fused_model
     import time as _time
 
     timestamp = _time.strftime("%Y%m%d_%H%M%S")
@@ -1577,7 +1577,7 @@ def run_lora_training_cycle(round_num: int, state: dict) -> dict:
             [MLX_PYTHON, str(WORKSPACE / "lora_train.py"),
              "--data", str(SUCCESSFUL_PROGRAMS_PATH),
              "--output", str(adapter_dir),
-             "--pb2"],
+             "--pb2", "--fuse"],
             capture_output=True, text=True, timeout=1800,
             cwd=str(WORKSPACE),
         )
@@ -1594,11 +1594,20 @@ def run_lora_training_cycle(round_num: int, state: dict) -> dict:
         return state
 
     if result.returncode == 0:
-        # Adapter validated — reload with it
-        adapter_path = str(adapter_dir)
-        reload_with_adapter(adapter_path)
+        # Check if fused model was created (preferred — same memory as base)
+        fused_marker = adapter_dir / "fused_model_path.txt"
+        if fused_marker.exists():
+            fused_path = fused_marker.read_text().strip()
+            print(f"[lora] Loading fused model (no adapter overhead): {fused_path}")
+            reload_fused_model(fused_path)
+            state["fused_model_path"] = fused_path
+        else:
+            # Fallback: load with adapter (may OOM on 16GB)
+            print("[lora] No fused model — falling back to adapter loading")
+            reload_with_adapter(str(adapter_dir))
 
         # Update state
+        adapter_path = str(adapter_dir)
         state["last_training_round"] = round_num
         state["programs_at_last_training"] = _count_successful_programs()
         state["active_adapter"] = adapter_path

@@ -90,6 +90,19 @@ def reload_with_adapter(adapter_path=None):
     _init_backend()
 
 
+def reload_fused_model(fused_model_path: str):
+    """Reload using a fused model (adapter baked into weights).
+
+    Same memory footprint as base model — no adapter overhead.
+    """
+    global MODEL_PATH, _adapter_path
+    _adapter_path = None
+    MODEL_PATH = fused_model_path
+    print(f"[backend] Switching to fused model: {fused_model_path}")
+    unload_model()
+    _init_backend()
+
+
 def _generate(prompt: str, temperature: float, max_tokens: int = None) -> str:
     """Generate a single response."""
     if _model is None:

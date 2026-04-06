@@ -264,6 +264,41 @@ def run_training(data_dir: Path, adapter_output: Path):
     return True
 
 
+def fuse_adapter(adapter_path: Path, save_path: Path = None) -> Path | None:
+    """Fuse LoRA adapter into base model weights.
+
+    Returns the fused model directory path, or None on failure.
+    This produces a standalone model with identical memory footprint to the
+    base model — no adapter overhead at inference time.
+    """
+    if save_path is None:
+        save_path = adapter_path / "fused_model"
+
+    cmd = [
+        MLX_PYTHON, "-m", "mlx_lm", "fuse",
+        "--model", MODEL_PATH,
+        "--adapter-path", str(adapter_path),
+        "--save-path", str(save_path),
+    ]
+
+    print(f"[lora] Fusing adapter into base model → {save_path}")
+    try:
+        result = subprocess.run(cmd, capture_output=True, text=True, timeout=600)
+        if result.returncode != 0:
+            print(f"[lora] Fuse FAILED (exit {result.returncode})")
+            if result.stderr:
+                print(f"[lora] stderr: {result.stderr[-500:]}")
+            return None
+        print(f"[lora] Fuse complete. Merged model at {save_path}")
+        return save_path
+    except subprocess.TimeoutExpired:
+        print("[lora] Fuse timed out (10min limit)")
+        return None
+    except Exception as e:
+        print(f"[lora] Fuse error: {e}")
+        return None
+
+
 # ---------------------------------------------------------------------------
 # CANARY VALIDATION
 # ---------------------------------------------------------------------------
@@ -563,6 +598,7 @@ def main():
     parser.add_argument("--data", type=Path, required=True, help="Path to successful_programs.jsonl")
     parser.add_argument("--output", type=Path, required=True, help="Adapter output directory")
     parser.add_argument("--pb2", action="store_true", help="Use PB2 hyperparameter scheduling")
+    parser.add_argument("--fuse", action="store_true", help="Fuse adapter into base model after validation")
     args = parser.parse_args()
 
     if not args.data.exists():
@@ -602,6 +638,15 @@ def main():
         print(f"[lora] Adapter VALIDATED — all {len(canary_tasks)} canary tasks passed")
         if pb2_config:
             _save_pb2_trial(pb2_config, 1.0)  # full score for validated adapter
+
+        # Fuse adapter into base model weights (same memory as base at inference)
+        if args.fuse:
+            fused_path = fuse_adapter(args.output)
+            if fused_path:
+                # Write marker so caller knows the fused path
+                (args.output / "fused_model_path.txt").write_text(str(fused_path))
+            else:
+                print("[lora] Fuse failed — adapter still usable but will OOM on 16GB")
         sys.exit(0)
     else:
         print(f"[lora] Adapter REJECTED — canary task regression detected")
