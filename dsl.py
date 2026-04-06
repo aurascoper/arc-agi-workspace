@@ -19680,6 +19680,452 @@ def detect_symmetry_diagonal_anti(grid: list[list[int]]) -> bool:
                 return False
     return True
 
+
+
+# --- EVOLVED FUNCTIONS (auto-generated) ---
+
+def transform_to_diamond_pattern(grid: list[list[int]]) -> list[list[int]]:
+    """Extract diagonal objects and expand them into a diamond shape centered in the grid."""
+    import numpy as np
+    arr = np.array(grid)
+    target_color = 0
+    background = 0
+    for c in arr:
+        if c != 0:
+            target_color = c
+            break
+    
+    objects = []
+    h, w = arr.shape
+    visited = np.zeros_like(arr, dtype=bool)
+    
+    for r in range(h):
+        for c in range(w):
+            if arr[r, c] == target_color and not visited[r, c]:
+                obj = []
+                br, bc = r, c
+                while br >= 0 and bc >= 0 and bc < w and br < h:
+                    if arr[br, bc] == target_color:
+                        obj.append(arr[br, bc])
+                        visited[br, bc] = True
+                        br -= 1
+                        bc += 1
+                    else:
+                        break
+                objects.append({
+                    "coords": obj,
+                    "color": target_color
+                })
+                target_color = 0
+    
+    height = 2 * len(objects) + 1
+    width = 2 * len(objects) + 1
+    result = np.full((height, width), background, dtype=int)
+    
+    for i, obj in enumerate(objects):
+        center_r = i
+        center_c = len(objects) - 1
+        obj_h = len(obj)
+        obj_w = len(obj)
+        
+        for dr in range(-obj_h, obj_h + 1):
+            for dc in range(-obj_w, obj_w + 1):
+                r, c = center_r + dr, center_c + dc
+                if 0 <= r < height and 0 <= c < width:
+                    if r >= i and r <= i:
+                        if r - center_r == center_c - c:
+                             result[r, c] = obj[dr + obj_h]
+                        elif r - center_r == -(center_c - c):
+                             if r - center_r == center_c - c:
+                                result[r, c] = obj[dr + obj_w]
+                    elif r - center_r == center_c - c:
+                         result[r, c] = obj[dr + obj_w]
+                    elif r - center_r == -(center_c - c):
+                         result[r, c] = obj[dr + obj_w]
+
+    return result.tolist()
+
+def transform_to_diamond_pattern(grid: list[list[int]]) -> list[list[int]]:
+    """Extract diagonal objects and expand them into a diamond shape centered in the grid."""
+    import numpy as np
+    arr = np.array(grid)
+    target_color = 0
+    background = 0
+    for c in arr:
+        if c != 0:
+            target_color = c
+            break
+    
+    objects = []
+    h, w = arr.shape
+    visited = np.zeros_like(arr, dtype=bool)
+    
+    for r in range(h):
+        for c in range(w):
+            if arr[r, c] == target_color and not visited[r, c]:
+                obj = []
+                br, bc = r, c
+                while br >= 0 and bc >= 0 and bc < w and br < h:
+                    if arr[br, bc] == target_color:
+                        obj.append(arr[br, bc])
+                        visited[br, bc] = True
+                        br -= 1
+                        bc += 1
+                    else:
+                        break
+                objects.append({
+                    "coords": obj,
+                    "color": target_color
+                })
+                target_color = 0
+    
+    height = 2 * len(objects) + 1
+    width = 2 * len(objects) + 1
+    result = np.full((height, width), background, dtype=int)
+    
+    for i, obj in enumerate(objects):
+        center_r = i
+        center_c = len(objects) - 1
+        obj_h = len(obj)
+        obj_w = len(obj)
+        
+        for dr in range(-obj_h, obj_h + 1):
+            for dc in range(-obj_w, obj_w + 1):
+                r, c = center_r + dr, center_c + dc
+                if 0 <= r < height and 0 <= c < width:
+                    if r >= i and r <= i:
+                        if r - center_r == center_c - c:
+                             result[r, c] = obj[dr + obj_h]
+                        elif r - center_r == -(center_c - c):
+                             if r - center_r == center_c - c:
+                                result[r, c] = obj[dr + obj_w]
+                    elif r - center_r == center_c - c:
+                         result[r, c] = obj[dr + obj_w]
+                    elif r - center_r == -(center_c - c):
+                         result[r, c] = obj[dr + obj_w]
+
+    return result.tolist()
+
+def transform_to_diamond_pattern(grid: list[list[int]]) -> list[list[int]]:
+    """Extract diagonal objects and expand them into a diamond shape centered in the grid."""
+    import numpy as np
+    arr = np.array(grid)
+    target_color = 0
+    background = 0
+    for c in arr:
+        if c != 0:
+            target_color = c
+            break
+    
+    objects = []
+    h, w = arr.shape
+    visited = np.zeros_like(arr, dtype=bool)
+    
+    for r in range(h):
+        for c in range(w):
+            if arr[r, c] == target_color and not visited[r, c]:
+                obj = []
+                br, bc = r, c
+                while br >= 0 and bc >= 0 and bc < w and br < h:
+                    if arr[br, bc] == target_color:
+                        obj.append(arr[br, bc])
+                        visited[br, bc] = True
+                        br -= 1
+                        bc += 1
+                    else:
+                        break
+                objects.append({
+                    "coords": obj,
+                    "color": target_color
+                })
+                target_color = 0
+    
+    height = 2 * len(objects) + 1
+    width = 2 * len(objects) + 1
+    result = np.full((height, width), background, dtype=int)
+    
+    for i, obj in enumerate(objects):
+        center_r = i
+        center_c = len(objects) - 1
+        obj_h = len(obj)
+        obj_w = len(obj)
+        
+        for dr in range(-obj_h, obj_h + 1):
+            for dc in range(-obj_w, obj_w + 1):
+                r, c = center_r + dr, center_c + dc
+                if 0 <= r < height and 0 <= c < width:
+                    if r >= i and r <= i:
+                        if r - center_r == center_c - c:
+                             result[r, c] = obj[dr + obj_h]
+                        elif r - center_r == -(center_c - c):
+                             if r - center_r == center_c - c:
+                                result[r, c] = obj[dr + obj_w]
+                    elif r - center_r == center_c - c:
+                         result[r, c] = obj[dr + obj_w]
+                    elif r - center_r == -(center_c - c):
+                         result[r, c] = obj[dr + w]
+
+    return result.tolist()
+
+def transform_to_diamond_pattern(grid: list[list[int]]) -> list[list[int]]:
+    """Extract diagonal objects and expand them into a diamond shape centered in the grid."""
+    import numpy as np
+    arr = np.array(grid)
+    target_color = 0
+    background = 0
+    for c in arr:
+        if c != 0:
+            target_color = c
+            break
+    
+    objects = []
+    h, w = arr.shape
+    visited = np.zeros_like(arr, dtype=bool)
+    
+    for r in range(h):
+        for c in range(w):
+            if arr[r, c] == target_color and not visited[r, c]:
+                obj = []
+                br, bc = r, c
+                while br >= 0 and bc >= 0 and bc < w and br < h:
+                    if arr[br, bc] == target_color:
+                        obj.append(arr[br, bc])
+                        visited[br, bc] = True
+                        br -= 1
+                        bc += 1
+                    else:
+                        break
+                objects.append({
+                    "coords": obj,
+                    "color": target_color
+                })
+                target_color = 0
+    
+    height = 2 * len(objects) + 1
+    width = 2 * len(objects) + 1
+    result = np.full((height, width), background, dtype=int)
+    
+    for i, obj in enumerate(objects):
+        center_r = i
+        center_c = len(objects) - 1
+        obj_h = len(obj)
+        obj_w = len(obj)
+        
+        for dr in range(-obj_h, obj_h + 1):
+            for dc in range(-obj_w, obj_w + 1):
+                r, c = center_r + dr, center_c + dc
+                if 0 <= r < height and 0 <= c < width:
+                    if r >= i and r <= i:
+                        if r - center_r == center_c - c:
+                             result[r, c] = obj[dr + obj_h]
+                        elif r - center_r == -(center_c - c):
+                             if r - center_r == center_c - c:
+                                result[r, c] = obj[dr + obj_w]
+                    elif r - center_r == center_c - c:
+                         result[r, c] = obj[dr + obj_w]
+                    elif r - center_r == -(center_c - c):
+                         result[r, c] = obj[dr + obj_w]
+
+    return result.tolist()
+
+def transform_to_diamond_pattern(grid: list[list[int]]) -> list[list[int]]:
+    """Extract diagonal objects and expand them into a diamond shape centered in the grid."""
+    import numpy as np
+    arr = np.array(grid)
+    target_color = 0
+    background = 0
+    for c in arr:
+        if c != 0:
+            target_color = c
+            break
+    
+    objects = []
+    h, w = arr.shape
+    visited = np.zeros_like(arr, dtype=bool)
+    
+    for r in range(h):
+        for c in range(w):
+            if arr[r, c] == target_color and not visited[r, c]:
+                obj = []
+                br, bc = r, c
+                while br >= 0 and bc >= 0 and bc < w and br < h:
+                    if arr[br, bc] == target_color:
+                        obj.append(arr[br, bc])
+                        visited[br, bc] = True
+                        br -= 1
+                        bc += 1
+                    else:
+                        break
+                objects.append({
+                    "coords": obj,
+                    "color": target_color
+                })
+                target_color = 0
+    
+    height = 2 * len(objects) + 1
+    width = 2 * len(objects) + 1
+    result = np.full((height, width), background, dtype=int)
+    
+    for i, obj in enumerate(objects):
+        center_r = i
+        center_c = len(objects) - 1
+        obj_h = len(obj)
+        obj_w = len(obj)
+        
+        for dr in range(-obj_h, obj_h + 1):
+            for dc in range(-obj_w, obj_w + 1):
+                r, c = center_r + dr, center_c + dc
+                if 0 <= r < height and 0 <= c < width:
+                    if r >= i and r <= i:
+                        if r - center_r == center_c - c:
+                             result[r, c] = obj[dr + obj_h]
+                        elif r - center_r == -(center_c - c):
+                             if r - center_r == center_c - c:
+                                result[r, c] = obj[dr + obj_w]
+                    elif r - center_r == center_c - c:
+                         result[r, c] = obj[dr + obj_w]
+                    elif r - center_r == -(center_c - c):
+                         result[r, c] = obj[dr + obj_w]
+
+    return result.tolist()
+
+def transform_to_diamond_pattern(grid: list[list[int]]) -> list[list[int]]:
+    """Extract diagonal objects and expand them into a diamond shape centered in the grid."""
+    import numpy as np
+    arr = np.array(grid)
+    target_color = 0
+    background = 0
+    for c in arr:
+        if c != 0:
+            target_color = c
+            break
+    
+    objects = []
+    h, w = arr.shape
+    visited = np.zeros_like(arr, dtype=bool)
+    
+    for r in range(h):
+        for c in range(w):
+            if arr[r, c] == target_color and not visited[r, c]:
+                obj = []
+                br, bc = r, c
+                while br >= 0 and bc >= 0 and bc < w and br < h:
+                    if arr[br, bc] == target_color:
+                        obj.append(arr[br, bc])
+                        visited[br, bc] = True
+                        br -= 1
+                        bc += 1
+                    else:
+                        break
+                objects.append({
+                    "coords": obj,
+                    "color": target_color
+                })
+                target_color = 0
+    
+    height = 2 * len(objects) + 1
+    width = 2 * len(objects) + 1
+    result = np.full((height, width), background, dtype=int)
+    
+    for i, obj in enumerate(objects):
+        center_r = i
+        center_c = len(objects) - 1
+        obj_h = len(obj)
+        obj_w = len(obj)
+        
+        for dr in range(-obj_h, obj_h + 1):
+            for dc in range(-obj_w, obj_w + 1):
+                r, c = center_r + dr, center_c + dc
+                if 0 <= r < height and 0 <= c < width:
+                    if r >= i and r <= i:
+                        if r - center_r == center_c - c:
+                             result[r, c] = obj[dr + obj_h]
+                        elif r - center_r == -(center_c - c):
+                             if r - center_r == center_c - c:
+                                result[r, c] = obj[dr + obj_w]
+                    elif r - center_r == center_c - c:
+                         result[r, c] = obj[dr + obj_w]
+                    elif r - center_r == -(center_c - c):
+                         result[r, c] = obj[dr + obj_w]
+
+    return result.tolist()
+
+def transform_to_diamond_pattern(grid: list[list[int]]) -> list[list[int]]:
+    """Extract diagonal objects and expand them into a diamond shape centered in the grid."""
+    import numpy as np
+    arr = np.array(grid)
+    target_color = 0
+    background = 0
+    for c in arr:
+        if c != 0:
+            target_color = c
+            break
+    
+    objects = []
+    h, w = arr.shape
+    visited = np.zeros_like(arr, dtype=bool)
+    
+    for r in range(h):
+        for c in range(w):
+            if arr[r, c] == target_color and not visited[r, c]:
+                obj = []
+                br, bc = r, c
+                while br >= 0 and bc >= 0 and bc < w and br < h:
+                    if arr[br, bc] == target_color:
+                        obj.append(arr[br, bc])
+                        visited[br, bc] = True
+                        br -= 1
+                        bc += 1
+                    else:
+                        break
+                objects.append({
+                    "coords": obj,
+                    "color": target_color
+                })
+                target_color = 0
+    
+    height = 2 * len(objects) + 1
+    width = 2 * len(objects) + 1
+    result = np.full((height, width), background, dtype=int)
+    
+    for i, obj in enumerate(objects):
+        center_r = i
+        center_c = len(objects) - 1
+        obj_h = len(obj)
+        obj_w = len(obj)
+        
+        for dr in range(-obj_h, obj_h + 1):
+            for dc in range(-obj_w, obj_w + 1):
+                r, c = center_r + dr, center_c + dc
+                if 0 <= r < height and 0 <= c < width:
+                    if r >= i and r <= i:
+                        if r - center_r == center_c - c:
+                             result[r, c] = obj[dr + obj_h]
+                        elif r - center_r == -(center_c - c):
+                             if r - center_r == center_c - c:
+                                result[r, c] = obj[dr + obj_w]
+                    elif r - center_r == center_c - c:
+                         result[r, c] = obj[dr + obj_w]
+                    elif r - center_r == -(center_c - c):
+                         result[r, c] = obj[dr + obj_w]
+
+    return result.tolist()
+
+def transform_to_diamond_pattern(grid: list[list[int]]) -> list[list[int]]:
+    """Extract diagonal objects and expand them into a diamond shape centered in the grid."""
+    import numpy as np
+    arr = np.array(grid)
+    target_color = 0
+    background = 0
+    for c in arr:
+        if c != 0:
+            target_color = c
+            break
+    
+    objects = []
+    h, w = arr.shape
+    visited = np.zeros_like(arr, dtype=bool)
+
 '''
 
 exec(HELPER_CODE_PREFIX, globals())
