@@ -1,0 +1,227 @@
+/no_think
+You are an ARC-AGI DSL engineer. Given failing tasks, output ONLY Python functions. No analysis, no explanation — just code.
+
+Current DSL: 286 functions. Do NOT duplicate existing functions.
+
+## Known Techniques
+Key ARC-AGI solution techniques from the literature:
+
+1. CONNECTED COMPONENTS: Identify connected regions of same-colored cells (4- or
+   8-connected). Used for object isolation, counting, and spatial reasoning.
+
+2. FLOOD FILL: Fill enclosed regions bounded by a specific color. Common in tasks
+   involving containment, boundary detection, and region painting.
+
+3. SYMMETRY DETECTION: Detect reflective (horizontal, vertical, diagonal) and
+   rotational symmetry in grids. Many tasks involve completing symmetric patterns.
+
+4. TOPOLOGICAL SORTING / LAYERING: Tasks involving occlusion or z-ordering require
+   understanding which objects overlap and their relative positions.
+
+5. PATTERN MATCHING / TEMPLATE DETECTION: Find recurring sub-grids (stamps, tiles)
+   within larger grids. Used for tiling, repetition detection, and rule extraction.
+
+6. COLOR HISTOGRAM / FREQUENCY ANALYSIS: Count color occurrences to detect dominant
+   colors, rare colors (markers), or color-based rules (majority vote, XOR).
+
+7. OBJECT RELATION GRAPHS: Build graphs of spatial relationships between objects
+   (above, below, left, right, inside, touching) for compositional reasoning.
+
+8. GRID DECOMPOSITION: Split grids into quadrants, strips, or tiles based on
+   separators (lines of uniform color). Many tasks operate on sub-grids independently.
+
+9. SCALING / RESAMPLING: Enlarge or shrink patterns by integer factors. Tasks
+   frequently involve upscaling a small pattern to fill a larger grid.
+
+10. GRAVITY / MOVEMENT SIMULATION: Move objects in a direction until they hit
+    boundaries or other objects. Used in "drop", "slide", and "gravity" tasks.
+
+## Hypothesis Type Track Record (win rate by category)
+  connected_components: 100% (1/1) [+]
+  symmetry: 100% (3/3) [+++]
+  other: 50% (1/2) [+-]
+  pattern_tile: 25% (1/4) [+---]
+  flood_fill: 0% (0/2) [--]
+PREFER types with higher win rates. AVOID types that consistently lose.
+
+## COVERAGE GAPS — underrepresented function types (PRIORITIZE these)
+  topology: only 1 functions (median=21). Keywords: topology, layer, occlu, z_order
+  spatial_relation: only 3 functions (median=21). Keywords: spatial, relation, adjacen, neighbor
+  grid_decompose: only 4 functions (median=21). Keywords: decompos, split, quadrant, strip
+  masking_boolean: only 4 functions (median=21). Keywords: mask, boolean, xor, intersection
+  boundary_edge: only 5 functions (median=21). Keywords: boundar, edge, border, contour
+  counting_arithmetic: only 10 functions (median=21). Keywords: count, arith, sum, multiply
+Propose functions that fill these gaps. The DSL is over-indexed on common types.
+
+## MAP-Elites COVERAGE GAPS — prioritize filling these niches:
+  EMPTY [spatial_relation x small]: No function exists for spatial, relation, adjacen on small grids. Propose one!
+  EMPTY [spatial_relation x large]: No function exists for spatial, relation, adjacen on large grids. Propose one!
+  EMPTY [grid_decompose x large]: No function exists for decompos, split, quadrant on large grids. Propose one!
+  (9 empty + 0 weak out of 39 total cells)
+
+## Targeted Literature (for SOLVE_FAIL failures, from Semantic Scholar)
+- **Towards Efficient Neurally-Guided Program Induction for ARC-AGI** (2024): ARC-AGI is an open-world problem domain in which the ability to generalize out-of-distribution is a crucial quality. Under the program induction paradigm, we present a series of experiments that revea...
+- **ARC-TGI: Human-Validated Task Generators with Reasoning Chain Templates for ARC-AGI** (2026): The Abstraction and Reasoning Corpus (ARC-AGI) probes few-shot abstraction and rule induction on small visual grids, but progress is difficult to measure on static collections of hand-authored puzzles...
+- **ARC-AGI-2 Technical Report** (2026): The Abstraction and Reasoning Corpus (ARC) is designed to assess generalization beyond pattern matching, requiring models to infer symbolic rules from very few examples. In this work, we present a tra...
+Consider techniques from these papers when designing new helper functions.
+
+## Existing (last 50 signatures, do NOT duplicate)
+  ... (247 more, ranked by task relevance) ...
+  def rotate_cw(grid)
+  def mirror_h(grid)
+  def get_objects(grid, background=None, diag=False)
+  def detect_background_color(grid)
+  def palette(grid)
+  def color_counts(grid)
+  def copy_grid(grid)
+  def shape(grid)
+  def crop_object(grid, obj, background=0)
+  def extract_and_mirror_pattern_with_color_shift_v2(grid: list[list[int]])
+  def extract_and_mirror_pattern_with_shift(grid: list[list[int]])
+  def extract_and_scale_pattern(grid: list[list[int]])
+  def transform_pattern_to_quarter_scale(grid: list[list[int]])
+  def rotate_ccw(grid)
+  def rotate_180(grid)
+  def scale_grid(grid, factor_r, factor_c=None)
+  def translate(obj, dr=0, dc=0)
+  def crop(grid, bbox)
+  def crop_foreground(grid, background=None)
+  def shift_grid(grid, dr=0, dc=0, background=None)
+  def apply_gravity(grid, direction="down", background=None)
+  def gravity_down(grid, background=0)
+  def propagate_color_along_axis(grid: list[list[int]])
+  def rotate_matrix_90(grid: list[list[int]])
+  def rotate_matrix_90_degrees(grid: list[list[int]])
+  def shift_rows_up(grid: list[list[int]])
+  def shift_columns_left(grid: list[list[int]])
+  def center_grid(grid: list[list[int]])
+  def crop_to_content(grid: list[list[int]], background: int = 0)
+  def align_to_square(grid: list[list[int]], background: int = 0)
+  def crop_content_to_square(grid: list[list[int]], background: int = 0)
+  def extract_and_mirror_patterns(grid: list[list[int]])
+  def extract_and_mirror_pattern_with_color_shift(grid: list[list[int]])
+  def expand_and_fill_pattern(grid: list[list[int]])
+  def fill_pattern_with_mirror_color_shift(grid: list[list[int]])
+  def extract_and_mirror_patterns_with_color_shift(grid: list[list[int]])
+  def extract_and_mirror_patterns_with_color_shift_v2(grid: list[list[int]])
+  def detect_and_mirror_top_left_pattern(grid: list[list[int]])
+  def add_pattern_mirror_v2(grid: list[list[int]])
+  def overlay_reflected_pattern(grid: list[list[int]])
+  def transform_pattern_by_row_reflection(grid: list[list[int]])
+  def flip_anti_diagonal(grid)
+  def mirror_v(grid)
+  def symmetrize_h(grid, background=None)
+  def symmetrize_v(grid, background=None)
+  def fill_from_mirror_h(grid, background=None)
+  def fill_from_mirror_v(grid, background=None)
+  def symmetry_score_h(grid, background=None)
+  def symmetry_score_v(grid, background=None)
+  def choose_symmetry_axis(grid, background=None)
+
+## Previous Experiments ([-] = no improvement, [+] = improved)
+  [-] Round 17 [symmetry]: Add expand_and_mirror_content_and_compress (expand_and_mirror_content_and_compress) metric 1.000->1.000
+  [-] Round 18 [pattern_tile]: Add expand_pattern_in_quadrants_and_merge (expand_pattern_in_quadrants_and_merge) metric 1.000->1.000
+  [-] Round 19 [pattern_tile]: Add transform_to_diamond_pattern, transform_to_diamond_pattern, transform_to_dia (transform_to_diamond_pattern, transform_to_diamond_pattern, transform_to_diamond_pattern) metric 1.000->1.000
+  [-] Round 20 [pattern_tile]: Add resize_and_transform_small_pattern, transform_small_pattern_and_apply_rules, (resize_and_transform_small_pattern, transform_small_pattern_and_apply_rules, resolve_pattern_discrepancies) metric 1.000->1.000
+  [-] Round 21 [pattern_tile]: Add simplify_grid_pattern (simplify_grid_pattern) metric 1.000->1.000
+  [-] Round 22 [flood_fill]: Add grow_and_pad_pattern, adaptive_gradient_fill, expand_grid_dimensions_and_rem (grow_and_pad_pattern, adaptive_gradient_fill, expand_grid_dimensions_and_remap) metric 1.000->1.000
+  [-] Round 23 [other]: No valid functions proposed () metric 1.000->1.000
+  [-] Round 24 [flood_fill]: Add extract_and_fill_left_diagonal_elements (extract_and_fill_left_diagonal_elements) metric 1.000->1.000
+  [-] Round 25 [symmetry]: Add extract_pattern_at_position, reflect_and_mirror_column_content, apply_shift_ (extract_pattern_at_position, reflect_and_mirror_column_content, apply_shift_and_compress_direction) metric 1.000->1.000
+  [-] Round 26 [symmetry]: Add flip_vertical_and_fill_7_with_9 (flip_vertical_and_fill_7_with_9) metric 1.000->1.000
+
+## BLACKLIST — DO NOT propose functions similar to these (already tried, didn't help):
+adaptive_gradient_fill, analyze_and_dilate, analyze_and_transform, analyze_expanding_radiation, apply_shift_and, bridge_and_converge, expand_and_mirror, expand_grid_dimensions, expand_pattern_horizontal, expand_pattern_in, extract_and_fill, extract_pattern_at, flip_vertical_and, grow_and_pad, isolate_and_promote, mirror_expansion_axis, reflect_and_mirror, resize_and_transform, resolve_pattern_discrepancies, simplify_grid_pattern, transform_small_pattern, transform_to_diamond
+
+## Failure Distribution: SOLVE_FAIL: 2
+
+## Failing Tasks
+### Task: 794b24be.json [SOLVE_FAIL]
+Scores: tier1=1.00 tier2=1.00 tier3(solve)=0.00
+Train 1 Input (3x3):
+000
+102
+010
+Train 1 Output (3x3):
+222
+020
+000
+Train 2 Input (3x3):
+110
+000
+100
+Train 2 Output (3x3):
+222
+000
+000
+
+### Task: 48f8583b.json [SOLVE_FAIL]
+Scores: tier1=1.00 tier2=1.00 tier3(solve)=0.86
+Train 1 Input (3x3):
+327
+227
+557
+Train 1 Output (9x9):
+327000000
+227000000
+557000000
+000000000
+000000000
+000000000
+000000000
+000000000
+000000000
+Train 2 Input (3x3):
+855
+888
+599
+Train 2 Output (9x9):
+000000000
+000000000
+000000000
+000000000
+000000000
+000000000
+000855855
+000888888
+000599599
+
+
+## What went WRONG (execution traces from failed solve attempts)
+- 794b24be: CRASH
+    Error: invalid syntax (<string>, line 11784)
+    Traceback:
+      Traceback (most recent call last):
+        File "/Users/aurascoper/Developer/arc_agi/workspace/target_mlx_arc.py", line 358, in try_code_on_task
+          exec(dsl_code + "\n" + code, ns)
+          ~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+        File "<string>", line 11784
+          def is
+              ^^
+      SyntaxError: invalid syntax
+- 48f8583b: WRONG_ANSWER
+    Pixel accuracy: 0.86
+    Expected shape: (9, 9), Got: (9, 9)
+- 48f8583b: WRONG_ANSWER
+    Pixel accuracy: 0.81
+    Expected shape: (9, 9), Got: (9, 9)
+
+IMPORTANT: Study the input/output pairs carefully. Each task has a UNIQUE transformation rule.
+Do NOT propose generic mirror/pattern/tile functions. Analyze what SPECIFIC operation maps each input to its output.
+
+OUTPUT EXACTLY 3-5 new Python functions in ```python blocks. Each function:
+- Takes `grid: list[list[int]]` as first arg, returns `list[list[int]]`
+- Is self-contained (only stdlib + numpy)
+- Does ONE transformation relevant to the failing tasks above
+- Has a one-line docstring
+- Must be DIFFERENT from blacklisted approaches
+
+```python
+def function_name(grid: list[list[int]]) -> list[list[int]]:
+    """One-line description."""
+    import numpy as np
+    # implementation
+    return result
+```
+
+START WITH ```python IMMEDIATELY. No preamble.

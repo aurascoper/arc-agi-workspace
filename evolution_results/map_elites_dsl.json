@@ -171,11 +171,13 @@
     {
       "hypothesis_type": "pattern_tile",
       "grid_size_bin": "small",
-      "func_name": "find_minimal_tile",
-      "code": "def find_minimal_tile(grid):\n    \"\"\"\n    Given a grid that is a repeating tile, extract the smallest repeating tile.\n    Tries row periods first (smallest), then column periods within each row period.\n    \"\"\"\n    rows = len(grid)\n    cols = len(grid[0]) if grid else 0\n    for rp in range(1, rows + 1):\n        if rows % rp == 0:\n            tile = grid[:rp]\n            if all(grid[r][c] == tile[r % rp][c] for r in range(rows) for c in range(cols)):\n                for cp in range(1, cols + 1):\n                    if cols % cp == 0:\n                        mini = [row[:cp] for row in tile]\n                        if all(tile[r][c] == mini[r][c % cp] for r in range(rp) for c in range(cols)):\n                            return mini\n    return grid\n",
-      "score": 0.5,
-      "timestamp": 1775430507.846077,
-      "metadata": {}
+      "func_name": "fix_3x3_to_9x9_expansion",
+      "code": "def fix_3x3_to_9x9_expansion(grid: list[list[int]], target_bg: int = 0) -> list[list[int]]:\n    \"\"\"Expands a 3x3 grid into a 9x9 grid by tiling the grid into 3x3 quadrants, where each quadrant is filled with a specific background or the original grid content based on a mapping rule derived from the input grid's non-background pixels.\"\"\"\n    import numpy as np\n    import copy\n    \n    n_rows = len(grid)\n    n_cols = len(grid[0])\n    \n    # Assume input is 3x3 or 9x9\n    if n_rows == 9 and n_cols == 9:\n        return grid\n        \n    # If input is smaller, we assume it's a 3x3 core that needs to be expanded to 9x9\n    # Based on Task 48f8583b: The top-left 3x3 block of the output corresponds to the input grid in some way, \n    # but the bottom-right 3x3 block contains the transformed input.\n    # Actually, looking at 48f8583b:\n    # Input: 3x3. Output: 9x9.\n    # Top-left 3x3 of Output matches Input exactly.\n    # Bottom-right 3x3 of Output is Input shifted down 3 rows and right 3 cols.\n    # Middle 3x3 is background.\n    # This suggests a 3x3 \"stamp\" of the input grid is placed at (0,0) and (6,6).\n    \n    # Let's verify with Task 794b24be:\n    # Input: \n    # 000\n    # 102\n    # 010\n    # Output:\n    # 222\n    # 020\n    # 000\n    # Here, the output is NOT just a tiling. The content changed.\n    # Input (0,1)=0 -> Output (0,0)=2. Input (1,0)=1 -> Output (1,0)=0.\n    # Input (1,2)=2 -> Output (1,1)=2.\n    # Input (2,1)=1 -> Output (2,0)=0.\n    # It looks like the input grid is being transformed before being placed.\n    \n    # Let's re-examine 48f8583b.\n    # Input:\n    # 327\n    # 227\n    # 557\n    # Output Top-Left (0,0) to (2,2):\n    # 327\n    # 227\n    # 557\n    # Matches exactly.\n    \n    # Output Bottom-Right (6,6) to (8,8):\n    # 855\n    # 888\n    # 599\n    # Wait, the Input is 327/227/557.\n    # The Output Bottom-Right is 855/888/599.\n    # Let's look at the colors.\n    # Input: 2 is red, 7 is orange. 3 is green, 5 is gray, 8 is teal, 9 is maroon.\n    # Input:",
+      "score": 0.8846001413975552,
+      "timestamp": 1775503602.711149,
+      "metadata": {
+        "round": 27
+      }
     },
     {
       "hypothesis_type": "counting_arithmetic",
@@ -281,5 +283,5 @@
       }
     }
   ],
-  "updated": 1775497285.888771
+  "updated": 1775503602.711176
 }
