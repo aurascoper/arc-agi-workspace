@@ -156,7 +156,7 @@ def generate(prompt: str, config: BeamConfig, temperature: Optional[float] = Non
 # PROMPT & PARSING
 # ---------------------------------------------------------------------------
 
-def _extract_helper_summary(dsl_code: str, max_sigs: int = 50, task_data: list = None) -> str:
+def _extract_helper_summary(dsl_code: str, max_sigs: int = 20, task_data: list = None) -> str:
     """Extract function signatures from HELPER_CODE_PREFIX for prompt context.
 
     If task_data is provided, uses the recognition model to rank by relevance.
@@ -189,7 +189,7 @@ def build_optimization_prompt(dsl_code: str, info_text: str, config: BeamConfig)
     """Build the prompt sent to the LLM for code optimization."""
     sigs = _extract_helper_summary(dsl_code)
     existing_names = _extract_function_names(dsl_code)
-    ban_list = ", ".join(existing_names[-60:]) if existing_names else "(none)"
+    ban_list = ", ".join(existing_names[-30:]) if existing_names else "(none)"
 
     # Go-Explore archive context — inject prior best attempts for near-solved tasks
     archive_context = ""
@@ -199,7 +199,7 @@ def build_optimization_prompt(dsl_code: str, info_text: str, config: BeamConfig)
         near_solved = archive.get_near_solved(min_score=0.5, max_score=0.99)
         if near_solved:
             import random as _arc_rng
-            sampled = _arc_rng.sample(near_solved, min(2, len(near_solved)))
+            sampled = _arc_rng.sample(near_solved, min(1, len(near_solved)))
             parts = []
             for tid in sampled:
                 snippet = archive.format_for_prompt(tid, k=1)
@@ -488,8 +488,13 @@ def _mini_solve_eval(worktree_path: str, config: BeamConfig) -> float:
     _rng.seed(getattr(config, "_solve_seed", 0))
     sample = _rng.sample(task_files, min(SOLVE_TASKS, len(task_files)))
 
+    EARLY_TERM_AFTER = 3  # check for early termination after this many tasks
     scores = []
     for tf in sample:
+        # Early termination: if first N tasks all score 0, bail (arXiv 2504.03037 insight)
+        if len(scores) >= EARLY_TERM_AFTER and all(s == 0.0 for s in scores):
+            print(f"    [tier3-mini] Early termination: first {EARLY_TERM_AFTER} tasks all 0.0")
+            return 0.0
         try:
             td = json.loads(tf.read_text())
             # Canonicalize colors — LLM sees frequency-ordered colors
@@ -782,11 +787,14 @@ def run_beam_search(config: Optional[BeamConfig] = None) -> Optional[NodeResult]
         # Compute novelty bonus: reward candidates whose new functions cover
         # underrepresented transformation types
         NOVELTY_LAMBDA = 0.15  # weight of novelty bonus vs raw score
+        # Cache baseline names once (avoid re-extracting 22K line file per candidate)
         baseline_names = set(_extract_function_names(dsl_code))
         for c in valid:
             novelty = 0.0
             if c.dsl_code:
-                new_names = set(_extract_function_names(c.dsl_code)) - baseline_names
+                # Only extract new names from the diff (candidate code after baseline)
+                candidate_names = set(_extract_function_names(c.dsl_code))
+                new_names = candidate_names - baseline_names
                 if new_names:
                     # Count how many distinct type categories the new functions cover
                     types_covered = set()

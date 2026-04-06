@@ -161,24 +161,39 @@ def _majority_vote(predictions: list[list[list[int]] | None],
 # D4 ensemble solver
 # ---------------------------------------------------------------------------
 
+def _select_views(task_data: dict) -> list[str]:
+    """Pick a compact subset of D4 views based on grid geometry.
+
+    - Square grids: identity + rotate_180 + mirror_h + mirror_v  (4 views)
+      Rotations and transpose are equivalent to reflections for square grids.
+    - Non-square grids: identity + rotate_180 + mirror_h + mirror_v  (4 views)
+      CW/CCW rotations change dimensions (HxW -> WxH), unlikely to help the
+      LLM pattern-match. Transpose/anti-diag also swap dims.
+    - Always includes identity (baseline) and the 3 most universally useful
+      transforms: rotate_180 (preserves dims), mirror_h, mirror_v.
+
+    Returns list of transform names to run.
+    """
+    # These 4 preserve grid dimensions for ANY shape and cover the most
+    # common ARC symmetries (horizontal/vertical reflection, 180° rotation).
+    return ["identity", "rotate_180", "mirror_h", "mirror_v"]
+
+
 def solve_task_d4(task_data: dict, task_name: str = "unknown",
                   phase2: bool = True) -> tuple[float, list]:
     """Solve with D4 augmentation. Returns (pixel_accuracy, traces).
 
-    Phase 1: identity + 3 rotations (4 LLM calls).
-      If any view gets perfect solve -> return immediately.
-    Phase 2 (if phase1 imperfect and phase2=True): 4 reflections.
-      Collect all predictions, inverse-transform, majority vote.
+    Runs a geometry-aware subset of D4 views (typically 4, not 8) for speed.
+    Early-exits on perfect solve. Falls back to remaining views only if
+    phase1 found partial signal (score > 0) but no perfect solve.
     """
     from evolve_qwen_arc import solve_task_single, _canonicalize_task
     from target_mlx_arc import try_code_on_task, extract_python_code, calculate_pixel_accuracy, run_code_on_inputs
 
-    transforms = _get_d4_transforms()
-    phase1 = transforms[:4]   # identity, rotate_cw, rotate_180, rotate_ccw
-    phase2_transforms = transforms[4:]  # mirror_h, mirror_v, transpose, flip_anti
+    all_transforms = {name: (fwd, inv) for name, fwd, inv in _get_d4_transforms()}
+    selected_names = _select_views(task_data)
 
     all_scores = []
-    all_codes = []
     all_traces = []
     all_inv_fns = []
     best_score = 0.0
@@ -204,24 +219,25 @@ def solve_task_d4(task_data: dict, task_name: str = "unknown",
         print(f"  [D4] {task_name}@{name}: {score:.4f}")
         return score
 
-    # Phase 1: identity + rotations
-    for name, fwd, inv in phase1:
+    # Phase 1: geometry-selected views (typically 4)
+    for name in selected_names:
+        fwd, inv = all_transforms[name]
         score = _solve_view(name, fwd, inv)
         if score >= 1.0:
-            print(f"  [D4] {task_name}: SOLVED by {name} (phase 1)")
+            print(f"  [D4] {task_name}: SOLVED by {name}")
             return 1.0, []
 
-    # Phase 2: reflections (only if phase1 didn't solve perfectly)
-    if phase2:
-        for name, fwd, inv in phase2_transforms:
+    # Phase 2: remaining views, only if phase1 found partial signal
+    if phase2 and best_score > 0:
+        remaining = [n for n in all_transforms if n not in selected_names]
+        for name in remaining:
+            fwd, inv = all_transforms[name]
             score = _solve_view(name, fwd, inv)
             if score >= 1.0:
                 print(f"  [D4] {task_name}: SOLVED by {name} (phase 2)")
                 return 1.0, []
 
     # No perfect solve -- return best individual score
-    # (Voting requires test predictions which we don't have from solve_task_single.
-    #  The best individual view score is the most reliable metric.)
     if best_score > 0:
         view_count = len(all_scores)
         above_zero = sum(1 for s in all_scores if s > 0)

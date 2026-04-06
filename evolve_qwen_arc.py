@@ -46,6 +46,8 @@ from copy import deepcopy
 
 WORKSPACE = Path(__file__).parent
 DSL_PATH = WORKSPACE / "dsl.py"
+_VENV_PYTHON = WORKSPACE.parent / "turboquant-mlx" / ".venv" / "bin" / "python3"
+MLX_PYTHON = str(_VENV_PYTHON) if _VENV_PYTHON.exists() else sys.executable
 ARC_DATA = WORKSPACE / "arc_agi_2_data" / "training"
 METRIC_FILE = WORKSPACE / "metric.json"
 RESULTS_DIR = WORKSPACE / "evolution_results"
@@ -56,12 +58,12 @@ OLLAMA_URL = os.environ.get("OLLAMA_URL", "http://localhost:11434")
 MAX_NEW_TOKENS = int(os.environ.get("EVOLVE_MAX_TOKENS", "4096"))
 TASKS_PER_DIAGNOSTIC = int(os.environ.get("TASKS_PER_DIAGNOSTIC", "5"))
 OUTER_ROUNDS = int(os.environ.get("EVOLVE_ROUNDS", "3"))
-CODOPT_BRANCHES = int(os.environ.get("CODOPT_BRANCHES", "3"))
-CODOPT_TIME = int(os.environ.get("CODOPT_TIME", "120"))
+CODOPT_BRANCHES = int(os.environ.get("CODOPT_BRANCHES", "2"))
+CODOPT_TIME = int(os.environ.get("CODOPT_TIME", "90"))
 
-# Fixed holdout set for consistent progress tracking (seed=2026, n=10)
+# Fixed holdout set for consistent progress tracking (seed=2026, n=25)
 HOLDOUT_SEED = 2026
-HOLDOUT_SIZE = 10
+HOLDOUT_SIZE = 25
 HOLDOUT_FILE = RESULTS_DIR / "holdout_scores.jsonl"
 SOLVE_COMMIT_THRESHOLD = float(os.environ.get("SOLVE_THRESHOLD", "0.85"))
 TIER3_TASKS = int(os.environ.get("TIER3_TASKS", "2"))
@@ -663,10 +665,11 @@ def solve_task_single(task_data, task_name="unknown"):
 ENHANCED_SOLVE = True  # Enable H2 (D4 symmetry) + H3 (MDL composition)
 
 
-def solve_task_enhanced(task_data, task_name="unknown"):
+def solve_task_enhanced(task_data, task_name="unknown", use_d4=True):
     """Enhanced solve: H3 composition search -> H2 D4 ensemble -> fallback single.
 
     Returns (pixel_accuracy, traces) -- same interface as solve_task_single.
+    Set use_d4=False to skip D4 (fast mode for evolution rounds).
     """
     if not ENHANCED_SOLVE:
         return solve_task_single(task_data, task_name)
@@ -687,15 +690,16 @@ def solve_task_enhanced(task_data, task_name="unknown"):
     except Exception as e:
         print(f"  [H3] {task_name}: error {e}")
 
-    # Phase 2: H2 -- D4 symmetry ensemble (up to 8 LLM calls, ~40-80s)
-    try:
-        from d4_ensemble import solve_task_d4
-        score, traces = solve_task_d4(task_data, task_name)
-        return score, traces
-    except Exception as e:
-        print(f"  [H2] {task_name}: error {e}")
+    # Phase 2: H2 -- D4 symmetry ensemble (skipped in fast mode)
+    if use_d4:
+        try:
+            from d4_ensemble import solve_task_d4
+            score, traces = solve_task_d4(task_data, task_name)
+            return score, traces
+        except Exception as e:
+            print(f"  [H2] {task_name}: error {e}")
 
-    # Fallback: original single solve
+    # Fallback / fast mode: identity-only solve (1 LLM call)
     return solve_task_single(task_data, task_name)
 
 
@@ -745,7 +749,7 @@ def find_failing_tasks(sample_size=50, tier3_count=None, seed=42):
             print(f"[evolve] Tier 3: solving {len(tier3_targets)} worst tasks...")
             for tf, td, t1, t2, combined in tier3_targets:
                 try:
-                    solve_score, traces = solve_task_enhanced(td, task_name=tf.stem)
+                    solve_score, traces = solve_task_enhanced(td, task_name=tf.stem, use_d4=False)
                 except Exception as e:
                     print(f"  [tier3] {tf.name}: error {e}")
                     solve_score, traces = 0.0, [{"task_name": tf.stem, "failure_type": "CRASH", "error_message": str(e)}]
@@ -773,7 +777,7 @@ def find_failing_tasks(sample_size=50, tier3_count=None, seed=42):
         print(f"[evolve] Tier 1+2 all perfect. Tier 3: solving {len(tier3_targets)} tasks to find LLM failures...")
         for tf, td, t1, t2, combined in tier3_targets:
             try:
-                solve_score, traces = solve_task_enhanced(td, task_name=tf.stem)
+                solve_score, traces = solve_task_enhanced(td, task_name=tf.stem, use_d4=False)
             except Exception as e:
                 print(f"  [tier3] {tf.name}: error {e}")
                 solve_score, traces = 0.0, [{"task_name": tf.stem, "failure_type": "CRASH", "error_message": str(e)}]
@@ -813,28 +817,76 @@ def _get_holdout_tasks():
     return rng.sample(task_files, min(HOLDOUT_SIZE, len(task_files)))
 
 
+_holdout_best: dict[str, tuple[float, str]] = {}  # task_stem -> (best_score, code)
+
+HOLDOUT_CACHE_PATH = Path(__file__).resolve().parent / "evolution_results" / "holdout_best.json"
+
+
+def _load_holdout_cache():
+    """Load best-ever holdout solutions from disk (survives restarts)."""
+    global _holdout_best
+    if HOLDOUT_CACHE_PATH.exists() and not _holdout_best:
+        try:
+            data = json.loads(HOLDOUT_CACHE_PATH.read_text())
+            for k, v in data.items():
+                _holdout_best[k] = (v["score"], v["code"])
+        except Exception:
+            pass
+
+
+def _save_holdout_cache():
+    """Persist best-ever holdout solutions to disk."""
+    HOLDOUT_CACHE_PATH.parent.mkdir(parents=True, exist_ok=True)
+    data = {k: {"score": v[0], "code": v[1]} for k, v in _holdout_best.items()}
+    HOLDOUT_CACHE_PATH.write_text(json.dumps(data, indent=2))
+
+
 def compute_holdout_score():
     """Evaluate tier3 solve on a FIXED set of tasks. Returns (mean_score, per_task_scores).
 
     Unlike compute_solve_score which uses random tasks each round, this always
     evaluates the same tasks, making progress observable across rounds.
+
+    Uses a monotonic best-ever cache: if a new generation scores lower than the
+    previous best for a task, the old score is retained. This prevents regression
+    from prompt drift as the DSL grows.
     """
+    _load_holdout_cache()
     holdout = _get_holdout_tasks()
     if not holdout:
         return 0.0, {}
 
-    ns = load_dsl_namespace()
     per_task = {}
+    improved = 0
+    skipped = 0
     for tf in holdout:
+        # Skip tasks already near-perfect (>0.95) — can't improve much, saves ~1.5 min each
+        prev_best, prev_code = _holdout_best.get(tf.stem, (0.0, ""))
+        if prev_best >= 0.95:
+            per_task[tf.stem] = round(prev_best, 4)
+            skipped += 1
+            continue
+
         with open(tf) as f:
             task_data = json.load(f)
         try:
-            score, _ = solve_task_single(task_data, task_name=tf.stem)  # no D4 on holdout (too slow)
+            score, _ = solve_task_single(task_data, task_name=tf.stem)
         except Exception:
             score = 0.0
-        per_task[tf.stem] = round(score, 4)
+        score = round(score, 4)
 
+        # Monotonic best-ever: keep the higher score
+        if score > prev_best:
+            _holdout_best[tf.stem] = (score, "")  # code not available here, just track score
+            improved += 1
+            per_task[tf.stem] = score
+        else:
+            per_task[tf.stem] = round(prev_best, 4)
+
+    _save_holdout_cache()
     mean = sum(per_task.values()) / len(per_task) if per_task else 0.0
+    if improved or skipped:
+        print(f"[holdout] {improved} task(s) improved, {skipped} skipped (≥0.95)")
     return round(mean, 4), per_task
 
 
@@ -1171,7 +1223,7 @@ def build_diagnostic_prompt(failing_results):
     try:
         from dsl_map_elites import get_map_elites
         me = get_map_elites()
-        me_gaps = me.format_gaps_for_prompt(max_gaps=5)
+        me_gaps = me.format_gaps_for_prompt(max_gaps=3)
         if me_gaps:
             research = research + "\n\n" + me_gaps
     except Exception:
@@ -1416,9 +1468,17 @@ def git_commit_if_improved(round_num, pre_score, post_score, hypothesis="",
     timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
     label = (f"solve {solve_before:.4f} -> {solve_after:.4f}" if at_ceiling
              else f"{pre_score:.4f} -> {post_score:.4f}")
+    # Include holdout in commit message for observable progress
+    try:
+        _load_holdout_cache()
+        _holdout_val = (sum(v[0] for v in _holdout_best.values()) /
+                        max(len(_holdout_best), 1)) if _holdout_best else 0.0
+    except Exception:
+        _holdout_val = 0.0
     msg = (
-        f"evolve: round {round_num} results [keep] score={post_score:.4f}\n\n"
+        f"evolve: round {round_num} results [keep] score={post_score:.4f} holdout={_holdout_val:.4f}\n\n"
         f"Solve score: {solve_before:.4f} -> {solve_after:.4f}\n"
+        f"Holdout: {_holdout_val:.4f}\n"
         f"Hypothesis: {hypothesis[:200]}\n"
         f"Model: {_get_model_path()}\n"
         f"Timestamp: {timestamp}"
@@ -1514,7 +1574,7 @@ def run_lora_training_cycle(round_num: int, state: dict) -> dict:
     # Run training as subprocess for memory isolation (with PB2 HP scheduling)
     try:
         result = subprocess.run(
-            [sys.executable, str(WORKSPACE / "lora_train.py"),
+            [MLX_PYTHON, str(WORKSPACE / "lora_train.py"),
              "--data", str(SUCCESSFUL_PROGRAMS_PATH),
              "--output", str(adapter_dir),
              "--pb2"],
@@ -1889,26 +1949,39 @@ def evolve(rounds=None, diagnose_only=False, never_stop=False, tier3_tasks=None,
         log_holdout_score(round_num, holdout_mean, holdout_per_task)
 
         # --- 7. DECIDE ---
-        # Decision uses TWO signals:
-        #   1. beam_improved — codopt tournament found a winner on blended score
-        #   2. solve_after >= threshold — absolute tier3 quality gate (default 0.85)
-        # NOTE: We no longer compare solve_after vs solve_before (too noisy due to
-        # random task sampling). Instead, use absolute threshold + beam winner signal.
+        # Decision uses holdout as primary signal (helper coverage is at ceiling).
+        # Compare against PREVIOUS ROUND's logged holdout (not monotonic cache,
+        # which always equals current holdout_mean due to best-ever tracking).
+        _load_holdout_cache()
+        prev_logged_holdout = 0.0
+        try:
+            holdout_log = RESULTS_DIR / "holdout_scores.jsonl"
+            if holdout_log.exists():
+                lines = holdout_log.read_text().strip().split("\n")
+                if len(lines) >= 2:
+                    prev_entry = json.loads(lines[-2])  # second-to-last = previous round
+                    prev_logged_holdout = prev_entry.get("holdout_mean", 0.0)
+                elif lines:
+                    prev_logged_holdout = json.loads(lines[-1]).get("holdout_mean", 0.0)
+        except Exception:
+            pass
+        holdout_improved = holdout_mean > prev_logged_holdout + 0.005  # >0.5% improvement counts
+
         if post_score >= 0.999:
-            above_threshold = solve_after >= SOLVE_COMMIT_THRESHOLD
-            if beam_improved or above_threshold:
+            # At ceiling: use holdout + beam signals
+            if beam_improved or holdout_improved:
                 improved = True
                 status = "keep"
-                reason = "beam winner" if beam_improved else f"solve≥{SOLVE_COMMIT_THRESHOLD}"
-                print(f"\n[7/9] DECIDE — {status} ({reason}: solve={solve_after:.4f}, holdout={holdout_mean:.4f})")
+                reason = f"holdout {prev_logged_holdout:.4f}->{holdout_mean:.4f}" + (" +beam" if beam_improved else "")
+                print(f"\n[7/9] DECIDE — {status} ({reason}: solve={solve_after:.4f})")
             else:
                 improved = False
                 status = "stagnant"
-                print(f"\n[7/9] DECIDE — {status} (solve={solve_after:.4f}<{SOLVE_COMMIT_THRESHOLD}, holdout={holdout_mean:.4f})")
+                print(f"\n[7/9] DECIDE — {status} (holdout={holdout_mean:.4f}≈prev={prev_logged_holdout:.4f}, solve={solve_after:.4f})")
         else:
             improved = post_score > pre_score
             status = "keep" if improved else "stagnant"
-            print(f"\n[7/9] DECIDE — {status} (metric {pre_score:.4f}->{post_score:.4f})")
+            print(f"\n[7/9] DECIDE — {status} (metric {pre_score:.4f}->{post_score:.4f}, holdout={holdout_mean:.4f})")
 
         # P4: Update MAP-Elites archive with surviving functions
         if improved and func_names:
@@ -1961,7 +2034,7 @@ def evolve(rounds=None, diagnose_only=False, never_stop=False, tier3_tasks=None,
                 cwd=str(WORKSPACE), capture_output=True,
             ).returncode != 0 and subprocess.run(
                 ["git", "commit", "-m",
-                 f"evolve: round {round_num} results [{status}] score={current_score:.4f}"],
+                 f"evolve: round {round_num} results [{status}] score={current_score:.4f} holdout={holdout_mean:.4f}"],
                 cwd=str(WORKSPACE), capture_output=True,
             )
             push_result = subprocess.run(

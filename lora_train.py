@@ -26,6 +26,10 @@ from pathlib import Path
 WORKSPACE = Path(__file__).resolve().parent
 MODEL_PATH = os.environ.get("ARC_MODEL_PATH", "mlx-community/Qwen3.5-9B-4bit")
 
+# Use turboquant-mlx venv python which has mlx_lm installed
+_VENV_PYTHON = WORKSPACE.parent / "turboquant-mlx" / ".venv" / "bin" / "python3"
+MLX_PYTHON = str(_VENV_PYTHON) if _VENV_PYTHON.exists() else sys.executable
+
 # LoRA hyperparameters (defaults; PB2 may override LR, ITERS, DATA_MIX)
 LORA_RANK = 4
 LORA_LAYERS = 8
@@ -223,7 +227,7 @@ def run_training(data_dir: Path, adapter_output: Path):
     adapter_output.mkdir(parents=True, exist_ok=True)
 
     cmd = [
-        sys.executable, "-m", "mlx_lm.lora",
+        MLX_PYTHON, "-m", "mlx_lm.lora",
         "--model", MODEL_PATH,
         "--train",
         "--data", str(data_dir),
@@ -510,7 +514,7 @@ def run_training_pb2(data_dir: Path, adapter_output: Path,
     adapter_output.mkdir(parents=True, exist_ok=True)
 
     cmd = [
-        sys.executable, "-m", "mlx_lm.lora",
+        MLX_PYTHON, "-m", "mlx_lm.lora",
         "--model", MODEL_PATH,
         "--train",
         "--data", str(data_dir),
