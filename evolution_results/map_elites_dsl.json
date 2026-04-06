@@ -52,11 +52,13 @@
     {
       "hypothesis_type": "transform_geom",
       "grid_size_bin": "medium",
-      "func_name": "rotate_cw",
-      "code": "def rotate_cw(grid):\n    rows, cols = len(grid), len(grid[0])\n    return [[grid[rows-1-r][c] for r in range(rows)] for c in range(cols)]\n",
-      "score": 0.5,
-      "timestamp": 1775430507.8133729,
-      "metadata": {}
+      "func_name": "transform_and_resize_grid_to_target",
+      "code": "def transform_and_resize_grid_to_target(grid: list[list[int]], target_h: int, target_w: int) -> list[list[int]]:\n    \"\"\"Resizes the grid to the target dimensions by sampling and repeating pixels.\"\"\"\n    import numpy as np\n    grid_np = np.array(grid, dtype=int)\n    h, w = grid_np.shape\n    \n    # Determine background color\n    bg_color = 0\n    \n    # Flatten grid into a list of non-background pixels\n    pixels = []\n    for r in range(h):\n        for c in range(w):\n            if grid_np[r, c] != 0:\n                pixels.append((r, c, grid_np[r, c]))\n    \n    # Sort pixels by row then column\n    pixels.sort(key=lambda x: (x[0], x[1]))\n    \n    # Create a mapping from original coordinates to new coordinates\n    # We need to figure out how the content maps to the target grid\n    # Looking at Task 2: 14x14 -> 10x10 (approx 0.71 scale)\n    # The content seems to be preserved but scaled or shifted.\n    \n    # Let's try a simple resize approach:\n    # 1. Extract content\n    # 2. Determine scale factor\n    # 3. Apply resize\n    \n    # Since we don't know the exact rule (scaling vs shifting), we will try to map content\n    # based on the relative position of non-background pixels.\n    \n    # Strategy: Identify the \"active\" area (non-bg bounding box) and map it to the target grid\n    # by scaling the coordinates.\n    \n    # Find bounding box of non-background pixels\n    rows = [p[0] for p in pixels]\n    cols = [p[1] for p in pixels]\n    \n    min_r, max_r = min(rows), max(rows)\n    min_c, max_c = min(cols), max(cols)\n    \n    if not pixels:\n        return [[0] * target_w for _ in range(target_h)]\n        \n    # Calculate the aspect ratio of the content\n    content_h = max_r - min_r + 1\n    content_w = max_c - min_c + 1\n    \n    # Calculate scale factor\n    scale_h = target_h / content_h\n    scale_w = target_w / content_w\n    \n    # If the content fits exactly or close, copy it.\n    # If scaling is needed, interpolate.\n    \n    # Since ARC tasks are usually integer-based, let'",
+      "score": 0.8612852007727281,
+      "timestamp": 1775509861.148718,
+      "metadata": {
+        "round": 28
+      }
     },
     {
       "hypothesis_type": "symmetry",
@@ -135,11 +137,13 @@
     {
       "hypothesis_type": "connected_components",
       "grid_size_bin": "large",
-      "func_name": "largest_object_grid",
-      "code": "def largest_object_grid(grid, background=None, diag=False, crop_result=True):\n    if background is None:\n        background = detect_background_color(grid)\n    objs = get_objects(grid, background=background, diag=diag)\n    if not objs:\n        return crop_foreground(grid, background=background) if crop_result else copy_grid(grid)\n    largest = max(objs, key=len)\n    out = crop_object(grid, largest, background=background)\n    return crop_foreground(out, background=background) if crop_result else out\n",
-      "score": 0.5,
-      "timestamp": 1775430507.834711,
-      "metadata": {}
+      "func_name": "extract_pattern_from_symmetric_borders",
+      "code": "def extract_pattern_from_symmetric_borders(grid: list[list[int]]) -> list[list[int]]:\n    \"\"\"Extracts the inner pattern bounded by uniform colored borders.\"\"\"\n    import numpy as np\n    grid_np = np.array(grid, dtype=int)\n    h, w = grid_np.shape\n    \n    bg_color = 0\n    \n    # Identify borders by looking for uniform lines of non-background colors\n    # Check rows\n    border_rows = []\n    for r in range(h):\n        if len(set(grid_np[r])) == 1 and grid_np[r, 0] != bg_color:\n            border_rows.append(r)\n            \n    # Check columns\n    border_cols = []\n    for c in range(w):\n        if len(set(grid_np[:, c])) == 1 and grid_np[0, c] != bg_color:\n            border_cols.append(c)\n            \n    # If no borders found, return empty or identity\n    if not border_rows and not border_cols:\n        return grid\n    \n    # Find the bounding box of the inner region defined by these borders\n    # This assumes the borders form a box or we just take the inner area\n    # A more robust way for ARC tasks is finding the largest connected component or bounding box of non-bg\n    \n    # Let's try to detect the \"frame\" by finding the first non-bg row/col from edges\n    # Then find the inner region\n    \n    # Simplified logic for Task 2:\n    # Task 2 has a border of 2s.\n    # We need to extract the content inside the border.\n    \n    # Find the first row containing non-bg color\n    first_row_idx = -1\n    for r in range(h):\n        if np.any(grid_np[r] != bg_color):\n            first_row_idx = r\n            break\n            \n    # Find the last row containing non-bg color\n    last_row_idx = -1\n    for r in range(h-1, -1, -1):\n        if np.any(grid_np[r] != bg_color):\n            last_row_idx = r\n            break\n            \n    # Find the first col containing non-bg color\n    first_col_idx = -1\n    for c in range(w):\n        if np.any(grid_np[:, c] != bg_color):\n            first_col_idx = c\n            break\n            \n    # Find the last col containing non-bg color\n    l",
+      "score": 0.8612852007727281,
+      "timestamp": 1775509861.1426802,
+      "metadata": {
+        "round": 28
+      }
     },
     {
       "hypothesis_type": "boundary_edge",
@@ -191,11 +195,13 @@
     {
       "hypothesis_type": "grid_decompose",
       "grid_size_bin": "medium",
-      "func_name": "xor_split_halves",
-      "code": "def xor_split_halves(grid, separator=4, marker=2, output_val=3, background=0):\n    \"\"\"Find separator row (all same value). XOR top/bottom halves: where exactly one half has marker, output output_val.\"\"\"\n    rows, cols = len(grid), len(grid[0])\n    sep_row = next((r for r in range(rows) if all(grid[r][c] == separator for c in range(cols))), None)\n    if sep_row is None:\n        return grid\n    top, bottom = grid[:sep_row], grid[sep_row+1:]\n    if len(top) != len(bottom):\n        return grid\n    return [[output_val if (top[i][c] == marker) ^ (bottom[i][c] == marker) else background for c in range(cols)] for i in range(len(top))]\n",
-      "score": 0.5,
-      "timestamp": 1775430507.8492749,
-      "metadata": {}
+      "func_name": "extract_and_transform_quadrant_content",
+      "code": "def extract_and_transform_quadrant_content(grid: list[list[int]]) -> list[list[int]]:\n    \"\"\"Extracts non-background sub-grids from quadrants and merges them into a compressed output grid.\"\"\"\n    import numpy as np\n    grid_np = np.array(grid, dtype=int)\n    h, w = grid_np.shape\n    bg_color = 0\n    \n    # Determine quadrant size and bounding boxes for non-background objects\n    split_h = h // 2\n    split_w = w // 2\n    \n    results = []\n    \n    # Helper to extract non-background objects from a specific ROI\n    def extract_objects(roi_start_r, roi_start_c, roi_h, roi_w):\n        roi = grid_np[roi_start_r:roi_start_r+roi_h, roi_start_c:roi_start_c+roi_w]\n        objects = []\n        colors_in_roi = set()\n        for r in range(roi_h):\n            for c in range(roi_w):\n                color = roi[r, c]\n                if color != bg_color:\n                    colors_in_roi.add(color)\n        \n        # Collect all non-background pixels\n        for r in range(roi_h):\n            for c in range(roi_w):\n                if roi[r, c] != bg_color:\n                    obj_coords = [(roi_start_r + r, roi_start_c + c)]\n                    objects.append({\n                        \"color\": roi[r, c],\n                        \"coords\": obj_coords,\n                        \"bbox\": {\"r\": r, \"c\": c, \"h\": 0, \"w\": 0} # placeholder\n                    })\n        return objects\n\n    # Process each quadrant independently\n    # Quadrant 1 (Top-Left)\n    q1_objects = extract_objects(0, 0, split_h, split_w)\n    # Quadrant 2 (Top-Right)\n    q2_objects = extract_objects(0, split_w, split_h, split_w)\n    # Quadrant 3 (Bottom-Left)\n    q3_objects = extract_objects(split_h, 0, split_h, split_w)\n    # Quadrant 4 (Bottom-Right)\n    q4_objects = extract_objects(split_h, split_w, split_h, split_w)\n    \n    # Combine objects into a list for further processing (if needed)\n    all_objects = q1_objects + q2_objects + q3_objects + q4_objects\n    \n    # Determine target grid size based on input or default",
+      "score": 0.8612852007727281,
+      "timestamp": 1775509861.1360772,
+      "metadata": {
+        "round": 28
+      }
     },
     {
       "hypothesis_type": "pattern_tile",
@@ -283,5 +289,5 @@
       }
     }
   ],
-  "updated": 1775503602.711176
+  "updated": 1775509861.148741
 }

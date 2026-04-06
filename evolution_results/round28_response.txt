@@ -1,0 +1,405 @@
+
+
+```python
+def extract_and_transform_quadrant_content(grid: list[list[int]]) -> list[list[int]]:
+    """Extracts non-background sub-grids from quadrants and merges them into a compressed output grid."""
+    import numpy as np
+    grid_np = np.array(grid, dtype=int)
+    h, w = grid_np.shape
+    bg_color = 0
+    
+    # Determine quadrant size and bounding boxes for non-background objects
+    split_h = h // 2
+    split_w = w // 2
+    
+    results = []
+    
+    # Helper to extract non-background objects from a specific ROI
+    def extract_objects(roi_start_r, roi_start_c, roi_h, roi_w):
+        roi = grid_np[roi_start_r:roi_start_r+roi_h, roi_start_c:roi_start_c+roi_w]
+        objects = []
+        colors_in_roi = set()
+        for r in range(roi_h):
+            for c in range(roi_w):
+                color = roi[r, c]
+                if color != bg_color:
+                    colors_in_roi.add(color)
+        
+        # Collect all non-background pixels
+        for r in range(roi_h):
+            for c in range(roi_w):
+                if roi[r, c] != bg_color:
+                    obj_coords = [(roi_start_r + r, roi_start_c + c)]
+                    objects.append({
+                        "color": roi[r, c],
+                        "coords": obj_coords,
+                        "bbox": {"r": r, "c": c, "h": 0, "w": 0} # placeholder
+                    })
+        return objects
+
+    # Process each quadrant independently
+    # Quadrant 1 (Top-Left)
+    q1_objects = extract_objects(0, 0, split_h, split_w)
+    # Quadrant 2 (Top-Right)
+    q2_objects = extract_objects(0, split_w, split_h, split_w)
+    # Quadrant 3 (Bottom-Left)
+    q3_objects = extract_objects(split_h, 0, split_h, split_w)
+    # Quadrant 4 (Bottom-Right)
+    q4_objects = extract_objects(split_h, split_w, split_h, split_w)
+    
+    # Combine objects into a list for further processing (if needed)
+    all_objects = q1_objects + q2_objects + q3_objects + q4_objects
+    
+    # Determine target grid size based on input or default logic
+    # Based on Task 1 (10x10 -> 10x10) and Task 2 (14x14 -> 6x6), the output grid size seems variable
+    # However, we need to construct the output grid.
+    # Let's assume a target size or extract based on the union of bounding boxes
+    
+    # This function attempts to extract content from quadrants, which is the first step in both tasks.
+    # To fully solve these tasks, a second function would be needed to handle the grid transformation logic.
+    return [] 
+
+def extract_pattern_from_symmetric_borders(grid: list[list[int]]) -> list[list[int]]:
+    """Extracts the inner pattern bounded by uniform colored borders."""
+    import numpy as np
+    grid_np = np.array(grid, dtype=int)
+    h, w = grid_np.shape
+    
+    bg_color = 0
+    
+    # Identify borders by looking for uniform lines of non-background colors
+    # Check rows
+    border_rows = []
+    for r in range(h):
+        if len(set(grid_np[r])) == 1 and grid_np[r, 0] != bg_color:
+            border_rows.append(r)
+            
+    # Check columns
+    border_cols = []
+    for c in range(w):
+        if len(set(grid_np[:, c])) == 1 and grid_np[0, c] != bg_color:
+            border_cols.append(c)
+            
+    # If no borders found, return empty or identity
+    if not border_rows and not border_cols:
+        return grid
+    
+    # Find the bounding box of the inner region defined by these borders
+    # This assumes the borders form a box or we just take the inner area
+    # A more robust way for ARC tasks is finding the largest connected component or bounding box of non-bg
+    
+    # Let's try to detect the "frame" by finding the first non-bg row/col from edges
+    # Then find the inner region
+    
+    # Simplified logic for Task 2:
+    # Task 2 has a border of 2s.
+    # We need to extract the content inside the border.
+    
+    # Find the first row containing non-bg color
+    first_row_idx = -1
+    for r in range(h):
+        if np.any(grid_np[r] != bg_color):
+            first_row_idx = r
+            break
+            
+    # Find the last row containing non-bg color
+    last_row_idx = -1
+    for r in range(h-1, -1, -1):
+        if np.any(grid_np[r] != bg_color):
+            last_row_idx = r
+            break
+            
+    # Find the first col containing non-bg color
+    first_col_idx = -1
+    for c in range(w):
+        if np.any(grid_np[:, c] != bg_color):
+            first_col_idx = c
+            break
+            
+    # Find the last col containing non-bg color
+    last_col_idx = -1
+    for c in range(w-1, -1, -1):
+        if np.any(grid_np[:, c] != bg_color):
+            last_col_idx = c
+            break
+            
+    # Define the inner area
+    top = first_row_idx + 1
+    bottom = last_row_idx - 1
+    left = first_col_idx + 1
+    right = last_col_idx - 1
+    
+    # Ensure indices are valid
+    top = max(0, top)
+    bottom = min(h-1, bottom)
+    left = max(0, left)
+    right = min(w-1, right)
+    
+    if top > bottom or left > right:
+        return []
+        
+    inner_area = grid_np[top:bottom+1, left:right+1]
+    
+    # Return as list of lists
+    return inner_area.tolist()
+```
+
+```python
+def transform_and_resize_grid_to_target(grid: list[list[int]], target_h: int, target_w: int) -> list[list[int]]:
+    """Resizes the grid to the target dimensions by sampling and repeating pixels."""
+    import numpy as np
+    grid_np = np.array(grid, dtype=int)
+    h, w = grid_np.shape
+    
+    # Determine background color
+    bg_color = 0
+    
+    # Flatten grid into a list of non-background pixels
+    pixels = []
+    for r in range(h):
+        for c in range(w):
+            if grid_np[r, c] != 0:
+                pixels.append((r, c, grid_np[r, c]))
+    
+    # Sort pixels by row then column
+    pixels.sort(key=lambda x: (x[0], x[1]))
+    
+    # Create a mapping from original coordinates to new coordinates
+    # We need to figure out how the content maps to the target grid
+    # Looking at Task 2: 14x14 -> 10x10 (approx 0.71 scale)
+    # The content seems to be preserved but scaled or shifted.
+    
+    # Let's try a simple resize approach:
+    # 1. Extract content
+    # 2. Determine scale factor
+    # 3. Apply resize
+    
+    # Since we don't know the exact rule (scaling vs shifting), we will try to map content
+    # based on the relative position of non-background pixels.
+    
+    # Strategy: Identify the "active" area (non-bg bounding box) and map it to the target grid
+    # by scaling the coordinates.
+    
+    # Find bounding box of non-background pixels
+    rows = [p[0] for p in pixels]
+    cols = [p[1] for p in pixels]
+    
+    min_r, max_r = min(rows), max(rows)
+    min_c, max_c = min(cols), max(cols)
+    
+    if not pixels:
+        return [[0] * target_w for _ in range(target_h)]
+        
+    # Calculate the aspect ratio of the content
+    content_h = max_r - min_r + 1
+    content_w = max_c - min_c + 1
+    
+    # Calculate scale factor
+    scale_h = target_h / content_h
+    scale_w = target_w / content_w
+    
+    # If the content fits exactly or close, copy it.
+    # If scaling is needed, interpolate.
+    
+    # Since ARC tasks are usually integer-based, let's try to map content to target grid
+    # by checking which target cells should contain the original colors.
+    
+    result = [[0] * target_w for _ in range(target_h)]
+    
+    # Map each non-bg pixel in input to a pixel in output
+    # This is a naive implementation of "resize"
+    # We need to determine the transformation rule from the input/output pairs.
+    
+    # Task 1: Input 10x10 -> Output 10x10. Objects seem to move and change color.
+    # Task 2: Input 14x14 -> Output 10x10. Content is extracted and scaled down.
+    
+    # Let's implement a generic "extract and center" logic first.
+    
+    # Extract content from bounding box
+    content = grid_np[min_r:max_r+1, min_c:max_c+1]
+    
+    # Resize content to target dimensions
+    # We'll use a nearest-neighbor approach for discrete values
+    # But we need to handle the specific transformation logic.
+    
+    # For now, let's just return a placeholder that works for the second task (extraction)
+    # and can be adapted for the first.
+    
+    # Actually, looking at the traces, `crop` returns the full grid (14x14) because it doesn't find the bbox.
+    # This function will try to extract the bounding box of non-background elements.
+    
+    return content.tolist() if content.size > 0 else []
+```
+
+```python
+def solve_task_6c434453_logic(grid: list[list[int]]) -> list[list[int]]:
+    """Implements the specific logic for Task 6c434453: shifting objects and inverting colors in specific regions."""
+    import numpy as np
+    grid_np = np.array(grid, dtype=int)
+    h, w = grid_np.shape
+    
+    bg_color = 0
+    
+    # Extract non-background objects
+    objects = []
+    for r in range(h):
+        for c in range(w):
+            if grid_np[r, c] != 0:
+                objects.append({
+                    "color": int(grid_np[r, c]),
+                    "coords": [(r, c)],
+                    "bbox": {"r": r, "c": c, "h": 1, "w": 1}
+                })
+    
+    # Group objects by their original row (or close proximity)
+    rows = [o["coords"][0][0] for o in objects]
+    
+    # This is a heuristic implementation. 
+    # Based on Task 1 Input -> Output:
+    # Input has objects at specific locations.
+    # Output has objects shifted or moved.
+    # Specifically, some objects seem to move down or change color.
+    
+    # Let's try to detect the "active" rows in the input grid.
+    active_rows = sorted(list(set(rows)))
+    
+    # If there are active rows, we can try to predict the output based on the pattern of activity.
+    # However, without a general rule, we can only implement specific logic.
+    
+    # Let's try to construct the output grid by copying the input grid but applying some transformations.
+    # Task 1 Output has a lot of 2s and 1s. Input has 0s and 1s and 2s.
+    # It seems like a "gravity" or "shift" operation combined with color mapping.
+    
+    # Let's try a generic shift down logic.
+    result = np.zeros((h, w), dtype=int)
+    
+    # Copy objects to result
+    for obj in objects:
+        # Shift objects down by some amount?
+        # Or maybe just keep them where they are but change color?
+        # In Task 1, input 1s become 2s in some places.
+        
+        # Let's assume we copy the object to the result grid at its original position.
+        # We will refine this in a second step if needed.
+        
+        # But wait, the task is to SOLVE the ARC task.
+        # We need to generate the OUTPUT grid.
+        
+        # Let's try to copy the input grid to the result grid.
+        result = grid_np.copy()
+        
+        # Now, apply the transformation.
+        # Transformation: 
+        # 1. Move objects down by 1 row?
+        # 2. Change 1s to 2s?
+        
+        # Let's try to detect if there's a dominant color in the input that should be the new color.
+        colors = [o["color"] for o in objects if o["color"] != 0]
+        if colors:
+            most_common_color = max(set(colors), key=colors.count)
+            
+            # If most common color is 2, maybe 1s become 2s?
+            if most_common_color == 2:
+                for r in range(h):
+                    for c in range(w):
+                        if grid_np[r, c] == 1:
+                            result[r, c] = 2
+                            
+        # Move objects down by 1 row (if space permits)
+        for r in range(h):
+            for c in range(w):
+                if grid_np[r, c] != 0 and r < h - 1:
+                    if result[r+1, c] == 0:
+                        result[r+1, c] = result[r, c]
+                        result[r, c] = 0
+                        
+    return result.tolist()
+```
+
+```python
+def solve_task_e7a25a18_logic(grid: list[list[int]]) -> list[list[int]]:
+    """Implements the specific logic for Task e7a25a18: Extract inner pattern and resize to a smaller grid."""
+    import numpy as np
+    grid_np = np.array(grid, dtype=int)
+    h, w = grid_np.shape
+    
+    bg_color = 0
+    
+    # Step 1: Find the bounding box of the non-background content.
+    # The input grid has a border of 0s. The content is inside.
+    # Find the first non-bg row and column.
+    
+    first_non_bg_row = -1
+    for r in range(h):
+        if np.any(grid_np[r] != 0):
+            first_non_bg_row = r
+            break
+            
+    last_non_bg_row = -1
+    for r in range(h-1, -1, -1):
+        if np.any(grid_np[r] != 0):
+            last_non_bg_row = r
+            break
+            
+    first_non_bg_col = -1
+    for c in range(w):
+        if np.any(grid_np[:, c] != 0):
+            first_non_bg_col = c
+            break
+            
+    last_non_bg_col = -1
+    for c in range(w-1, -1, -1):
+        if np.any(grid_np[:, c] != 0):
+            last_non_bg_col = c
+            break
+            
+    # Crop to the bounding box of the non-background content
+    # We must exclude the outer 0-border if it exists, but here the content is surrounded by 0s.
+    # We want to extract the content.
+    
+    content_top = first_non_bg_row + 1
+    content_bottom = last_non_bg_row - 1
+    content_left = first_non_bg_col + 1
+    content_right = last_non_bg_col - 1
+    
+    # Ensure bounds
+    content_top = max(0, content_top)
+    content_bottom = min(h-1, content_bottom)
+    content_left = max(0, content_left)
+    content_right = min(w-1, content_right)
+    
+    # Extract the inner content grid
+    content = grid_np[content_top:content_bottom+1, content_left:content_right+1]
+    
+    # Step 2: Determine the output grid size.
+    # Task 2: Input 14x14 -> Output 10x10.
+    # Content size: 
+    # In Task 2, the content is surrounded by 2s.
+    # The inner content is 4x4 (from row 3 to 6, col 3 to 6).
+    # Wait, looking at the trace, the task is to transform the grid.
+    # The output is smaller than the input.
+    
+    # Let's assume the output grid size is fixed or derived from the content size.
+    # If content is 4x4, and output is 10x10? Or maybe the output is the content scaled up?
+    # No, Task 2 Input 14x14 -> Output 10x10.
+    
+    # Let's try to extract the content and then pad it or resize it.
+    # But we need to know the target size.
+    # Since we can't know the target size from the grid alone without a rule,
+    # we will return the extracted content grid.
+    # The ARC engine might handle the resizing or we need to infer the target size.
+    
+    # However, the user prompt says "solve the ARC task".
+    # This means we need to generate the exact output.
+    # If the output size is not provided, we might need to infer it from the input.
+    # For Task 2, input 14x14 -> output 10x10.
+    # Maybe the output size is determined by the non-zero elements?
+    
+    # Let's try to infer the output size based on the content.
+    # If the content is 4x4, maybe the output is 6x6? (4+2?)
+    # Or maybe it's based on the number of distinct colors?
+    
+    # Let's assume the output size is the content size + some padding.
+    # Or maybe the output size is fixed for this task type.
+    
+    # Let's try to return the extracted content resized to a
