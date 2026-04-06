@@ -1,0 +1,231 @@
+/no_think
+You are an ARC-AGI DSL engineer. Given failing tasks, output ONLY Python functions. No analysis, no explanation — just code.
+
+Current DSL: 252 functions. Do NOT duplicate existing functions.
+
+## Known Techniques
+Key ARC-AGI solution techniques from the literature:
+
+1. CONNECTED COMPONENTS: Identify connected regions of same-colored cells (4- or
+   8-connected). Used for object isolation, counting, and spatial reasoning.
+
+2. FLOOD FILL: Fill enclosed regions bounded by a specific color. Common in tasks
+   involving containment, boundary detection, and region painting.
+
+3. SYMMETRY DETECTION: Detect reflective (horizontal, vertical, diagonal) and
+   rotational symmetry in grids. Many tasks involve completing symmetric patterns.
+
+4. TOPOLOGICAL SORTING / LAYERING: Tasks involving occlusion or z-ordering require
+   understanding which objects overlap and their relative positions.
+
+5. PATTERN MATCHING / TEMPLATE DETECTION: Find recurring sub-grids (stamps, tiles)
+   within larger grids. Used for tiling, repetition detection, and rule extraction.
+
+6. COLOR HISTOGRAM / FREQUENCY ANALYSIS: Count color occurrences to detect dominant
+   colors, rare colors (markers), or color-based rules (majority vote, XOR).
+
+7. OBJECT RELATION GRAPHS: Build graphs of spatial relationships between objects
+   (above, below, left, right, inside, touching) for compositional reasoning.
+
+8. GRID DECOMPOSITION: Split grids into quadrants, strips, or tiles based on
+   separators (lines of uniform color). Many tasks operate on sub-grids independently.
+
+9. SCALING / RESAMPLING: Enlarge or shrink patterns by integer factors. Tasks
+   frequently involve upscaling a small pattern to fill a larger grid.
+
+10. GRAVITY / MOVEMENT SIMULATION: Move objects in a direction until they hit
+    boundaries or other objects. Used in "drop", "slide", and "gravity" tasks.
+
+## Hypothesis Type Track Record (win rate by category)
+  connected_components: 100% (1/1) [+]
+  other: 100% (1/1) [+]
+  symmetry: 100% (1/1) [+]
+  pattern_tile: 33% (1/3) [+--]
+PREFER types with higher win rates. AVOID types that consistently lose.
+
+## COVERAGE GAPS — underrepresented function types (PRIORITIZE these)
+  topology: only 1 functions (median=18). Keywords: topology, layer, occlu, z_order
+  spatial_relation: only 3 functions (median=18). Keywords: spatial, relation, adjacen, neighbor
+  grid_decompose: only 3 functions (median=18). Keywords: decompos, split, quadrant, strip
+  boundary_edge: only 3 functions (median=18). Keywords: boundar, edge, border, contour
+  masking_boolean: only 4 functions (median=18). Keywords: mask, boolean, xor, intersection
+  counting_arithmetic: only 10 functions (median=18). Keywords: count, arith, sum, multiply
+Propose functions that fill these gaps. The DSL is over-indexed on common types.
+
+## MAP-Elites COVERAGE GAPS — prioritize filling these niches:
+  EMPTY [spatial_relation x small]: No function exists for spatial, relation, adjacen on small grids. Propose one!
+  EMPTY [spatial_relation x large]: No function exists for spatial, relation, adjacen on large grids. Propose one!
+  EMPTY [grid_decompose x large]: No function exists for decompos, split, quadrant on large grids. Propose one!
+  (9 empty + 0 weak out of 39 total cells)
+
+## Targeted Literature (for SOLVE_FAIL failures, from Semantic Scholar)
+- **Towards Efficient Neurally-Guided Program Induction for ARC-AGI** (2024): ARC-AGI is an open-world problem domain in which the ability to generalize out-of-distribution is a crucial quality. Under the program induction paradigm, we present a series of experiments that revea...
+- **ARC-TGI: Human-Validated Task Generators with Reasoning Chain Templates for ARC-AGI** (2026): The Abstraction and Reasoning Corpus (ARC-AGI) probes few-shot abstraction and rule induction on small visual grids, but progress is difficult to measure on static collections of hand-authored puzzles...
+- **ARC-AGI-2 Technical Report** (2026): The Abstraction and Reasoning Corpus (ARC) is designed to assess generalization beyond pattern matching, requiring models to infer symbolic rules from very few examples. In this work, we present a tra...
+Consider techniques from these papers when designing new helper functions.
+
+## Existing (last 50 signatures, do NOT duplicate)
+  ... (212 more, ranked by task relevance) ...
+  def get_objects(grid, background=None, diag=False)
+  def mirror_h(grid)
+  def detect_background_color(grid)
+  def palette(grid)
+  def color_counts(grid)
+  def copy_grid(grid)
+  def shape(grid)
+  def rotate_cw(grid)
+  def get_objects_by_color(grid, color, diag=False)
+  def get_shapes(grid, background=None, diag=False)
+  def get_bbox(obj_coords)
+  def object_colors(grid, obj)
+  def object_color_counts(grid, obj)
+  def objects_by_color(grid, background=None, diag=False)
+  def object_height(obj)
+  def object_width(obj)
+  def object_dimensions(obj)
+  def object_center(obj)
+  def normalize_object(obj)
+  def remove_small_objects(grid, max_size=1, background=None, diag=False)
+  def remove_border_objects_by_size(grid, max_size=None, background=None, diag=False)
+  def crop_object(grid, obj, background=0)
+  def object_to_grid(obj, color=1, background=0)
+  def erase_object(grid, obj, background=None)
+  def move_object(grid, obj, dr=0, dc=0, background=None, color=None)
+  def transform_object(grid, obj, rotation=None, mirror=None, dr=0, dc=0, background=None, in_place=False)
+  def transform_objects_in_place(grid, objects=None, rotation=None, mirror=None, dr=0, dc=0, background=None, diag=False)
+  def largest_object_grid(grid, background=None, diag=False, crop_result=True)
+  def largest_object_in_place(grid, background=None, diag=False)
+  def sort_objects(objects, key="size", reverse=False)
+  def is_square_object(obj)
+  def is_line_object(obj)
+  def is_rectangle_object(obj)
+  def border_objects(grid, objects)
+  def interior_objects(grid, objects)
+  def largest_object(objects)
+  def smallest_object(objects)
+  def topmost_object(objects)
+  def bottommost_object(objects)
+  def leftmost_object(objects)
+  def rightmost_object(objects)
+  def count_objects(grid, background=None, diag=False)
+  def nearest_object(target, objects)
+  def farthest_object(target, objects)
+  def extract_top_cluster(grid: list[list[int]])
+  def color_and_shift_objects(grid: list[list[int]])
+  def swap_side_patterns(grid: list[list[int]])
+  def shift_and_mirror_by_color_hint(g: list[list[int]])
+  def complete_diagonal_reflection_pattern_full(g: list[list[int]])
+  def remove_outliers_by_consensus(grid: list[list[int]])
+
+## Previous Experiments ([-] = no improvement, [+] = improved)
+  [-] Round 1: Add transform_pattern_to_quarter_scale (transform_pattern_to_quarter_scale) metric 1.000->1.000
+  [-] Round 1: Add apply_hole_fill_pattern (apply_hole_fill_pattern) metric 1.000->1.000
+  [-] Round 2: Add transform_four_color_pattern, transform_pattern_b6afb2da, transform_pattern_ (transform_four_color_pattern, transform_pattern_b6afb2da, transform_pattern_34b99a2b) metric 1.000->1.000
+  [-] Round 3: Add extract_color_zones_by_horizontal_segments, generate_inverted_pattern_zones, (extract_color_zones_by_horizontal_segments, generate_inverted_pattern_zones, transform_quadrant_boundary_patterns) metric 1.000->1.000
+  [-] Round 15 [connected_components]: Add complete_vertical_walls_and_shift_objects (complete_vertical_walls_and_shift_objects) metric 1.000->1.000
+  [-] Round 16 [other]: Add collapse_and_merge_columns (collapse_and_merge_columns) metric 1.000->1.000
+  [-] Round 17 [symmetry]: Add expand_and_mirror_content_and_compress (expand_and_mirror_content_and_compress) metric 1.000->1.000
+  [-] Round 18 [pattern_tile]: Add expand_pattern_in_quadrants_and_merge (expand_pattern_in_quadrants_and_merge) metric 1.000->1.000
+  [-] Round 19 [pattern_tile]: Add transform_to_diamond_pattern, transform_to_diamond_pattern, transform_to_dia (transform_to_diamond_pattern, transform_to_diamond_pattern, transform_to_diamond_pattern) metric 1.000->1.000
+  [-] Round 20 [pattern_tile]: Add resize_and_transform_small_pattern, transform_small_pattern_and_apply_rules, (resize_and_transform_small_pattern, transform_small_pattern_and_apply_rules, resolve_pattern_discrepancies) metric 1.000->1.000
+
+## BLACKLIST — DO NOT propose functions similar to these (already tried, didn't help):
+analyze_and_transform, apply_hole_fill, apply_symmetry_correction, calculate_quadrant_dominant, collapse_and_merge, complete_vertical_walls, expand_and_mirror, expand_border_with, expand_pattern_in, extract_color_zones, fill_pattern_with, generate_diagonal_patterns, generate_inverted_pattern, resize_and_transform, resolve_pattern_discrepancies, transform_four_color, transform_pattern_34b99a2b, transform_pattern_b6afb2da, transform_pattern_by, transform_pattern_to, transform_quadrant_boundary, transform_small_pattern, transform_to_diamond
+
+## Failure Distribution: SOLVE_FAIL: 1
+
+## Failing Tasks
+### Task: f823c43c.json [SOLVE_FAIL]
+Scores: tier1=1.00 tier2=1.00 tier3(solve)=0.00
+Train 1 Input (12x12):
+776776767776
+787767786787
+777677776777
+777777777777
+787786787787
+777777777777
+677777776777
+767787666787
+767777667776
+777777777777
+787787687786
+777777677677
+Train 1 Output (12x12):
+777777777777
+787787787787
+777777777777
+777777777777
+787787787787
+777777777777
+777777777777
+787787787787
+777777777777
+777777777777
+787787787787
+777777777777
+Train 2 Input (15x19):
+8888888886866688888
+8484848464848464848
+6886868888886688688
+8484866484648486848
+8888888868888888886
+8484846484848484848
+8868888888886688686
+8484848484846484648
+8888686888888888888
+8684846466848484848
+8886866868868888888
+8484666484648484848
+8888868868868688888
+8486868484846484648
+8668888888888888888
+Train 2 Output (15x19):
+8888888888888888888
+8484848484848484848
+8888888888888888888
+8484848484848484848
+8888888888888888888
+8484848484848484848
+8888888888888888888
+8484848484848484848
+8888888888888888888
+8484848484848484848
+8888888888888888888
+8484848484848484848
+8888888888888888888
+8484848484848484848
+8888888888888888888
+
+
+## What went WRONG (execution traces from failed solve attempts)
+- f823c43c: CRASH
+    Error: expected an indented block after function definition on line 9651 (<string>, line 9676)
+    Traceback:
+      Traceback (most recent call last):
+        File "/Users/aurascoper/Developer/arc_agi/workspace/target_mlx_arc.py", line 345, in try_code_on_task
+          exec(dsl_code + "\n" + code, ns)
+          ~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+        File "<string>", line 9676
+          # Row 9 In: 0302023233020202020 -> Out: 0202020
+                                                         ^
+      IndentationError: expected an indented block after function definition on line 9651
+
+IMPORTANT: Study the input/output pairs carefully. Each task has a UNIQUE transformation rule.
+Do NOT propose generic mirror/pattern/tile functions. Analyze what SPECIFIC operation maps each input to its output.
+
+OUTPUT EXACTLY 3-5 new Python functions in ```python blocks. Each function:
+- Takes `grid: list[list[int]]` as first arg, returns `list[list[int]]`
+- Is self-contained (only stdlib + numpy)
+- Does ONE transformation relevant to the failing tasks above
+- Has a one-line docstring
+- Must be DIFFERENT from blacklisted approaches
+
+```python
+def function_name(grid: list[list[int]]) -> list[list[int]]:
+    """One-line description."""
+    import numpy as np
+    # implementation
+    return result
+```
+
+START WITH ```python IMMEDIATELY. No preamble.
