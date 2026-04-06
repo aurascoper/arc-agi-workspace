@@ -226,6 +226,10 @@ def run_training(data_dir: Path, adapter_output: Path):
     """Run LoRA training via mlx_lm.lora CLI (subprocess for clean memory)."""
     adapter_output.mkdir(parents=True, exist_ok=True)
 
+    # Write LoRA config for rank (--lora-rank removed in newer mlx_lm)
+    lora_config = adapter_output / "lora_config.yaml"
+    lora_config.write_text(f"lora_layers: {LORA_LAYERS}\nlora_parameters:\n  rank: {LORA_RANK}\n  dropout: 0.0\n  scale: 20.0\n")
+
     cmd = [
         MLX_PYTHON, "-m", "mlx_lm.lora",
         "--model", MODEL_PATH,
@@ -234,13 +238,13 @@ def run_training(data_dir: Path, adapter_output: Path):
         "--adapter-path", str(adapter_output),
         "--batch-size", str(BATCH_SIZE),
         "--num-layers", str(LORA_LAYERS),
-        "--lora-rank", str(LORA_RANK),
         "--iters", str(ITERS),
         "--learning-rate", str(LEARNING_RATE),
         "--max-seq-length", str(MAX_SEQ_LENGTH),
         "--val-batches", "10",
         "--steps-per-report", "20",
         "--steps-per-eval", "50",
+        "-c", str(lora_config),
     ]
 
     print(f"[lora] Training: {' '.join(cmd)}")
@@ -513,6 +517,10 @@ def run_training_pb2(data_dir: Path, adapter_output: Path,
 
     adapter_output.mkdir(parents=True, exist_ok=True)
 
+    # Write LoRA config for rank
+    lora_config = adapter_output / "lora_config.yaml"
+    lora_config.write_text(f"lora_layers: {LORA_LAYERS}\nlora_parameters:\n  rank: {LORA_RANK}\n  dropout: 0.0\n  scale: 20.0\n")
+
     cmd = [
         MLX_PYTHON, "-m", "mlx_lm.lora",
         "--model", MODEL_PATH,
@@ -521,13 +529,13 @@ def run_training_pb2(data_dir: Path, adapter_output: Path,
         "--adapter-path", str(adapter_output),
         "--batch-size", str(BATCH_SIZE),
         "--num-layers", str(LORA_LAYERS),
-        "--lora-rank", str(LORA_RANK),
         "--iters", str(iters),
         "--learning-rate", str(lr),
         "--max-seq-length", str(MAX_SEQ_LENGTH),
         "--val-batches", "10",
         "--steps-per-report", "20",
         "--steps-per-eval", "50",
+        "-c", str(lora_config),
     ]
 
     print(f"[pb2] Training: lr={lr:.2e}, iters={iters}, data_mix={pb2_config['data_mix']:.2f}")
