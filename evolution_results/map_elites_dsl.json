@@ -34,11 +34,13 @@
     {
       "hypothesis_type": "flood_fill",
       "grid_size_bin": "medium",
-      "func_name": "make_grid",
-      "code": "def make_grid(rows, cols, fill=0):\n    return [[fill]*cols for _ in range(rows)]\n",
-      "score": 0.5,
-      "timestamp": 1775430507.8116639,
-      "metadata": {}
+      "func_name": "decompose_and_isolate_patterns",
+      "code": "def decompose_and_isolate_patterns(grid: list[list[int]]) -> list[list[int]]:\n    \"\"\"Extracts disconnected sub-patterns from large grids by identifying non-background regions and outputting them as small grids in order of appearance.\"\"\"\n    import numpy as np\n    \n    # Identify background color (most frequent color excluding 0, or 0 if no other color)\n    grid_arr = np.array(grid)\n    if grid_arr.size == 0:\n        return []\n    \n    # Flatten and count colors\n    counts = {}\n    for c in grid_arr:\n        counts[c] = counts.get(c, 0) + 1\n    \n    # Determine background (0 or most frequent)\n    bg = 0 if 0 in counts else max(counts, key=counts.get)\n    \n    # Find all non-background pixels\n    coords = np.argwhere(grid_arr != bg)\n    \n    if len(coords) == 0:\n        return [[bg]]\n    \n    # Group coordinates by color to find distinct objects\n    # Sort by position to maintain order of appearance (top-left)\n    obj_map = {}\n    for r, c in coords:\n        color = grid_arr[r, c]\n        if color != bg:\n            if color not in obj_map:\n                obj_map[color] = []\n            obj_map[color].append((r, c))\n    \n    # Determine grid dimensions for output\n    if len(coords) > 0:\n        min_r = min(r for r, c in coords)\n        max_r = max(r for r, c in coords)\n        min_c = min(c for r, c in coords)\n        max_c = max(c for r, c in coords)\n        \n        rows = max_r - min_r + 1\n        cols = max_c - min_c + 1\n    else:\n        rows = 1\n        cols = 1\n        \n    output = []\n    \n    # Create empty grid with background\n    out_grid = np.full((rows, cols), bg, dtype=int)\n    \n    # Fill in the colors from the original grid relative to the bounding box\n    for r, c in coords:\n        if grid_arr[r, c] != bg:\n            out_grid[r - min_r, c - min_c] = grid_arr[r, c]\n            \n    output.append(out_grid.tolist())\n    return output\n",
+      "score": 0.7412962962962962,
+      "timestamp": 1775596665.172284,
+      "metadata": {
+        "round": 32
+      }
     },
     {
       "hypothesis_type": "spatial_relation",
@@ -103,11 +105,13 @@
     {
       "hypothesis_type": "color_logic",
       "grid_size_bin": "small",
-      "func_name": "remove_small_shapes",
-      "code": "def remove_small_shapes(grid, max_size=1, background=None, diag=True):\n    if background is None:\n        background = detect_background_color(grid)\n    out = copy_grid(grid)\n    for shape in get_shapes(grid, background=background, diag=diag):\n        if len(shape) <= max_size:\n            for r, c in shape:\n                out[r][c] = background\n    return out\n",
-      "score": 0.5,
-      "timestamp": 1775430507.8183942,
-      "metadata": {}
+      "func_name": "normalize_and_crop_input_patterns",
+      "code": "def normalize_and_crop_input_patterns(grid: list[list[int]]) -> list[list[int]]:\n    \"\"\"Extracts minimal bounding boxes containing non-background colors and returns them as a list of grids in topological order.\"\"\"\n    import numpy as np\n    \n    if not grid:\n        return [[0]]\n        \n    grid_arr = np.array(grid)\n    shape = grid_arr.shape\n    \n    # Identify background color: 0 if present, else most frequent\n    counts = {}\n    for x in grid_arr:\n        counts[x] = counts.get(x, 0) + 1\n        \n    bg = 0 if 0 in counts else max(counts, key=counts.get)\n    \n    # Collect all non-background coordinates\n    non_bg_coords = np.argwhere(grid_arr != bg)\n    \n    if len(non_bg_coords) == 0:\n        # If grid is empty or just background, return 1x1 grid with background\n        return [[bg]]\n    \n    # Calculate bounding box of all non-background pixels\n    min_r, max_r = non_bg_coords[:, 0].min(), non_bg_coords[:, 0].max()\n    min_c, max_c = non_bg_coords[:, 1].min(), non_bg_coords[:, 1].max()\n    \n    # Crop the grid to the bounding box\n    cropped = grid_arr[min_r:max_r+1, min_c:max_c+1].tolist()\n    \n    # Check if the cropped grid is valid (contains non-background)\n    if len(cropped) > 0 and cropped[0] != [[bg]]:\n        return [[row for row in cropped]]\n    else:\n        return [[bg]]\n",
+      "score": 0.7412962962962962,
+      "timestamp": 1775596665.1780648,
+      "metadata": {
+        "round": 32
+      }
     },
     {
       "hypothesis_type": "masking_boolean",
@@ -284,14 +288,14 @@
     {
       "hypothesis_type": "symmetry",
       "grid_size_bin": "large",
-      "func_name": "flip_vertical_and_fill_7_with_9",
-      "code": "def flip_vertical_and_fill_7_with_9(grid: list[list[int]]) -> list[list[int]]:\n    \"\"\"Flip grid vertically, then replace background 7 with 9 in the upper half.\"\"\"\n    import numpy as np\n    g = np.array(grid)\n    # Perform vertical flip\n    flipped = np.flipud(g)\n    \n    # Identify background color (most frequent)\n    counts = np.bincount(g.ravel())\n    background = np.argmax(counts)\n    \n    # Determine if we are in \"Input 1\" or \"Input 2\" style based on dominant color\n    # Input 1 style: Background 7, Foreground 8/9. Output: Swap 7->9, keep 8.\n    # Input 2 style: Background 7, Foreground 8/9. Output: Swap 7->8, keep 9.\n    # Actually, looking at Task 48634b99:\n    # Input has 7s and 8s. Output has 7s and 9s.\n    # Input 1 Input has 7s and 8s. Output 1 has 7s, 8s, 9s.\n    \n    # Let's analyze the specific pattern in 48634b99.\n    # Input 1: Left side is 7s, Right side is 8s. \n    #         Diagonal 8s and 9s appear in specific columns.\n    # Input 2: Left side is 7s, Right side is 8s.\n    # Output 1: Left side 7s, Right side 8s. A 9 appears where Input 1 didn't have 9, or 7 changed to 9?\n    # Input 1 has 9 at (3,9), (4,9). Output 1 has 9 at (1,0), (2,0), (3,0), (4,0).\n    # Wait, looking closely at 48634b99 Input 1 vs Output 1:\n    # Input: 8s are at cols 6, 9 (0-indexed). 9s are at cols 9.\n    # Output: 8s are at cols 6, 9. 9s are at cols 0, 1, 2, 3.\n    # The 9s in Output 1 are exactly where the 7s were in Input 1? \n    # Input 1 has 7s at cols 0-5. Output 1 has 9s at cols 0-3.\n    # So 48634b99 Input 1: 7s in left half, 8s in right half. 9s appear in a specific vertical strip on right side.\n    # 48634b99 Output 1: 7s in left half, 8s in right half. 9s appear in a vertical strip on LEFT side (cols 0-3).\n    # It seems the 9s \"jumped\" from right side to left side.\n    \n    # Let's look at Input 2 vs Output 2.\n    # Input 2: Left side is 7s, Right side is 8s.\n    # Output 2: Left side is 7s, Right side is 8s.\n    # Input 2 has 9s? No. Output 2 has 9s.\n    # Inp",
-      "score": 0.7,
-      "timestamp": 1775497285.888747,
+      "func_name": "extract_symmetric_subgrids",
+      "code": "def extract_symmetric_subgrids(grid: list[list[int]]) -> list[list[int]]:\n    \"\"\"Detects and extracts symmetric regions from the grid by checking for color symmetry and returning the symmetric sub-patterns.\"\"\"\n    import numpy as np\n    \n    if not grid:\n        return [[0]]\n        \n    grid_arr = np.array(grid)\n    h, w = grid_arr.shape\n    \n    # Identify background\n    counts = {c: np.sum(grid_arr == c) for c in range(256)}\n    bg = 0 if 0 in counts else max(counts, key=counts.get)\n    \n    # Find bounding box of all non-background pixels\n    non_bg_mask = grid_arr != bg\n    if not np.any(non_bg_mask):\n        return [[bg]]\n        \n    coords = np.argwhere(non_bg_mask)\n    min_r, max_r = coords[:, 0].min(), coords[:, 0].max()\n    min_c, max_c = coords[:, 1].min(), coords[:, 1].max()\n    \n    # Extract the region of interest\n    subgrid = grid_arr[min_r:max_r+1, min_c:max_c+1]\n    \n    # Detect symmetry axis in the subgrid\n    # Check horizontal symmetry\n    is_h_sym = True\n    for r in range((h_sub := (subgrid.shape[0] + 1) // 2)):\n        row_top = r\n        row_bot = h_sub - r - 1\n        if subgrid[row_top] != subgrid[row_bot]:\n            is_h_sym = False\n            break\n            \n    # Check vertical symmetry\n    is_v_sym = True\n    for c in range((w_sub := subgrid.shape[1] + 1) // 2):\n        col_left = c\n        col_right = w_sub - c - 1\n        if subgrid[:, col_left] != subgrid[:, col_right]:\n            is_v_sym = False\n            break\n            \n    # Check diagonal symmetry (if square-ish)\n    is_d_sym = True\n    if min_r == min_c and max_r == max_c:\n        for i in range(min(subgrid.shape[0], subgrid.shape[1])):\n            if subgrid[i, i] != subgrid[i, i]: # Placeholder for diagonal check, logic needs refinement for non-square\n                is_d_sym = False\n                break\n        # Simplified diagonal check for square subgrids\n        if min_r == min_c and max_r == max_c:\n             is_d_sym = np.allclose(subgrid, np.fliplr(s",
+      "score": 0.7412962962962962,
+      "timestamp": 1775596665.18349,
       "metadata": {
-        "round": 26
+        "round": 32
       }
     }
   ],
-  "updated": 1775522839.970804
+  "updated": 1775596665.1835048
 }

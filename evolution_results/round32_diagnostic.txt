@@ -1,0 +1,369 @@
+/no_think
+You are an ARC-AGI DSL engineer. Given failing tasks, output ONLY Python functions. No analysis, no explanation — just code.
+
+Current DSL: 270 functions. Do NOT duplicate existing functions.
+
+## Known Techniques
+Key ARC-AGI solution techniques from the literature:
+
+1. CONNECTED COMPONENTS: Identify connected regions of same-colored cells (4- or
+   8-connected). Used for object isolation, counting, and spatial reasoning.
+
+2. FLOOD FILL: Fill enclosed regions bounded by a specific color. Common in tasks
+   involving containment, boundary detection, and region painting.
+
+3. SYMMETRY DETECTION: Detect reflective (horizontal, vertical, diagonal) and
+   rotational symmetry in grids. Many tasks involve completing symmetric patterns.
+
+4. TOPOLOGICAL SORTING / LAYERING: Tasks involving occlusion or z-ordering require
+   understanding which objects overlap and their relative positions.
+
+5. PATTERN MATCHING / TEMPLATE DETECTION: Find recurring sub-grids (stamps, tiles)
+   within larger grids. Used for tiling, repetition detection, and rule extraction.
+
+6. COLOR HISTOGRAM / FREQUENCY ANALYSIS: Count color occurrences to detect dominant
+   colors, rare colors (markers), or color-based rules (majority vote, XOR).
+
+7. OBJECT RELATION GRAPHS: Build graphs of spatial relationships between objects
+   (above, below, left, right, inside, touching) for compositional reasoning.
+
+8. GRID DECOMPOSITION: Split grids into quadrants, strips, or tiles based on
+   separators (lines of uniform color). Many tasks operate on sub-grids independently.
+
+9. SCALING / RESAMPLING: Enlarge or shrink patterns by integer factors. Tasks
+   frequently involve upscaling a small pattern to fill a larger grid.
+
+10. GRAVITY / MOVEMENT SIMULATION: Move objects in a direction until they hit
+    boundaries or other objects. Used in "drop", "slide", and "gravity" tasks.
+
+## Hypothesis Type Track Record (win rate by category)
+  connected_components: 100% (1/1) [+]
+  symmetry: 100% (4/4) [++++]
+  grid_decompose: 100% (1/1) [+]
+  other: 67% (2/3) [++-]
+  pattern_tile: 40% (2/5) [++---]
+  flood_fill: 0% (0/3) [---]
+PREFER types with higher win rates. AVOID types that consistently lose.
+
+## COVERAGE GAPS — underrepresented function types (PRIORITIZE these)
+  topology: only 1 functions (median=20). Keywords: topology, layer, occlu, z_order
+  spatial_relation: only 3 functions (median=20). Keywords: spatial, relation, adjacen, neighbor
+  masking_boolean: only 4 functions (median=20). Keywords: mask, boolean, xor, intersection
+  boundary_edge: only 5 functions (median=20). Keywords: boundar, edge, border, contour
+  grid_decompose: only 6 functions (median=20). Keywords: decompos, split, quadrant, strip
+  counting_arithmetic: only 10 functions (median=20). Keywords: count, arith, sum, multiply
+Propose functions that fill these gaps. The DSL is over-indexed on common types.
+
+## MAP-Elites COVERAGE GAPS — prioritize filling these niches:
+  EMPTY [spatial_relation x small]: No function exists for spatial, relation, adjacen on small grids. Propose one!
+  EMPTY [spatial_relation x large]: No function exists for spatial, relation, adjacen on large grids. Propose one!
+  EMPTY [grid_decompose x large]: No function exists for decompos, split, quadrant on large grids. Propose one!
+  (9 empty + 0 weak out of 39 total cells)
+
+## Existing (last 50 signatures, do NOT duplicate)
+  ... (232 more, ranked by task relevance) ...
+  def get_objects(grid, background=None, diag=False)
+  def detect_background_color(grid)
+  def palette(grid)
+  def color_counts(grid)
+  def mirror_h(grid)
+  def rotate_cw(grid)
+  def copy_grid(grid)
+  def shape(grid)
+  def get_objects_by_color(grid, color, diag=False)
+  def get_shapes(grid, background=None, diag=False)
+  def get_bbox(obj_coords)
+  def object_colors(grid, obj)
+  def object_color_counts(grid, obj)
+  def objects_by_color(grid, background=None, diag=False)
+  def object_height(obj)
+  def object_width(obj)
+  def object_dimensions(obj)
+  def object_center(obj)
+  def normalize_object(obj)
+  def remove_small_objects(grid, max_size=1, background=None, diag=False)
+  def remove_border_objects_by_size(grid, max_size=None, background=None, diag=False)
+  def crop_object(grid, obj, background=0)
+  def object_to_grid(obj, color=1, background=0)
+  def erase_object(grid, obj, background=None)
+  def move_object(grid, obj, dr=0, dc=0, background=None, color=None)
+  def transform_object(grid, obj, rotation=None, mirror=None, dr=0, dc=0, background=None, in_place=False)
+  def transform_objects_in_place(grid, objects=None, rotation=None, mirror=None, dr=0, dc=0, background=None, diag=False)
+  def largest_object_grid(grid, background=None, diag=False, crop_result=True)
+  def largest_object_in_place(grid, background=None, diag=False)
+  def sort_objects(objects, key="size", reverse=False)
+  def is_square_object(obj)
+  def is_line_object(obj)
+  def is_rectangle_object(obj)
+  def border_objects(grid, objects)
+  def interior_objects(grid, objects)
+  def largest_object(objects)
+  def smallest_object(objects)
+  def topmost_object(objects)
+  def bottommost_object(objects)
+  def leftmost_object(objects)
+  def rightmost_object(objects)
+  def count_objects(grid, background=None, diag=False)
+  def nearest_object(target, objects)
+  def farthest_object(target, objects)
+  def extract_top_cluster(grid: list[list[int]])
+  def color_and_shift_objects(grid: list[list[int]])
+  def swap_side_patterns(grid: list[list[int]])
+  def shift_and_mirror_by_color_hint(g: list[list[int]])
+  def complete_diagonal_reflection_pattern_full(g: list[list[int]])
+  def extract_color_zones_by_horizontal_segments(grid: list[list[int]])
+
+## Previous Experiments ([-] = no improvement, [+] = improved)
+  [-] Round 22 [flood_fill]: Add grow_and_pad_pattern, adaptive_gradient_fill, expand_grid_dimensions_and_rem (grow_and_pad_pattern, adaptive_gradient_fill, expand_grid_dimensions_and_remap) metric 1.000->1.000
+  [-] Round 23 [other]: No valid functions proposed () metric 1.000->1.000
+  [-] Round 24 [flood_fill]: Add extract_and_fill_left_diagonal_elements (extract_and_fill_left_diagonal_elements) metric 1.000->1.000
+  [-] Round 25 [symmetry]: Add extract_pattern_at_position, reflect_and_mirror_column_content, apply_shift_ (extract_pattern_at_position, reflect_and_mirror_column_content, apply_shift_and_compress_direction) metric 1.000->1.000
+  [-] Round 26 [symmetry]: Add flip_vertical_and_fill_7_with_9 (flip_vertical_and_fill_7_with_9) metric 1.000->1.000
+  [-] Round 27 [other]: Add fix_3x3_to_9x9_expansion (fix_3x3_to_9x9_expansion) metric 1.000->1.000
+  [-] Round 28 [symmetry]: Add extract_and_transform_quadrant_content, extract_pattern_from_symmetric_borde (extract_and_transform_quadrant_content, extract_pattern_from_symmetric_borders, transform_and_resize_grid_to_target) metric 1.000->1.000
+  [-] Round 29 [pattern_tile]: Add extract_and_scale_core_pattern (extract_and_scale_core_pattern) metric 1.000->1.000
+  [-] Round 30 [grid_decompose]: Add extract_corner_quadrants (extract_corner_quadrants) metric 1.000->1.000
+  [-] Round 31 [flood_fill]: Add fill_and_shift_diagonal_connections, fill_horizontal_vertical_clusters (fill_and_shift_diagonal_connections, fill_horizontal_vertical_clusters) metric 1.000->1.000
+
+## BLACKLIST — DO NOT propose functions similar to these (already tried, didn't help):
+adaptive_gradient_fill, analyze_and_dilate, analyze_expanding_radiation, apply_shift_and, bridge_and_converge, expand_grid_dimensions, expand_pattern_horizontal, extract_and_fill, extract_and_scale, extract_and_transform, extract_corner_quadrants, extract_pattern_at, extract_pattern_from, fill_and_shift, fill_horizontal_vertical, fix_3x3_to, flip_vertical_and, grow_and_pad, isolate_and_promote, mirror_expansion_axis, reflect_and_mirror, transform_and_resize
+
+## Failure Distribution: SOLVE_FAIL: 2
+
+## Failing Tasks
+### Task: 264363fd.json [SOLVE_FAIL]
+Scores: tier1=1.00 tier2=1.00 tier3(solve)=0.00
+Train 1 Input (30x30):
+111111111111111111111111111111
+111111111111111111111111111111
+111111111111111111111111111111
+111111111111111111111111311111
+111111111111111111111111311111
+122222222222222222111133433111
+122222222222222222111111311111
+122222222222224222111111311111
+122222222222222222111111111111
+122222222222222222111111111111
+122224222222222222111111111111
+122222222222222222111111111111
+122222222222222222111111111111
+122222222222222222111111111111
+111111111111111111111111111111
+111111222222222222222222111111
+111111222222222222222222111111
+111111222222222222222222111111
+111111222222222222222222111111
+111111222222222222222222111111
+111111222222222222222222111111
+111111222222222222222222111111
+111111222222222222222222111111
+111111222222222222222222111111
+111111222222222242222222111111
+111111222222222222222222111111
+111111222222222222222222111111
+111111222222222222222222111111
+111111111111111111111111111111
+111111111111111111111111111111
+Train 1 Output (30x30):
+111111111111111111111111111111
+111111111111111111111111111111
+111111111111111111111111111111
+111111111111111111111111111111
+111111111111111111111111111111
+122223222222223222111111111111
+122223222222223222111111111111
+133333333333334333111111111111
+122223222222223222111111111111
+122223222222223222111111111111
+133334333333333333111111111111
+122223222222223222111111111111
+122223222222223222111111111111
+122223222222223222111111111111
+111111111111111111111111111111
+111111222222222232222222111111
+111111222222222232222222111111
+111111222222222232222222111111
+111111222222222232222222111111
+111111222222222232222222111111
+111111222222222232222222111111
+111111222222222232222222111111
+111111222222222232222222111111
+111111222222222232222222111111
+111111333333333343333333111111
+111111222222222232222222111111
+111111222222222232222222111111
+111111222222222232222222111111
+111111111111111111111111111111
+111111111111111111111111111111
+Train 2 Input (30x30):
+888888888888888888888888888888
+881111111111111111188888888888
+881111111111111111188888828888
+881111111111111111188888323888
+881111111111111111188882232288
+881113111111111111188888323888
+881111111111111111188888828888
+881111111111111111188888888888
+881111111111111111188888888888
+881111111111111111188888888888
+881111111111111111188888888888
+881111111111111111188888888888
+881111111111111111188888888888
+881111111111111111188888888888
+881111111111111111188888888888
+881111111111111111188888888888
+888888888888888888888888888888
+888888888888888888888888888888
+888888881111111111111111118888
+888888881111111111111111118888
+888888881111111111111111118888
+888888881111111111111111118888
+888888881111111111111111118888
+888888881111111111111111118888
+888888881111111111111111118888
+888888881111111113111111118888
+888888881111111111111111118888
+888888888888888888888888888888
+888888888888888888888888888888
+888888888888888888888888888888
+Train 2 Output (30x30):
+888888888888888888888888888888
+881112111111111111188888888888
+881112111111111111188888888888
+881112111111111111188888888888
+881132311111111111188888888888
+882223222222222222288888888888
+881132311111111111188888888888
+881112111111111111188888888888
+881112111111111111188888888888
+881112111111111111188888888888
+881112111111111111188888888888
+881112111111111111188888888888
+881112111111111111188888888888
+881112111111111111188888888888
+881112111111111111188888888888
+881112111111111111188888888888
+888888888888888888888888888888
+888888888888888888888888888888
+888888881111111112111111118888
+888888881111111112111111118888
+888888881111111112111111118888
+888888881111111112111111118888
+888888881111111112111111118888
+888888881111111112111111118888
+888888881111111132311111118888
+888888882222222223222222228888
+888888881111111132311111118888
+888888888888888888888888888888
+888888888888888888888888888888
+888888888888888888888888888888
+
+### Task: d4c90558.json [SOLVE_FAIL]
+Scores: tier1=1.00 tier2=1.00 tier3(solve)=0.00
+Train 1 Input (20x20):
+00000000000000000000
+00000666666666666000
+00000600000000066000
+00000600000500066000
+00000600505000066000
+00000600000000066000
+00000600000005066000
+00000666666666666000
+00000666666666666000
+00000000000000000000
+00000000000000000000
+00000000000000000000
+02222222220000000000
+02200000020000000000
+02200500020000000000
+02200000020000000000
+02250500020000000000
+02200000020000000000
+02200000020000000000
+02222222220000000000
+Train 1 Output (2x4):
+2220
+6666
+Train 2 Input (25x25):
+0888888888880000000000000
+0800000008880000000000000
+0800000008880000000000000
+0800005008880000111111000
+0800500008880000105001000
+0805000008880000100001000
+0800000508880000100501000
+0800000008880000111111000
+0888888888880000000000000
+0888888888880000000000000
+0000000000000000000000000
+0000777777777777777777700
+0000770000000000000007700
+0000770000000000000007700
+0000770050000050000507700
+0000770000000000000007700
+0000770000500000500007700
+0000770000000000000007700
+0000770050000000000007700
+0000770000005000500007700
+0000770000000000000007700
+0000770000000000000007700
+0000777777777777777777700
+0000000000000000000000000
+0000000000000000000000000
+Train 2 Output (3x8):
+11000000
+88880000
+77777777
+
+
+## What went WRONG (execution traces from failed solve attempts)
+- 264363fd: WRONG_ANSWER
+    Pixel accuracy: 0.00
+    Expected shape: (30, 30), Got: None
+- 264363fd: WRONG_ANSWER
+    Pixel accuracy: 0.00
+    Expected shape: (30, 30), Got: None
+- d4c90558: CRASH
+    Error: 6
+    Traceback:
+      ...
+          pred = run_with_timeout(transform_fn, (pair["input"],), timeout_sec=5)
+        File "/Users/aurascoper/Developer/arc_agi/workspace/target_mlx_arc.py", line 274, in run_with_timeout
+          raise error[0]
+        File "/Users/aurascoper/Developer/arc_agi/workspace/target_mlx_arc.py", line 264, in target
+          result[0] = fn(*args)
+                      ~~^^^^^^^
+        File "<string>", line 11735, in transform
+      KeyError: 6
+- d4c90558: CRASH
+    Error: 6
+    Traceback:
+      ...
+          pred = run_with_timeout(transform_fn, (pair["input"],), timeout_sec=5)
+        File "/Users/aurascoper/Developer/arc_agi/workspace/target_mlx_arc.py", line 274, in run_with_timeout
+          raise error[0]
+        File "/Users/aurascoper/Developer/arc_agi/workspace/target_mlx_arc.py", line 264, in target
+          result[0] = fn(*args)
+                      ~~^^^^^^^
+        File "<string>", line 11735, in transform
+      KeyError: 6
+
+IMPORTANT: Study the input/output pairs carefully. Each task has a UNIQUE transformation rule.
+Do NOT propose generic mirror/pattern/tile functions. Analyze what SPECIFIC operation maps each input to its output.
+
+OUTPUT EXACTLY 3-5 new Python functions in ```python blocks. Each function:
+- Takes `grid: list[list[int]]` as first arg, returns `list[list[int]]`
+- Is self-contained (only stdlib + numpy)
+- Does ONE transformation relevant to the failing tasks above
+- Has a one-line docstring
+- Must be DIFFERENT from blacklisted approaches
+
+```python
+def function_name(grid: list[list[int]]) -> list[list[int]]:
+    """One-line description."""
+    import numpy as np
+    # implementation
+    return result
+```
+
+START WITH ```python IMMEDIATELY. No preamble.
