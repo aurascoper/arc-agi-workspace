@@ -1,0 +1,46 @@
+{
+  "round": 30,
+  "hypothesis_type": "pattern_tile",
+  "func_names": [
+    "extract_corner_quadrants",
+    "find_path_bfs"
+  ],
+  "improved_tasks": [
+    {
+      "task": "abbfd121",
+      "delta": 0.1838,
+      "from": 0.38,
+      "to": 0.5638
+    },
+    {
+      "task": "ddf7fa4f",
+      "delta": 0.015,
+      "from": 0.82,
+      "to": 0.835
+    }
+  ],
+  "regressed_tasks": [],
+  "stuck_tasks": [
+    {
+      "task": "72a961c9",
+      "stuck_rounds": 17
+    },
+    {
+      "task": "995c5fa3",
+      "stuck_rounds": 17
+    },
+    {
+      "task": "230f2e48",
+      "stuck_rounds": 14
+    },
+    {
+      "task": "e734a0e8",
+      "stuck_rounds": 14
+    }
+  ],
+  "pattern": "pure_improvement",
+  "recommendations": [
+    "PRIORITY: Task 72a961c9 has been at 0.0 for 17 rounds. Focus new primitives on this task's transformation pattern."
+  ],
+  "holdout_mean": 0.6932
+}

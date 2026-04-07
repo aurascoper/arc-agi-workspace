@@ -1,0 +1,308 @@
+
+
+```python
+def fill_and_shift_diagonal_connections(grid: list[list[int]]) -> list[list[int]]:
+    """Identify diagonal color chains and fill the path between existing diagonal markers with the marker color."""
+    import numpy as np
+    H, W = len(grid), len(grid[0])
+    
+    # Collect coordinates for each color (excluding background 0)
+    color_positions = {}
+    for r in range(H):
+        for c in range(W):
+            val = grid[r][c]
+            if val != 0:
+                if val not in color_positions:
+                    color_positions[val] = []
+                color_positions[val].append((r, c))
+    
+    result = [row[:] for row in grid]
+    
+    # Process each color group
+    for color in color_positions:
+        positions = color_positions[color]
+        if len(positions) < 2:
+            continue
+            
+        positions.sort(key=lambda p: p[0] + p[1]) # Sort by anti-diagonal
+        
+        # Check if positions form a connected diagonal line (slope -1 or 1)
+        is_diagonal = False
+        for i in range(len(positions) - 1):
+            r1, c1 = positions[i]
+            r2, c2 = positions[i+1]
+            
+            if r1 + c1 == r2 + c2: # Same anti-diagonal
+                is_diagonal = True
+                break
+            if r1 - c1 == r2 - c2: # Same main diagonal
+                is_diagonal = True
+                break
+        
+        if not is_diagonal:
+            continue
+            
+        # Fill the segment between the first and last point of this diagonal chain
+        if r1 + c1 == r2 + c2: # Anti-diagonal (top-right to bottom-left)
+            start, end = positions[0], positions[-1]
+            r1, c1 = start
+            r2, c2 = end
+            
+            # Fill along anti-diagonal (r+c = const)
+            diag_sum = r1 + c1
+            r_curr = r1
+            c_curr = c1
+            while r_curr <= r2 and c_curr >= c1:
+                if r_curr + c_curr == diag_sum:
+                    result[r_curr][c_curr] = color
+                r_curr += 1
+                c_curr -= 1
+                
+        elif r1 - c1 == r2 - c2: # Main diagonal (top-left to bottom-right)
+            start, end = positions[0], positions[-1]
+            r1, c1 = start
+            r2, c2 = end
+            
+            # Fill along main diagonal (r-c = const)
+            diag_diff = r1 - c1
+            r_curr = r1
+            c_curr = c1
+            while r_curr <= r2 and c_curr <= c2:
+                if r_curr - c_curr == diag_diff:
+                    result[r_curr][c_curr] = color
+                r_curr += 1
+                c_curr += 1
+                
+    return result
+```
+
+```python
+def fill_horizontal_vertical_clusters(grid: list[list[int]]) -> list[list[int]]:
+    """Detect isolated color blocks and fill the rectangular area defined by the cluster's bounding box with the cluster's dominant color."""
+    import numpy as np
+    H, W = len(grid), len(grid[0])
+    
+    # Identify connected components (4-connected) for each color
+    visited = [[False]*W for _ in range(H)]
+    color_components = {}
+    
+    for r in range(H):
+        for c in range(W):
+            val = grid[r][c]
+            if val != 0 and not visited[r][c]:
+                component = []
+                q = [(r, c)]
+                visited[r][c] = True
+                while q:
+                    cr, cc = q.pop(0)
+                    val = grid[cr][cc]
+                    if val == 0 or val != grid[r][c]:
+                        continue
+                    component.append(val)
+                    for nr, nc in [(cr+1, cc), (cr-1, cc), (cr, cc+1), (cr, cc-1)]:
+                        if 0 <= nr < H and 0 <= nc < W and not visited[nr][nc] and grid[nr][nc] == val:
+                            visited[nr][nc] = True
+                            q.append((nr, nc))
+                
+                # Count color frequencies in this component
+                counts = [0, 0, 0, 0]
+                for v in component:
+                    counts[v] += 1
+                dominant_color = np.argmax(counts)
+                
+                if dominant_color not in color_components:
+                    color_components[dominant_color] = []
+                color_components[dominant_color].append(component)
+                
+                # Mark visited cells as part of component
+                for cr, cc in component:
+                    visited[cr][cc] = True
+    # Re-scan for components that were already visited or skipped due to logic, 
+    # but for this specific task, we need to fill based on specific geometric rules.
+    # Let's simplify: Find all non-zero pixels, group by row/col dominance.
+    
+    # Re-eval based on Task f83cb36: 
+    # Input: Vertical line of 8s, scattered 1s and 6s.
+    # Output: Vertical line of 1s and 6s "pushed" or "filled" relative to the 8s.
+    # Actually, looking closer: 
+    # Input 1: Vertical line of 8s. Some 1s and 6s are to the right.
+    # Output 1: The 8s become 1s or 8s. The 1s and 6s move closer to the line.
+    # It looks like a "gravity" or "attraction" towards the vertical line of 8s.
+    
+    # Let's try a "project to nearest vertical line" approach.
+    
+    result = [row[:] for row in grid]
+    
+    # Find all vertical lines (columns) that are monochromatic or have a dominant color
+    # Actually, in Input 1, col 6 is all 8s (except row 0,1,2 which are 0).
+    # Wait, Input 1:
+    # Row 0: 8 at 6
+    # Row 1: 8 at 6
+    # Row 2: 8 at 5
+    # Row 3: 8 at 8
+    # Row 4: 8 at 6
+    # Row 5: 8 at 6
+    # Row 6: 8 at 6
+    # Row 7: 8 at 3
+    # Row 8: 0
+    # Row 9: 0
+    # This is not a perfect vertical line.
+    
+    # Let's look at the Output 1:
+    # Row 0: 8 at 6 -> 8 at 6
+    # Row 1: 8 at 6 -> 8 at 5
+    # Row 2: 8 at 5 -> 8 at 4
+    # Row 3: 8 at 8 -> 8 at 8
+    # Row 4: 8 at 6 -> 8 at 6
+    # Row 5: 8 at 6 -> 8 at 6
+    # Row 6: 8 at 6 -> 8 at 6
+    # Row 7: 8 at 3 -> 8 at 3
+    # Row 8: 0
+    # Row 9: 0
+    # The 8s stay put or move slightly.
+    # The 1s and 6s change position significantly.
+    
+    # Input 1: 1s at (1,0), (2,3), (3,0), (5,9), (6,2), (7,0), (8,0), (9,0) - wait, coordinates are (row, col).
+    # Input 1:
+    # 1 at (0,1) -> Output 1: 1 at (1,1). Shifted down? No.
+    # 1 at (3,3) -> Output 1: 1 at (3,3)
+    # 6 at (1,9) -> Output 1: 6 at (1,5). Moved left.
+    # 6 at (5,9) -> Output 1: 6 at (5,0). Moved left.
+    # 6 at (8,3) -> Output 1: 6 at (6,2). Moved up and left.
+    
+    # It seems objects are being attracted to the vertical line of 8s.
+    # The 8s act as a "magnet" or "wall".
+    
+    # Let's implement an "Attract to vertical column of color X" function.
+    # But we don't know which color is the attractor beforehand.
+    # We need to detect the "spine" or "axis".
+    
+    # In Task 1: The 8s form a rough vertical line.
+    # In Task 2: The 5s form a rough diagonal line (top-left to bottom-right).
+    # Wait, Task 2 Input:
+    # Row 3: 5 at 2, 5 at 3, 5 at 4, 5 at 5 (Horizontal segment)
+    # Row 6: 5 at 5
+    # Row 7: 5 at 4
+    # Row 8: 5 at 3
+    # Row 9: 5 at 1, 5 at 4
+    # Row 10: 5 at 4
+    # Row 11: 5 at 1, 5 at 3
+    # Row 12: 5 at 4
+    # This forms a diagonal-ish shape.
+    
+    # Output 2:
+    # Row 7: 5 at 2, 5 at 5, 5 at 6, 5 at 7, 5 at 8, 5 at 9
+    # Row 8: 5 at 1, 5 at 6
+    # Row 9: 5 at 1, 5 at 4, 5 at 6
+    # Row 10: 5 at 1, 5 at 4
+    # Row 11: 5 at 1, 5 at 5, 5 at 6
+    # Row 12: 5 at 1, 5 at 6
+    # The 5s form a diagonal band.
+    
+    # Hypothesis: The task is to "complete the shape" or "align objects to the dominant diagonal/vertical".
+    # Specifically, objects move towards the existing line of that color.
+    
+    # Let's implement a "Project to nearest diagonal/vertical line" function.
+    # Identify the "spine" color and direction.
+    
+    # Count color frequencies in columns/rows.
+    col_counts = [0] * W
+    for r in range(H):
+        for c in range(W):
+            col_counts[grid[r][c]] += 1
+            
+    # Find most frequent color in columns?
+    # Or most frequent color in a specific row?
+    
+    # Let's try a simpler heuristic: 
+    # If there is a vertical line of color X, move all other colors towards it.
+    # If there is a diagonal line of color X, move all other colors towards it.
+    
+    # Detect vertical line:
+    vertical_spine_color = None
+    for c in range(W):
+        non_zero_count = 0
+        for r in range(H):
+            if grid[r][c] != 0:
+                non_zero_count += 1
+        if non_zero_count > H // 2: # Assume > 50% of rows have this color in this column
+             # Check if it's consistent (all same color?)
+             pass
+    
+    # Detect diagonal line:
+    diag_spine_color = None
+    for r in range(H):
+        for c in range(W):
+            # Check if (r,c) is a diagonal
+            if r == c: # Main diagonal
+                pass
+            if r + c == W - 1: # Anti-diagonal
+                pass
+    
+    # Let's just implement "Move all non-zero pixels in row r to the nearest non-zero pixel in column c".
+    # No, that's too generic.
+    
+    # Let's look at the specific transformation in Task 1 again.
+    # Input: 8s at (0,6), (1,6), (2,5), (3,8), (4,6), (5,6), (6,6), (7,3), (8,0), (9,0)
+    # Output: 8s at (0,6), (1,5), (2,4), (3,8), (4,6), (5,6), (6,6), (7,3), (8,0), (9,0)
+    # The 8 at (1,6) moved to (1,5). The 8 at (2,5) moved to (2,4).
+    # It seems the 8s are shifting left.
+    # But 8s at (0,6) stayed. (3,8) stayed.
+    # Why? (0,6) is top-left of the cluster? (3,8) is rightmost?
+    # (0,6) -> (1,5) -> (2,4) -> (3,8) -> (4,6) -> (5,6) -> (6,6) -> (7,3) -> (8,0) -> (9,0)
+    # This looks like a "snake" or "path".
+    # The output 8s form a continuous path?
+    # (0,6) -> (1,5) -> (2,4) -> (3,8) NO, (2,4) and (3,8) are not adjacent in output.
+    # (1,5) -> (2,4) is diagonal.
+    # (2,4) -> (3,8) is not connected.
+    
+    # Wait, in Output 1:
+    # 8s are at: (0,6), (1,5), (2,4), (3,8), (4,6), (5,6), (6,6), (7,3), (8,0), (9,0)
+    # This doesn't look like a single connected component.
+    # Maybe the 8s are the "background" or "obstacle"?
+    
+    # Let's look at the other colors.
+    # 1s: (0,1), (1,0), (2,3), (3,0), (5,9), (6,2), (7,0), (8,0), (9,0)
+    # 6s: (1,9), (2,1), (3,9), (5,9), (6,2), (7,0), (8,0), (9,0), (6,2), (7,0), (8,0), (9,0)
+    # Wait, the input has multiple 6s.
+    # 6s are at: (1,9), (2,1), (3,9), (5,9), (6,2), (7,0), (8,0), (9,0)
+    # Output 1:
+    # 6s are at: (1,5), (2,2), (3,0), (5,0), (6,0), (7,0), (8,0), (9,0)
+    # They moved left.
+    # 1s are at: (0,1), (1,0), (2,3), (3,0), (5,0), (6,0), (7,0), (8,0), (9,0)
+    # They moved down/left.
+    
+    # This is complex. Let's try a different function.
+    # "Fill empty rows/cols with the dominant color".
+    
+    # Or "Complete the pattern by mirroring".
+    
+    # Let's try a function that fills the "missing" part of a symmetric shape.
+    # Or "Fill the bounding box of the non-background objects".
+    
+    # Let's try: "Fill the bounding box of all non-background objects with the most frequent non-background color".
+    # In Task 1:
+    # Non-bg colors: 7, 8, 3.
+    # Counts: 7: 10, 8: 11, 3: 4.
+    # Dominant: 8.
+    # Bounding box of all non-bg objects:
+    # Min row: 0 (from 7 at 0,1), Max row: 9 (from 7 at 9,0).
+    # Min col: 0 (from 7 at 9,0), Max col: 9 (from 6 at 5,9).
+    # BB: (0,0) to (9,9).
+    # Fill with 8s?
+    # Output 1:
+    # (1,5) is 8. (2,4) is 8. (3,8) is 8.
+    # (1,5) is inside BB.
+    # (2,4) is inside BB.
+    # (3,8) is inside BB.
+    # But (0,1) is 7 (not 8). (0,6) is 8.
+    # So not all BB is filled with 8.
+    
+    # Let's try: "Fill the bounding box of objects of color C with color C".
+    # But which C? The one that has the most objects? Or the one that appears in a line?
+    
+    # Let's try: "Project all objects to the nearest vertical line of objects".
+    # Identify vertical lines (columns with multiple objects).
+    # Move all other objects to the nearest vertical line.
+    
+    # Let's try: "Complete

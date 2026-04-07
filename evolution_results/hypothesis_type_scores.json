@@ -21,8 +21,8 @@
   },
   "flood_fill": {
     "wins": 0,
-    "losses": 2,
-    "total": 2
+    "losses": 3,
+    "total": 3
   },
   "grid_decompose": {
     "wins": 1,

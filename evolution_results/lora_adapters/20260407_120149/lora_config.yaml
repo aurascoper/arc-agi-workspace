@@ -1,0 +1,5 @@
+lora_layers: 4
+lora_parameters:
+  rank: 4
+  dropout: 0.0
+  scale: 20.0
