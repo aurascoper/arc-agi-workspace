@@ -1,0 +1,224 @@
+
+
+```python
+def fill_enclosed_diagonal_regions(grid: list[list[int]]) -> list[list[int]]:
+    """Fill 2x2 diagonal blocks with a new color if they are enclosed by the background color."""
+    g = np.array(grid, dtype=int)
+    h, w = g.shape
+    bg = 0
+    # Identify all non-background colors as potential object colors
+    colors = set(g[g > bg])
+    
+    result = g.copy()
+    # Iterate over every pixel to check for diagonal enclosure patterns
+    for r in range(h):
+        for c in range(w):
+            if g[r, c] == bg:
+                # Check 2x2 diagonal blocks starting at (r, c)
+                # Pattern: Top-left (bg), Top-right (colored), Bottom-left (bg), Bottom-right (colored)
+                # This creates a diagonal split in a 2x2 region
+                if c + 1 < w and r + 1 < h:
+                    tl, tr = g[r, c], g[r, c+1]
+                    bl, br = g[r+1, c], g[r+1, c+1]
+                    
+                    # Check if this is the specific diagonal split pattern (corner pieces)
+                    # In Task 1: 2x2 blocks of 5s are replaced by 2x2 blocks of 7s (and 8s in next block)
+                    # In Task 2: 2x2 blocks of 2s are replaced by 2x2 blocks of 8s (and 1s in next block)
+                    
+                    # Check if TL and BR are background (or empty) and TR and BR are colored
+                    # Actually, looking at inputs:
+                    # Input 1: Left side is 5s. Right side is 0s. 
+                    # Top 5s: 2x2 blocks of 5s. 
+                    # Bottom 5s: 2x2 blocks of 5s.
+                    # Input 2: Left side 0s. Right side 2s.
+                    # Top 2s: 2x2 blocks of 2s.
+                    # Bottom 2s: 2x2 blocks of 2s.
+                    
+                    # The output fills the "inner" 2x2 blocks of the colored regions with a new color.
+                    # It seems to be filling the "hole" or "interior" of the colored shapes, specifically 2x2 blocks.
+                    
+                    # Let's detect if a 2x2 block of a color C is surrounded by background or boundary
+                    # Actually, it looks like it's filling the interior of the colored shapes.
+                    # Shape 5 (Task 1 Left): 3x4 block of 5s. Interior is 1x2. Output changes to 7s.
+                    # Shape 2 (Task 1 Right): 4x2 block of 5s. Interior is 2x2. Output changes to 8s.
+                    # Shape 2 (Task 2 Left): 5x4 block of 2s. Interior is 3x2. Output changes to 8s.
+                    # Shape 2 (Task 2 Right): 6x5 block of 2s. Interior is 4x3. Output changes to 1s.
+                    
+                    # It seems to be filling the central 2x2 area of any colored object.
+                    # If a 2x2 area is colored and is not on the boundary of the whole grid?
+                    # Or specifically the 2x2 area is NOT on the edge of the shape?
+                    
+                    # Let's try: If a 2x2 block of color C exists, and it's not on the very edge of the grid?
+                    # No, in task 1, the top 5s are on the edge.
+                    # Let's check if the 2x2 block is "inside" the shape.
+                    
+                    # Hypothesis: If a 2x2 block of color C is surrounded by background on ALL 4 sides (top, bottom, left, right of the block)?
+                    # No, Task 1 Left: 2x2 of 5s at (1,1). Top is 5. Left is 5.
+                    # Task 1 Right: 2x2 of 5s at (5,8). Top is 0. Right is 5.
+                    
+                    # Let's try: Fill 2x2 blocks of color C with color D if C is the "dominant" color of the object?
+                    # Task 1: Obj 5 becomes 7. Obj 5 becomes 8.
+                    # Task 2: Obj 2 becomes 8. Obj 2 becomes 1.
+                    
+                    # It seems like it's filling the "center" of the object with a specific color based on size or position?
+                    # Or maybe filling 2x2 blocks of the *majority* color inside a larger object?
+                    
+                    # Let's assume the rule is: Identify 2x2 blocks of color C. If this block is part of a larger connected region of C,
+                    # change the color to a new color.
+                    # But what is the new color?
+                    # Task 1: 5 -> 7, 5 -> 8.
+                    # Task 2: 2 -> 8, 2 -> 1.
+                    
+                    # Maybe it's filling the *interior* of the shape with a specific color?
+                    # Task 1 Left: 5s form a 3x4 block. Interior is 1x2. Output has 7s there.
+                    # Task 1 Right: 5s form a 4x2 block. Interior is 2x2. Output has 8s there.
+                    # Task 2 Left: 2s form a 5x4 block. Interior is 3x2. Output has 8s there.
+                    # Task 2 Right: 2s form a 6x5 block. Interior is 4x3. Output has 1s there.
+                    
+                    # It seems like we are filling the *interior* of the shape (pixels not on the border of the object).
+                    # And the fill color depends on the color of the object?
+                    # Or maybe it's filling a specific 2x2 region?
+                    
+                    # Let's try: For each connected component of a color:
+                    # 1. Calculate its bounding box.
+                    # 2. Determine its interior pixels (pixels in bbox but not on the border of the bbox).
+                    # 3. If the interior has a 2x2 block of the original color, fill it with a new color.
+                    # 4. How to determine the new color?
+                    #    Task 1: Obj 5 (3x4) -> 7. Obj 5 (4x2) -> 8.
+                    #    Task 2: Obj 2 (5x4) -> 8. Obj 2 (6x5) -> 1.
+                    
+                    # Maybe the new color is determined by the color itself?
+                    # Color 5 -> 7 and 8. Color 2 -> 8 and 1.
+                    # This doesn't look like a fixed mapping (5->7, 5->8).
+                    
+                    # Wait, look at the outputs again.
+                    # Task 1: Left 5s -> 7s. Right 5s -> 8s.
+                    # Task 2: Left 2s -> 8s. Right 2s -> 1s.
+                    
+                    # Is there a relation between the fill color and the object color?
+                    # 5 -> 7 (+2). 5 -> 8 (+3).
+                    # 2 -> 8 (+6). 2 -> 1 (+9? -1?).
+                    
+                    # Maybe it's filling based on the position?
+                    # Left side vs Right side?
+                    # Top vs Bottom?
+                    
+                    # Let's try filling the *interior* of the object with a color that makes the object symmetric?
+                    # Or maybe filling the *interior* with a color that is the "next" color in a sequence?
+                    
+                    # Let's try a simpler hypothesis: 
+                    # Identify all 2x2 blocks of color C.
+                    # If this 2x2 block is NOT on the border of the grid, change it to a new color.
+                    # If it IS on the border, keep it C?
+                    # Task 1 Left: 2x2 of 5s at (1,1). Not on grid border. Filled with 7.
+                    # Task 1 Right: 2x2 of 5s at (5,8). Not on grid border. Filled with 8.
+                    # Task 2 Left: 2x2 of 2s at (5,0). On grid border (Left). Kept as 8? No, Input is 2, Output is 8.
+                    # Task 2 Right: 2x2 of 2s at (8,6). Not on grid border. Filled with 1.
+                    
+                    # This doesn't match perfectly.
+                    
+                    # Let's go back to: Fill the *interior* of the object.
+                    # Interior of a 3x4 block is a 1x2 block.
+                    # Interior of a 4x2 block is a 2x2 block.
+                    # Interior of a 5x4 block is a 3x2 block.
+                    # Interior of a 6x5 block is a 4x3 block.
+                    
+                    # In the output:
+                    # Task 1 Left: 3x4 block of 5s. Interior is 1x2. Filled with 7s? 
+                    #    Input:
+                    #    055550000000
+                    #    050050000000
+                    #    050050000000
+                    #    055550000000
+                    #    This is two separate 2x2 blocks of 5s? No, it's a 3x4 block with holes.
+                    #    Actually, it's a 3x4 block of 5s in the input?
+                    #    Row 0: 055550... -> 5s at (0,1) to (0,4).
+                    #    Row 1: 050050... -> 5s at (1,1) and (1,4).
+                    #    Row 2: 050050... -> 5s at (2,1) and (2,4).
+                    #    Row 3: 055550... -> 5s at (3,1) to (3,4).
+                    #    This forms a shape like:
+                    #    XXXX
+                    #    X.X.
+                    #    X.X.
+                    #    XXXX
+                    #    The "interior" is the two 1x1 holes at (1,2) and (2,2).
+                    #    Output:
+                    #    055550000000
+                    #    057750000000
+                    #    057750000000
+                    #    055550000000
+                    #    The holes are filled with 7s.
+                    
+                    #    So, identify holes (pixels of background color inside a colored object).
+                    #    Fill them with a new color.
+                    
+                    #    Task 1 Right:
+                    #    000000555550
+                    #    000000500050
+                    #    000000500050
+                    #    055500500050
+                    #    050500555550
+                    #    ...
+                    #    This is more complex.
+                    
+                    #    Let's look at the object 5s on the right side.
+                    #    (4,5) to (4,9) -> 55555
+                    #    (5,5) -> 5, (5,9) -> 5. Holes at (5,6), (5,7), (5,8).
+                    #    (6,5) -> 5, (6,9) -> 5. Holes at (6,6), (6,7), (6,8).
+                    #    (7,4) -> 5, (7,6) -> 5, (7,8) -> 5, (7,9) -> 5.
+                    #    This is getting complicated.
+                    
+                    #    Let's try a simpler heuristic: 
+                    #    Find all 2x2 blocks of color C.
+                    #    If this 2x2 block is the *only* 2x2 block of color C in the whole grid, or the *majority*?
+                    
+                    #    Let's try: Identify all connected components.
+                    #    For each component, find its interior (pixels that are background but surrounded by the component).
+                    #    Wait, in Task 1 Left, the holes are (1,2), (1,3), (2,2), (2,3).
+                    #    These are surrounded by 5s.
+                    #    In the output, they are filled with 7s.
+                    
+                    #    In Task 1 Right, the 5s form a shape. 
+                    #    (4,5)-(4,9) is a row of 5s.
+                    #    (5,5) and (5,9) are 5s.
+                    #    (6,5) and (6,9) are 5s.
+                    #    (7,4), (7,6), (7,8), (7,9) are 5s.
+                    #    (8,4), (8,6), (8,7), (8,8) are 5s.
+                    #    This is messy.
+                    
+                    #    Let's look at the output for Task 1 Right.
+                    #    000000555550
+                    #    000000588850
+                    #    000000588850
+                    #    055500588850
+                    #    050500555550
+                    #    The 5s at (5,5), (5,6), (5,7), (5,8) are now 8s.
+                    #    The 5s at (6,5), (6,6), (6,7), (6,8) are now 8s.
+                    #    The 5s at (7,6), (7,7), (7,8) are now 8s.
+                    
+                    #    So, in Task 1, the 5s on the right side are being turned into 8s.
+                    #    Specifically, the 2x2 blocks of 5s on the right side are being turned into 8s.
+                    #    (5,5)-(5,6) is a 2x2 block of 5s. Becomes 8s.
+                    #    (5,7)-(5,8) is a 2x2 block of 5s. Becomes 8s.
+                    #    (6,5)-(6,6) is a 2x2 block of 5s. Becomes 8s.
+                    #    (6,7)-(6,8) is a 2x2 block of 5s. Becomes 8s.
+                    #    (7,6)-(7,7) is a 2x2 block of 5s. Becomes 8s.
+                    #    (7,7)-(7,8) is a 2x2 block of 5s. Becomes 8s.
+                    
+                    #    In Task 1 Left, the 5s on the left side are being turned into 7s.
+                    #    (1,1)-(1,2) is a 2x2 block of 5s. Becomes 7s.
+                    #    (2,1)-(2,2) is a 2x2 block of 5s. Becomes 7s.
+                    #    Wait, (1,1) is 5. (1,2) is 0. So it's not a 2x2 block.
+                    #    (2,1) is 5. (2,2) is 0.
+                    
+                    #    Let's re-examine Task 1 Input.
+                    #    Row 0: 055550... -> (0,1), (0,2), (0,3), (0,4) are 5s.
+                    #    Row 1: 050050... -> (1,1), (1,4) are 5s.
+                    #    Row 2: 050050... -> (2,1), (2,4) are 5s.
+                    #    Row 3: 055550... -> (3,1), (3,2), (3,3), (3,4) are 5s.
+                    #    The 5s form a "U" shape? Or two vertical bars?
+                    #    Left bar: (0,1), (1,1), (2,1), (3,1).
+                    #    Right bar: (0,2), (0,3), (0,4), (1,4), (2,4), (3,4).
+                    #    Wait, (0,2) and (0,3) are 5s. (0,4) is 5.
+                    #    So top row is 5555.
+                    #    Then (1,1) is 5. (1,4
