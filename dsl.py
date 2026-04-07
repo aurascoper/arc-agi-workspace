@@ -9848,6 +9848,361 @@ def count_dominant_color_per_region(grid: list[list[int]], region_shape: tuple[i
                 result[r][c] = dominant
     return result
 
+
+
+# --- EVOLVED FUNCTIONS (auto-generated) ---
+
+def extract_corner_quadrants(grid: list[list[int]]) -> list[list[int]]:
+    """Extract the four corner 2x2 quadrants and combine them into a 4x4 grid where top-left is top-left corner, top-right is top-right corner, etc."""
+    h, w = len(grid), len(grid[0])
+    if min(h, w) < 4:
+        return [[0] * w for _ in range(h)]
+    tl = [[grid[i][j] for j in range(2)] for i in range(2)]
+    tr = [[grid[i][w-j] for j in range(2)] for i in range(2)]
+    bl = [[grid[i][j] for j in range(2)] for i in range(h-2)]
+    br = [[grid[i][w-j] for j in range(2)] for i in range(h-2)]
+    result = [
+        [0] * w if i == 0 else [0] * w, 
+        [0] * w if i == 0 else [0] * w,
+        [0] * w if i == 0 else [0] * w,
+        [0] * w if i == 0 else [0] * w
+    ]
+    # Fallback: Just return the top-left 2x2 if grid is small
+    if h < 3 or w < 3:
+        return [[0]*w for _ in range(h)]
+    
+    # Extract specific quadrants for 3x3 output
+    # Task 1: 5x7 -> 3x3. 
+    # Input Row 0: 4000004. Corners are 4.
+    # Input Row 4: 4000044. Corners are 4, 4.
+    # Output Row 0: 404. Middle is 0.
+    # Input Row 2: 0000000. All 0.
+    # Output Row 1: 000. All 0.
+    # Input Row 0 & 4 are top/bottom borders.
+    
+    # Task 2: 9x9 -> 3x3.
+    # Input Row 0 & 8 are empty.
+    # Input Row 1: 006111111. Left=0, Right=1.
+    # Input Row 6: 000600000. Left=0, Right=0.
+    # Output Row 0: 666. All 6.
+    # Output Row 1: 660. Left=6, Mid=6, Right=0.
+    # Output Row 2: 000. All 0.
+    
+    # Logic for Task 1:
+    # Input has two 4s at top corners. Output has 4s at top corners.
+    # Input has 4s at bottom corners. Output has 4s at bottom corners.
+    # Middle rows are 0s.
+    # Result seems to be: Take top-left corner, top-right corner, bottom-left corner, bottom-right corner?
+    # Or maybe extract the outermost non-background pixels in each quadrant?
+    
+    # Let's try to extract the "quadrant summary" based on the corners of the input grid.
+    # The output is 3x3. The input is split into 3x3 regions? No, input is 5x7.
+    # The output is 3x3.
+    
+    # Hypothesis: The output represents the "content" of the four corners of the input grid.
+    # TL (0,0), TR (0,6), BL (4,0), BR (4,6).
+    # TL is 4. TR is 4. BL is 4. BR is 4.
+    # Output TL is 4. TR is 0. BR is 4.
+    # Wait, Output is:
+    # 404
+    # 000
+    # 444
+    # This doesn't match simple corner extraction.
+    
+    # Let's look at the objects.
+    # Task 1 Input: Two vertical lines of 4s on the edges.
+    # Left edge: 4 at (0,0), 4 at (4,0).
+    # Right edge: 4 at (0,6), 4 at (4,5) - wait, grid[4] is 4000044. So (4,5) and (4,6) are 4.
+    # So we have a 'C' shape made of 4s? Or two lines?
+    # 0,0 is 4. 4,0 is 4. 0,6 is 4. 4,5 is 4. 4,6 is 4.
+    # It's a rectangle missing the middle of the vertical lines?
+    # Actually, it looks like two vertical bars on the left and right, connected at bottom?
+    # Left bar: (0,0), (4,0). Gap at 1,2,3.
+    # Right bar: (0,6), (4,5), (4,6). Gap at 1,2,3,4.
+    # Wait, row 4 is 4000044. Indices 0, 5, 6 are 4.
+    # Row 0 is 4000004. Indices 0, 6 are 4.
+    # So Left side has 4s at 0 and 4. Right side has 4s at 0, 5, 6.
+    # Output:
+    # 404
+    # 000
+    # 444
+    # This output looks like a 3x3 grid.
+    # Row 0: 4, 0, 4.
+    # Row 2: 4, 4, 4.
+    
+    # Task 2 Input:
+    # Row 1: 006111111. 6 at (1,2). 1 at (1,3)..(1,7).
+    # Row 2: 000160601. 1 at (2,3). 6 at (2,5). 1 at (2,7).
+    # Row 3: 000106001. 1 at (3,3). 6 at (3,5). 1 at (3,7).
+    # Row 4: 000100061. 1 at (4,3). 6 at (4,6). 1 at (4,8).
+    # Row 5: 060160001. 6 at (5,1). 1 at (5,3). 6 at (5,5). 1 at (5,7).
+    # Row 6: 000111111. 1 at (6,3)..(6,8).
+    # Row 7: 000600000. 6 at (7,3).
+    # Row 8: 000000000.
+    
+    # Output:
+    # 666
+    # 660
+    # 000
+    
+    # Let's check the objects.
+    # Object 6 in Task 2:
+    # (1,2), (2,5), (3,5), (4,6), (5,1), (5,5), (7,3).
+    # This looks like a diagonal line of 6s going from top-leftish to bottom-rightish?
+    # (1,2) -> (2,5) -> (3,5)? No.
+    # (5,1) -> (7,3).
+    # (2,5), (3,5), (4,6), (5,5). This is a diagonal.
+    # (1,2) is isolated? (1,2) is 6. (2,5) is 6. (3,5) is 6. (4,6) is 6. (5,5) is 6. (7,3) is 6.
+    # Wait, let's re-read the grid.
+    # Row 1: 006111111. 6 at col 2.
+    # Row 2: 000160601. 6 at col 5.
+    # Row 3: 000106001. 6 at col 5.
+    # Row 4: 000100061. 6 at col 6.
+    # Row 5: 060160001. 6 at col 1, col 5.
+    # Row 6: 000111111. No 6.
+    # Row 7: 000600000. 6 at col 3.
+    # Row 8: 000000000.
+    
+    # It seems there are multiple 6s.
+    # Row 0 is all 0.
+    # Row 8 is all 0.
+    # Row 1 has 6 at pos 2.
+    # Row 2 has 6 at pos 5.
+    # Row 3 has 6 at pos 5.
+    # Row 4 has 6 at pos 6.
+    # Row 5 has 6 at pos 1, 5.
+    # Row 7 has 6 at pos 3.
+    
+    # Output 3x3:
+    # 6 6 6
+    # 6 6 0
+    # 0 0 0
+    
+    # Let's check Task 1 again.
+    # Row 0: 4 at 0, 6.
+    # Row 4: 4 at 0, 5, 6.
+    # Output 3x3:
+    # 4 0 4
+    # 0 0 0
+    # 4 4 4
+    
+    # Common pattern:
+    # The output grid is 3x3.
+    # The input grid seems to be divided into 3 rows and 3 columns of "logic"?
+    # Or maybe the output represents the corners of the 3x3 regions of the input?
+    # No, the input is 5x7.
+    # Maybe the input is divided into 3x3 blocks? 5x7 is not divisible.
+    
+    # Maybe it's about the bounding box of the objects?
+    # Task 1: Object 4s.
+    # BB: (0,0) to (4,6).
+    # Output 3x3:
+    # 4 0 4
+    # 0 0 0
+    # 4 4 4
+    # This looks like the corners of the BB are 4s.
+    # (0,0) is 4. (0,6) is 4. (4,0) is 4. (4,6) is 4.
+    # But output is 3x3.
+    # Maybe it's checking if the corners of the 3x3 output correspond to something in the input?
+    
+    # Let's look at the mapping from Input (HxW) to Output (3x3).
+    # H=5, W=7.
+    # 5 rows -> 3 rows in output.
+    # 7 cols -> 3 cols in output.
+    # This suggests a downsampling or region of interest.
+    # Maybe the input is split into 3 vertical strips?
+    # 5 rows is small. 7 cols is larger.
+    # If we split 7 cols into 3 strips: 2, 2, 3? Or 2, 3, 2?
+    # If we split 5 rows into 3 strips: 2, 2, 1? Or 1, 2, 2?
+    
+    # Let's try to map input pixels to output pixels.
+    # Input (0,0) -> Output (0,0)? Input (0,6) -> Output (0,2)?
+    # Input (4,0) -> Output (2,0)? Input (4,6) -> Output (2,2)?
+    
+    # If we assume the input is divided into 3x3 regions:
+    # Region (0,0): Rows 0-1, Cols 0-1. (2x2)
+    # Region (0,1): Rows 0-1, Cols 2-3. (2x2)
+    # Region (0,2): Rows 0-1, Cols 4-6. (2x3) -> (0,2) in output?
+    # Region (1,0): Rows 2-3, Cols 0-1. (2x2)
+    # Region (1,1): Rows 2-3, Cols 2-3. (2x2)
+    # Region (1,2): Rows 2-3, Cols 4-6. (2x3)
+    # Region (2,0): Rows 4, Cols 0-1. (1x2)
+    # Region (2,1): Rows 4, Cols 2-3. (1x2)
+    # Region (2,2): Rows 4, Cols 4-6. (1x3)
+    
+    # This seems complex.
+    
+    # Let's look at the corners of the non-background pixels in the input.
+    # Task 1:
+    # Top-left non-zero: (0,0) -> 4.
+    # Top-right non-zero: (0,6) -> 4.
+    # Bottom-left non-zero: (4,0) -> 4.
+    # Bottom-right non-zero: (4,6) -> 4.
+    # All 4 corners are 4.
+    # Output:
+    # 4 0 4
+    # 0 0 0
+    # 4 4 4
+    # This doesn't match a simple 4x4 corner extraction.
+    
+    # Let's look at the 3x3 output as representing 3x3 regions of the input.
+    # Maybe the input is divided into 3x3 blocks?
+    # 5x7 -> 3x3.
+    # Maybe it's extracting the center of each 2x2 block?
+    # 5 rows -> 2 rows of 2x2 blocks + 1 row? No.
+    # 5 rows -> 3 rows of blocks?
+    # 7 cols -> 3 cols of blocks?
+    
+    # Let's try to map the 3x3 output to the input.
+    # Output (0,0) = 4. Input (0,0) = 4.
+    # Output (0,2) = 4. Input (0,6) = 4.
+    # Output (2,0) = 4. Input (4,0) = 4.
+    # Output (2,2) = 4. Input (4,6) = 4.
+    # Output (0,1) = 0. Input (0,3)?
+    # Row 0: 4000004. Center is 0.
+    # Output (1,0) = 0. Input (2,0)?
+    # Row 2: 0000000.
+    # Output (1,2) = 0. Input (4,6)? No, 4.
+    # Output (2,1) = 4. Input (4,3)?
+    # Row 4: 4000044. Middle is 0. (4,3) is 0.
+    
+    # So far:
+    # O(0,0) = 4. I(0,0) = 4.
+    # O(0,2) = 4. I(0,6) = 4.
+    # O(2,0) = 4. I(4,0) = 4.
+    # O(2,2) = 4. I(4,6) = 4.
+    # O(0,1) = 0. I(0,3) = 0.
+    # O(2,1) = 4. I(4,3) = 0.
+    
+    # Wait, Task 1 Output:
+    # 404
+    # 000
+    # 444
+    # O(2,1) is 4.
+    # I(4,3) is 0.
+    # So O(2,1) is 4 but I(4,3) is 0.
+    # Why?
+    # Maybe O(2,1) corresponds to the 4 at (4,5)?
+    # (4,5) is 4.
+    # (4,6) is 4.
+    # So O(2,1) takes the max color in the bottom-right quadrant?
+    # Quadrants:
+    # TL: (0,0) to (2,3). (3x4).
+    # TR: (0,4) to (2,6). (3x3).
+    # BL: (3,0) to (4,3). (2x4).
+    # BR: (3,4) to (4,6). (2x3).
+    
+    # Let's try dividing the input into 4 quadrants.
+    # Mid row = 2 (0,1,2 | 3,4).
+    # Mid col = 3 (0,1,2,3 | 4,5,6
+
+
+
+# --- BEAM SEARCH EVOLVED FUNCTIONS ---
+
+def find_path_bfs(grid: list[list[int]], start: tuple[int, int], target: tuple[int, int], wall_color: int = 1, background: int = 0) -> list[tuple[int, int]]:
+    """Find shortest path from start to target using BFS, avoiding walls and background."""
+    h, w = len(grid), len(grid[0])
+    if start[0] < 0 or start[0] >= h or start[1] < 0 or start[1] >= w or target[0] < 0 or target[0] >= h or target[1] < 0 or target[1] >= w:
+        return []
+    if grid[start[0]][start[1]] == wall_color or grid[target[0]][target[1]] == wall_color:
+        return []
+    visited = set()
+    queue = deque([(start, [start])])
+    visited.add(start)
+    while queue:
+        (curr_r, curr_c), path = queue.popleft()
+        if (curr_r, curr_c) == target:
+            return path
+        for dr, dc in [(-1, 0), (1, 0), (0, -1), (0, 1)]:
+            nr, nc = curr_r + dr, curr_c + dc
+            if 0 <= nr < h and 0 <= nc < w and grid[nr][nc] != wall_color and grid[nr][nc] != background and (nr, nc) not in visited:
+                visited.add((nr, nc))
+                queue.append(((nr, nc), path + [(nr, nc)]))
+    return []
+
+def find_path_dfs(grid: list[list[int]], start: tuple[int, int], target: tuple[int, int], wall_color: int = 1, background: int = 0) -> list[tuple[int, int]]:
+    """Find path from start to target using DFS, avoiding walls and background."""
+    h, w = len(grid), len(grid[0])
+    if start[0] < 0 or start[0] >= h or start[1] < 0 or start[1] >= w or target[0] < 0 or target[0] >= h or target[1] < 0 or target[1] >= w:
+        return []
+    if grid[start[0]][start[1]] == wall_color or grid[target[0]][target[1]] == wall_color:
+        return []
+    visited = set()
+    stack = [(start, [start])]
+    visited.add(start)
+    while stack:
+        (curr_r, curr_c), path = stack.pop()
+        if (curr_r, curr_c) == target:
+            return path
+        for dr, dc in [(-1, 0), (1, 0), (0, -1), (0, 1)]:
+            nr, nc = curr_r + dr, curr_c + dc
+            if 0 <= nr < h and 0 <= nc < w and grid[nr][nc] != wall_color and grid[nr][nc] != background and (nr, nc) not in visited:
+                visited.add((nr, nc))
+                stack.append(((nr, nc), path + [(nr, nc)]))
+    return []
+
+def fill_maze_path(grid: list[list[int]], path: list[tuple[int, int]], fill_color: int = 9, background: int = 0) -> list[list[int]]:
+    """Fill the cells along the given path with the specified fill color."""
+    h, w = len(grid), len(grid[0])
+    for r, c in path:
+        if 0 <= r < h and 0 <= c < w:
+            grid[r][c] = fill_color
+    return grid
+
+def detect_maze_walls(grid: list[list[int]], wall_color: int = 1, background: int = 0) -> list[tuple[int, int]]:
+    """Identify coordinates of all wall cells in the grid."""
+    h, w = len(grid), len(grid[0])
+    walls = []
+    for r in range(h):
+        for c in range(w):
+            if grid[r][c] == wall_color:
+                walls.append((r, c))
+    return walls
+
+def find_shortest_path_breadth_first(grid: list[list[int]], start: tuple[int, int], target: tuple[int, int], wall_color: int = 1, background: int = 0) -> list[tuple[int, int]]:
+    """Find shortest path from start to target using BFS, avoiding walls and background."""
+    h, w = len(grid), len(grid[0])
+    if start[0] < 0 or start[0] >= h or start[1] < 0 or start[1] >= w or target[0] < 0 or target[0] >= h or target[1] < 0 or target[1] >= w:
+        return []
+    if grid[start[0]][start[1]] == wall_color or grid[target[0]][target[1]] == wall_color:
+        return []
+    visited = set()
+    queue = deque([(start, [start])])
+    visited.add(start)
+    while queue:
+        (curr_r, curr_c), path = queue.popleft()
+        if (curr_r, curr_c) == target:
+            return path
+        for dr, dc in [(-1, 0), (1, 0), (0, -1), (0, 0)]:
+            nr, nc = curr_r + dr, curr_c + dc
+            if 0 <= nr < h and 0 <= nc < w and grid[nr][nc] != wall_color and grid[nr][nc] != background and (nr, nc) not in visited:
+                visited.add((nr, nc))
+                queue.append(((nr, nc), path + [(nr, nc)]))
+    return []
+
+def extract_connected_components(grid: list[list[int]], target_color: int = 1, background: int = 0) -> list[list[list[int]]]:
+    """Extract connected components of the target color using BFS."""
+    h, w = len(grid), len(grid[0])
+    components = []
+    visited = set()
+    for r in range(h):
+        for c in range(w):
+            if grid[r][c] == target_color and (r, c) not in visited:
+                component = []
+                queue = deque([(r, c)])
+                visited.add((r, c))
+                while queue:
+                    curr_r, curr_c = queue.popleft()
+                    component.append((curr_r, curr_c))
+                    for dr, dc in [(-1, 0), (1, 0), (0, -1), (0, 1)]:
+                        nr, nc = curr_r + dr, curr_c + dc
+                        if 0 <= nr < h and 0 <= nc < w and grid[nr][nc] == target_color and (nr, nc) not in visited:
+                            visited.add((nr, nc))
+                            queue.append((nr, nc))
+                components.append(component)
+    return components
+
 '''
 
 exec(HELPER_CODE_PREFIX, globals())
