@@ -273,11 +273,13 @@
     {
       "hypothesis_type": "grid_decompose",
       "grid_size_bin": "small",
-      "func_name": "b6afb2da_transform",
-      "code": "def b6afb2da_transform(grid: list[list[int]]) -> list[list[int]]:\n    \"\"\"Extract 5x5 subgrids from quadrants and map colors to transformed palette (0->1, 5->4, 6->2, 7->2) based on specific quadrant positions.\"\"\"\n    import numpy as np\n    b, w = len(grid), len(grid[0])\n    # Assume 10x10 split into 4 equal quadrants (5x5)\n    if b == 10 and w == 10:\n        q1 = grid[:5][:5]\n        q2 = grid[:5][5:]\n        q3 = grid[5:][5:]\n        q4 = grid[5:][:5]\n        \n        # Transform 5x5 grids\n        def transform_quad(q):\n            res = np.zeros((5, 5), dtype=int)\n            for r in range(5):\n                for c in range(5):\n                    if q[r][c] == 0:\n                        res[r][c] = 0 if r > 4 else 0 if c > 5 else 0 # Placeholder logic needs refinement based on mapping\n                    elif q[r][c] == 5:\n                        res[r][c] = 4 if r % 2 == 0 else 2\n                    elif q[r][c] == 1:\n                        res[r][c] = 0\n                    elif q[r][c] == 2:\n                        res[r][c] = 2\n                    elif q[r][c] == 3:\n                        res[r][c] = 0\n                    elif q[r][c] == 4:\n                        res[r][c] = 4\n                    elif q[r][c] == 6:\n                        res[r][c] = 2\n                    elif q[r][c] == 7:\n                        res[r][c] = 2\n            return res\n\n        # Mapping input quadrants to output quadrants\n        # Input: Q1 full, Q2 empty, Q3 empty, Q4 empty (from Train 1, but wait, Train 1 has 5x5 filled)\n        # Actually Input is 10x10.\n        # Train 1 Input: Left 5x5 block is 5s. Right/Bottom are 0s (mostly).\n        # Wait, looking at Train 1 Input again:\n        # Rows 0-4: 555555 0000 (First 6 cols are 5s, last 4 are 0s)\n        # Rows 5-9: 000000 0000 (Row 5 empty), Rows 6-9: 0000 555555 (Cols 4-9 are 5s)\n        # This is not 4 quadrants. It's specific regions.\n        # Let's re-examine Train 1 Input/Output structure.\n        # Train 1: Input ",
-      "score": 0.5,
-      "timestamp": 1775430507.9554281,
-      "metadata": {}
+      "func_name": "extract_corner_quadrants",
+      "code": "def extract_corner_quadrants(grid: list[list[int]]) -> list[list[int]]:\n    \"\"\"Extract the four corner 2x2 quadrants and combine them into a 4x4 grid where top-left is top-left corner, top-right is top-right corner, etc.\"\"\"\n    h, w = len(grid), len(grid[0])\n    if min(h, w) < 4:\n        return [[0] * w for _ in range(h)]\n    tl = [[grid[i][j] for j in range(2)] for i in range(2)]\n    tr = [[grid[i][w-j] for j in range(2)] for i in range(2)]\n    bl = [[grid[i][j] for j in range(2)] for i in range(h-2)]\n    br = [[grid[i][w-j] for j in range(2)] for i in range(h-2)]\n    result = [\n        [0] * w if i == 0 else [0] * w, \n        [0] * w if i == 0 else [0] * w,\n        [0] * w if i == 0 else [0] * w,\n        [0] * w if i == 0 else [0] * w\n    ]\n    # Fallback: Just return the top-left 2x2 if grid is small\n    if h < 3 or w < 3:\n        return [[0]*w for _ in range(h)]\n    \n    # Extract specific quadrants for 3x3 output\n    # Task 1: 5x7 -> 3x3. \n    # Input Row 0: 4000004. Corners are 4.\n    # Input Row 4: 4000044. Corners are 4, 4.\n    # Output Row 0: 404. Middle is 0.\n    # Input Row 2: 0000000. All 0.\n    # Output Row 1: 000. All 0.\n    # Input Row 0 & 4 are top/bottom borders.\n    \n    # Task 2: 9x9 -> 3x3.\n    # Input Row 0 & 8 are empty.\n    # Input Row 1: 006111111. Left=0, Right=1.\n    # Input Row 6: 000600000. Left=0, Right=0.\n    # Output Row 0: 666. All 6.\n    # Output Row 1: 660. Left=6, Mid=6, Right=0.\n    # Output Row 2: 000. All 0.\n    \n    # Logic for Task 1:\n    # Input has two 4s at top corners. Output has 4s at top corners.\n    # Input has 4s at bottom corners. Output has 4s at bottom corners.\n    # Middle rows are 0s.\n    # Result seems to be: Take top-left corner, top-right corner, bottom-left corner, bottom-right corner?\n    # Or maybe extract the outermost non-background pixels in each quadrant?\n    \n    # Let's try to extract the \"quadrant summary\" based on the corners of the input grid.\n    # The output is 3x3. The input is split into 3x3 reg",
+      "score": 0.7889999999999999,
+      "timestamp": 1775522839.97078,
+      "metadata": {
+        "round": 30
+      }
     },
     {
       "hypothesis_type": "symmetry",
@@ -291,5 +293,5 @@
       }
     }
   ],
-  "updated": 1775516815.5758579
+  "updated": 1775522839.970804
 }

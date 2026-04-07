@@ -1,18 +1,18 @@
 {
   "s2:SOLVE_FAIL:Towards Efficient Neurally-Guided Program Induction for ARC-": {
-    "wins": 5,
+    "wins": 6,
     "losses": 6,
-    "total": 11
+    "total": 12
   },
   "s2:SOLVE_FAIL:ARC-TGI: Human-Validated Task Generators with Reasoning Chai": {
-    "wins": 5,
+    "wins": 6,
     "losses": 6,
-    "total": 11
+    "total": 12
   },
   "s2:SOLVE_FAIL:ARC-AGI-2 Technical Report": {
-    "wins": 5,
+    "wins": 6,
     "losses": 6,
-    "total": 11
+    "total": 12
   },
   "broad:stagnation_hints": {
     "wins": 1,
