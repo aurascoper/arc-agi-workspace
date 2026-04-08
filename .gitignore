@@ -2,6 +2,14 @@ __pycache__/
 *.pyc
 .venv/
 metric.json
-# evolution_results/ — tracked for remote monitoring
 *.egg-info/
 .DS_Store
+
+# Large binary files (exceed GitHub 2GB pack limit)
+*.safetensors
+evolution_results/lora_adapters/*/fused_model/
+evolution_results/cognition_index.npz
+
+# Logs and caches (regenerated at runtime)
+evolution_results/*.log
+evolution_results/literature_cache.json

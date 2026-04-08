@@ -903,6 +903,132 @@ def log_holdout_score(round_num, mean_score, per_task):
     print(f"[holdout] Score: {mean_score:.4f} ({len(per_task)} tasks)")
 
 
+def analyze_experiment_results(
+    round_num: int,
+    func_names: list[str],
+    holdout_per_task: dict[str, float],
+    hypothesis_type: str = "unknown",
+) -> dict:
+    """ASI-Evolve-inspired Analyzer: distill multi-dimensional holdout feedback.
+
+    Produces structured analysis of what changed, what's stuck, and what to prioritize.
+    Output is saved to JSON and injected into the next round's diagnostic prompt.
+    """
+    # Load previous rounds' per-task scores for trend analysis
+    prev_per_task = {}
+    stuck_rounds = {}  # task_id -> number of consecutive rounds at 0.0
+
+    try:
+        lines = HOLDOUT_FILE.read_text().strip().split("\n")
+        if len(lines) >= 2:
+            prev_entry = json.loads(lines[-2])
+            prev_per_task = prev_entry.get("per_task", {})
+
+        # Count how many consecutive rounds each task has been at 0.0
+        all_entries = [json.loads(line) for line in lines]
+        for task_id in holdout_per_task:
+            if holdout_per_task[task_id] > 0.01:
+                stuck_rounds[task_id] = 0
+                continue
+            count = 0
+            for entry in reversed(all_entries):
+                if entry.get("per_task", {}).get(task_id, 0) < 0.01:
+                    count += 1
+                else:
+                    break
+            stuck_rounds[task_id] = count
+    except Exception:
+        pass
+
+    # Compute per-task deltas
+    improved_tasks = []
+    regressed_tasks = []
+    stuck_tasks = []
+
+    for task_id, score in holdout_per_task.items():
+        prev = prev_per_task.get(task_id, 0.0)
+        delta = score - prev
+        if delta > 0.01:
+            improved_tasks.append({"task": task_id, "delta": round(delta, 4),
+                                   "from": round(prev, 4), "to": round(score, 4)})
+        elif delta < -0.01:
+            regressed_tasks.append({"task": task_id, "delta": round(delta, 4),
+                                    "from": round(prev, 4), "to": round(score, 4)})
+        if score < 0.01 and stuck_rounds.get(task_id, 0) >= 5:
+            stuck_tasks.append({"task": task_id, "stuck_rounds": stuck_rounds[task_id]})
+
+    # Classify the overall pattern
+    if improved_tasks and not regressed_tasks:
+        pattern = "pure_improvement"
+    elif improved_tasks and regressed_tasks:
+        pattern = "mixed_tradeoff"
+    elif regressed_tasks and not improved_tasks:
+        pattern = "regression"
+    else:
+        pattern = "no_change"
+
+    # Build recommendation
+    recommendations = []
+    if stuck_tasks:
+        stuck_tasks.sort(key=lambda x: x["stuck_rounds"], reverse=True)
+        worst = stuck_tasks[0]
+        recommendations.append(
+            f"PRIORITY: Task {worst['task']} has been at 0.0 for {worst['stuck_rounds']} rounds. "
+            f"Focus new primitives on this task's transformation pattern."
+        )
+    if regressed_tasks:
+        recommendations.append(
+            f"WARNING: {len(regressed_tasks)} task(s) regressed. "
+            f"Check if new functions interfere with: {', '.join(r['task'] for r in regressed_tasks[:3])}"
+        )
+
+    return {
+        "round": round_num,
+        "hypothesis_type": hypothesis_type,
+        "func_names": func_names,
+        "improved_tasks": improved_tasks,
+        "regressed_tasks": regressed_tasks,
+        "stuck_tasks": stuck_tasks,
+        "pattern": pattern,
+        "recommendations": recommendations,
+        "holdout_mean": round(sum(holdout_per_task.values()) / max(len(holdout_per_task), 1), 4),
+    }
+
+
+def _load_latest_analysis() -> str:
+    """Load the most recent analysis JSON and format for diagnostic prompt injection."""
+    try:
+        # Find the latest round{N}_analysis.json
+        analysis_files = sorted(RESULTS_DIR.glob("round*_analysis.json"))
+        if not analysis_files:
+            return ""
+        latest = json.loads(analysis_files[-1].read_text())
+
+        lines = ["## EXPERIMENT ANALYSIS (previous round)"]
+
+        if latest.get("improved_tasks"):
+            lines.append("Improved tasks:")
+            for t in latest["improved_tasks"][:5]:
+                lines.append(f"  + {t['task']}: {t['from']:.2f} -> {t['to']:.2f} (+{t['delta']:.2f})")
+
+        if latest.get("regressed_tasks"):
+            lines.append("Regressed tasks:")
+            for t in latest["regressed_tasks"][:5]:
+                lines.append(f"  - {t['task']}: {t['from']:.2f} -> {t['to']:.2f} ({t['delta']:.2f})")
+
+        if latest.get("stuck_tasks"):
+            lines.append("STUCK at 0.0 (high priority targets):")
+            for t in latest["stuck_tasks"]:
+                lines.append(f"  ! {t['task']}: zero for {t['stuck_rounds']} consecutive rounds")
+
+        for rec in latest.get("recommendations", []):
+            lines.append(f"\n{rec}")
+
+        return "\n".join(lines)
+    except Exception:
+        return ""
+
+
 # ---------------------------------------------------------------------------
 # DIAGNOSTIC PROMPTS — enriched with research context + hypothesis history
 # ---------------------------------------------------------------------------
@@ -1183,7 +1309,7 @@ def build_diagnostic_prompt(failing_results):
             desc += f"Train {i+1} Output ({len(out)}x{len(out[0])}):\n{grid_to_str(out)}\n"
         task_descs.append(desc)
 
-    # Build execution trace summaries from ABPR data
+    # Build execution trace summaries from ABPR data (arXiv 2603.20334)
     trace_descs = []
     for r in shown:
         traces = r.get("traces", [])
@@ -1200,17 +1326,33 @@ def build_diagnostic_prompt(failing_results):
                 tdesc += f"\n    Pixel accuracy: {t.get('pixel_accuracy', 0):.2f}"
                 tdesc += f"\n    Expected shape: {t.get('output_shape')}, Got: {t.get('predicted_shape')}"
             if t.get("abpr_trace"):
-                tdesc += "\n    ABPR call trace:"
+                # Prefer tree-structured trace from ExecutionTracer (ABPR deep mode)
+                tree_trace = None
                 for step in t["abpr_trace"]:
-                    call = step.get("call", "?")
-                    shape = step.get("result_shape", "?")
-                    err = step.get("error", "")
-                    tdesc += f"\n      → {call}() → shape={shape}" + (f" ERROR: {err}" if err else "")
+                    if step.get("trace_tree"):
+                        tree_trace = step["trace_tree"]
+                        break
+                if tree_trace:
+                    # Use the full tree-structured trace with APD instructions
+                    tdesc += "\n    " + tree_trace.replace("\n", "\n    ")
+                else:
+                    # Fallback to flat call log
+                    tdesc += "\n    ABPR call trace:"
+                    for step in t["abpr_trace"]:
+                        call = step.get("call", "?")
+                        shape = step.get("result_shape", "?")
+                        err = step.get("error", "")
+                        tdesc += f"\n      → {call}() → shape={shape}" + (f" ERROR: {err}" if err else "")
             trace_descs.append(tdesc)
+
+    # Analyzer feedback: inject previous round's structured analysis
+    prev_analysis = _load_latest_analysis()
+    research = RESEARCH_CONTEXT.strip()
+    if prev_analysis:
+        research = research + "\n\n" + prev_analysis
 
     # Cherry-pick 2: Inject hypothesis type win/loss guidance
     type_guidance = format_hypothesis_type_guidance()
-    research = RESEARCH_CONTEXT.strip()
     if type_guidance:
         research = research + "\n\n" + type_guidance
 
@@ -1229,10 +1371,36 @@ def build_diagnostic_prompt(failing_results):
     except Exception:
         pass
 
-    # Cherry-pick 1: Targeted literature search based on failure categories
-    lit_hints, lit_hint_ids = _targeted_literature_hints(categories)
-    if lit_hints:
-        research = research + "\n\n" + lit_hints
+    # Cherry-pick 1: Cognition base (semantic) OR targeted literature (keyword fallback)
+    lit_hint_ids = []
+    try:
+        from cognition_base import CognitionBase, format_cognition_hints
+        cb = CognitionBase()
+        if cb.ensure_index():
+            # Build query from task descriptions (semantic match to techniques)
+            query_text = " ".join(td[:200] for td in task_descs[:3])
+            cognition_results = cb.query(query_text, k=3)
+            cognition_text = format_cognition_hints(cognition_results)
+            if cognition_text:
+                research = research + "\n\n" + cognition_text
+                lit_hint_ids = [r.get("name", "") for r in cognition_results]
+                print(f"  [cognition] {len(cognition_results)} hits, top={cognition_results[0]['name'] if cognition_results else 'none'}")
+        else:
+            raise ImportError("Cognition base not available")
+    except Exception as e:
+        print(f"  [cognition] fallback to cached hints: {e}")
+        # Skip Semantic Scholar (rate-limited 429s) — use cached literature hints only
+        cache_file = RESULTS_DIR / "literature_cache.json"
+        if cache_file.exists():
+            try:
+                cache = json.loads(cache_file.read_text())
+                for v in cache.values():
+                    if v.get("hints"):
+                        research = research + "\n\n" + v["hints"]
+                        lit_hint_ids = v.get("hint_ids", [])
+                        break
+            except (json.JSONDecodeError, OSError):
+                pass
 
     prompt = DIAGNOSTIC_PROMPT.format(
         num_functions=num_functions,
@@ -1359,6 +1527,19 @@ def validate_function(func_code: str) -> bool:
     if func_name and func_name.group(1) in helper_code:
         print(f"  [skip] {func_name.group(1)} already exists in DSL")
         return False
+
+    # BART-inspired AST constraint checking (arXiv 2508.00005)
+    try:
+        from ast_constraints import check_constraints
+        existing_names = set(re.findall(r"def\s+(\w+)\(", helper_code))
+        is_valid, violations = check_constraints(func_code, dsl_function_names=existing_names)
+        if not is_valid:
+            fn = func_name.group(1) if func_name else "?"
+            print(f"  [ast] Rejected {fn}: {violations[0][:80]}")
+            return False
+    except ImportError:
+        pass
+
     return True
 
 
@@ -1578,14 +1759,14 @@ def run_lora_training_cycle(round_num: int, state: dict) -> dict:
              "--data", str(SUCCESSFUL_PROGRAMS_PATH),
              "--output", str(adapter_dir),
              "--pb2", "--fuse"],
-            capture_output=True, text=True, timeout=1800,
+            capture_output=True, text=True, timeout=2700,
             cwd=str(WORKSPACE),
         )
         print(result.stdout[-2000:] if result.stdout else "")
         if result.stderr:
             print(f"[lora] stderr: {result.stderr[-500:]}")
     except subprocess.TimeoutExpired:
-        print("[lora] Training timed out (30min limit)")
+        print("[lora] Training timed out (45min limit)")
         reload_with_adapter(state.get("active_adapter"))
         return state
     except Exception as e:
@@ -1685,7 +1866,7 @@ def check_lora_regression(state: dict, solve_score: float) -> dict:
 # MAIN AUTORESEARCH LOOP
 # ---------------------------------------------------------------------------
 
-def evolve(rounds=None, diagnose_only=False, never_stop=False, tier3_tasks=None, no_lora=False):
+def evolve(rounds=None, diagnose_only=False, never_stop=False, tier3_tasks=None, no_lora=False, elo_mode=False):
     if rounds is None:
         rounds = OUTER_ROUNDS
     if tier3_tasks is not None:
@@ -1694,6 +1875,20 @@ def evolve(rounds=None, diagnose_only=False, never_stop=False, tier3_tasks=None,
 
     lora_enabled = not no_lora
     lora_state = _load_lora_state() if lora_enabled else None
+
+    # Elo tournament mode (RoboPhD, arXiv 2604.04347)
+    elo_tournament = None
+    if elo_mode:
+        try:
+            from elo_tournament import EloTournament, Agent
+            elo_tournament = EloTournament(
+                archive_path=RESULTS_DIR / "elo_archive.json",
+            )
+            elo_tournament.load()
+            print(f"[evolve] Elo tournament mode: {len(elo_tournament.archive)} agents in archive")
+        except ImportError:
+            print("[evolve] WARNING: elo_tournament.py not found, falling back to greedy mode")
+            elo_tournament = None
 
     RESULTS_DIR.mkdir(exist_ok=True)
 
@@ -1804,17 +1999,33 @@ def evolve(rounds=None, diagnose_only=False, never_stop=False, tier3_tasks=None,
         # in build_diagnostic_prompt(). On high stagnation, also add the broader scan hints.
         if stagnant_streak >= 5:
             try:
-                from literature_scan import load_hints
-                lit_hints = load_hints(max_hints=5)
-                if lit_hints:
-                    diag_prompt = diag_prompt.replace(
-                        "## Failing Tasks",
-                        f"{lit_hints}\n\n## Failing Tasks",
-                    )
-                    injected_hint_ids.append("broad:stagnation_hints")
-                    print(f"  [literature] Extra broad hints injected (stagnant={stagnant_streak})")
-            except ImportError:
-                pass
+                from cognition_base import CognitionBase, format_cognition_hints
+                cb = CognitionBase()
+                if cb.ensure_index():
+                    stag_results = cb.query("novel ARC grid transformation techniques beyond standard approaches", k=5)
+                    stag_text = format_cognition_hints(stag_results, max_hints=5)
+                    if stag_text:
+                        diag_prompt = diag_prompt.replace(
+                            "## Failing Tasks",
+                            f"{stag_text}\n\n## Failing Tasks",
+                        )
+                        injected_hint_ids.append("broad:cognition_stagnation")
+                        print(f"  [cognition] Stagnation hints injected ({len(stag_results)} results)")
+                else:
+                    raise ImportError("fallback")
+            except Exception:
+                try:
+                    from literature_scan import load_hints
+                    lit_hints = load_hints(max_hints=5)
+                    if lit_hints:
+                        diag_prompt = diag_prompt.replace(
+                            "## Failing Tasks",
+                            f"{lit_hints}\n\n## Failing Tasks",
+                        )
+                        injected_hint_ids.append("broad:stagnation_hints")
+                        print(f"  [literature] Extra broad hints injected (stagnant={stagnant_streak})")
+                except ImportError:
+                    pass
 
         # Prompt-fix needs more tokens (replacing whole functions with nested helpers)
         gen_max = MAX_NEW_TOKENS * 3 if use_prompt_fix_mode else None
@@ -1957,40 +2168,89 @@ def evolve(rounds=None, diagnose_only=False, never_stop=False, tier3_tasks=None,
         holdout_mean, holdout_per_task = compute_holdout_score()
         log_holdout_score(round_num, holdout_mean, holdout_per_task)
 
-        # --- 7. DECIDE ---
-        # Decision uses holdout as primary signal (helper coverage is at ceiling).
-        # Compare against PREVIOUS ROUND's logged holdout (not monotonic cache,
-        # which always equals current holdout_mean due to best-ever tracking).
-        _load_holdout_cache()
-        prev_logged_holdout = 0.0
+        # --- 6c. ANALYZER — structured feedback distillation (ASI-Evolve) ---
         try:
-            holdout_log = RESULTS_DIR / "holdout_scores.jsonl"
-            if holdout_log.exists():
-                lines = holdout_log.read_text().strip().split("\n")
-                if len(lines) >= 2:
-                    prev_entry = json.loads(lines[-2])  # second-to-last = previous round
-                    prev_logged_holdout = prev_entry.get("holdout_mean", 0.0)
-                elif lines:
-                    prev_logged_holdout = json.loads(lines[-1]).get("holdout_mean", 0.0)
-        except Exception:
-            pass
-        holdout_improved = holdout_mean > prev_logged_holdout + 0.005  # >0.5% improvement counts
+            analysis = analyze_experiment_results(
+                round_num=round_num,
+                func_names=func_names,
+                holdout_per_task=holdout_per_task,
+                hypothesis_type=classify_hypothesis_type(response, func_names),
+            )
+            analysis_path = RESULTS_DIR / f"round{round_num}_analysis.json"
+            analysis_path.write_text(json.dumps(analysis, indent=2))
+            if analysis.get("stuck_tasks"):
+                print(f"  [analyzer] {len(analysis['stuck_tasks'])} stuck tasks, "
+                      f"{len(analysis.get('improved_tasks', []))} improved, "
+                      f"{len(analysis.get('regressed_tasks', []))} regressed")
+        except Exception as e:
+            print(f"  [analyzer] failed: {e}")
 
-        if post_score >= 0.999:
-            # At ceiling: use holdout + beam signals
-            if beam_improved or holdout_improved:
-                improved = True
-                status = "keep"
-                reason = f"holdout {prev_logged_holdout:.4f}->{holdout_mean:.4f}" + (" +beam" if beam_improved else "")
-                print(f"\n[7/9] DECIDE — {status} ({reason}: solve={solve_after:.4f})")
+        # --- 7. DECIDE ---
+        # Elo tournament mode: use tournament selection instead of greedy comparison
+        if elo_tournament is not None:
+            try:
+                from elo_tournament import Agent, tournament_decide
+                new_agent = Agent(
+                    agent_id=f"R{round_num}_{'-'.join(func_names[:3])}",
+                    dsl_diff="\n".join(f"# {fn}" for fn in func_names),
+                    func_names=func_names,
+                    created_round=round_num,
+                    per_task_scores=dict(holdout_per_task),
+                )
+                # Load task pool for tournament sampling
+                task_pool = []
+                for tf in sorted(ARC_DATA.glob("*.json")):
+                    try:
+                        task_pool.append(json.loads(tf.read_text()))
+                    except Exception:
+                        pass
+
+                def _elo_eval_fn(agent, tasks):
+                    """Evaluate an agent using its per_task_scores (pre-computed)."""
+                    return agent.per_task_scores
+
+                improved, status, comp_report = tournament_decide(
+                    elo_tournament, new_agent, task_pool, _elo_eval_fn)
+                elo_tournament.save()
+                if comp_report:
+                    print(f"  [elo] {comp_report[:200]}")
+                print(f"\n[7/9] DECIDE — {status} (Elo mode, holdout={holdout_mean:.4f})")
+            except Exception as e:
+                print(f"  [elo] tournament failed: {e}, falling back to greedy")
+                elo_tournament = None  # disable for future rounds
+
+        if elo_tournament is None:
+            # Greedy mode: holdout as primary signal (helper coverage at ceiling).
+            # Compare against PREVIOUS ROUND's logged holdout.
+            _load_holdout_cache()
+            prev_logged_holdout = 0.0
+            try:
+                holdout_log = RESULTS_DIR / "holdout_scores.jsonl"
+                if holdout_log.exists():
+                    lines = holdout_log.read_text().strip().split("\n")
+                    if len(lines) >= 2:
+                        prev_entry = json.loads(lines[-2])
+                        prev_logged_holdout = prev_entry.get("holdout_mean", 0.0)
+                    elif lines:
+                        prev_logged_holdout = json.loads(lines[-1]).get("holdout_mean", 0.0)
+            except Exception:
+                pass
+            holdout_improved = holdout_mean > prev_logged_holdout + 0.005
+
+            if post_score >= 0.999:
+                if beam_improved or holdout_improved:
+                    improved = True
+                    status = "keep"
+                    reason = f"holdout {prev_logged_holdout:.4f}->{holdout_mean:.4f}" + (" +beam" if beam_improved else "")
+                    print(f"\n[7/9] DECIDE — {status} ({reason}: solve={solve_after:.4f})")
+                else:
+                    improved = False
+                    status = "stagnant"
+                    print(f"\n[7/9] DECIDE — {status} (holdout={holdout_mean:.4f}≈prev={prev_logged_holdout:.4f}, solve={solve_after:.4f})")
             else:
-                improved = False
-                status = "stagnant"
-                print(f"\n[7/9] DECIDE — {status} (holdout={holdout_mean:.4f}≈prev={prev_logged_holdout:.4f}, solve={solve_after:.4f})")
-        else:
-            improved = post_score > pre_score
-            status = "keep" if improved else "stagnant"
-            print(f"\n[7/9] DECIDE — {status} (metric {pre_score:.4f}->{post_score:.4f}, holdout={holdout_mean:.4f})")
+                improved = post_score > pre_score
+                status = "keep" if improved else "stagnant"
+                print(f"\n[7/9] DECIDE — {status} (metric {pre_score:.4f}->{post_score:.4f}, holdout={holdout_mean:.4f})")
 
         # P4: Update MAP-Elites archive with surviving functions
         if improved and func_names:
@@ -2084,6 +2344,7 @@ if __name__ == "__main__":
     parser.add_argument("--never-stop", action="store_true", help="Run continuously until killed")
     parser.add_argument("--tier3-tasks", type=int, default=None, help="Tier 3 solve task count")
     parser.add_argument("--no-lora", action="store_true", help="Disable LoRA self-distillation")
+    parser.add_argument("--elo-mode", action="store_true", help="Use Elo tournament selection (RoboPhD, arXiv 2604.04347)")
     args = parser.parse_args()
     evolve(
         rounds=args.rounds,
@@ -2091,4 +2352,5 @@ if __name__ == "__main__":
         never_stop=args.never_stop,
         tier3_tasks=args.tier3_tasks,
         no_lora=args.no_lora,
+        elo_mode=args.elo_mode,
     )
