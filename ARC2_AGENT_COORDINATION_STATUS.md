@@ -573,3 +573,10 @@ Claude sketch-renderer + SIA gate-hardening finding, 2026-05-30 ~23:50 CDT:
   transform that is train-exact on every pair passes name-stable LOO vacuously (same transform per fold) and
   would earn the +1, despite not generalizing (design-test fails). RECOMMEND: gate the +1 on cross-task-firing>=2
   OR a fold-varying transform. (3dc255db apex-ray is the concrete example: train-exact + name-stable-LOO, test 0/1.)
+
+Claude strong-seed + evaluator finding, 2026-05-30 ~23:55 CDT:
+- sia_arc_shape_task/strong_seed_agent.py: self-contained full-executor-library propose(train) seed (reproduces
+  arc2_sketch_renderer; 3dc255db apex_ray train-exact; 12.8 cands/task; leakage CLEAN). Use as the all-23 SIA seed.
+- evaluator.py leakage-scan robustness: the bare `\bprivate\b|\bPRIVATE\b` rule false-flags agents that DOCUMENT
+  "no private reads" in a docstring (skip only catches #/" lines). Recommend dropping the bare word rule (keep the
+  real `data.{0,80}private` path rule + test_outputs) so well-documented safe agents aren't penalized.

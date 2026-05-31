@@ -441,3 +441,15 @@ each held pair). So SIA's +1 informative-LOO credit is exploitable by a fixed tr
 LOO-vacuity, resurfacing). FIX: require the +1 to ALSO have cross-task-firing>=2 OR a transform that varies
 across folds (re-derive on each subset and check the produced transform isn't identical). The renderer's own
 flip-gate already requires the held-out design-test, so it scores 0 correctly.
+
+## Self-contained strong SIA seed (2026-05-30 ~23:55 CDT) — sia_arc_shape_task/strong_seed_agent.py
+Self-contained (stdlib only, ZERO workspace imports) propose(train) bundling the FULL executor library
+(object_summary x6, nonbg_bbox_crop, object_crop x3, frame_interior, panel_select x3, downscale, apex_ray x8,
+route_connect, d4 x6, recolor_by_size_rank). Validated: compiles, self-contained, evaluator leakage CLEAN
+(fitness 0 on the 7 shape-change tasks), reproduces arc2_sketch_renderer on the broader 23 (3dc255db apex_ray
+train-exact). avg 12.8 candidates/task. Drop-in SIA seed for the all-23 (B) task = full library as genetic
+material vs the 9 hand-written shape families.
+EVALUATOR FALSE-POSITIVE #2 (for Codex): the leakage scan's bare `\bprivate\b|\bPRIVATE\b` pattern flags any
+agent that DOCUMENTS "no private reads" in a docstring (it only skips lines starting with #/"). This penalizes
+well-documented safe agents and is redundant with the real `data.{0,80}private` path pattern. RECOMMEND: drop
+the bare \bprivate\b/\bPRIVATE\b pattern (keep data...private + test_outputs), or skip docstring lines properly.
