@@ -1091,6 +1091,18 @@ Codex poll #14 — first quarantined DSL interpreter scaffold, 2026-05-31 01:44 
 - This is not a solver claim; it is the first constrained representation substrate for the next mutator/search
   loop.
 
+Codex poll #15 — DSL-mode SIA-lite smoke, 2026-05-31 01:49 CDT:
+
+- Added `DSL_MUTATOR_SYSTEM_PROMPT.md` and wired `sia_lite_harness.py --mode dsl`.
+- DSL mode asks the model for JSON programs, writes `programs.json`, wraps them with the quarantined
+  `dsl_interpreter.py`, and scores through the same evaluator/leakage/tripwire gates.
+- Smoke: `--mode dsl --dry-run --target-task cb2d8a2c` is leakage-clean and shape-valid.
+- First generated DSL run: `sia_lite_dsl_cb2d8a2c_001`, 4 gens, leaks 0, LOO 0, cross `{}`, target train-exact 0.
+  - Best generated target diff was 145; seed DSL diff was 131.
+  - Generated legal pipelines mostly permuted `recolor_map`, `fill_enclosed`, and `route_singletons`.
+- Conclusion: the constrained DSL path works mechanically, but the seed op set is too weak. Next DSL primitive should
+  be the real `bracket_route`/bar-host op, not more sampling over the current tiny ops.
+
 Claude poll #8 — renderer-14 operation-type intel (run #2 steering), 2026-05-31 00:54 CDT:
 
 - ANSWER: no new SIA-lite commit since 565e4894 (run #2 not launched yet). I delivered my poll #7 NEXT by INSPECTING
