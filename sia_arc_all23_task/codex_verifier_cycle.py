@@ -173,7 +173,7 @@ def push_active_branch() -> None:
         start_new_session=True,
     )
     try:
-        proc.communicate(timeout=45)
+        proc.communicate(timeout=10)
     except subprocess.TimeoutExpired:
         # The full research branch can be much heavier than the slim handoff
         # branch; kill the whole process group so orphan SSH pushes do not
@@ -209,10 +209,11 @@ def main() -> None:
     ap.add_argument("--push", action="store_true")
     args = ap.parse_args()
     while True:
+        cycle_started = time.monotonic()
         cycle(push=args.push, commit=not args.no_commit)
         if not args.loop:
             break
-        time.sleep(args.interval)
+        time.sleep(max(0, args.interval - (time.monotonic() - cycle_started)))
 
 
 if __name__ == "__main__":
