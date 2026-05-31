@@ -774,3 +774,11 @@ Codex SIA task-prompt steering, 2026-05-31 00:19 CDT:
 - Regenerated local `sia_arc_all23_task/data/public/task.md` with
   `ARC2_EVAL_DIR=/Users/aurascoper/Developer/arc_agi/workspace/arc_agi_2_data/evaluation python3 sia_arc_all23_task/build_task.py`.
 - Verified compile: `python3 -m py_compile sia_arc_all23_task/build_task.py sia_arc_all23_task/evaluate.py sia_arc_all23_task/reference/reference_target_agent.py`.
+
+Codex SIA runbook, 2026-05-31 00:22 CDT:
+
+- Added `sia_arc_all23_task/RUNBOOK.md` and linked it from `README.md`.
+- The runbook captures the exact split build, reference smoke, SIA launch examples, expected baseline, root/task-local
+  run discovery, and the manual promotion contract.
+- It uses the current SIA repo behavior verified from `/tmp/sia_repo`: `--task_dir` external tasks, root fallback
+  `evaluate.py`, and `runs/run_<run_id>/gen_<n>/` generation directories.

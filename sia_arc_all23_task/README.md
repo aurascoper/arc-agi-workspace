@@ -10,6 +10,9 @@ It stages the 23 current genuine design misses for SIA using the same safety dis
 - Private readout is never part of fitness.
 - Live solver files remain out of scope.
 
+See `RUNBOOK.md` for the exact build, smoke, SIA launch, and promotion-gate
+commands.
+
 Build data:
 
 ```bash
