@@ -404,3 +404,17 @@ exploit held-out outputs). VALIDATED: reference agent baseline fitness 0 (seed f
 correct); adversarial agent (hardcoded task-id + data/private read) -> fitness -10, 2 leakage hits flagged.
 Handoff: Codex promotes a SIA-discovered family only after re-running evaluator + strict/public guards, behind
 a feature flag. README.md documents quarantine rules.
+
+## SIA seed enriched + name-stable-LOO confirmed (2026-05-30 ~23:35 CDT)
+Codex/user fix to evaluator confirmed correct: informative_loo now requires the SAME named family re-derived
+on every LOO fold (required_name=nm) — no fallback-candidate credit. Enriched reference_agent.py to 9 families
+/ ~17 variants (object_summary x6, count_canvas, color_histogram_bar, nonbg_bbox_crop, object_crop x3,
+frame_interior, panel_select x3, filler_removal x2, downscale) — all self-contained, name-stable, design-only.
+Baseline fitness 0 (none train-exact; 7 are data-dependent), leakage CLEAN. SEED GRADIENT DIAGNOSTIC:
+- edb79dae: object_crop:largest reproduces output SHAPE (output = largest-object bbox) -> SIA gradient on
+  content renderer (NEW finding).
+- 5dbc8537: panel_select reproduces shape -> content (serialization) is the gap.
+- 20a9e565/2d0172a1/6ffbe589/e87109e9/89565ca0: 0 shape-matching candidates -> output dims are data-dependent;
+  SIA must discover the shape function first.
+SIA now has genetic material + a real gradient on 2/7. Next per plan (B, after A yields signal/falsification):
+generalize the SIA task to all 23 misses for marker-host/routing families.
