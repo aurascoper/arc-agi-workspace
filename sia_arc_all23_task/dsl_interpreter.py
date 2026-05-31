@@ -76,6 +76,43 @@ def learn_dominant_transition_map(train: list[dict[str, Any]]) -> dict[int, int]
     return {a: cnt.most_common(1)[0][0] for a, cnt in votes.items()}
 
 
+def learn_full_color_transition_map(train: list[dict[str, Any]]) -> dict[int, int] | None:
+    """Map colours whose every occurrence changes to one new colour.
+
+    This intentionally rejects sparse/background transitions. For cb2d8a2c-style
+    bars it learns 1->2 while refusing the much leakier "some 8 become 3" rule.
+    """
+    if not same_shape_train(train):
+        return None
+    seen: dict[int, Counter] = {}
+    for p in train:
+        gi, go = norm(p["input"]), norm(p["output"])
+        for r in range(len(gi)):
+            for c in range(len(gi[0])):
+                seen.setdefault(gi[r][c], Counter())[go[r][c]] += 1
+    mapping: dict[int, int] = {}
+    for src, outs in seen.items():
+        if len(outs) == 1:
+            dst = next(iter(outs))
+            if dst != src:
+                mapping[src] = dst
+    return mapping or None
+
+
+def learn_bg_draw_color(train: list[dict[str, Any]]) -> int | None:
+    if not same_shape_train(train):
+        return None
+    votes = Counter()
+    for p in train:
+        gi, go = norm(p["input"]), norm(p["output"])
+        background = bg(gi)
+        for r in range(len(gi)):
+            for c in range(len(gi[0])):
+                if gi[r][c] == background and go[r][c] != background:
+                    votes[go[r][c]] += 1
+    return votes.most_common(1)[0][0] if votes else None
+
+
 def learn_changed_output_color(train: list[dict[str, Any]]) -> int | None:
     colors = Counter()
     for p in train:
@@ -92,6 +129,8 @@ def learn_changed_output_color(train: list[dict[str, Any]]) -> int | None:
 FITTERS = {
     "color_transition_map": learn_color_transition_map,
     "dominant_transition_map": learn_dominant_transition_map,
+    "full_color_transition_map": learn_full_color_transition_map,
+    "bg_draw_color": learn_bg_draw_color,
     "changed_output_color": learn_changed_output_color,
 }
 
@@ -160,6 +199,68 @@ def singleton_markers(grid: Any, color: int | None = None) -> list[tuple[int, in
     return pts
 
 
+def components(grid: Any, cells: set[tuple[int, int]]) -> list[set[tuple[int, int]]]:
+    g = norm(grid)
+    h, w = dims(g)
+    remaining = set(cells)
+    out = []
+    while remaining:
+        start = next(iter(remaining))
+        q = deque([start])
+        remaining.remove(start)
+        comp = {start}
+        while q:
+            r, c = q.popleft()
+            for dr, dc in ((1, 0), (-1, 0), (0, 1), (0, -1)):
+                nb = (r + dr, c + dc)
+                if 0 <= nb[0] < h and 0 <= nb[1] < w and nb in remaining:
+                    remaining.remove(nb)
+                    comp.add(nb)
+                    q.append(nb)
+        out.append(comp)
+    return out
+
+
+def line_bar_components(grid: Any, route_color: int) -> list[dict[str, Any]]:
+    g = norm(grid)
+    background = bg(g)
+    cells = {
+        (r, c)
+        for r, row in enumerate(g)
+        for c, value in enumerate(row)
+        if value != background and value != route_color
+    }
+    bars = []
+    for comp in components(g, cells):
+        if len(comp) < 2:
+            continue
+        rs = [r for r, _ in comp]
+        cs = [c for _, c in comp]
+        r0, r1, c0, c1 = min(rs), max(rs), min(cs), max(cs)
+        horizontal = r0 == r1 and len(comp) >= 2
+        vertical = c0 == c1 and len(comp) >= 2
+        if not (horizontal or vertical):
+            continue
+        bars.append({
+            "cells": comp,
+            "bbox": (r0, c0, r1, c1),
+            "orientation": "h" if horizontal else "v",
+            "length": len(comp),
+        })
+    return bars
+
+
+def draw_orth_segment(g: Grid, a: tuple[int, int], b: tuple[int, int], color: int) -> None:
+    r1, c1 = a
+    r2, c2 = b
+    if r1 == r2:
+        for c in range(min(c1, c2), max(c1, c2) + 1):
+            g[r1][c] = color
+    elif c1 == c2:
+        for r in range(min(r1, r2), max(r1, r2) + 1):
+            g[r][c1] = color
+
+
 def op_recolor_map(grid: Any, args: dict[str, Any]) -> Grid:
     g = norm(grid)
     cmap = {int(k): int(v) for k, v in (args.get("map") or {}).items()}
@@ -172,6 +273,144 @@ def op_fill_enclosed(grid: Any, args: dict[str, Any]) -> Grid:
     for region in enclosed_regions(g):
         for r, c in region:
             g[r][c] = color
+    return g
+
+
+def op_bar_bracket_route(grid: Any, args: dict[str, Any]) -> Grid:
+    """Draw a conservative rectilinear route around straight host bars.
+
+    This is a generic renderer scaffold for tasks with one route-colour marker
+    and one or more straight bar hosts. It uses only input geometry at runtime:
+    host bars are non-background/non-route straight components, and turn rails
+    are chosen from available empty-side space. Empty selections are a no-op.
+    """
+    g = norm(grid)
+    h, w = dims(g)
+    color = int(args["color"])
+    markers = [(r, c) for r, c, col in singleton_markers(g, color)]
+    if not markers:
+        return g
+    bars = line_bar_components(g, color)
+    if not bars:
+        return g
+    marker = markers[0]
+    hbars = [b for b in bars if b["orientation"] == "h"]
+    vbars = [b for b in bars if b["orientation"] == "v"]
+    if len(hbars) >= len(vbars):
+        ordered = sorted(hbars, key=lambda b: (b["bbox"][0], b["bbox"][1]))
+        current = marker
+        prev_row = marker[0]
+        for bar in ordered:
+            r0, c0, _r1, c1 = bar["bbox"]
+            turn_row = max(0, min(h - 1, (prev_row + r0) // 2))
+            left_space = c0
+            right_space = w - 1 - c1
+            if right_space > left_space:
+                rail_col = min(w - 1, c1 + max(1, min(3, right_space)))
+            else:
+                rail_col = max(0, c0 - max(1, min(5, left_space)))
+            draw_orth_segment(g, current, (turn_row, current[1]), color)
+            draw_orth_segment(g, (turn_row, current[1]), (turn_row, rail_col), color)
+            current = (turn_row, rail_col)
+            prev_row = r0
+        end_row = h - 1 if current[0] >= marker[0] else 0
+        draw_orth_segment(g, current, (end_row, current[1]), color)
+    else:
+        ordered = sorted(vbars, key=lambda b: (b["bbox"][1], b["bbox"][0]))
+        current = marker
+        prev_col = marker[1]
+        for bar in ordered:
+            r0, c0, r1, _c1 = bar["bbox"]
+            turn_col = max(0, min(w - 1, (prev_col + c0) // 2))
+            above_space = r0
+            below_space = h - 1 - r1
+            if below_space > above_space:
+                rail_row = min(h - 1, r1 + max(1, min(3, below_space)))
+            else:
+                rail_row = max(0, r0 - max(1, min(3, above_space)))
+            draw_orth_segment(g, current, (current[0], turn_col), color)
+            draw_orth_segment(g, (current[0], turn_col), (rail_row, turn_col), color)
+            current = (rail_row, turn_col)
+            prev_col = c0
+        end_col = w - 1 if current[1] >= marker[1] else 0
+        draw_orth_segment(g, current, (current[0], end_col), color)
+    return g
+
+
+def op_bar_marker_bracket_route(grid: Any, args: dict[str, Any]) -> Grid:
+    """Recolor marked straight bars and route around them by marker count.
+
+    For each straight non-background/non-route bar containing source colours
+    from `map`, the side offset is derived from the number of source-colour
+    cells in that bar plus one. This keeps the integer parameter input-derived
+    instead of a constant, matching the v0.3 derived-int contract.
+    """
+    original = norm(grid)
+    g = norm(grid)
+    h, w = dims(g)
+    color = int(args["color"])
+    cmap = {int(k): int(v) for k, v in (args.get("map") or {}).items()}
+    if not cmap:
+        return g
+    source_colors = set(cmap)
+    markers = [(r, c) for r, c, col in singleton_markers(original, color)]
+    if not markers:
+        return [[cmap.get(v, v) for v in row] for row in g]
+    marker = markers[0]
+    bars = []
+    for bar in line_bar_components(original, color):
+        n_src = sum(1 for cell in bar["cells"] if original[cell[0]][cell[1]] in source_colors)
+        if n_src <= 0:
+            continue
+        item = dict(bar)
+        item["source_count"] = n_src
+        item["margin"] = n_src + 1
+        bars.append(item)
+    if not bars:
+        return [[cmap.get(v, v) for v in row] for row in g]
+
+    hbars = [b for b in bars if b["orientation"] == "h"]
+    vbars = [b for b in bars if b["orientation"] == "v"]
+    if len(hbars) >= len(vbars):
+        ordered = sorted(hbars, key=lambda b: (b["bbox"][0], b["bbox"][1]))
+        current = marker
+        marker_above = marker[0] <= ordered[0]["bbox"][0]
+        for bar in ordered:
+            r0, c0, r1, c1 = bar["bbox"]
+            margin = int(bar["margin"])
+            turn_row = max(0, r0 - margin) if marker_above else min(h - 1, r1 + margin)
+            left_space = c0
+            right_space = w - 1 - c1
+            if right_space > left_space:
+                rail_col = min(w - 1, c1 + margin)
+            else:
+                rail_col = max(0, c0 - margin)
+            draw_orth_segment(g, current, (turn_row, current[1]), color)
+            draw_orth_segment(g, (turn_row, current[1]), (turn_row, rail_col), color)
+            current = (turn_row, rail_col)
+        end_row = h - 1 if marker_above else 0
+        draw_orth_segment(g, current, (end_row, current[1]), color)
+    else:
+        ordered = sorted(vbars, key=lambda b: (b["bbox"][1], b["bbox"][0]))
+        current = marker
+        marker_left = marker[1] <= ordered[0]["bbox"][1]
+        for idx, bar in enumerate(ordered):
+            r0, c0, r1, c1 = bar["bbox"]
+            margin = int(bar["margin"])
+            turn_col = max(0, c0 - margin) if marker_left else min(w - 1, c1 + margin)
+            if idx % 2 == 0:
+                rail_row = min(h - 1, r1 + margin)
+            else:
+                rail_row = max(0, r0 - margin)
+            draw_orth_segment(g, current, (current[0], turn_col), color)
+            draw_orth_segment(g, (current[0], turn_col), (rail_row, turn_col), color)
+            current = (rail_row, turn_col)
+        end_col = w - 1 if marker_left else 0
+        draw_orth_segment(g, current, (current[0], end_col), color)
+
+    for r in range(h):
+        for c in range(w):
+            g[r][c] = cmap.get(g[r][c], g[r][c])
     return g
 
 
@@ -201,6 +440,8 @@ def op_route_singletons(grid: Any, args: dict[str, Any]) -> Grid:
 OPS = {
     "recolor_map": op_recolor_map,
     "fill_enclosed": op_fill_enclosed,
+    "bar_bracket_route": op_bar_bracket_route,
+    "bar_marker_bracket_route": op_bar_marker_bracket_route,
     "route_singletons": op_route_singletons,
 }
 
@@ -257,12 +498,35 @@ DEFAULT_PROGRAMS: list[Program] = [
         "pipeline": [{"op": "recolor_map", "args": {"map": {"learn": "dominant_transition_map"}}}],
     },
     {
+        "name": "full_color_transition_map",
+        "pipeline": [{"op": "recolor_map", "args": {"map": {"learn": "full_color_transition_map"}}}],
+    },
+    {
         "name": "fill_enclosed_changed_color",
         "pipeline": [{"op": "fill_enclosed", "args": {"color": {"learn": "changed_output_color"}}}],
     },
     {
         "name": "route_singletons_same",
         "pipeline": [{"op": "route_singletons", "args": {"color": "same"}}],
+    },
+    {
+        "name": "full_recolor_then_bar_bracket_route",
+        "pipeline": [
+            {"op": "recolor_map", "args": {"map": {"learn": "full_color_transition_map"}}},
+            {"op": "bar_bracket_route", "args": {"color": {"learn": "bg_draw_color"}}},
+        ],
+    },
+    {
+        "name": "bar_marker_bracket_route",
+        "pipeline": [
+            {
+                "op": "bar_marker_bracket_route",
+                "args": {
+                    "map": {"learn": "full_color_transition_map"},
+                    "color": {"learn": "bg_draw_color"},
+                },
+            }
+        ],
     },
 ]
 
