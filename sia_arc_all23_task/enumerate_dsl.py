@@ -8,6 +8,8 @@ and records LOO admission type using the same hardened evaluator.
 from __future__ import annotations
 
 import importlib.util
+import ast
+import inspect
 import json
 from copy import deepcopy
 from pathlib import Path
@@ -18,6 +20,9 @@ WORKSPACE = HERE.parent
 OUT = WORKSPACE / "tmp" / "dsl_enumeration_latest.json"
 
 import dsl_interpreter as DSL
+
+
+ALLOWED_STRUCTURAL_INTS = {-1, 0, 1, 2}
 
 
 def _load_base_evaluator():
@@ -89,11 +94,88 @@ def program_space() -> list[dict[str, Any]]:
     return programs
 
 
+def op_magic_ints(op_name: str) -> list[int]:
+    fn = DSL.OPS.get(op_name)
+    if fn is None:
+        return []
+    try:
+        tree = ast.parse(inspect.getsource(fn))
+    except Exception:
+        return []
+    out = set()
+    for node in ast.walk(tree):
+        if isinstance(node, ast.Constant) and isinstance(node.value, int):
+            if node.value not in ALLOWED_STRUCTURAL_INTS:
+                out.add(int(node.value))
+    return sorted(out)
+
+
+def program_generality(program: dict[str, Any]) -> dict[str, Any]:
+    op_constants: dict[str, list[int]] = {}
+    for step in program.get("pipeline", []):
+        op = step.get("op")
+        constants = op_magic_ints(op)
+        if constants:
+            op_constants[op] = constants
+    blockers = []
+    if op_constants:
+        blockers.append("magic_int_constants")
+    return {"magic_int_constants": op_constants, "blockers": blockers}
+
+
 def _propose_for(program: dict[str, Any]):
     def propose(train):
         compiled = DSL.compile_program(program, train)
         return [compiled] if compiled is not None else []
     return propose
+
+
+def _d4_variants(grid):
+    def hflip(g):
+        return [list(reversed(row)) for row in g]
+
+    def vflip(g):
+        return list(reversed([row[:] for row in g]))
+
+    def rot90(g):
+        return [list(row) for row in zip(*g[::-1])]
+
+    def rot180(g):
+        return rot90(rot90(g))
+
+    def rot270(g):
+        return rot90(rot180(g))
+
+    return {
+        "hflip": hflip(grid),
+        "vflip": vflip(grid),
+        "rot90": rot90(grid),
+        "rot180": rot180(grid),
+        "rot270": rot270(grid),
+        "anti_diag": hflip(rot90(grid)),
+    }
+
+
+def synthetic_d4_exact(program: dict[str, Any], train: list[dict[str, Any]]) -> dict[str, bool]:
+    labels = ["hflip", "vflip", "rot90", "rot180", "rot270", "anti_diag"]
+    out = {}
+    for label in labels:
+        variant = []
+        for pair in train:
+            variant.append({
+                "input": _d4_variants(pair["input"])[label],
+                "output": _d4_variants(pair["output"])[label],
+            })
+        compiled = DSL.compile_program(program, variant)
+        if compiled is None:
+            out[label] = False
+            continue
+        _name, fn = compiled
+        try:
+            out[label] = all(fn(deepcopy(p["input"])) == p["output"] for p in variant)
+        except Exception:
+            out[label] = False
+    return out
 
 
 def score_task(task_id: str, task: dict[str, Any], evaluator: Any, programs: list[dict[str, Any]]) -> dict[str, Any]:
@@ -110,6 +192,7 @@ def score_task(task_id: str, task: dict[str, Any], evaluator: Any, programs: lis
         row = dict(diag_by_name.get(name, {}))
         row["program_name"] = program.get("name")
         row["signature"] = name
+        row["generality"] = program_generality(program)
         if row.get("shape_exact") and row.get("train_diff") == 0:
             ev = evaluator.loo_evidence(_propose_for(program), train, required_name=name, full_transform=fn)
             row["loo"] = {
@@ -117,6 +200,7 @@ def score_task(task_id: str, task: dict[str, Any], evaluator: Any, programs: lis
                 "informative": ev["informative"],
                 "admission_type": ev["admission_type"],
             }
+            row["synthetic_d4_exact"] = synthetic_d4_exact(program, train)
         rows.append(row)
     rows.sort(key=lambda r: (
         r.get("train_diff") is None,
@@ -146,6 +230,15 @@ def main() -> None:
     for row in results:
         for exact in row["train_exact"]:
             cross.setdefault(exact["signature"], []).append(row["task_id"])
+    for row in results:
+        for exact in row["train_exact"]:
+            cross_count = len(cross.get(exact["signature"], []))
+            blockers = list((exact.get("generality") or {}).get("blockers", []))
+            if not (exact.get("loo") or {}).get("informative") and cross_count < 2:
+                blockers.append("no_informative_loo_or_cross")
+            exact["cross_task_count"] = cross_count
+            exact["admission_ready"] = not blockers
+            exact["promotion_blockers"] = blockers
     out = {
         "artifact": "dsl_enumeration_latest",
         "programs_enumerated": len(programs),

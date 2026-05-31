@@ -36,7 +36,11 @@
         ],
         "error": null,
         "program_name": "route_singletons_same",
-        "signature": "route_singletons_same|route_singletons()"
+        "signature": "route_singletons_same|route_singletons()",
+        "generality": {
+          "magic_int_constants": {},
+          "blockers": []
+        }
       },
       "train_exact": [],
       "top": [
@@ -65,7 +69,11 @@
           ],
           "error": null,
           "program_name": "route_singletons_same",
-          "signature": "route_singletons_same|route_singletons()"
+          "signature": "route_singletons_same|route_singletons()",
+          "generality": {
+            "magic_int_constants": {},
+            "blockers": []
+          }
         },
         {
           "name": "enum_route_singletons:same|route_singletons()",
@@ -92,7 +100,11 @@
           ],
           "error": null,
           "program_name": "enum_route_singletons:same",
-          "signature": "enum_route_singletons:same|route_singletons()"
+          "signature": "enum_route_singletons:same|route_singletons()",
+          "generality": {
+            "magic_int_constants": {},
+            "blockers": []
+          }
         },
         {
           "name": "fill_enclosed_changed_color|fill_enclosed(changed_output_color)",
@@ -119,7 +131,11 @@
           ],
           "error": null,
           "program_name": "fill_enclosed_changed_color",
-          "signature": "fill_enclosed_changed_color|fill_enclosed(changed_output_color)"
+          "signature": "fill_enclosed_changed_color|fill_enclosed(changed_output_color)",
+          "generality": {
+            "magic_int_constants": {},
+            "blockers": []
+          }
         },
         {
           "name": "enum_fill_enclosed:changed_output_color|fill_enclosed(changed_output_color)",
@@ -146,7 +162,11 @@
           ],
           "error": null,
           "program_name": "enum_fill_enclosed:changed_output_color",
-          "signature": "enum_fill_enclosed:changed_output_color|fill_enclosed(changed_output_color)"
+          "signature": "enum_fill_enclosed:changed_output_color|fill_enclosed(changed_output_color)",
+          "generality": {
+            "magic_int_constants": {},
+            "blockers": []
+          }
         },
         {
           "name": "enum_bar_route:bg_draw|bar_bracket_route(bg_draw_color)",
@@ -173,7 +193,18 @@
           ],
           "error": null,
           "program_name": "enum_bar_route:bg_draw",
-          "signature": "enum_bar_route:bg_draw|bar_bracket_route(bg_draw_color)"
+          "signature": "enum_bar_route:bg_draw|bar_bracket_route(bg_draw_color)",
+          "generality": {
+            "magic_int_constants": {
+              "bar_bracket_route": [
+                3,
+                5
+              ]
+            },
+            "blockers": [
+              "magic_int_constants"
+            ]
+          }
         },
         {
           "name": "dominant_recolor_map|recolor_map(dominant_transition_map)",
@@ -200,7 +231,11 @@
           ],
           "error": null,
           "program_name": "dominant_recolor_map",
-          "signature": "dominant_recolor_map|recolor_map(dominant_transition_map)"
+          "signature": "dominant_recolor_map|recolor_map(dominant_transition_map)",
+          "generality": {
+            "magic_int_constants": {},
+            "blockers": []
+          }
         },
         {
           "name": "enum_recolor:dominant_transition_map|recolor_map(dominant_transition_map)",
@@ -227,7 +262,11 @@
           ],
           "error": null,
           "program_name": "enum_recolor:dominant_transition_map",
-          "signature": "enum_recolor:dominant_transition_map|recolor_map(dominant_transition_map)"
+          "signature": "enum_recolor:dominant_transition_map|recolor_map(dominant_transition_map)",
+          "generality": {
+            "magic_int_constants": {},
+            "blockers": []
+          }
         },
         {
           "name": "enum_recolor_then_bar_route:dominant_transition_map+bg_draw|recolor_map(dominant_transition_map)|bar_bracket_route(bg_draw_color)",
@@ -254,7 +293,18 @@
           ],
           "error": null,
           "program_name": "enum_recolor_then_bar_route:dominant_transition_map+bg_draw",
-          "signature": "enum_recolor_then_bar_route:dominant_transition_map+bg_draw|recolor_map(dominant_transition_map)|bar_bracket_route(bg_draw_color)"
+          "signature": "enum_recolor_then_bar_route:dominant_transition_map+bg_draw|recolor_map(dominant_transition_map)|bar_bracket_route(bg_draw_color)",
+          "generality": {
+            "magic_int_constants": {
+              "bar_bracket_route": [
+                3,
+                5
+              ]
+            },
+            "blockers": [
+              "magic_int_constants"
+            ]
+          }
         }
       ]
     },
@@ -281,7 +331,11 @@
         ],
         "error": null,
         "program_name": "full_color_transition_map",
-        "signature": "full_color_transition_map|recolor_map(full_color_transition_map)"
+        "signature": "full_color_transition_map|recolor_map(full_color_transition_map)",
+        "generality": {
+          "magic_int_constants": {},
+          "blockers": []
+        }
       },
       "train_exact": [],
       "top": [
@@ -305,7 +359,11 @@
           ],
           "error": null,
           "program_name": "full_color_transition_map",
-          "signature": "full_color_transition_map|recolor_map(full_color_transition_map)"
+          "signature": "full_color_transition_map|recolor_map(full_color_transition_map)",
+          "generality": {
+            "magic_int_constants": {},
+            "blockers": []
+          }
         },
         {
           "name": "enum_recolor:full_color_transition_map|recolor_map(full_color_transition_map)",
@@ -327,7 +385,11 @@
           ],
           "error": null,
           "program_name": "enum_recolor:full_color_transition_map",
-          "signature": "enum_recolor:full_color_transition_map|recolor_map(full_color_transition_map)"
+          "signature": "enum_recolor:full_color_transition_map|recolor_map(full_color_transition_map)",
+          "generality": {
+            "magic_int_constants": {},
+            "blockers": []
+          }
         },
         {
           "name": "bar_marker_bracket_route|bar_marker_bracket_route(bg_draw_color,full_color_transition_map)",
@@ -349,7 +411,11 @@
           ],
           "error": null,
           "program_name": "bar_marker_bracket_route",
-          "signature": "bar_marker_bracket_route|bar_marker_bracket_route(bg_draw_color,full_color_transition_map)"
+          "signature": "bar_marker_bracket_route|bar_marker_bracket_route(bg_draw_color,full_color_transition_map)",
+          "generality": {
+            "magic_int_constants": {},
+            "blockers": []
+          }
         },
         {
           "name": "enum_bar_marker_route:full_map+bg_draw|bar_marker_bracket_route(bg_draw_color,full_color_transition_map)",
@@ -371,7 +437,11 @@
           ],
           "error": null,
           "program_name": "enum_bar_marker_route:full_map+bg_draw",
-          "signature": "enum_bar_marker_route:full_map+bg_draw|bar_marker_bracket_route(bg_draw_color,full_color_transition_map)"
+          "signature": "enum_bar_marker_route:full_map+bg_draw|bar_marker_bracket_route(bg_draw_color,full_color_transition_map)",
+          "generality": {
+            "magic_int_constants": {},
+            "blockers": []
+          }
         },
         {
           "name": "full_recolor_then_bar_bracket_route|recolor_map(full_color_transition_map)|bar_bracket_route(bg_draw_color)",
@@ -393,7 +463,18 @@
           ],
           "error": null,
           "program_name": "full_recolor_then_bar_bracket_route",
-          "signature": "full_recolor_then_bar_bracket_route|recolor_map(full_color_transition_map)|bar_bracket_route(bg_draw_color)"
+          "signature": "full_recolor_then_bar_bracket_route|recolor_map(full_color_transition_map)|bar_bracket_route(bg_draw_color)",
+          "generality": {
+            "magic_int_constants": {
+              "bar_bracket_route": [
+                3,
+                5
+              ]
+            },
+            "blockers": [
+              "magic_int_constants"
+            ]
+          }
         },
         {
           "name": "enum_recolor_then_bar_route:full_color_transition_map+bg_draw|recolor_map(full_color_transition_map)|bar_bracket_route(bg_draw_color)",
@@ -415,7 +496,18 @@
           ],
           "error": null,
           "program_name": "enum_recolor_then_bar_route:full_color_transition_map+bg_draw",
-          "signature": "enum_recolor_then_bar_route:full_color_transition_map+bg_draw|recolor_map(full_color_transition_map)|bar_bracket_route(bg_draw_color)"
+          "signature": "enum_recolor_then_bar_route:full_color_transition_map+bg_draw|recolor_map(full_color_transition_map)|bar_bracket_route(bg_draw_color)",
+          "generality": {
+            "magic_int_constants": {
+              "bar_bracket_route": [
+                3,
+                5
+              ]
+            },
+            "blockers": [
+              "magic_int_constants"
+            ]
+          }
         },
         {
           "name": "enum_bar_route_then_recolor:bg_draw+full_color_transition_map|bar_bracket_route(bg_draw_color)|recolor_map(full_color_transition_map)",
@@ -437,7 +529,18 @@
           ],
           "error": null,
           "program_name": "enum_bar_route_then_recolor:bg_draw+full_color_transition_map",
-          "signature": "enum_bar_route_then_recolor:bg_draw+full_color_transition_map|bar_bracket_route(bg_draw_color)|recolor_map(full_color_transition_map)"
+          "signature": "enum_bar_route_then_recolor:bg_draw+full_color_transition_map|bar_bracket_route(bg_draw_color)|recolor_map(full_color_transition_map)",
+          "generality": {
+            "magic_int_constants": {
+              "bar_bracket_route": [
+                3,
+                5
+              ]
+            },
+            "blockers": [
+              "magic_int_constants"
+            ]
+          }
         },
         {
           "name": "enum_bar_route:bg_draw|bar_bracket_route(bg_draw_color)",
@@ -459,7 +562,18 @@
           ],
           "error": null,
           "program_name": "enum_bar_route:bg_draw",
-          "signature": "enum_bar_route:bg_draw|bar_bracket_route(bg_draw_color)"
+          "signature": "enum_bar_route:bg_draw|bar_bracket_route(bg_draw_color)",
+          "generality": {
+            "magic_int_constants": {
+              "bar_bracket_route": [
+                3,
+                5
+              ]
+            },
+            "blockers": [
+              "magic_int_constants"
+            ]
+          }
         }
       ]
     },
@@ -491,7 +605,11 @@
         ],
         "error": null,
         "program_name": "full_color_transition_map",
-        "signature": "full_color_transition_map|recolor_map(full_color_transition_map)"
+        "signature": "full_color_transition_map|recolor_map(full_color_transition_map)",
+        "generality": {
+          "magic_int_constants": {},
+          "blockers": []
+        }
       },
       "train_exact": [],
       "top": [
@@ -520,7 +638,11 @@
           ],
           "error": null,
           "program_name": "full_color_transition_map",
-          "signature": "full_color_transition_map|recolor_map(full_color_transition_map)"
+          "signature": "full_color_transition_map|recolor_map(full_color_transition_map)",
+          "generality": {
+            "magic_int_constants": {},
+            "blockers": []
+          }
         },
         {
           "name": "enum_recolor:full_color_transition_map|recolor_map(full_color_transition_map)",
@@ -547,7 +669,11 @@
           ],
           "error": null,
           "program_name": "enum_recolor:full_color_transition_map",
-          "signature": "enum_recolor:full_color_transition_map|recolor_map(full_color_transition_map)"
+          "signature": "enum_recolor:full_color_transition_map|recolor_map(full_color_transition_map)",
+          "generality": {
+            "magic_int_constants": {},
+            "blockers": []
+          }
         },
         {
           "name": "bar_marker_bracket_route|bar_marker_bracket_route(bg_draw_color,full_color_transition_map)",
@@ -574,7 +700,11 @@
           ],
           "error": null,
           "program_name": "bar_marker_bracket_route",
-          "signature": "bar_marker_bracket_route|bar_marker_bracket_route(bg_draw_color,full_color_transition_map)"
+          "signature": "bar_marker_bracket_route|bar_marker_bracket_route(bg_draw_color,full_color_transition_map)",
+          "generality": {
+            "magic_int_constants": {},
+            "blockers": []
+          }
         },
         {
           "name": "enum_bar_marker_route:full_map+bg_draw|bar_marker_bracket_route(bg_draw_color,full_color_transition_map)",
@@ -601,7 +731,11 @@
           ],
           "error": null,
           "program_name": "enum_bar_marker_route:full_map+bg_draw",
-          "signature": "enum_bar_marker_route:full_map+bg_draw|bar_marker_bracket_route(bg_draw_color,full_color_transition_map)"
+          "signature": "enum_bar_marker_route:full_map+bg_draw|bar_marker_bracket_route(bg_draw_color,full_color_transition_map)",
+          "generality": {
+            "magic_int_constants": {},
+            "blockers": []
+          }
         },
         {
           "name": "full_recolor_then_bar_bracket_route|recolor_map(full_color_transition_map)|bar_bracket_route(bg_draw_color)",
@@ -628,7 +762,18 @@
           ],
           "error": null,
           "program_name": "full_recolor_then_bar_bracket_route",
-          "signature": "full_recolor_then_bar_bracket_route|recolor_map(full_color_transition_map)|bar_bracket_route(bg_draw_color)"
+          "signature": "full_recolor_then_bar_bracket_route|recolor_map(full_color_transition_map)|bar_bracket_route(bg_draw_color)",
+          "generality": {
+            "magic_int_constants": {
+              "bar_bracket_route": [
+                3,
+                5
+              ]
+            },
+            "blockers": [
+              "magic_int_constants"
+            ]
+          }
         },
         {
           "name": "enum_recolor_then_bar_route:full_color_transition_map+bg_draw|recolor_map(full_color_transition_map)|bar_bracket_route(bg_draw_color)",
@@ -655,7 +800,18 @@
           ],
           "error": null,
           "program_name": "enum_recolor_then_bar_route:full_color_transition_map+bg_draw",
-          "signature": "enum_recolor_then_bar_route:full_color_transition_map+bg_draw|recolor_map(full_color_transition_map)|bar_bracket_route(bg_draw_color)"
+          "signature": "enum_recolor_then_bar_route:full_color_transition_map+bg_draw|recolor_map(full_color_transition_map)|bar_bracket_route(bg_draw_color)",
+          "generality": {
+            "magic_int_constants": {
+              "bar_bracket_route": [
+                3,
+                5
+              ]
+            },
+            "blockers": [
+              "magic_int_constants"
+            ]
+          }
         },
         {
           "name": "enum_bar_route_then_recolor:bg_draw+full_color_transition_map|bar_bracket_route(bg_draw_color)|recolor_map(full_color_transition_map)",
@@ -682,7 +838,18 @@
           ],
           "error": null,
           "program_name": "enum_bar_route_then_recolor:bg_draw+full_color_transition_map",
-          "signature": "enum_bar_route_then_recolor:bg_draw+full_color_transition_map|bar_bracket_route(bg_draw_color)|recolor_map(full_color_transition_map)"
+          "signature": "enum_bar_route_then_recolor:bg_draw+full_color_transition_map|bar_bracket_route(bg_draw_color)|recolor_map(full_color_transition_map)",
+          "generality": {
+            "magic_int_constants": {
+              "bar_bracket_route": [
+                3,
+                5
+              ]
+            },
+            "blockers": [
+              "magic_int_constants"
+            ]
+          }
         },
         {
           "name": "enum_bar_route:bg_draw|bar_bracket_route(bg_draw_color)",
@@ -709,7 +876,18 @@
           ],
           "error": null,
           "program_name": "enum_bar_route:bg_draw",
-          "signature": "enum_bar_route:bg_draw|bar_bracket_route(bg_draw_color)"
+          "signature": "enum_bar_route:bg_draw|bar_bracket_route(bg_draw_color)",
+          "generality": {
+            "magic_int_constants": {
+              "bar_bracket_route": [
+                3,
+                5
+              ]
+            },
+            "blockers": [
+              "magic_int_constants"
+            ]
+          }
         }
       ]
     },
@@ -748,7 +926,18 @@
         ],
         "error": null,
         "program_name": "enum_bar_route:bg_draw",
-        "signature": "enum_bar_route:bg_draw|bar_bracket_route(bg_draw_color)"
+        "signature": "enum_bar_route:bg_draw|bar_bracket_route(bg_draw_color)",
+        "generality": {
+          "magic_int_constants": {
+            "bar_bracket_route": [
+              3,
+              5
+            ]
+          },
+          "blockers": [
+            "magic_int_constants"
+          ]
+        }
       },
       "train_exact": [],
       "top": [
@@ -777,7 +966,18 @@
           ],
           "error": null,
           "program_name": "enum_bar_route:bg_draw",
-          "signature": "enum_bar_route:bg_draw|bar_bracket_route(bg_draw_color)"
+          "signature": "enum_bar_route:bg_draw|bar_bracket_route(bg_draw_color)",
+          "generality": {
+            "magic_int_constants": {
+              "bar_bracket_route": [
+                3,
+                5
+              ]
+            },
+            "blockers": [
+              "magic_int_constants"
+            ]
+          }
         },
         {
           "name": "fill_enclosed_changed_color|fill_enclosed(changed_output_color)",
@@ -804,7 +1004,11 @@
           ],
           "error": null,
           "program_name": "fill_enclosed_changed_color",
-          "signature": "fill_enclosed_changed_color|fill_enclosed(changed_output_color)"
+          "signature": "fill_enclosed_changed_color|fill_enclosed(changed_output_color)",
+          "generality": {
+            "magic_int_constants": {},
+            "blockers": []
+          }
         },
         {
           "name": "enum_fill_enclosed:changed_output_color|fill_enclosed(changed_output_color)",
@@ -831,7 +1035,11 @@
           ],
           "error": null,
           "program_name": "enum_fill_enclosed:changed_output_color",
-          "signature": "enum_fill_enclosed:changed_output_color|fill_enclosed(changed_output_color)"
+          "signature": "enum_fill_enclosed:changed_output_color|fill_enclosed(changed_output_color)",
+          "generality": {
+            "magic_int_constants": {},
+            "blockers": []
+          }
         },
         {
           "name": "route_singletons_same|route_singletons()",
@@ -858,7 +1066,11 @@
           ],
           "error": null,
           "program_name": "route_singletons_same",
-          "signature": "route_singletons_same|route_singletons()"
+          "signature": "route_singletons_same|route_singletons()",
+          "generality": {
+            "magic_int_constants": {},
+            "blockers": []
+          }
         },
         {
           "name": "enum_route_singletons:same|route_singletons()",
@@ -885,7 +1097,11 @@
           ],
           "error": null,
           "program_name": "enum_route_singletons:same",
-          "signature": "enum_route_singletons:same|route_singletons()"
+          "signature": "enum_route_singletons:same|route_singletons()",
+          "generality": {
+            "magic_int_constants": {},
+            "blockers": []
+          }
         },
         {
           "name": "dominant_recolor_map|recolor_map(dominant_transition_map)",
@@ -912,7 +1128,11 @@
           ],
           "error": null,
           "program_name": "dominant_recolor_map",
-          "signature": "dominant_recolor_map|recolor_map(dominant_transition_map)"
+          "signature": "dominant_recolor_map|recolor_map(dominant_transition_map)",
+          "generality": {
+            "magic_int_constants": {},
+            "blockers": []
+          }
         },
         {
           "name": "enum_recolor:dominant_transition_map|recolor_map(dominant_transition_map)",
@@ -939,7 +1159,11 @@
           ],
           "error": null,
           "program_name": "enum_recolor:dominant_transition_map",
-          "signature": "enum_recolor:dominant_transition_map|recolor_map(dominant_transition_map)"
+          "signature": "enum_recolor:dominant_transition_map|recolor_map(dominant_transition_map)",
+          "generality": {
+            "magic_int_constants": {},
+            "blockers": []
+          }
         },
         {
           "name": "enum_recolor_then_bar_route:dominant_transition_map+bg_draw|recolor_map(dominant_transition_map)|bar_bracket_route(bg_draw_color)",
@@ -966,7 +1190,18 @@
           ],
           "error": null,
           "program_name": "enum_recolor_then_bar_route:dominant_transition_map+bg_draw",
-          "signature": "enum_recolor_then_bar_route:dominant_transition_map+bg_draw|recolor_map(dominant_transition_map)|bar_bracket_route(bg_draw_color)"
+          "signature": "enum_recolor_then_bar_route:dominant_transition_map+bg_draw|recolor_map(dominant_transition_map)|bar_bracket_route(bg_draw_color)",
+          "generality": {
+            "magic_int_constants": {
+              "bar_bracket_route": [
+                3,
+                5
+              ]
+            },
+            "blockers": [
+              "magic_int_constants"
+            ]
+          }
         }
       ]
     },
@@ -1005,7 +1240,11 @@
         ],
         "error": null,
         "program_name": "route_singletons_same",
-        "signature": "route_singletons_same|route_singletons()"
+        "signature": "route_singletons_same|route_singletons()",
+        "generality": {
+          "magic_int_constants": {},
+          "blockers": []
+        }
       },
       "train_exact": [],
       "top": [
@@ -1034,7 +1273,11 @@
           ],
           "error": null,
           "program_name": "route_singletons_same",
-          "signature": "route_singletons_same|route_singletons()"
+          "signature": "route_singletons_same|route_singletons()",
+          "generality": {
+            "magic_int_constants": {},
+            "blockers": []
+          }
         },
         {
           "name": "enum_route_singletons:same|route_singletons()",
@@ -1061,7 +1304,11 @@
           ],
           "error": null,
           "program_name": "enum_route_singletons:same",
-          "signature": "enum_route_singletons:same|route_singletons()"
+          "signature": "enum_route_singletons:same|route_singletons()",
+          "generality": {
+            "magic_int_constants": {},
+            "blockers": []
+          }
         },
         {
           "name": "fill_enclosed_changed_color|fill_enclosed(changed_output_color)",
@@ -1088,7 +1335,11 @@
           ],
           "error": null,
           "program_name": "fill_enclosed_changed_color",
-          "signature": "fill_enclosed_changed_color|fill_enclosed(changed_output_color)"
+          "signature": "fill_enclosed_changed_color|fill_enclosed(changed_output_color)",
+          "generality": {
+            "magic_int_constants": {},
+            "blockers": []
+          }
         },
         {
           "name": "enum_fill_enclosed:changed_output_color|fill_enclosed(changed_output_color)",
@@ -1115,7 +1366,11 @@
           ],
           "error": null,
           "program_name": "enum_fill_enclosed:changed_output_color",
-          "signature": "enum_fill_enclosed:changed_output_color|fill_enclosed(changed_output_color)"
+          "signature": "enum_fill_enclosed:changed_output_color|fill_enclosed(changed_output_color)",
+          "generality": {
+            "magic_int_constants": {},
+            "blockers": []
+          }
         },
         {
           "name": "enum_bar_route:bg_draw|bar_bracket_route(bg_draw_color)",
@@ -1142,7 +1397,18 @@
           ],
           "error": null,
           "program_name": "enum_bar_route:bg_draw",
-          "signature": "enum_bar_route:bg_draw|bar_bracket_route(bg_draw_color)"
+          "signature": "enum_bar_route:bg_draw|bar_bracket_route(bg_draw_color)",
+          "generality": {
+            "magic_int_constants": {
+              "bar_bracket_route": [
+                3,
+                5
+              ]
+            },
+            "blockers": [
+              "magic_int_constants"
+            ]
+          }
         },
         {
           "name": "dominant_recolor_map|recolor_map(dominant_transition_map)",
@@ -1169,7 +1435,11 @@
           ],
           "error": null,
           "program_name": "dominant_recolor_map",
-          "signature": "dominant_recolor_map|recolor_map(dominant_transition_map)"
+          "signature": "dominant_recolor_map|recolor_map(dominant_transition_map)",
+          "generality": {
+            "magic_int_constants": {},
+            "blockers": []
+          }
         },
         {
           "name": "enum_recolor:dominant_transition_map|recolor_map(dominant_transition_map)",
@@ -1196,7 +1466,11 @@
           ],
           "error": null,
           "program_name": "enum_recolor:dominant_transition_map",
-          "signature": "enum_recolor:dominant_transition_map|recolor_map(dominant_transition_map)"
+          "signature": "enum_recolor:dominant_transition_map|recolor_map(dominant_transition_map)",
+          "generality": {
+            "magic_int_constants": {},
+            "blockers": []
+          }
         },
         {
           "name": "enum_recolor_then_bar_route:dominant_transition_map+bg_draw|recolor_map(dominant_transition_map)|bar_bracket_route(bg_draw_color)",
@@ -1223,7 +1497,18 @@
           ],
           "error": null,
           "program_name": "enum_recolor_then_bar_route:dominant_transition_map+bg_draw",
-          "signature": "enum_recolor_then_bar_route:dominant_transition_map+bg_draw|recolor_map(dominant_transition_map)|bar_bracket_route(bg_draw_color)"
+          "signature": "enum_recolor_then_bar_route:dominant_transition_map+bg_draw|recolor_map(dominant_transition_map)|bar_bracket_route(bg_draw_color)",
+          "generality": {
+            "magic_int_constants": {
+              "bar_bracket_route": [
+                3,
+                5
+              ]
+            },
+            "blockers": [
+              "magic_int_constants"
+            ]
+          }
         }
       ]
     },
@@ -1266,7 +1551,11 @@
         ],
         "error": null,
         "program_name": "fill_enclosed_changed_color",
-        "signature": "fill_enclosed_changed_color|fill_enclosed(changed_output_color)"
+        "signature": "fill_enclosed_changed_color|fill_enclosed(changed_output_color)",
+        "generality": {
+          "magic_int_constants": {},
+          "blockers": []
+        }
       },
       "train_exact": [],
       "top": [
@@ -1306,7 +1595,11 @@
           ],
           "error": null,
           "program_name": "fill_enclosed_changed_color",
-          "signature": "fill_enclosed_changed_color|fill_enclosed(changed_output_color)"
+          "signature": "fill_enclosed_changed_color|fill_enclosed(changed_output_color)",
+          "generality": {
+            "magic_int_constants": {},
+            "blockers": []
+          }
         },
         {
           "name": "enum_fill_enclosed:changed_output_color|fill_enclosed(changed_output_color)",
@@ -1344,7 +1637,11 @@
           ],
           "error": null,
           "program_name": "enum_fill_enclosed:changed_output_color",
-          "signature": "enum_fill_enclosed:changed_output_color|fill_enclosed(changed_output_color)"
+          "signature": "enum_fill_enclosed:changed_output_color|fill_enclosed(changed_output_color)",
+          "generality": {
+            "magic_int_constants": {},
+            "blockers": []
+          }
         },
         {
           "name": "enum_bar_route:bg_draw|bar_bracket_route(bg_draw_color)",
@@ -1382,7 +1679,18 @@
           ],
           "error": null,
           "program_name": "enum_bar_route:bg_draw",
-          "signature": "enum_bar_route:bg_draw|bar_bracket_route(bg_draw_color)"
+          "signature": "enum_bar_route:bg_draw|bar_bracket_route(bg_draw_color)",
+          "generality": {
+            "magic_int_constants": {
+              "bar_bracket_route": [
+                3,
+                5
+              ]
+            },
+            "blockers": [
+              "magic_int_constants"
+            ]
+          }
         },
         {
           "name": "route_singletons_same|route_singletons()",
@@ -1420,7 +1728,11 @@
           ],
           "error": null,
           "program_name": "route_singletons_same",
-          "signature": "route_singletons_same|route_singletons()"
+          "signature": "route_singletons_same|route_singletons()",
+          "generality": {
+            "magic_int_constants": {},
+            "blockers": []
+          }
         },
         {
           "name": "enum_route_singletons:same|route_singletons()",
@@ -1458,7 +1770,11 @@
           ],
           "error": null,
           "program_name": "enum_route_singletons:same",
-          "signature": "enum_route_singletons:same|route_singletons()"
+          "signature": "enum_route_singletons:same|route_singletons()",
+          "generality": {
+            "magic_int_constants": {},
+            "blockers": []
+          }
         },
         {
           "name": "learned_recolor_map|recolor_map(color_transition_map)",
@@ -1496,7 +1812,11 @@
           ],
           "error": null,
           "program_name": "learned_recolor_map",
-          "signature": "learned_recolor_map|recolor_map(color_transition_map)"
+          "signature": "learned_recolor_map|recolor_map(color_transition_map)",
+          "generality": {
+            "magic_int_constants": {},
+            "blockers": []
+          }
         },
         {
           "name": "dominant_recolor_map|recolor_map(dominant_transition_map)",
@@ -1534,7 +1854,11 @@
           ],
           "error": null,
           "program_name": "dominant_recolor_map",
-          "signature": "dominant_recolor_map|recolor_map(dominant_transition_map)"
+          "signature": "dominant_recolor_map|recolor_map(dominant_transition_map)",
+          "generality": {
+            "magic_int_constants": {},
+            "blockers": []
+          }
         },
         {
           "name": "enum_recolor:color_transition_map|recolor_map(color_transition_map)",
@@ -1572,7 +1896,11 @@
           ],
           "error": null,
           "program_name": "enum_recolor:color_transition_map",
-          "signature": "enum_recolor:color_transition_map|recolor_map(color_transition_map)"
+          "signature": "enum_recolor:color_transition_map|recolor_map(color_transition_map)",
+          "generality": {
+            "magic_int_constants": {},
+            "blockers": []
+          }
         }
       ]
     },
@@ -1604,7 +1932,11 @@
         ],
         "error": null,
         "program_name": "full_color_transition_map",
-        "signature": "full_color_transition_map|recolor_map(full_color_transition_map)"
+        "signature": "full_color_transition_map|recolor_map(full_color_transition_map)",
+        "generality": {
+          "magic_int_constants": {},
+          "blockers": []
+        }
       },
       "train_exact": [],
       "top": [
@@ -1633,7 +1965,11 @@
           ],
           "error": null,
           "program_name": "full_color_transition_map",
-          "signature": "full_color_transition_map|recolor_map(full_color_transition_map)"
+          "signature": "full_color_transition_map|recolor_map(full_color_transition_map)",
+          "generality": {
+            "magic_int_constants": {},
+            "blockers": []
+          }
         },
         {
           "name": "enum_recolor:full_color_transition_map|recolor_map(full_color_transition_map)",
@@ -1660,7 +1996,11 @@
           ],
           "error": null,
           "program_name": "enum_recolor:full_color_transition_map",
-          "signature": "enum_recolor:full_color_transition_map|recolor_map(full_color_transition_map)"
+          "signature": "enum_recolor:full_color_transition_map|recolor_map(full_color_transition_map)",
+          "generality": {
+            "magic_int_constants": {},
+            "blockers": []
+          }
         },
         {
           "name": "bar_marker_bracket_route|bar_marker_bracket_route(bg_draw_color,full_color_transition_map)",
@@ -1687,7 +2027,11 @@
           ],
           "error": null,
           "program_name": "bar_marker_bracket_route",
-          "signature": "bar_marker_bracket_route|bar_marker_bracket_route(bg_draw_color,full_color_transition_map)"
+          "signature": "bar_marker_bracket_route|bar_marker_bracket_route(bg_draw_color,full_color_transition_map)",
+          "generality": {
+            "magic_int_constants": {},
+            "blockers": []
+          }
         },
         {
           "name": "enum_bar_marker_route:full_map+bg_draw|bar_marker_bracket_route(bg_draw_color,full_color_transition_map)",
@@ -1714,7 +2058,11 @@
           ],
           "error": null,
           "program_name": "enum_bar_marker_route:full_map+bg_draw",
-          "signature": "enum_bar_marker_route:full_map+bg_draw|bar_marker_bracket_route(bg_draw_color,full_color_transition_map)"
+          "signature": "enum_bar_marker_route:full_map+bg_draw|bar_marker_bracket_route(bg_draw_color,full_color_transition_map)",
+          "generality": {
+            "magic_int_constants": {},
+            "blockers": []
+          }
         },
         {
           "name": "full_recolor_then_bar_bracket_route|recolor_map(full_color_transition_map)|bar_bracket_route(bg_draw_color)",
@@ -1741,7 +2089,18 @@
           ],
           "error": null,
           "program_name": "full_recolor_then_bar_bracket_route",
-          "signature": "full_recolor_then_bar_bracket_route|recolor_map(full_color_transition_map)|bar_bracket_route(bg_draw_color)"
+          "signature": "full_recolor_then_bar_bracket_route|recolor_map(full_color_transition_map)|bar_bracket_route(bg_draw_color)",
+          "generality": {
+            "magic_int_constants": {
+              "bar_bracket_route": [
+                3,
+                5
+              ]
+            },
+            "blockers": [
+              "magic_int_constants"
+            ]
+          }
         },
         {
           "name": "enum_recolor_then_bar_route:full_color_transition_map+bg_draw|recolor_map(full_color_transition_map)|bar_bracket_route(bg_draw_color)",
@@ -1768,7 +2127,18 @@
           ],
           "error": null,
           "program_name": "enum_recolor_then_bar_route:full_color_transition_map+bg_draw",
-          "signature": "enum_recolor_then_bar_route:full_color_transition_map+bg_draw|recolor_map(full_color_transition_map)|bar_bracket_route(bg_draw_color)"
+          "signature": "enum_recolor_then_bar_route:full_color_transition_map+bg_draw|recolor_map(full_color_transition_map)|bar_bracket_route(bg_draw_color)",
+          "generality": {
+            "magic_int_constants": {
+              "bar_bracket_route": [
+                3,
+                5
+              ]
+            },
+            "blockers": [
+              "magic_int_constants"
+            ]
+          }
         },
         {
           "name": "enum_bar_route_then_recolor:bg_draw+full_color_transition_map|bar_bracket_route(bg_draw_color)|recolor_map(full_color_transition_map)",
@@ -1795,7 +2165,18 @@
           ],
           "error": null,
           "program_name": "enum_bar_route_then_recolor:bg_draw+full_color_transition_map",
-          "signature": "enum_bar_route_then_recolor:bg_draw+full_color_transition_map|bar_bracket_route(bg_draw_color)|recolor_map(full_color_transition_map)"
+          "signature": "enum_bar_route_then_recolor:bg_draw+full_color_transition_map|bar_bracket_route(bg_draw_color)|recolor_map(full_color_transition_map)",
+          "generality": {
+            "magic_int_constants": {
+              "bar_bracket_route": [
+                3,
+                5
+              ]
+            },
+            "blockers": [
+              "magic_int_constants"
+            ]
+          }
         },
         {
           "name": "fill_enclosed_changed_color|fill_enclosed(changed_output_color)",
@@ -1822,7 +2203,11 @@
           ],
           "error": null,
           "program_name": "fill_enclosed_changed_color",
-          "signature": "fill_enclosed_changed_color|fill_enclosed(changed_output_color)"
+          "signature": "fill_enclosed_changed_color|fill_enclosed(changed_output_color)",
+          "generality": {
+            "magic_int_constants": {},
+            "blockers": []
+          }
         }
       ]
     },
@@ -1849,7 +2234,11 @@
         ],
         "error": null,
         "program_name": "route_singletons_same",
-        "signature": "route_singletons_same|route_singletons()"
+        "signature": "route_singletons_same|route_singletons()",
+        "generality": {
+          "magic_int_constants": {},
+          "blockers": []
+        }
       },
       "train_exact": [],
       "top": [
@@ -1873,7 +2262,11 @@
           ],
           "error": null,
           "program_name": "route_singletons_same",
-          "signature": "route_singletons_same|route_singletons()"
+          "signature": "route_singletons_same|route_singletons()",
+          "generality": {
+            "magic_int_constants": {},
+            "blockers": []
+          }
         },
         {
           "name": "enum_route_singletons:same|route_singletons()",
@@ -1895,7 +2288,11 @@
           ],
           "error": null,
           "program_name": "enum_route_singletons:same",
-          "signature": "enum_route_singletons:same|route_singletons()"
+          "signature": "enum_route_singletons:same|route_singletons()",
+          "generality": {
+            "magic_int_constants": {},
+            "blockers": []
+          }
         },
         {
           "name": "full_color_transition_map|recolor_map(full_color_transition_map)",
@@ -1917,7 +2314,11 @@
           ],
           "error": null,
           "program_name": "full_color_transition_map",
-          "signature": "full_color_transition_map|recolor_map(full_color_transition_map)"
+          "signature": "full_color_transition_map|recolor_map(full_color_transition_map)",
+          "generality": {
+            "magic_int_constants": {},
+            "blockers": []
+          }
         },
         {
           "name": "enum_recolor:full_color_transition_map|recolor_map(full_color_transition_map)",
@@ -1939,7 +2340,11 @@
           ],
           "error": null,
           "program_name": "enum_recolor:full_color_transition_map",
-          "signature": "enum_recolor:full_color_transition_map|recolor_map(full_color_transition_map)"
+          "signature": "enum_recolor:full_color_transition_map|recolor_map(full_color_transition_map)",
+          "generality": {
+            "magic_int_constants": {},
+            "blockers": []
+          }
         },
         {
           "name": "bar_marker_bracket_route|bar_marker_bracket_route(bg_draw_color,full_color_transition_map)",
@@ -1961,7 +2366,11 @@
           ],
           "error": null,
           "program_name": "bar_marker_bracket_route",
-          "signature": "bar_marker_bracket_route|bar_marker_bracket_route(bg_draw_color,full_color_transition_map)"
+          "signature": "bar_marker_bracket_route|bar_marker_bracket_route(bg_draw_color,full_color_transition_map)",
+          "generality": {
+            "magic_int_constants": {},
+            "blockers": []
+          }
         },
         {
           "name": "enum_bar_marker_route:full_map+bg_draw|bar_marker_bracket_route(bg_draw_color,full_color_transition_map)",
@@ -1983,7 +2392,11 @@
           ],
           "error": null,
           "program_name": "enum_bar_marker_route:full_map+bg_draw",
-          "signature": "enum_bar_marker_route:full_map+bg_draw|bar_marker_bracket_route(bg_draw_color,full_color_transition_map)"
+          "signature": "enum_bar_marker_route:full_map+bg_draw|bar_marker_bracket_route(bg_draw_color,full_color_transition_map)",
+          "generality": {
+            "magic_int_constants": {},
+            "blockers": []
+          }
         },
         {
           "name": "full_recolor_then_bar_bracket_route|recolor_map(full_color_transition_map)|bar_bracket_route(bg_draw_color)",
@@ -2005,7 +2418,18 @@
           ],
           "error": null,
           "program_name": "full_recolor_then_bar_bracket_route",
-          "signature": "full_recolor_then_bar_bracket_route|recolor_map(full_color_transition_map)|bar_bracket_route(bg_draw_color)"
+          "signature": "full_recolor_then_bar_bracket_route|recolor_map(full_color_transition_map)|bar_bracket_route(bg_draw_color)",
+          "generality": {
+            "magic_int_constants": {
+              "bar_bracket_route": [
+                3,
+                5
+              ]
+            },
+            "blockers": [
+              "magic_int_constants"
+            ]
+          }
         },
         {
           "name": "enum_recolor_then_bar_route:full_color_transition_map+bg_draw|recolor_map(full_color_transition_map)|bar_bracket_route(bg_draw_color)",
@@ -2027,7 +2451,18 @@
           ],
           "error": null,
           "program_name": "enum_recolor_then_bar_route:full_color_transition_map+bg_draw",
-          "signature": "enum_recolor_then_bar_route:full_color_transition_map+bg_draw|recolor_map(full_color_transition_map)|bar_bracket_route(bg_draw_color)"
+          "signature": "enum_recolor_then_bar_route:full_color_transition_map+bg_draw|recolor_map(full_color_transition_map)|bar_bracket_route(bg_draw_color)",
+          "generality": {
+            "magic_int_constants": {
+              "bar_bracket_route": [
+                3,
+                5
+              ]
+            },
+            "blockers": [
+              "magic_int_constants"
+            ]
+          }
         }
       ]
     },
@@ -2059,7 +2494,18 @@
         ],
         "error": null,
         "program_name": "enum_bar_route:bg_draw",
-        "signature": "enum_bar_route:bg_draw|bar_bracket_route(bg_draw_color)"
+        "signature": "enum_bar_route:bg_draw|bar_bracket_route(bg_draw_color)",
+        "generality": {
+          "magic_int_constants": {
+            "bar_bracket_route": [
+              3,
+              5
+            ]
+          },
+          "blockers": [
+            "magic_int_constants"
+          ]
+        }
       },
       "train_exact": [],
       "top": [
@@ -2088,7 +2534,18 @@
           ],
           "error": null,
           "program_name": "enum_bar_route:bg_draw",
-          "signature": "enum_bar_route:bg_draw|bar_bracket_route(bg_draw_color)"
+          "signature": "enum_bar_route:bg_draw|bar_bracket_route(bg_draw_color)",
+          "generality": {
+            "magic_int_constants": {
+              "bar_bracket_route": [
+                3,
+                5
+              ]
+            },
+            "blockers": [
+              "magic_int_constants"
+            ]
+          }
         },
         {
           "name": "fill_enclosed_changed_color|fill_enclosed(changed_output_color)",
@@ -2115,7 +2572,11 @@
           ],
           "error": null,
           "program_name": "fill_enclosed_changed_color",
-          "signature": "fill_enclosed_changed_color|fill_enclosed(changed_output_color)"
+          "signature": "fill_enclosed_changed_color|fill_enclosed(changed_output_color)",
+          "generality": {
+            "magic_int_constants": {},
+            "blockers": []
+          }
         },
         {
           "name": "enum_fill_enclosed:changed_output_color|fill_enclosed(changed_output_color)",
@@ -2142,7 +2603,11 @@
           ],
           "error": null,
           "program_name": "enum_fill_enclosed:changed_output_color",
-          "signature": "enum_fill_enclosed:changed_output_color|fill_enclosed(changed_output_color)"
+          "signature": "enum_fill_enclosed:changed_output_color|fill_enclosed(changed_output_color)",
+          "generality": {
+            "magic_int_constants": {},
+            "blockers": []
+          }
         },
         {
           "name": "route_singletons_same|route_singletons()",
@@ -2169,7 +2634,11 @@
           ],
           "error": null,
           "program_name": "route_singletons_same",
-          "signature": "route_singletons_same|route_singletons()"
+          "signature": "route_singletons_same|route_singletons()",
+          "generality": {
+            "magic_int_constants": {},
+            "blockers": []
+          }
         },
         {
           "name": "enum_route_singletons:same|route_singletons()",
@@ -2196,7 +2665,11 @@
           ],
           "error": null,
           "program_name": "enum_route_singletons:same",
-          "signature": "enum_route_singletons:same|route_singletons()"
+          "signature": "enum_route_singletons:same|route_singletons()",
+          "generality": {
+            "magic_int_constants": {},
+            "blockers": []
+          }
         },
         {
           "name": "dominant_recolor_map|recolor_map(dominant_transition_map)",
@@ -2223,7 +2696,11 @@
           ],
           "error": null,
           "program_name": "dominant_recolor_map",
-          "signature": "dominant_recolor_map|recolor_map(dominant_transition_map)"
+          "signature": "dominant_recolor_map|recolor_map(dominant_transition_map)",
+          "generality": {
+            "magic_int_constants": {},
+            "blockers": []
+          }
         },
         {
           "name": "enum_recolor:dominant_transition_map|recolor_map(dominant_transition_map)",
@@ -2250,7 +2727,11 @@
           ],
           "error": null,
           "program_name": "enum_recolor:dominant_transition_map",
-          "signature": "enum_recolor:dominant_transition_map|recolor_map(dominant_transition_map)"
+          "signature": "enum_recolor:dominant_transition_map|recolor_map(dominant_transition_map)",
+          "generality": {
+            "magic_int_constants": {},
+            "blockers": []
+          }
         },
         {
           "name": "enum_recolor_then_bar_route:dominant_transition_map+bg_draw|recolor_map(dominant_transition_map)|bar_bracket_route(bg_draw_color)",
@@ -2277,7 +2758,18 @@
           ],
           "error": null,
           "program_name": "enum_recolor_then_bar_route:dominant_transition_map+bg_draw",
-          "signature": "enum_recolor_then_bar_route:dominant_transition_map+bg_draw|recolor_map(dominant_transition_map)|bar_bracket_route(bg_draw_color)"
+          "signature": "enum_recolor_then_bar_route:dominant_transition_map+bg_draw|recolor_map(dominant_transition_map)|bar_bracket_route(bg_draw_color)",
+          "generality": {
+            "magic_int_constants": {
+              "bar_bracket_route": [
+                3,
+                5
+              ]
+            },
+            "blockers": [
+              "magic_int_constants"
+            ]
+          }
         }
       ]
     },
@@ -2323,7 +2815,11 @@
         ],
         "error": null,
         "program_name": "fill_enclosed_changed_color",
-        "signature": "fill_enclosed_changed_color|fill_enclosed(changed_output_color)"
+        "signature": "fill_enclosed_changed_color|fill_enclosed(changed_output_color)",
+        "generality": {
+          "magic_int_constants": {},
+          "blockers": []
+        }
       },
       "train_exact": [],
       "top": [
@@ -2352,7 +2848,11 @@
           ],
           "error": null,
           "program_name": "fill_enclosed_changed_color",
-          "signature": "fill_enclosed_changed_color|fill_enclosed(changed_output_color)"
+          "signature": "fill_enclosed_changed_color|fill_enclosed(changed_output_color)",
+          "generality": {
+            "magic_int_constants": {},
+            "blockers": []
+          }
         },
         {
           "name": "enum_fill_enclosed:changed_output_color|fill_enclosed(changed_output_color)",
@@ -2379,7 +2879,11 @@
           ],
           "error": null,
           "program_name": "enum_fill_enclosed:changed_output_color",
-          "signature": "enum_fill_enclosed:changed_output_color|fill_enclosed(changed_output_color)"
+          "signature": "enum_fill_enclosed:changed_output_color|fill_enclosed(changed_output_color)",
+          "generality": {
+            "magic_int_constants": {},
+            "blockers": []
+          }
         },
         {
           "name": "route_singletons_same|route_singletons()",
@@ -2406,7 +2910,11 @@
           ],
           "error": null,
           "program_name": "route_singletons_same",
-          "signature": "route_singletons_same|route_singletons()"
+          "signature": "route_singletons_same|route_singletons()",
+          "generality": {
+            "magic_int_constants": {},
+            "blockers": []
+          }
         },
         {
           "name": "enum_route_singletons:same|route_singletons()",
@@ -2433,7 +2941,11 @@
           ],
           "error": null,
           "program_name": "enum_route_singletons:same",
-          "signature": "enum_route_singletons:same|route_singletons()"
+          "signature": "enum_route_singletons:same|route_singletons()",
+          "generality": {
+            "magic_int_constants": {},
+            "blockers": []
+          }
         },
         {
           "name": "learned_recolor_map|recolor_map(color_transition_map)",
@@ -2460,7 +2972,11 @@
           ],
           "error": null,
           "program_name": "learned_recolor_map",
-          "signature": "learned_recolor_map|recolor_map(color_transition_map)"
+          "signature": "learned_recolor_map|recolor_map(color_transition_map)",
+          "generality": {
+            "magic_int_constants": {},
+            "blockers": []
+          }
         },
         {
           "name": "dominant_recolor_map|recolor_map(dominant_transition_map)",
@@ -2487,7 +3003,11 @@
           ],
           "error": null,
           "program_name": "dominant_recolor_map",
-          "signature": "dominant_recolor_map|recolor_map(dominant_transition_map)"
+          "signature": "dominant_recolor_map|recolor_map(dominant_transition_map)",
+          "generality": {
+            "magic_int_constants": {},
+            "blockers": []
+          }
         },
         {
           "name": "enum_recolor:color_transition_map|recolor_map(color_transition_map)",
@@ -2514,7 +3034,11 @@
           ],
           "error": null,
           "program_name": "enum_recolor:color_transition_map",
-          "signature": "enum_recolor:color_transition_map|recolor_map(color_transition_map)"
+          "signature": "enum_recolor:color_transition_map|recolor_map(color_transition_map)",
+          "generality": {
+            "magic_int_constants": {},
+            "blockers": []
+          }
         },
         {
           "name": "enum_recolor:dominant_transition_map|recolor_map(dominant_transition_map)",
@@ -2541,7 +3065,11 @@
           ],
           "error": null,
           "program_name": "enum_recolor:dominant_transition_map",
-          "signature": "enum_recolor:dominant_transition_map|recolor_map(dominant_transition_map)"
+          "signature": "enum_recolor:dominant_transition_map|recolor_map(dominant_transition_map)",
+          "generality": {
+            "magic_int_constants": {},
+            "blockers": []
+          }
         }
       ]
     },
@@ -2583,7 +3111,11 @@
         ],
         "error": null,
         "program_name": "fill_enclosed_changed_color",
-        "signature": "fill_enclosed_changed_color|fill_enclosed(changed_output_color)"
+        "signature": "fill_enclosed_changed_color|fill_enclosed(changed_output_color)",
+        "generality": {
+          "magic_int_constants": {},
+          "blockers": []
+        }
       },
       "train_exact": [],
       "top": [
@@ -2622,7 +3154,11 @@
           ],
           "error": null,
           "program_name": "fill_enclosed_changed_color",
-          "signature": "fill_enclosed_changed_color|fill_enclosed(changed_output_color)"
+          "signature": "fill_enclosed_changed_color|fill_enclosed(changed_output_color)",
+          "generality": {
+            "magic_int_constants": {},
+            "blockers": []
+          }
         },
         {
           "name": "enum_fill_enclosed:changed_output_color|fill_enclosed(changed_output_color)",
@@ -2659,7 +3195,11 @@
           ],
           "error": null,
           "program_name": "enum_fill_enclosed:changed_output_color",
-          "signature": "enum_fill_enclosed:changed_output_color|fill_enclosed(changed_output_color)"
+          "signature": "enum_fill_enclosed:changed_output_color|fill_enclosed(changed_output_color)",
+          "generality": {
+            "magic_int_constants": {},
+            "blockers": []
+          }
         },
         {
           "name": "route_singletons_same|route_singletons()",
@@ -2696,7 +3236,11 @@
           ],
           "error": null,
           "program_name": "route_singletons_same",
-          "signature": "route_singletons_same|route_singletons()"
+          "signature": "route_singletons_same|route_singletons()",
+          "generality": {
+            "magic_int_constants": {},
+            "blockers": []
+          }
         },
         {
           "name": "enum_route_singletons:same|route_singletons()",
@@ -2733,7 +3277,11 @@
           ],
           "error": null,
           "program_name": "enum_route_singletons:same",
-          "signature": "enum_route_singletons:same|route_singletons()"
+          "signature": "enum_route_singletons:same|route_singletons()",
+          "generality": {
+            "magic_int_constants": {},
+            "blockers": []
+          }
         },
         {
           "name": "enum_bar_route:bg_draw|bar_bracket_route(bg_draw_color)",
@@ -2770,7 +3318,18 @@
           ],
           "error": null,
           "program_name": "enum_bar_route:bg_draw",
-          "signature": "enum_bar_route:bg_draw|bar_bracket_route(bg_draw_color)"
+          "signature": "enum_bar_route:bg_draw|bar_bracket_route(bg_draw_color)",
+          "generality": {
+            "magic_int_constants": {
+              "bar_bracket_route": [
+                3,
+                5
+              ]
+            },
+            "blockers": [
+              "magic_int_constants"
+            ]
+          }
         },
         {
           "name": "enum_bar_route_then_recolor:bg_draw+dominant_transition_map|bar_bracket_route(bg_draw_color)|recolor_map(dominant_transition_map)",
@@ -2807,7 +3366,18 @@
           ],
           "error": null,
           "program_name": "enum_bar_route_then_recolor:bg_draw+dominant_transition_map",
-          "signature": "enum_bar_route_then_recolor:bg_draw+dominant_transition_map|bar_bracket_route(bg_draw_color)|recolor_map(dominant_transition_map)"
+          "signature": "enum_bar_route_then_recolor:bg_draw+dominant_transition_map|bar_bracket_route(bg_draw_color)|recolor_map(dominant_transition_map)",
+          "generality": {
+            "magic_int_constants": {
+              "bar_bracket_route": [
+                3,
+                5
+              ]
+            },
+            "blockers": [
+              "magic_int_constants"
+            ]
+          }
         },
         {
           "name": "enum_recolor_then_bar_route:dominant_transition_map+bg_draw|recolor_map(dominant_transition_map)|bar_bracket_route(bg_draw_color)",
@@ -2844,7 +3414,18 @@
           ],
           "error": null,
           "program_name": "enum_recolor_then_bar_route:dominant_transition_map+bg_draw",
-          "signature": "enum_recolor_then_bar_route:dominant_transition_map+bg_draw|recolor_map(dominant_transition_map)|bar_bracket_route(bg_draw_color)"
+          "signature": "enum_recolor_then_bar_route:dominant_transition_map+bg_draw|recolor_map(dominant_transition_map)|bar_bracket_route(bg_draw_color)",
+          "generality": {
+            "magic_int_constants": {
+              "bar_bracket_route": [
+                3,
+                5
+              ]
+            },
+            "blockers": [
+              "magic_int_constants"
+            ]
+          }
         },
         {
           "name": "dominant_recolor_map|recolor_map(dominant_transition_map)",
@@ -2881,7 +3462,11 @@
           ],
           "error": null,
           "program_name": "dominant_recolor_map",
-          "signature": "dominant_recolor_map|recolor_map(dominant_transition_map)"
+          "signature": "dominant_recolor_map|recolor_map(dominant_transition_map)",
+          "generality": {
+            "magic_int_constants": {},
+            "blockers": []
+          }
         }
       ]
     },
@@ -2925,7 +3510,11 @@
         ],
         "error": null,
         "program_name": "full_color_transition_map",
-        "signature": "full_color_transition_map|recolor_map(full_color_transition_map)"
+        "signature": "full_color_transition_map|recolor_map(full_color_transition_map)",
+        "generality": {
+          "magic_int_constants": {},
+          "blockers": []
+        }
       },
       "train_exact": [],
       "top": [
@@ -2959,7 +3548,11 @@
           ],
           "error": null,
           "program_name": "full_color_transition_map",
-          "signature": "full_color_transition_map|recolor_map(full_color_transition_map)"
+          "signature": "full_color_transition_map|recolor_map(full_color_transition_map)",
+          "generality": {
+            "magic_int_constants": {},
+            "blockers": []
+          }
         },
         {
           "name": "enum_recolor:full_color_transition_map|recolor_map(full_color_transition_map)",
@@ -2991,7 +3584,11 @@
           ],
           "error": null,
           "program_name": "enum_recolor:full_color_transition_map",
-          "signature": "enum_recolor:full_color_transition_map|recolor_map(full_color_transition_map)"
+          "signature": "enum_recolor:full_color_transition_map|recolor_map(full_color_transition_map)",
+          "generality": {
+            "magic_int_constants": {},
+            "blockers": []
+          }
         },
         {
           "name": "full_recolor_then_bar_bracket_route|recolor_map(full_color_transition_map)|bar_bracket_route(bg_draw_color)",
@@ -3023,7 +3620,18 @@
           ],
           "error": null,
           "program_name": "full_recolor_then_bar_bracket_route",
-          "signature": "full_recolor_then_bar_bracket_route|recolor_map(full_color_transition_map)|bar_bracket_route(bg_draw_color)"
+          "signature": "full_recolor_then_bar_bracket_route|recolor_map(full_color_transition_map)|bar_bracket_route(bg_draw_color)",
+          "generality": {
+            "magic_int_constants": {
+              "bar_bracket_route": [
+                3,
+                5
+              ]
+            },
+            "blockers": [
+              "magic_int_constants"
+            ]
+          }
         },
         {
           "name": "enum_recolor_then_bar_route:full_color_transition_map+bg_draw|recolor_map(full_color_transition_map)|bar_bracket_route(bg_draw_color)",
@@ -3055,16 +3663,27 @@
           ],
           "error": null,
           "program_name": "enum_recolor_then_bar_route:full_color_transition_map+bg_draw",
-          "signature": "enum_recolor_then_bar_route:full_color_transition_map+bg_draw|recolor_map(full_color_transition_map)|bar_bracket_route(bg_draw_color)"
+          "signature": "enum_recolor_then_bar_route:full_color_transition_map+bg_draw|recolor_map(full_color_transition_map)|bar_bracket_route(bg_draw_color)",
+          "generality": {
+            "magic_int_constants": {
+              "bar_bracket_route": [
+                3,
+                5
+              ]
+            },
+            "blockers": [
+              "magic_int_constants"
+            ]
+          }
         },
         {
           "name": "bar_marker_bracket_route|bar_marker_bracket_route(bg_draw_color,full_color_transition_map)",
           "shape_exact": true,
-          "train_diff": 169,
+          "train_diff": 164,
           "per_pair_diff": [
             8,
             68,
-            76,
+            71,
             17
           ],
           "pred_shapes": [
@@ -3087,16 +3706,20 @@
           ],
           "error": null,
           "program_name": "bar_marker_bracket_route",
-          "signature": "bar_marker_bracket_route|bar_marker_bracket_route(bg_draw_color,full_color_transition_map)"
+          "signature": "bar_marker_bracket_route|bar_marker_bracket_route(bg_draw_color,full_color_transition_map)",
+          "generality": {
+            "magic_int_constants": {},
+            "blockers": []
+          }
         },
         {
           "name": "enum_bar_marker_route:full_map+bg_draw|bar_marker_bracket_route(bg_draw_color,full_color_transition_map)",
           "shape_exact": true,
-          "train_diff": 169,
+          "train_diff": 164,
           "per_pair_diff": [
             8,
             68,
-            76,
+            71,
             17
           ],
           "pred_shapes": [
@@ -3119,7 +3742,11 @@
           ],
           "error": null,
           "program_name": "enum_bar_marker_route:full_map+bg_draw",
-          "signature": "enum_bar_marker_route:full_map+bg_draw|bar_marker_bracket_route(bg_draw_color,full_color_transition_map)"
+          "signature": "enum_bar_marker_route:full_map+bg_draw|bar_marker_bracket_route(bg_draw_color,full_color_transition_map)",
+          "generality": {
+            "magic_int_constants": {},
+            "blockers": []
+          }
         },
         {
           "name": "enum_bar_route_then_recolor:bg_draw+full_color_transition_map|bar_bracket_route(bg_draw_color)|recolor_map(full_color_transition_map)",
@@ -3151,7 +3778,18 @@
           ],
           "error": null,
           "program_name": "enum_bar_route_then_recolor:bg_draw+full_color_transition_map",
-          "signature": "enum_bar_route_then_recolor:bg_draw+full_color_transition_map|bar_bracket_route(bg_draw_color)|recolor_map(full_color_transition_map)"
+          "signature": "enum_bar_route_then_recolor:bg_draw+full_color_transition_map|bar_bracket_route(bg_draw_color)|recolor_map(full_color_transition_map)",
+          "generality": {
+            "magic_int_constants": {
+              "bar_bracket_route": [
+                3,
+                5
+              ]
+            },
+            "blockers": [
+              "magic_int_constants"
+            ]
+          }
         },
         {
           "name": "fill_enclosed_changed_color|fill_enclosed(changed_output_color)",
@@ -3183,7 +3821,11 @@
           ],
           "error": null,
           "program_name": "fill_enclosed_changed_color",
-          "signature": "fill_enclosed_changed_color|fill_enclosed(changed_output_color)"
+          "signature": "fill_enclosed_changed_color|fill_enclosed(changed_output_color)",
+          "generality": {
+            "magic_int_constants": {},
+            "blockers": []
+          }
         }
       ]
     },
@@ -3221,11 +3863,28 @@
         "error": null,
         "program_name": "bar_marker_bracket_route",
         "signature": "bar_marker_bracket_route|bar_marker_bracket_route(bg_draw_color,full_color_transition_map)",
+        "generality": {
+          "magic_int_constants": {},
+          "blockers": []
+        },
         "loo": {
           "passes": true,
           "informative": false,
           "admission_type": "train_exact_fixed_loo_vacuous"
-        }
+        },
+        "synthetic_d4_exact": {
+          "hflip": true,
+          "vflip": true,
+          "rot90": true,
+          "rot180": true,
+          "rot270": true,
+          "anti_diag": true
+        },
+        "cross_task_count": 1,
+        "admission_ready": false,
+        "promotion_blockers": [
+          "no_informative_loo_or_cross"
+        ]
       },
       "train_exact": [
         {
@@ -3259,11 +3918,28 @@
           "error": null,
           "program_name": "bar_marker_bracket_route",
           "signature": "bar_marker_bracket_route|bar_marker_bracket_route(bg_draw_color,full_color_transition_map)",
+          "generality": {
+            "magic_int_constants": {},
+            "blockers": []
+          },
           "loo": {
             "passes": true,
             "informative": false,
             "admission_type": "train_exact_fixed_loo_vacuous"
-          }
+          },
+          "synthetic_d4_exact": {
+            "hflip": true,
+            "vflip": true,
+            "rot90": true,
+            "rot180": true,
+            "rot270": true,
+            "anti_diag": true
+          },
+          "cross_task_count": 1,
+          "admission_ready": false,
+          "promotion_blockers": [
+            "no_informative_loo_or_cross"
+          ]
         },
         {
           "name": "enum_bar_marker_route:full_map+bg_draw|bar_marker_bracket_route(bg_draw_color,full_color_transition_map)",
@@ -3296,11 +3972,28 @@
           "error": null,
           "program_name": "enum_bar_marker_route:full_map+bg_draw",
           "signature": "enum_bar_marker_route:full_map+bg_draw|bar_marker_bracket_route(bg_draw_color,full_color_transition_map)",
+          "generality": {
+            "magic_int_constants": {},
+            "blockers": []
+          },
           "loo": {
             "passes": true,
             "informative": false,
             "admission_type": "train_exact_fixed_loo_vacuous"
-          }
+          },
+          "synthetic_d4_exact": {
+            "hflip": true,
+            "vflip": true,
+            "rot90": true,
+            "rot180": true,
+            "rot270": true,
+            "anti_diag": true
+          },
+          "cross_task_count": 1,
+          "admission_ready": false,
+          "promotion_blockers": [
+            "no_informative_loo_or_cross"
+          ]
         }
       ],
       "top": [
@@ -3335,11 +4028,28 @@
           "error": null,
           "program_name": "bar_marker_bracket_route",
           "signature": "bar_marker_bracket_route|bar_marker_bracket_route(bg_draw_color,full_color_transition_map)",
+          "generality": {
+            "magic_int_constants": {},
+            "blockers": []
+          },
           "loo": {
             "passes": true,
             "informative": false,
             "admission_type": "train_exact_fixed_loo_vacuous"
-          }
+          },
+          "synthetic_d4_exact": {
+            "hflip": true,
+            "vflip": true,
+            "rot90": true,
+            "rot180": true,
+            "rot270": true,
+            "anti_diag": true
+          },
+          "cross_task_count": 1,
+          "admission_ready": false,
+          "promotion_blockers": [
+            "no_informative_loo_or_cross"
+          ]
         },
         {
           "name": "enum_bar_marker_route:full_map+bg_draw|bar_marker_bracket_route(bg_draw_color,full_color_transition_map)",
@@ -3372,11 +4082,28 @@
           "error": null,
           "program_name": "enum_bar_marker_route:full_map+bg_draw",
           "signature": "enum_bar_marker_route:full_map+bg_draw|bar_marker_bracket_route(bg_draw_color,full_color_transition_map)",
+          "generality": {
+            "magic_int_constants": {},
+            "blockers": []
+          },
           "loo": {
             "passes": true,
             "informative": false,
             "admission_type": "train_exact_fixed_loo_vacuous"
-          }
+          },
+          "synthetic_d4_exact": {
+            "hflip": true,
+            "vflip": true,
+            "rot90": true,
+            "rot180": true,
+            "rot270": true,
+            "anti_diag": true
+          },
+          "cross_task_count": 1,
+          "admission_ready": false,
+          "promotion_blockers": [
+            "no_informative_loo_or_cross"
+          ]
         },
         {
           "name": "full_recolor_then_bar_bracket_route|recolor_map(full_color_transition_map)|bar_bracket_route(bg_draw_color)",
@@ -3408,7 +4135,18 @@
           ],
           "error": null,
           "program_name": "full_recolor_then_bar_bracket_route",
-          "signature": "full_recolor_then_bar_bracket_route|recolor_map(full_color_transition_map)|bar_bracket_route(bg_draw_color)"
+          "signature": "full_recolor_then_bar_bracket_route|recolor_map(full_color_transition_map)|bar_bracket_route(bg_draw_color)",
+          "generality": {
+            "magic_int_constants": {
+              "bar_bracket_route": [
+                3,
+                5
+              ]
+            },
+            "blockers": [
+              "magic_int_constants"
+            ]
+          }
         },
         {
           "name": "enum_recolor_then_bar_route:full_color_transition_map+bg_draw|recolor_map(full_color_transition_map)|bar_bracket_route(bg_draw_color)",
@@ -3440,7 +4178,18 @@
           ],
           "error": null,
           "program_name": "enum_recolor_then_bar_route:full_color_transition_map+bg_draw",
-          "signature": "enum_recolor_then_bar_route:full_color_transition_map+bg_draw|recolor_map(full_color_transition_map)|bar_bracket_route(bg_draw_color)"
+          "signature": "enum_recolor_then_bar_route:full_color_transition_map+bg_draw|recolor_map(full_color_transition_map)|bar_bracket_route(bg_draw_color)",
+          "generality": {
+            "magic_int_constants": {
+              "bar_bracket_route": [
+                3,
+                5
+              ]
+            },
+            "blockers": [
+              "magic_int_constants"
+            ]
+          }
         },
         {
           "name": "enum_bar_route_then_recolor:bg_draw+full_color_transition_map|bar_bracket_route(bg_draw_color)|recolor_map(full_color_transition_map)",
@@ -3472,7 +4221,18 @@
           ],
           "error": null,
           "program_name": "enum_bar_route_then_recolor:bg_draw+full_color_transition_map",
-          "signature": "enum_bar_route_then_recolor:bg_draw+full_color_transition_map|bar_bracket_route(bg_draw_color)|recolor_map(full_color_transition_map)"
+          "signature": "enum_bar_route_then_recolor:bg_draw+full_color_transition_map|bar_bracket_route(bg_draw_color)|recolor_map(full_color_transition_map)",
+          "generality": {
+            "magic_int_constants": {
+              "bar_bracket_route": [
+                3,
+                5
+              ]
+            },
+            "blockers": [
+              "magic_int_constants"
+            ]
+          }
         },
         {
           "name": "full_color_transition_map|recolor_map(full_color_transition_map)",
@@ -3504,7 +4264,11 @@
           ],
           "error": null,
           "program_name": "full_color_transition_map",
-          "signature": "full_color_transition_map|recolor_map(full_color_transition_map)"
+          "signature": "full_color_transition_map|recolor_map(full_color_transition_map)",
+          "generality": {
+            "magic_int_constants": {},
+            "blockers": []
+          }
         },
         {
           "name": "enum_recolor:full_color_transition_map|recolor_map(full_color_transition_map)",
@@ -3536,7 +4300,11 @@
           ],
           "error": null,
           "program_name": "enum_recolor:full_color_transition_map",
-          "signature": "enum_recolor:full_color_transition_map|recolor_map(full_color_transition_map)"
+          "signature": "enum_recolor:full_color_transition_map|recolor_map(full_color_transition_map)",
+          "generality": {
+            "magic_int_constants": {},
+            "blockers": []
+          }
         },
         {
           "name": "enum_bar_route:bg_draw|bar_bracket_route(bg_draw_color)",
@@ -3568,7 +4336,18 @@
           ],
           "error": null,
           "program_name": "enum_bar_route:bg_draw",
-          "signature": "enum_bar_route:bg_draw|bar_bracket_route(bg_draw_color)"
+          "signature": "enum_bar_route:bg_draw|bar_bracket_route(bg_draw_color)",
+          "generality": {
+            "magic_int_constants": {
+              "bar_bracket_route": [
+                3,
+                5
+              ]
+            },
+            "blockers": [
+              "magic_int_constants"
+            ]
+          }
         }
       ]
     },
@@ -3610,7 +4389,18 @@
         ],
         "error": null,
         "program_name": "enum_bar_route:bg_draw",
-        "signature": "enum_bar_route:bg_draw|bar_bracket_route(bg_draw_color)"
+        "signature": "enum_bar_route:bg_draw|bar_bracket_route(bg_draw_color)",
+        "generality": {
+          "magic_int_constants": {
+            "bar_bracket_route": [
+              3,
+              5
+            ]
+          },
+          "blockers": [
+            "magic_int_constants"
+          ]
+        }
       },
       "train_exact": [],
       "top": [
@@ -3649,7 +4439,18 @@
           ],
           "error": null,
           "program_name": "enum_bar_route:bg_draw",
-          "signature": "enum_bar_route:bg_draw|bar_bracket_route(bg_draw_color)"
+          "signature": "enum_bar_route:bg_draw|bar_bracket_route(bg_draw_color)",
+          "generality": {
+            "magic_int_constants": {
+              "bar_bracket_route": [
+                3,
+                5
+              ]
+            },
+            "blockers": [
+              "magic_int_constants"
+            ]
+          }
         },
         {
           "name": "fill_enclosed_changed_color|fill_enclosed(changed_output_color)",
@@ -3686,7 +4487,11 @@
           ],
           "error": null,
           "program_name": "fill_enclosed_changed_color",
-          "signature": "fill_enclosed_changed_color|fill_enclosed(changed_output_color)"
+          "signature": "fill_enclosed_changed_color|fill_enclosed(changed_output_color)",
+          "generality": {
+            "magic_int_constants": {},
+            "blockers": []
+          }
         },
         {
           "name": "enum_fill_enclosed:changed_output_color|fill_enclosed(changed_output_color)",
@@ -3723,7 +4528,11 @@
           ],
           "error": null,
           "program_name": "enum_fill_enclosed:changed_output_color",
-          "signature": "enum_fill_enclosed:changed_output_color|fill_enclosed(changed_output_color)"
+          "signature": "enum_fill_enclosed:changed_output_color|fill_enclosed(changed_output_color)",
+          "generality": {
+            "magic_int_constants": {},
+            "blockers": []
+          }
         },
         {
           "name": "route_singletons_same|route_singletons()",
@@ -3760,7 +4569,11 @@
           ],
           "error": null,
           "program_name": "route_singletons_same",
-          "signature": "route_singletons_same|route_singletons()"
+          "signature": "route_singletons_same|route_singletons()",
+          "generality": {
+            "magic_int_constants": {},
+            "blockers": []
+          }
         },
         {
           "name": "enum_route_singletons:same|route_singletons()",
@@ -3797,7 +4610,11 @@
           ],
           "error": null,
           "program_name": "enum_route_singletons:same",
-          "signature": "enum_route_singletons:same|route_singletons()"
+          "signature": "enum_route_singletons:same|route_singletons()",
+          "generality": {
+            "magic_int_constants": {},
+            "blockers": []
+          }
         },
         {
           "name": "dominant_recolor_map|recolor_map(dominant_transition_map)",
@@ -3834,7 +4651,11 @@
           ],
           "error": null,
           "program_name": "dominant_recolor_map",
-          "signature": "dominant_recolor_map|recolor_map(dominant_transition_map)"
+          "signature": "dominant_recolor_map|recolor_map(dominant_transition_map)",
+          "generality": {
+            "magic_int_constants": {},
+            "blockers": []
+          }
         },
         {
           "name": "enum_recolor:dominant_transition_map|recolor_map(dominant_transition_map)",
@@ -3871,7 +4692,11 @@
           ],
           "error": null,
           "program_name": "enum_recolor:dominant_transition_map",
-          "signature": "enum_recolor:dominant_transition_map|recolor_map(dominant_transition_map)"
+          "signature": "enum_recolor:dominant_transition_map|recolor_map(dominant_transition_map)",
+          "generality": {
+            "magic_int_constants": {},
+            "blockers": []
+          }
         },
         {
           "name": "enum_recolor_then_bar_route:dominant_transition_map+bg_draw|recolor_map(dominant_transition_map)|bar_bracket_route(bg_draw_color)",
@@ -3908,7 +4733,18 @@
           ],
           "error": null,
           "program_name": "enum_recolor_then_bar_route:dominant_transition_map+bg_draw",
-          "signature": "enum_recolor_then_bar_route:dominant_transition_map+bg_draw|recolor_map(dominant_transition_map)|bar_bracket_route(bg_draw_color)"
+          "signature": "enum_recolor_then_bar_route:dominant_transition_map+bg_draw|recolor_map(dominant_transition_map)|bar_bracket_route(bg_draw_color)",
+          "generality": {
+            "magic_int_constants": {
+              "bar_bracket_route": [
+                3,
+                5
+              ]
+            },
+            "blockers": [
+              "magic_int_constants"
+            ]
+          }
         }
       ]
     },
@@ -3940,7 +4776,11 @@
         ],
         "error": null,
         "program_name": "learned_recolor_map",
-        "signature": "learned_recolor_map|recolor_map(color_transition_map)"
+        "signature": "learned_recolor_map|recolor_map(color_transition_map)",
+        "generality": {
+          "magic_int_constants": {},
+          "blockers": []
+        }
       },
       "train_exact": [],
       "top": [
@@ -3969,7 +4809,11 @@
           ],
           "error": null,
           "program_name": "learned_recolor_map",
-          "signature": "learned_recolor_map|recolor_map(color_transition_map)"
+          "signature": "learned_recolor_map|recolor_map(color_transition_map)",
+          "generality": {
+            "magic_int_constants": {},
+            "blockers": []
+          }
         },
         {
           "name": "dominant_recolor_map|recolor_map(dominant_transition_map)",
@@ -3996,7 +4840,11 @@
           ],
           "error": null,
           "program_name": "dominant_recolor_map",
-          "signature": "dominant_recolor_map|recolor_map(dominant_transition_map)"
+          "signature": "dominant_recolor_map|recolor_map(dominant_transition_map)",
+          "generality": {
+            "magic_int_constants": {},
+            "blockers": []
+          }
         },
         {
           "name": "enum_recolor:color_transition_map|recolor_map(color_transition_map)",
@@ -4023,7 +4871,11 @@
           ],
           "error": null,
           "program_name": "enum_recolor:color_transition_map",
-          "signature": "enum_recolor:color_transition_map|recolor_map(color_transition_map)"
+          "signature": "enum_recolor:color_transition_map|recolor_map(color_transition_map)",
+          "generality": {
+            "magic_int_constants": {},
+            "blockers": []
+          }
         },
         {
           "name": "enum_recolor:dominant_transition_map|recolor_map(dominant_transition_map)",
@@ -4050,7 +4902,11 @@
           ],
           "error": null,
           "program_name": "enum_recolor:dominant_transition_map",
-          "signature": "enum_recolor:dominant_transition_map|recolor_map(dominant_transition_map)"
+          "signature": "enum_recolor:dominant_transition_map|recolor_map(dominant_transition_map)",
+          "generality": {
+            "magic_int_constants": {},
+            "blockers": []
+          }
         },
         {
           "name": "fill_enclosed_changed_color|fill_enclosed(changed_output_color)",
@@ -4077,7 +4933,11 @@
           ],
           "error": null,
           "program_name": "fill_enclosed_changed_color",
-          "signature": "fill_enclosed_changed_color|fill_enclosed(changed_output_color)"
+          "signature": "fill_enclosed_changed_color|fill_enclosed(changed_output_color)",
+          "generality": {
+            "magic_int_constants": {},
+            "blockers": []
+          }
         },
         {
           "name": "enum_fill_enclosed:changed_output_color|fill_enclosed(changed_output_color)",
@@ -4104,7 +4964,11 @@
           ],
           "error": null,
           "program_name": "enum_fill_enclosed:changed_output_color",
-          "signature": "enum_fill_enclosed:changed_output_color|fill_enclosed(changed_output_color)"
+          "signature": "enum_fill_enclosed:changed_output_color|fill_enclosed(changed_output_color)",
+          "generality": {
+            "magic_int_constants": {},
+            "blockers": []
+          }
         },
         {
           "name": "route_singletons_same|route_singletons()",
@@ -4131,7 +4995,11 @@
           ],
           "error": null,
           "program_name": "route_singletons_same",
-          "signature": "route_singletons_same|route_singletons()"
+          "signature": "route_singletons_same|route_singletons()",
+          "generality": {
+            "magic_int_constants": {},
+            "blockers": []
+          }
         },
         {
           "name": "enum_route_singletons:same|route_singletons()",
@@ -4158,7 +5026,11 @@
           ],
           "error": null,
           "program_name": "enum_route_singletons:same",
-          "signature": "enum_route_singletons:same|route_singletons()"
+          "signature": "enum_route_singletons:same|route_singletons()",
+          "generality": {
+            "magic_int_constants": {},
+            "blockers": []
+          }
         }
       ]
     },
@@ -4209,7 +5081,11 @@
         ],
         "error": null,
         "program_name": "fill_enclosed_changed_color",
-        "signature": "fill_enclosed_changed_color|fill_enclosed(changed_output_color)"
+        "signature": "fill_enclosed_changed_color|fill_enclosed(changed_output_color)",
+        "generality": {
+          "magic_int_constants": {},
+          "blockers": []
+        }
       },
       "train_exact": [],
       "top": [
@@ -4243,7 +5119,11 @@
           ],
           "error": null,
           "program_name": "fill_enclosed_changed_color",
-          "signature": "fill_enclosed_changed_color|fill_enclosed(changed_output_color)"
+          "signature": "fill_enclosed_changed_color|fill_enclosed(changed_output_color)",
+          "generality": {
+            "magic_int_constants": {},
+            "blockers": []
+          }
         },
         {
           "name": "enum_fill_enclosed:changed_output_color|fill_enclosed(changed_output_color)",
@@ -4275,7 +5155,11 @@
           ],
           "error": null,
           "program_name": "enum_fill_enclosed:changed_output_color",
-          "signature": "enum_fill_enclosed:changed_output_color|fill_enclosed(changed_output_color)"
+          "signature": "enum_fill_enclosed:changed_output_color|fill_enclosed(changed_output_color)",
+          "generality": {
+            "magic_int_constants": {},
+            "blockers": []
+          }
         },
         {
           "name": "route_singletons_same|route_singletons()",
@@ -4307,7 +5191,11 @@
           ],
           "error": null,
           "program_name": "route_singletons_same",
-          "signature": "route_singletons_same|route_singletons()"
+          "signature": "route_singletons_same|route_singletons()",
+          "generality": {
+            "magic_int_constants": {},
+            "blockers": []
+          }
         },
         {
           "name": "enum_route_singletons:same|route_singletons()",
@@ -4339,7 +5227,11 @@
           ],
           "error": null,
           "program_name": "enum_route_singletons:same",
-          "signature": "enum_route_singletons:same|route_singletons()"
+          "signature": "enum_route_singletons:same|route_singletons()",
+          "generality": {
+            "magic_int_constants": {},
+            "blockers": []
+          }
         },
         {
           "name": "enum_bar_route:bg_draw|bar_bracket_route(bg_draw_color)",
@@ -4371,7 +5263,18 @@
           ],
           "error": null,
           "program_name": "enum_bar_route:bg_draw",
-          "signature": "enum_bar_route:bg_draw|bar_bracket_route(bg_draw_color)"
+          "signature": "enum_bar_route:bg_draw|bar_bracket_route(bg_draw_color)",
+          "generality": {
+            "magic_int_constants": {
+              "bar_bracket_route": [
+                3,
+                5
+              ]
+            },
+            "blockers": [
+              "magic_int_constants"
+            ]
+          }
         },
         {
           "name": "enum_bar_route_then_recolor:bg_draw+dominant_transition_map|bar_bracket_route(bg_draw_color)|recolor_map(dominant_transition_map)",
@@ -4403,7 +5306,18 @@
           ],
           "error": null,
           "program_name": "enum_bar_route_then_recolor:bg_draw+dominant_transition_map",
-          "signature": "enum_bar_route_then_recolor:bg_draw+dominant_transition_map|bar_bracket_route(bg_draw_color)|recolor_map(dominant_transition_map)"
+          "signature": "enum_bar_route_then_recolor:bg_draw+dominant_transition_map|bar_bracket_route(bg_draw_color)|recolor_map(dominant_transition_map)",
+          "generality": {
+            "magic_int_constants": {
+              "bar_bracket_route": [
+                3,
+                5
+              ]
+            },
+            "blockers": [
+              "magic_int_constants"
+            ]
+          }
         },
         {
           "name": "dominant_recolor_map|recolor_map(dominant_transition_map)",
@@ -4435,7 +5349,11 @@
           ],
           "error": null,
           "program_name": "dominant_recolor_map",
-          "signature": "dominant_recolor_map|recolor_map(dominant_transition_map)"
+          "signature": "dominant_recolor_map|recolor_map(dominant_transition_map)",
+          "generality": {
+            "magic_int_constants": {},
+            "blockers": []
+          }
         },
         {
           "name": "enum_recolor:dominant_transition_map|recolor_map(dominant_transition_map)",
@@ -4467,7 +5385,11 @@
           ],
           "error": null,
           "program_name": "enum_recolor:dominant_transition_map",
-          "signature": "enum_recolor:dominant_transition_map|recolor_map(dominant_transition_map)"
+          "signature": "enum_recolor:dominant_transition_map|recolor_map(dominant_transition_map)",
+          "generality": {
+            "magic_int_constants": {},
+            "blockers": []
+          }
         }
       ]
     }

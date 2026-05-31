@@ -372,9 +372,10 @@ def op_bar_marker_bracket_route(grid: Any, args: dict[str, Any]) -> Grid:
     hbars = [b for b in bars if b["orientation"] == "h"]
     vbars = [b for b in bars if b["orientation"] == "v"]
     if len(hbars) >= len(vbars):
-        ordered = sorted(hbars, key=lambda b: (b["bbox"][0], b["bbox"][1]))
+        first_h = min(hbars, key=lambda b: b["bbox"][0])
+        marker_above = marker[0] <= first_h["bbox"][0]
+        ordered = sorted(hbars, key=lambda b: (b["bbox"][0], b["bbox"][1]), reverse=not marker_above)
         current = marker
-        marker_above = marker[0] <= ordered[0]["bbox"][0]
         for bar in ordered:
             r0, c0, r1, c1 = bar["bbox"]
             margin = int(bar["margin"])
@@ -391,14 +392,17 @@ def op_bar_marker_bracket_route(grid: Any, args: dict[str, Any]) -> Grid:
         end_row = h - 1 if marker_above else 0
         draw_orth_segment(g, current, (end_row, current[1]), color)
     else:
-        ordered = sorted(vbars, key=lambda b: (b["bbox"][1], b["bbox"][0]))
+        first_v = min(vbars, key=lambda b: b["bbox"][1])
+        marker_left = marker[1] <= first_v["bbox"][1]
+        ordered = sorted(vbars, key=lambda b: (b["bbox"][1], b["bbox"][0]), reverse=not marker_left)
         current = marker
-        marker_left = marker[1] <= ordered[0]["bbox"][1]
+        start_below = marker[0] <= (h - 1) / 2
         for idx, bar in enumerate(ordered):
             r0, c0, r1, c1 = bar["bbox"]
             margin = int(bar["margin"])
             turn_col = max(0, c0 - margin) if marker_left else min(w - 1, c1 + margin)
-            if idx % 2 == 0:
+            use_below = start_below if idx % 2 == 0 else not start_below
+            if use_below:
                 rail_row = min(h - 1, r1 + margin)
             else:
                 rail_row = max(0, r0 - margin)
