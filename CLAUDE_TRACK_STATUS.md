@@ -383,3 +383,13 @@ scan CLEAN. 0 flips. Per-target failure locus:
   color-roles/bar-lengths), not crop/panel/filler/summary/downscale. The shape GENERATOR for these must
   compute output_dims as a RELATIONAL function of object-graph features, not a fixed family.
 Bounded ladder exhausted; advancing to next infra stage arc2_typed_sketch_enumerator.py per directive.
+
+## Typed sketch enumerator — infra stage (2026-05-30 ~23:05 CDT) — arc2_typed_sketch_enumerator.py
+On arc2_object_graph IR. Reads object-graph relations + shape_profile, emits a bounded, ranked list of TYPED
+SKETCH SKELETONS (7 templates: marker_host_action, route_connect, select_transform_place, panel_compose,
+object_summary, frame_crop, recolor_by_relation), each with typed holes bound to graph roles/relations/actions.
+Does NOT render or solve — produces the search space a downstream renderer/verifier fills. SANITY-CHECK: its
+priors match the empirical findings (dd6b8c4b/3dc255db -> marker_host_action top = the abstractions I pinned;
+shrink tasks -> object_summary). avg ~4 sketches/task (bounded, not unconstrained). Public API:
+enumerate_sketches(train) -> ([Sketch], features). tmp/claude_sketch_enumeration.json. Reusable by Codex as
+the sketch-proposer stage; next is a renderer/verifier that fills holes + gates train-exact/informative-LOO.
