@@ -1,15 +1,15 @@
 {
   "artifact": "verifier_health_latest",
-  "generated_cdt": "2026-05-31 05:07:28 CDT",
+  "generated_cdt": "2026-05-31 05:11:34 CDT",
   "branch": "research/operator-promotion-audit-2026-05-30",
-  "head": "17fd8718",
+  "head": "d491cc76",
   "handoff_mirror": {
     "dir": "/tmp/arc_agi_handoff_sync",
     "available": true,
     "branch": "research/deep-research-handoff-2026-05-30",
     "expected_branch": "research/deep-research-handoff-2026-05-30",
-    "head": "8adc187b",
-    "origin_head": "8adc187b",
+    "head": "b42d317a",
+    "origin_head": "b42d317a",
     "head_matches_origin": true,
     "safe_status": []
   },
@@ -17,65 +17,65 @@
     "available": true,
     "heartbeat_stale_seconds": 390,
     "latest": {
-      "health": {
-        "hash": "17fd8718",
-        "subject": "chore(sync): health 05:06 CDT",
-        "commit_cdt": "2026-05-31 05:06:32 CDT",
-        "age_seconds_at_generation": 56
-      },
       "heartbeat": {
-        "hash": "b858f9a6",
-        "subject": "chore(sync): heartbeat 05:06 CDT",
-        "commit_cdt": "2026-05-31 05:06:23 CDT",
-        "age_seconds_at_generation": 65
+        "hash": "d491cc76",
+        "subject": "chore(sync): heartbeat 05:11 CDT",
+        "commit_cdt": "2026-05-31 05:11:29 CDT",
+        "age_seconds_at_generation": 5
+      },
+      "health": {
+        "hash": "0adcc95b",
+        "subject": "chore(sync): health 05:07 CDT",
+        "commit_cdt": "2026-05-31 05:07:28 CDT",
+        "age_seconds_at_generation": 246
       }
     }
   },
   "artifact_freshness": {
     "stale_threshold_seconds": 900,
-    "max_age_seconds_at_generation": 132,
+    "max_age_seconds_at_generation": 78,
     "missing": [],
     "stale": [],
     "artifacts": {
       "tmp/dsl_enumeration_latest.json": {
         "exists": true,
-        "mtime_cdt": "2026-05-31 05:05:18 CDT",
-        "age_seconds_at_generation": 130
+        "mtime_cdt": "2026-05-31 05:10:18 CDT",
+        "age_seconds_at_generation": 76
       },
       "tmp/codex_sia_all23_sentinel.json": {
         "exists": true,
-        "mtime_cdt": "2026-05-31 05:06:23 CDT",
-        "age_seconds_at_generation": 65
+        "mtime_cdt": "2026-05-31 05:11:29 CDT",
+        "age_seconds_at_generation": 5
       },
       "tmp/sia_lite_latest.json": {
         "exists": true,
-        "mtime_cdt": "2026-05-31 05:06:04 CDT",
-        "age_seconds_at_generation": 83
+        "mtime_cdt": "2026-05-31 05:10:18 CDT",
+        "age_seconds_at_generation": 76
       },
       "tmp/sia_lite_residual_mining.json": {
         "exists": true,
-        "mtime_cdt": "2026-05-31 05:06:05 CDT",
-        "age_seconds_at_generation": 83
+        "mtime_cdt": "2026-05-31 05:10:18 CDT",
+        "age_seconds_at_generation": 76
       },
       "tmp/claude_sketch_enumeration.json": {
         "exists": true,
-        "mtime_cdt": "2026-05-31 05:05:19 CDT",
-        "age_seconds_at_generation": 129
+        "mtime_cdt": "2026-05-31 05:10:19 CDT",
+        "age_seconds_at_generation": 75
       },
       "tmp/legend_lattice_synthetic_latest.json": {
         "exists": true,
-        "mtime_cdt": "2026-05-31 05:05:16 CDT",
-        "age_seconds_at_generation": 132
+        "mtime_cdt": "2026-05-31 05:10:16 CDT",
+        "age_seconds_at_generation": 78
       },
       "tmp/verifier_refresh_latest.json": {
         "exists": true,
-        "mtime_cdt": "2026-05-31 05:06:23 CDT",
-        "age_seconds_at_generation": 65
+        "mtime_cdt": "2026-05-31 05:11:29 CDT",
+        "age_seconds_at_generation": 5
       }
     }
   },
   "last_refresh": {
-    "generated_cdt": "2026-05-31 05:06 CDT",
+    "generated_cdt": "2026-05-31 05:11 CDT",
     "failures": [],
     "timed_out": [],
     "returncodes": {
@@ -88,13 +88,13 @@
       "sentinel": 0
     },
     "durations_seconds": {
-      "compile": 0.104,
-      "legend_synth": 0.176,
-      "dsl_enum": 2.023,
-      "sia_latest": 0.085,
+      "compile": 0.106,
+      "legend_synth": 0.166,
+      "dsl_enum": 2.069,
+      "sia_latest": 0.065,
       "sia_mine": 0.07,
-      "sketch_enum": 0.452,
-      "sentinel": 64.462
+      "sketch_enum": 0.456,
+      "sentinel": 69.934
     }
   },
   "process_state": {
@@ -109,7 +109,7 @@
       {
         "pid": "46240",
         "ppid": "34104",
-        "etime": "03:29",
+        "etime": "07:35",
         "categories": [
           "sia_lite_worker"
         ],
@@ -118,7 +118,7 @@
       {
         "pid": "47648",
         "ppid": "34104",
-        "etime": "02:17",
+        "etime": "06:23",
         "categories": [
           "verifier_loop"
         ],
@@ -164,17 +164,17 @@
     "latest_run": {
       "run_id": "sia_lite_reloaded_faa9f03d_002",
       "target_task": "faa9f03d",
-      "last_generation": 1,
+      "last_generation": 5,
       "tripwire": false,
       "best_generation": {
-        "generation": "gen_1",
+        "generation": "gen_5",
         "status": "success",
         "fitness": 0.1,
         "leaks": 0,
         "loo_tasks": 0,
         "cross": {},
         "train_exact": 2,
-        "shape_exact": 434,
+        "shape_exact": 439,
         "target_train_exact": 0,
         "target_informative_loo": false,
         "target_shape_exact": 28,
@@ -185,11 +185,11 @@
     "latest_run_state": {
       "run_id": "sia_lite_reloaded_faa9f03d_002",
       "target_task": "faa9f03d",
-      "last_generation": 1,
+      "last_generation": 5,
       "tripwire": false,
-      "updated_at": "2026-05-31T05:05:26-0500",
-      "last_result_mtime_cdt": "2026-05-31 05:05:26 CDT",
-      "latest_result_age_seconds_at_generation": 122,
+      "updated_at": "2026-05-31T05:10:06-0500",
+      "last_result_mtime_cdt": "2026-05-31 05:10:06 CDT",
+      "latest_result_age_seconds_at_generation": 88,
       "stale_threshold_seconds": 1800,
       "is_stale": false
     },
