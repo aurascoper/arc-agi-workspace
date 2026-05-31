@@ -9,6 +9,8 @@ siblings independently from the text spec:
 - definition sibling: match by bounding-box shape instead;
 - domain sibling: use a literal row bound H=13;
 - baseline siblings: size/slot/nearest and pair-0 memorized mapping.
+- blind sibling floor: enumerate simple shape-feature match keys and literal
+  row/column bounds that were not named by Claude's note.
 
 The output is a stable JSON readout for Codex/Claude polling. It separates
 blocking findings from declared deferred surfaces so a family can be reviewed
@@ -100,6 +102,38 @@ def bbox(cells):
     rs = [r for r, _ in cells]
     cs = [c for _, c in cells]
     return (max(rs) - min(rs) + 1, max(cs) - min(cs) + 1)
+
+
+def perimeter(cells):
+    pts = set(cells)
+    return sum(1 for r, c in pts for dr, dc in N4 if (r + dr, c + dc) not in pts)
+
+
+def row_profile(cells):
+    pts = canon(cells)
+    counts = Counter(r for r, _ in pts)
+    return tuple(counts[r] for r in range(max(counts) + 1))
+
+
+def col_profile(cells):
+    pts = canon(cells)
+    counts = Counter(c for _, c in pts)
+    return tuple(counts[c] for c in range(max(counts) + 1))
+
+
+def holes(cells):
+    pts = set(canon(cells))
+    h, w = bbox(pts)
+    outside = set()
+    stack = [(-1, -1)]
+    while stack:
+        r, c = stack.pop()
+        if (r, c) in outside or (r, c) in pts or not (-1 <= r <= h and -1 <= c <= w):
+            continue
+        outside.add((r, c))
+        for dr, dc in N4:
+            stack.append((r + dr, c + dc))
+    return sum(1 for r in range(h) for c in range(w) if (r, c) not in pts and (r, c) not in outside)
 
 
 def canon_d4(cells):
@@ -207,6 +241,24 @@ def solve_by_bbox(inp, bg, query):
     return apply_recolor(inp, work, lambda row: by_box.get(row["bbox"]))
 
 
+def solve_by_width(inp, bg, query):
+    legend = legend_entries(inp, bg)
+    by_width = {}
+    for row in legend:
+        by_width.setdefault(row["bbox"][1], row["color"])
+    work = work_objects(inp, bg, query)
+    return apply_recolor(inp, work, lambda row: by_width.get(row["bbox"][1]))
+
+
+def solve_by_height(inp, bg, query):
+    legend = legend_entries(inp, bg)
+    by_height = {}
+    for row in legend:
+        by_height.setdefault(row["bbox"][0], row["color"])
+    work = work_objects(inp, bg, query)
+    return apply_recolor(inp, work, lambda row: by_height.get(row["bbox"][0]))
+
+
 def solve_by_shape_d4(inp, bg, query):
     legend = legend_entries(inp, bg)
     by_d4 = {}
@@ -266,6 +318,22 @@ def solve_hardcoded_w(inp, bg, query):
     return apply_recolor(inp, work, lambda row: by_shape.get(row["canon"]))
 
 
+def solve_literal_col_bound(inp, bg, query, chi):
+    literal_chi = min(chi, len(inp[0]) - 1)
+    legend = legend_entries(inp, bg, chi=min(LEG_CHI, literal_chi))
+    by_shape = {row["canon"]: row["color"] for row in legend}
+    work = work_objects(inp, bg, query, chi=literal_chi)
+    return apply_recolor(inp, work, lambda row: by_shape.get(row["canon"]))
+
+
+def solve_literal_row_bound(inp, bg, query, rhi):
+    literal_rhi = min(rhi, len(inp) - 1)
+    legend = legend_entries(inp, bg, rhi=literal_rhi)
+    by_shape = {row["canon"]: row["color"] for row in legend}
+    work = work_objects(inp, bg, query, rhi=literal_rhi)
+    return apply_recolor(inp, work, lambda row: by_shape.get(row["canon"]))
+
+
 def solve_unique_role_once(inp, bg, query):
     legend = legend_entries(inp, bg)
     by_shape = {row["canon"]: row["color"] for row in legend}
@@ -295,10 +363,56 @@ def pair0_table_solver(task):
     return solve
 
 
+def shape_key_solvers():
+    key_fns = {
+        "blind_by_size": lambda row: len(row["cells"]),
+        "blind_by_bbox": lambda row: row["bbox"],
+        "blind_by_width": lambda row: row["bbox"][1],
+        "blind_by_height": lambda row: row["bbox"][0],
+        "blind_by_bbox_area": lambda row: row["bbox"][0] * row["bbox"][1],
+        "blind_by_extent_sum": lambda row: row["bbox"][0] + row["bbox"][1],
+        "blind_by_perimeter": lambda row: perimeter(row["cells"]),
+        "blind_by_row_profile": lambda row: row_profile(row["cells"]),
+        "blind_by_col_profile": lambda row: col_profile(row["cells"]),
+        "blind_by_sorted_profiles": lambda row: tuple(sorted((row_profile(row["cells"]), col_profile(row["cells"])))),
+        "blind_by_holes": lambda row: holes(row["cells"]),
+        "blind_by_d4": lambda row: canon_d4(row["cells"]),
+    }
+
+    def make_solver(key_fn):
+        def solve(inp, bg, query):
+            legend = legend_entries(inp, bg)
+            table = {}
+            for row in legend:
+                table.setdefault(key_fn(row), row["color"])
+            work = work_objects(inp, bg, query)
+            return apply_recolor(inp, work, lambda row: table.get(key_fn(row)))
+
+        return solve
+
+    return {name: make_solver(fn) for name, fn in key_fns.items()}
+
+
 def admits_task(task, solver) -> bool:
     bg = task["meta"]["bg"]
     query = task["meta"]["query"]
     return all(solver(inp, bg, query) == out for inp, out in task["train"])
+
+
+def admitted_literal_bounds(task):
+    bg = task["meta"]["bg"]
+    query = task["meta"]["query"]
+    max_h = max(len(inp) for inp, _ in task["train"])
+    max_w = max(len(inp[0]) for inp, _ in task["train"])
+    cols = []
+    rows = []
+    for chi in range(WORK_CLO, max_w - 1):
+        if admits_task(task, lambda inp, bg, query, chi=chi: solve_literal_col_bound(inp, bg, query, chi)):
+            cols.append(chi)
+    for rhi in range(max_h - 1):
+        if admits_task(task, lambda inp, bg, query, rhi=rhi: solve_literal_row_bound(inp, bg, query, rhi)):
+            rows.append(rhi)
+    return {"cols": cols, "rows": rows}
 
 
 def task_domain(task):
@@ -320,6 +434,8 @@ def main() -> None:
     solvers = {
         "by_shape_rule": solve_by_shape,
         "by_bbox": solve_by_bbox,
+        "by_width": solve_by_width,
+        "by_height": solve_by_height,
         "by_shape_d4": solve_by_shape_d4,
         "by_shape_8conn": solve_by_shape_8conn,
         "by_size": solve_by_size,
@@ -331,10 +447,15 @@ def main() -> None:
     }
     admitted = {name: 0 for name in solvers}
     admitted["pair0_table"] = 0
+    blind_solvers = shape_key_solvers()
+    blind_admitted = {name: 0 for name in blind_solvers}
+    literal_bound_admitted = {"literal_col_bound_any": 0, "literal_row_bound_any": 0}
     per_seed = []
     oracle_mismatches = 0
     all_dims = Counter()
     examples = {name: [] for name in admitted}
+    blind_examples = {name: [] for name in blind_solvers}
+    literal_bound_examples = {name: [] for name in literal_bound_admitted}
 
     for seed in seeds:
         family = module.generate_family(seed=seed, num_tasks=num_tasks)
@@ -357,6 +478,30 @@ def main() -> None:
                 seed_counts["pair0_table"] += 1
                 if len(examples["pair0_table"]) < 5:
                     examples["pair0_table"].append({"seed": seed, "task_index": task_index, "domain": task_domain(task)})
+            for name, solver in blind_solvers.items():
+                if admits_task(task, solver):
+                    blind_admitted[name] += 1
+                    if len(blind_examples[name]) < 5:
+                        blind_examples[name].append({"seed": seed, "task_index": task_index, "domain": task_domain(task)})
+            bounds = admitted_literal_bounds(task)
+            if bounds["cols"]:
+                literal_bound_admitted["literal_col_bound_any"] += 1
+                if len(literal_bound_examples["literal_col_bound_any"]) < 5:
+                    literal_bound_examples["literal_col_bound_any"].append({
+                        "seed": seed,
+                        "task_index": task_index,
+                        "bounds": bounds["cols"],
+                        "domain": task_domain(task),
+                    })
+            if bounds["rows"]:
+                literal_bound_admitted["literal_row_bound_any"] += 1
+                if len(literal_bound_examples["literal_row_bound_any"]) < 5:
+                    literal_bound_examples["literal_row_bound_any"].append({
+                        "seed": seed,
+                        "task_index": task_index,
+                        "bounds": bounds["rows"],
+                        "domain": task_domain(task),
+                    })
         per_seed.append({"seed": seed, "admitted": seed_counts})
 
     total_tasks = len(seeds) * num_tasks
@@ -410,6 +555,22 @@ def main() -> None:
             "distinguishing_grid": "legend contains two shapes with same bbox but different canonical cells",
             "fix": "force bbox-collision pairs on >=2 train instances per task",
         })
+    if admitted["by_width"]:
+        blocking_findings.append({
+            "name": "by_width",
+            "axis": "definition/correspondence",
+            "admitted_tasks": admitted["by_width"],
+            "distinguishing_grid": "legend contains two shapes with same width but different canonical cells",
+            "fix": "force width-collision pairs on >=2 train instances per task",
+        })
+    if admitted["by_height"]:
+        blocking_findings.append({
+            "name": "by_height",
+            "axis": "definition/correspondence",
+            "admitted_tasks": admitted["by_height"],
+            "distinguishing_grid": "legend contains two shapes with same height but different canonical cells",
+            "fix": "force height-collision pairs on >=2 train instances per task",
+        })
     if admitted["hardcoded_H"]:
         blocking_findings.append({
             "name": "hardcoded_H",
@@ -426,6 +587,32 @@ def main() -> None:
             "distinguishing_grid": "place work objects in columns outside a literal W=15 bound",
             "fix": "force work-area occupancy beyond the smallest width on >=2 train instances per task",
         })
+    for name, count in literal_bound_admitted.items():
+        if count:
+            blocking_findings.append({
+                "name": name,
+                "axis": "domain/dimension",
+                "admitted_tasks": count,
+                "distinguishing_grid": "literal work-area row/column bounds survive when every train object stays inside them",
+                "fix": "force extremal work-area occupancy on >=2 train instances/task for both row and column axes",
+            })
+    blind_blocking_findings = []
+    blind_deferred_names = {"blind_by_d4"}
+    blind_floor_names = {"blind_by_size", "blind_by_bbox", "blind_by_width", "blind_by_height"}
+    for name, count in blind_admitted.items():
+        if name in blind_deferred_names:
+            continue
+        if count:
+            finding = {
+                "name": name,
+                "axis": "definition/correspondence",
+                "admitted_tasks": count,
+                "distinguishing_grid": "blind shape-feature key matches legend/work where exact canonical shape should be required",
+                "fix": "add >=2 train collisions for this feature key or document it as an explicit deferred tail",
+                "floor_feature": name in blind_floor_names,
+            }
+            blind_blocking_findings.append(finding)
+            blocking_findings.append(finding)
     if admitted["by_shape_d4"]:
         deferred_survivors.append({
             "name": "by_shape_d4",
@@ -471,6 +658,8 @@ def main() -> None:
                 "8-connected object individuation",
                 "literal width bound",
                 "unique-role-once binding constraint",
+                "blind shape-feature key grammar",
+                "literal row/column bound enumeration",
             ],
             "v2_requirement": (
                 "If Claude provides v2, treat this reviewer as a starting floor and add any new "
@@ -480,8 +669,14 @@ def main() -> None:
         "oracle_mismatches": oracle_mismatches,
         "admitted_counts": admitted,
         "admitted_rates": {name: admitted[name] / total_tasks for name in sorted(admitted)},
+        "blind_admitted_counts": blind_admitted,
+        "blind_admitted_rates": {name: blind_admitted[name] / total_tasks for name in sorted(blind_admitted)},
+        "blind_blocking_findings": blind_blocking_findings,
+        "literal_bound_admitted_counts": literal_bound_admitted,
+        "literal_bound_examples": literal_bound_examples,
         "dimension_histogram": dict(sorted(all_dims.items())),
         "examples": examples,
+        "blind_examples": blind_examples,
         "findings": blocking_findings,
         "blocking_findings": blocking_findings,
         "deferred_survivors": deferred_survivors,

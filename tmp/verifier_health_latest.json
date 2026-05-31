@@ -1,15 +1,15 @@
 {
   "artifact": "verifier_health_latest",
-  "generated_cdt": "2026-05-31 06:18:08 CDT",
+  "generated_cdt": "2026-05-31 06:20:33 CDT",
   "branch": "research/operator-promotion-audit-2026-05-30",
-  "head": "2bf82c25",
+  "head": "a31475f1",
   "handoff_mirror": {
     "dir": "/tmp/arc_agi_handoff_sync",
     "available": true,
     "branch": "research/deep-research-handoff-2026-05-30",
     "expected_branch": "research/deep-research-handoff-2026-05-30",
-    "head": "219dd7b7",
-    "origin_head": "219dd7b7",
+    "head": "d9a550f9",
+    "origin_head": "d9a550f9",
     "head_matches_origin": true,
     "safe_status": []
   },
@@ -17,80 +17,80 @@
     "available": true,
     "heartbeat_stale_seconds": 390,
     "latest": {
+      "health": {
+        "hash": "a31475f1",
+        "subject": "chore(sync): health after blind audit 06:19 CDT",
+        "commit_cdt": "2026-05-31 06:20:28 CDT",
+        "age_seconds_at_generation": 5
+      },
       "heartbeat": {
         "hash": "2bf82c25",
         "subject": "chore(sync): heartbeat 06:18 CDT",
         "commit_cdt": "2026-05-31 06:18:02 CDT",
-        "age_seconds_at_generation": 6
-      },
-      "health": {
-        "hash": "9ff729d1",
-        "subject": "chore(sync): health 06:13 CDT",
-        "commit_cdt": "2026-05-31 06:13:06 CDT",
-        "age_seconds_at_generation": 302
+        "age_seconds_at_generation": 151
       }
     }
   },
   "artifact_freshness": {
     "stale_threshold_seconds": 900,
-    "max_age_seconds_at_generation": 92,
+    "max_age_seconds_at_generation": 237,
     "missing": [],
     "stale": [],
     "artifacts": {
       "tmp/dsl_enumeration_latest.json": {
         "exists": true,
         "mtime_cdt": "2026-05-31 06:16:38 CDT",
-        "age_seconds_at_generation": 90
+        "age_seconds_at_generation": 235
       },
       "tmp/codex_sia_all23_sentinel.json": {
         "exists": true,
         "mtime_cdt": "2026-05-31 06:18:02 CDT",
-        "age_seconds_at_generation": 5
+        "age_seconds_at_generation": 151
       },
       "tmp/sia_lite_latest.json": {
         "exists": true,
         "mtime_cdt": "2026-05-31 06:16:38 CDT",
-        "age_seconds_at_generation": 90
+        "age_seconds_at_generation": 235
       },
       "tmp/sia_lite_residual_mining.json": {
         "exists": true,
         "mtime_cdt": "2026-05-31 06:16:38 CDT",
-        "age_seconds_at_generation": 89
+        "age_seconds_at_generation": 235
       },
       "tmp/sia_search_policy_latest.json": {
         "exists": true,
         "mtime_cdt": "2026-05-31 06:16:38 CDT",
-        "age_seconds_at_generation": 89
+        "age_seconds_at_generation": 235
       },
       "tmp/claude_artifact_watch_latest.json": {
         "exists": true,
-        "mtime_cdt": "2026-05-31 06:16:40 CDT",
-        "age_seconds_at_generation": 88
+        "mtime_cdt": "2026-05-31 06:19:51 CDT",
+        "age_seconds_at_generation": 41
       },
       "tmp/synthetic_family_ledger_latest.json": {
         "exists": true,
-        "mtime_cdt": "2026-05-31 06:16:40 CDT",
-        "age_seconds_at_generation": 88
+        "mtime_cdt": "2026-05-31 06:20:24 CDT",
+        "age_seconds_at_generation": 8
       },
       "tmp/template_match_role_recolor_latest_review.json": {
         "exists": true,
-        "mtime_cdt": "2026-05-31 06:16:40 CDT",
-        "age_seconds_at_generation": 88
+        "mtime_cdt": "2026-05-31 06:19:34 CDT",
+        "age_seconds_at_generation": 59
       },
       "tmp/claude_sketch_enumeration.json": {
         "exists": true,
         "mtime_cdt": "2026-05-31 06:16:40 CDT",
-        "age_seconds_at_generation": 87
+        "age_seconds_at_generation": 232
       },
       "tmp/legend_lattice_synthetic_latest.json": {
         "exists": true,
         "mtime_cdt": "2026-05-31 06:16:36 CDT",
-        "age_seconds_at_generation": 92
+        "age_seconds_at_generation": 237
       },
       "tmp/verifier_refresh_latest.json": {
         "exists": true,
         "mtime_cdt": "2026-05-31 06:18:02 CDT",
-        "age_seconds_at_generation": 5
+        "age_seconds_at_generation": 151
       }
     }
   },
@@ -137,7 +137,7 @@
       {
         "pid": "15614",
         "ppid": "15613",
-        "etime": "06:38",
+        "etime": "09:03",
         "categories": [
           "verifier_loop"
         ],
@@ -207,7 +207,7 @@
       "tripwire": false,
       "updated_at": "2026-05-31T05:29:11-0500",
       "last_result_mtime_cdt": "2026-05-31 05:29:11 CDT",
-      "latest_result_age_seconds_at_generation": 2936,
+      "latest_result_age_seconds_at_generation": 3082,
       "stale_threshold_seconds": 1800,
       "is_stale": true
     },
@@ -231,7 +231,7 @@
     "admissible_signal_targets": []
   },
   "template_match_role_recolor_review": {
-    "generated_cdt": "2026-05-31 06:16:40 CDT",
+    "generated_cdt": "2026-05-31 06:19:34 CDT",
     "generator_name": "template_match_role_recolor_v2.py",
     "generator_version": 2,
     "verdict": "not_ledger_safe",
@@ -242,11 +242,51 @@
         "admitted_tasks": 4,
         "distinguishing_grid": "place work objects in columns outside a literal W=15 bound",
         "fix": "force work-area occupancy beyond the smallest width on >=2 train instances per task"
+      },
+      {
+        "name": "literal_col_bound_any",
+        "axis": "domain/dimension",
+        "admitted_tasks": 89,
+        "distinguishing_grid": "literal work-area row/column bounds survive when every train object stays inside them",
+        "fix": "force extremal work-area occupancy on >=2 train instances/task for both row and column axes"
+      },
+      {
+        "name": "literal_row_bound_any",
+        "axis": "domain/dimension",
+        "admitted_tasks": 50,
+        "distinguishing_grid": "literal work-area row/column bounds survive when every train object stays inside them",
+        "fix": "force extremal work-area occupancy on >=2 train instances/task for both row and column axes"
+      },
+      {
+        "name": "blind_by_row_profile",
+        "axis": "definition/correspondence",
+        "admitted_tasks": 21,
+        "distinguishing_grid": "blind shape-feature key matches legend/work where exact canonical shape should be required",
+        "fix": "add >=2 train collisions for this feature key or document it as an explicit deferred tail",
+        "floor_feature": false
+      },
+      {
+        "name": "blind_by_col_profile",
+        "axis": "definition/correspondence",
+        "admitted_tasks": 14,
+        "distinguishing_grid": "blind shape-feature key matches legend/work where exact canonical shape should be required",
+        "fix": "add >=2 train collisions for this feature key or document it as an explicit deferred tail",
+        "floor_feature": false
+      },
+      {
+        "name": "blind_by_sorted_profiles",
+        "axis": "definition/correspondence",
+        "admitted_tasks": 100,
+        "distinguishing_grid": "blind shape-feature key matches legend/work where exact canonical shape should be required",
+        "fix": "add >=2 train collisions for this feature key or document it as an explicit deferred tail",
+        "floor_feature": false
       }
     ],
     "admitted_counts": {
       "by_shape_rule": 240,
       "by_bbox": 0,
+      "by_width": 0,
+      "by_height": 0,
       "by_shape_d4": 100,
       "by_shape_8conn": 240,
       "by_size": 0,
@@ -259,7 +299,7 @@
     }
   },
   "claude_artifact_watch": {
-    "generated_cdt": "2026-05-31 06:16:40 CDT",
+    "generated_cdt": "2026-05-31 06:19:51 CDT",
     "template_match_review_alignment": {
       "latest_template_exists": true,
       "review_exists": true,
@@ -278,7 +318,7 @@
     }
   },
   "synthetic_family_ledger": {
-    "generated_cdt": "2026-05-31 06:16:40 CDT",
+    "generated_cdt": "2026-05-31 06:20:24 CDT",
     "summary": {
       "live_integration_ready": false,
       "template_latest_reviewed": true,
