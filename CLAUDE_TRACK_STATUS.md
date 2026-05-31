@@ -342,3 +342,13 @@ tip rule underdetermined for sideways-opening frames). NOT promotable. The apex-
 bbox-contained marker fragment; draw marker-ray from host single-cell tip, len=min(frag,border)) IS validated
 = first design miss with the abstraction pinned. Handoff to Codex with the precise failure mode (needs robust
 host pointing-direction for frame-hosts). arc2_apex_ray_router.py.
+
+## Research-to-roadmap synthesis (2026-05-30 ~22:35 CDT) — arc2_synthesis_architecture_plan.md
+Incorporated the deep-research report (per-task program synthesis). Mapped its 4 buckets to our MEASURED
+4-way locus (decomposition 7 / selector 1 / parameter 1 / renderer 14, exact task lists). Key value-add:
+CORRECTED the report's admission protocol — its "LOO as hard gate" is VACUOUS for parameter-free operators
+(proven twice: finite-miss promotions + apex-ray train-exact-but-0/1). Corrected gate = informative-LOO
+(genuine param refit) OR cross-task firing >=2; apex-ray fires 1/23 -> correctly fails. Cut the report's
+repair-first track (we falsified pixel/object/symmetry/extension 0/23). Next probe = object-graph relation IR
++ host-pointing-direction (report exp 2/3) for the 2 "close" tasks; 3dc255db frame-host completion is BLOCKED
+by leakage (test-only structure); dd6b8c4b structural host-membership selector is the untried angle.
