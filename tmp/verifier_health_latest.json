@@ -1,15 +1,15 @@
 {
   "artifact": "verifier_health_latest",
-  "generated_cdt": "2026-05-31 05:36:55 CDT",
+  "generated_cdt": "2026-05-31 05:38:04 CDT",
   "branch": "research/operator-promotion-audit-2026-05-30",
-  "head": "e1dbb7d7",
+  "head": "d884fb3e",
   "handoff_mirror": {
     "dir": "/tmp/arc_agi_handoff_sync",
     "available": true,
     "branch": "research/deep-research-handoff-2026-05-30",
     "expected_branch": "research/deep-research-handoff-2026-05-30",
-    "head": "791e33dd",
-    "origin_head": "791e33dd",
+    "head": "7d923b32",
+    "origin_head": "7d923b32",
     "head_matches_origin": true,
     "safe_status": []
   },
@@ -17,65 +17,65 @@
     "available": true,
     "heartbeat_stale_seconds": 390,
     "latest": {
+      "health": {
+        "hash": "59d21587",
+        "subject": "chore(sync): health 05:36 CDT",
+        "commit_cdt": "2026-05-31 05:36:55 CDT",
+        "age_seconds_at_generation": 69
+      },
       "heartbeat": {
         "hash": "e1dbb7d7",
         "subject": "chore(sync): heartbeat 05:36 CDT",
         "commit_cdt": "2026-05-31 05:36:49 CDT",
-        "age_seconds_at_generation": 6
-      },
-      "health": {
-        "hash": "4398d26d",
-        "subject": "chore(sync): health 05:31 CDT",
-        "commit_cdt": "2026-05-31 05:31:46 CDT",
-        "age_seconds_at_generation": 309
+        "age_seconds_at_generation": 75
       }
     }
   },
   "artifact_freshness": {
     "stale_threshold_seconds": 900,
-    "max_age_seconds_at_generation": 89,
+    "max_age_seconds_at_generation": 157,
     "missing": [],
     "stale": [],
     "artifacts": {
       "tmp/dsl_enumeration_latest.json": {
         "exists": true,
         "mtime_cdt": "2026-05-31 05:35:28 CDT",
-        "age_seconds_at_generation": 87
+        "age_seconds_at_generation": 155
       },
       "tmp/codex_sia_all23_sentinel.json": {
         "exists": true,
-        "mtime_cdt": "2026-05-31 05:36:49 CDT",
-        "age_seconds_at_generation": 5
+        "mtime_cdt": "2026-05-31 05:36:58 CDT",
+        "age_seconds_at_generation": 65
       },
       "tmp/sia_lite_latest.json": {
         "exists": true,
         "mtime_cdt": "2026-05-31 05:35:28 CDT",
-        "age_seconds_at_generation": 87
+        "age_seconds_at_generation": 155
       },
       "tmp/sia_lite_residual_mining.json": {
         "exists": true,
         "mtime_cdt": "2026-05-31 05:35:28 CDT",
-        "age_seconds_at_generation": 87
+        "age_seconds_at_generation": 155
       },
       "tmp/sia_search_policy_latest.json": {
         "exists": true,
         "mtime_cdt": "2026-05-31 05:35:28 CDT",
-        "age_seconds_at_generation": 87
+        "age_seconds_at_generation": 155
       },
       "tmp/claude_sketch_enumeration.json": {
         "exists": true,
         "mtime_cdt": "2026-05-31 05:35:28 CDT",
-        "age_seconds_at_generation": 86
+        "age_seconds_at_generation": 155
       },
       "tmp/legend_lattice_synthetic_latest.json": {
         "exists": true,
         "mtime_cdt": "2026-05-31 05:35:26 CDT",
-        "age_seconds_at_generation": 89
+        "age_seconds_at_generation": 157
       },
       "tmp/verifier_refresh_latest.json": {
         "exists": true,
-        "mtime_cdt": "2026-05-31 05:36:49 CDT",
-        "age_seconds_at_generation": 5
+        "mtime_cdt": "2026-05-31 05:36:58 CDT",
+        "age_seconds_at_generation": 65
       }
     }
   },
@@ -89,41 +89,34 @@
       "dsl_enum": 0,
       "sia_latest": 0,
       "sia_mine": 0,
+      "sia_policy": 0,
       "sketch_enum": 0,
       "sentinel": 0
     },
     "durations_seconds": {
-      "compile": 0.102,
-      "legend_synth": 0.166,
-      "dsl_enum": 2.021,
-      "sia_latest": 0.07,
-      "sia_mine": 0.072,
-      "sketch_enum": 0.449,
-      "sentinel": 89.652
+      "compile": 0.091,
+      "legend_synth": 0.17,
+      "dsl_enum": 2.051,
+      "sia_latest": 0.066,
+      "sia_mine": 0.068,
+      "sia_policy": 0.046,
+      "sketch_enum": 0.445,
+      "sentinel": 89.683
     }
   },
   "process_state": {
     "available": true,
     "counts": {
-      "verifier_loop": 2,
+      "verifier_loop": 1,
       "sia_lite_worker": 0,
       "active_branch_push": 0,
       "github_arc_agi_transfer": 0
     },
     "matching_processes": [
       {
-        "pid": "77975",
-        "ppid": "83564",
-        "etime": "01:30",
-        "categories": [
-          "verifier_loop"
-        ],
-        "command": "/opt/homebrew/Cellar/python@3.14/3.14.5/Frameworks/Python.framework/Versions/3.14/Resources/Python.app/Contents/MacOS/Python sia_arc_all23_task/codex_verifier_cycle.py --no-commit"
-      },
-      {
         "pid": "47648",
         "ppid": "34104",
-        "etime": "31:44",
+        "etime": "32:53",
         "categories": [
           "verifier_loop"
         ],
@@ -134,9 +127,7 @@
   "tmux_sessions": [
     "arc2_codex_verifier: 1 windows (created Sun May 31 05:05:11 2026)"
   ],
-  "safe_status": [
-    "?? tmp/sia_search_policy_latest.json"
-  ],
+  "safe_status": [],
   "integration_ready": [],
   "manual_review_candidates": [],
   "parked_candidates": [
@@ -195,7 +186,7 @@
       "tripwire": false,
       "updated_at": "2026-05-31T05:29:11-0500",
       "last_result_mtime_cdt": "2026-05-31 05:29:11 CDT",
-      "latest_result_age_seconds_at_generation": 463,
+      "latest_result_age_seconds_at_generation": 532,
       "stale_threshold_seconds": 1800,
       "is_stale": false
     },
@@ -218,8 +209,6 @@
     "unprobed_residual_targets": [],
     "admissible_signal_targets": []
   },
-  "status": "attention",
-  "warnings": [
-    "safe coordination paths have uncommitted changes"
-  ]
+  "status": "ok",
+  "warnings": []
 }

@@ -1,0 +1,165 @@
+{
+  "artifact": "sia_search_policy_latest",
+  "generated_cdt": "2026-05-31 05:35:28 CDT",
+  "promotion_gate": "train-exact plus informative LOO or cross-task firing; leakage clean; manual verification",
+  "recommendation": "idle_exhausted_sia_queue",
+  "sia_worker_expected": false,
+  "next_action": "Do not restart flat SIA-lite residual runs. Move upstream to typed DSL/enumerator/library-learning or Claude method-track family two.",
+  "integration_ready_count": 0,
+  "manual_review_count": 0,
+  "parked_count": 1,
+  "reloaded_targets": {
+    "142ca369": {
+      "run_id": "sia_lite_reloaded_142ca369_002",
+      "target_task": "142ca369",
+      "last_generation": 8,
+      "tripwire": false,
+      "updated_at": "2026-05-31T05:29:11-0500",
+      "complete": true,
+      "leaks": 0,
+      "max_target_train_exact": 0,
+      "has_informative_loo": false,
+      "has_cross_task_firing": false,
+      "best_target_residual": {
+        "diff": 110,
+        "generation": "gen_2",
+        "name": "diag_renderer:1=fill0,2=fill0,3=fill0,5=fill0"
+      },
+      "admissible_signal": false,
+      "flat_non_promotable": true
+    },
+    "7b0280bc": {
+      "run_id": "sia_lite_reloaded_7b0280bc_002",
+      "target_task": "7b0280bc",
+      "last_generation": 8,
+      "tripwire": false,
+      "updated_at": "2026-05-31T05:24:27-0500",
+      "complete": true,
+      "leaks": 0,
+      "max_target_train_exact": 0,
+      "has_informative_loo": false,
+      "has_cross_task_firing": false,
+      "best_target_residual": {
+        "diff": 71,
+        "generation": "gen_4",
+        "name": "enclosed_region_fill_learned"
+      },
+      "admissible_signal": false,
+      "flat_non_promotable": true
+    },
+    "88bcf3b4": {
+      "run_id": "sia_lite_reloaded_88bcf3b4_002",
+      "target_task": "88bcf3b4",
+      "last_generation": 8,
+      "tripwire": false,
+      "updated_at": "2026-05-31T05:01:54-0500",
+      "complete": true,
+      "leaks": 0,
+      "max_target_train_exact": 0,
+      "has_informative_loo": false,
+      "has_cross_task_firing": false,
+      "best_target_residual": {
+        "diff": 51,
+        "generation": "gen_1",
+        "name": "component_gap_bridge:row"
+      },
+      "admissible_signal": false,
+      "flat_non_promotable": true
+    },
+    "cb2d8a2c": {
+      "run_id": "sia_lite_reloaded_cb2d8a2c_002",
+      "target_task": "cb2d8a2c",
+      "last_generation": 8,
+      "tripwire": false,
+      "updated_at": "2026-05-31T04:44:26-0500",
+      "complete": true,
+      "leaks": 0,
+      "max_target_train_exact": 0,
+      "has_informative_loo": false,
+      "has_cross_task_firing": false,
+      "best_target_residual": {
+        "diff": 131,
+        "generation": "gen_1",
+        "name": "apex_ray:2:any_single:min_frag_border"
+      },
+      "admissible_signal": false,
+      "flat_non_promotable": true
+    },
+    "d8e07eb2": {
+      "run_id": "sia_lite_reloaded_d8e07eb2_002",
+      "target_task": "d8e07eb2",
+      "last_generation": 8,
+      "tripwire": false,
+      "updated_at": "2026-05-31T02:52:40-0500",
+      "complete": true,
+      "leaks": 0,
+      "max_target_train_exact": 0,
+      "has_informative_loo": false,
+      "has_cross_task_firing": false,
+      "best_target_residual": {
+        "diff": 745,
+        "generation": "gen_1",
+        "name": "enclosed_region_fill:unique"
+      },
+      "admissible_signal": false,
+      "flat_non_promotable": true
+    },
+    "faa9f03d": {
+      "run_id": "sia_lite_reloaded_faa9f03d_002",
+      "target_task": "faa9f03d",
+      "last_generation": 8,
+      "tripwire": false,
+      "updated_at": "2026-05-31T05:13:49-0500",
+      "complete": true,
+      "leaks": 0,
+      "max_target_train_exact": 0,
+      "has_informative_loo": false,
+      "has_cross_task_firing": false,
+      "best_target_residual": {
+        "diff": 50,
+        "generation": "gen_1",
+        "name": "apex_ray:2:any_single:min_frag_border"
+      },
+      "admissible_signal": false,
+      "flat_non_promotable": true
+    }
+  },
+  "exhausted_flat_targets": [
+    "142ca369",
+    "7b0280bc",
+    "88bcf3b4",
+    "cb2d8a2c",
+    "d8e07eb2",
+    "faa9f03d"
+  ],
+  "admissible_signal_targets": [],
+  "incomplete_targets": [],
+  "unprobed_residual_targets": [],
+  "positive_residual_reductions": [
+    {
+      "run_id": "sia_lite_gpt54mini_cb2d8a2c_001",
+      "generation": "gen_5",
+      "target_task": "cb2d8a2c",
+      "fitness": -0.0,
+      "leaks": 0,
+      "cross": {},
+      "target_train_exact": 0,
+      "target_informative_loo": false,
+      "target_shape_exact": 2,
+      "target_best_diff": 127,
+      "target_best_name": "rowcol_cross_fill:row=2:col=2",
+      "per_pair_diff": [
+        25,
+        32,
+        41,
+        29
+      ],
+      "run_seed_diff": 131,
+      "run_delta": 4
+    }
+  ],
+  "notes": [
+    "Flat means completed, no tripwire/leaks, no target train exactness, no informative LOO, and no cross-task firing.",
+    "Finite residual reductions are diagnostic only and never promotion evidence by themselves."
+  ]
+}
