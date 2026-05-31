@@ -1,0 +1,173 @@
+{
+  "artifact": "synthetic_family_ledger_latest",
+  "generated_cdt": "2026-05-31 06:11:08 CDT",
+  "entries": [
+    {
+      "family": "template_match_role_recolor",
+      "status": "not_ledger_safe",
+      "live_solver_effect": "none",
+      "latest_generator": {
+        "name": "template_match_role_recolor_v2.py",
+        "path": "/Users/aurascoper/Downloads/template_match_role_recolor_v2.py",
+        "version": 2,
+        "size_bytes": 25593,
+        "sha256": "a85f1e375c694e33288fbfb4b0f5695092589ae59df535a19483f7cbca0f863d",
+        "mtime_cdt": "2026-05-31 06:05:51 CDT"
+      },
+      "review": {
+        "artifact": "tmp/template_match_role_recolor_latest_review.json",
+        "generated_cdt": "2026-05-31 06:11:08 CDT",
+        "verdict": "not_ledger_safe",
+        "oracle_mismatches": 0,
+        "admitted_counts": {
+          "by_shape_rule": 240,
+          "by_bbox": 0,
+          "by_shape_d4": 100,
+          "by_shape_8conn": 240,
+          "by_size": 0,
+          "by_slot": 0,
+          "by_nearest": 0,
+          "hardcoded_H": 0,
+          "hardcoded_W": 4,
+          "unique_role_once": 0,
+          "pair0_table": 0
+        },
+        "review_scope": {
+          "v1": "reproduces and extends named sibling checks; not a full blind sibling enumerator",
+          "open_ended_additions": [
+            "D4-canonical shape matching",
+            "8-connected object individuation",
+            "literal width bound",
+            "unique-role-once binding constraint"
+          ],
+          "v2_requirement": "If Claude provides v2, treat this reviewer as a starting floor and add any new surfaces suggested by v2's generator, especially transfer and unmatched-object semantics."
+        }
+      },
+      "review_alignment": {
+        "latest_template_exists": true,
+        "review_exists": true,
+        "latest_name": "template_match_role_recolor_v2.py",
+        "latest_version": 2,
+        "latest_sha256": "a85f1e375c694e33288fbfb4b0f5695092589ae59df535a19483f7cbca0f863d",
+        "reviewed_name": "template_match_role_recolor_v2.py",
+        "reviewed_version": 2,
+        "reviewed_sha256": "a85f1e375c694e33288fbfb4b0f5695092589ae59df535a19483f7cbca0f863d",
+        "latest_is_reviewed": true,
+        "action": "latest template-match generator is reviewed"
+      },
+      "blockers": [
+        {
+          "name": "hardcoded_W",
+          "axis": "domain/dimension",
+          "admitted_tasks": 4,
+          "fix": "force work-area occupancy beyond the smallest width on >=2 train instances per task"
+        }
+      ],
+      "deferred_survivors": [
+        {
+          "name": "by_shape_d4",
+          "axis": "definition/correspondence",
+          "admitted_tasks": 100,
+          "declared_scope": "D4-canonical shape matching is documented as deferred in the generator spec.",
+          "future_fix": "force orientation-sensitive correspondence collisions on >=2 train instances per task"
+        },
+        {
+          "name": "by_shape_8conn",
+          "axis": "definition/individuation",
+          "admitted_tasks": 240,
+          "declared_scope": "8-connected object individuation is documented as deferred in the generator spec.",
+          "future_fix": "force diagonal-touch individuation cases on >=2 train instances per task"
+        }
+      ],
+      "next_required_action": "Fix blocking synthetic-review findings: hardcoded_W (force work-area occupancy beyond the smallest width on >=2 train instances per task)",
+      "notes": [
+        "Method-track only; derived from 7b0280bc-class ideas and not live Kaggle evidence.",
+        "A pass here would still require separate live candidate gates before solver integration."
+      ]
+    },
+    {
+      "family": "count_marked_objects",
+      "status": "external_method_shipped_unverified_by_codex",
+      "live_solver_effect": "none",
+      "latest_generator": {
+        "name": "count_marked_objects_v5.py",
+        "path": "/Users/aurascoper/Downloads/count_marked_objects_v5.py",
+        "version": 5,
+        "size_bytes": 29317,
+        "sha256": "59bad14c06bb7f54e4048c7d974c62a2ded287d8403fc4b16280e5dcd98af59a",
+        "mtime_cdt": "2026-05-31 04:57:09 CDT"
+      },
+      "review": {
+        "artifact": null,
+        "verdict": "reported_shipped_by_claude_v5"
+      },
+      "blockers": [],
+      "scope_limits_reported": [
+        "region-grow/category-c: objects-in-margin not certified",
+        "N>7 tail not certified",
+        "object-size>6 tail not certified"
+      ],
+      "next_required_action": "No live action. If this family becomes admission-critical, add a Codex cold-review artifact similar to template_match_role_recolor.",
+      "notes": [
+        "Mailbox reports v5 shipped to the scoped generalization ledger.",
+        "Codex has fingerprinted the generator but has not added an independent count-family reviewer."
+      ]
+    },
+    {
+      "family": "live_solver_candidates",
+      "status": "no_live_work",
+      "integration_ready": [],
+      "manual_review_candidates": [],
+      "parked_candidates": [
+        {
+          "task_id": "d8e07eb2",
+          "signature": "legend_component_underfill|legend_component_underfill(bg_draw_color,legend_footer_alt_color,legend_footer_height)",
+          "promotion_blockers": [
+            "no_informative_loo_or_cross",
+            "synthetic_legend_lattice_fail"
+          ],
+          "parked_reason": "train-exact but failed held-out synthetic legend/lattice variation; treat as geometry-bespoke and do not promote",
+          "structural_synthetic_evidence": {
+            "name": "legend_lattice_synthetic",
+            "passed": false,
+            "tasks": 5,
+            "all_train_exact": false,
+            "all_test_exact": false,
+            "train_exact_tasks": [
+              "legend_lat_b"
+            ],
+            "test_exact_tasks": [
+              "legend_lat_b",
+              "legend_lat_d"
+            ]
+          }
+        }
+      ],
+      "sia_policy": {
+        "recommendation": "idle_exhausted_sia_queue",
+        "sia_worker_expected": false,
+        "exhausted_flat_targets": [
+          "142ca369",
+          "7b0280bc",
+          "88bcf3b4",
+          "cb2d8a2c",
+          "d8e07eb2",
+          "faa9f03d"
+        ],
+        "admissible_signal_targets": []
+      },
+      "next_required_action": "No live integration. Keep verifier running and wait for a new generator/candidate."
+    }
+  ],
+  "summary": {
+    "live_integration_ready": false,
+    "template_latest_reviewed": true,
+    "template_status": "not_ledger_safe",
+    "count_marked_status": "external_method_shipped_unverified_by_codex",
+    "sia_recommendation": "idle_exhausted_sia_queue"
+  },
+  "notes": [
+    "Generalization-ledger evidence is separate from live Kaggle solver evidence.",
+    "This ledger is for coordination; it does not execute generators or admit candidates."
+  ]
+}
