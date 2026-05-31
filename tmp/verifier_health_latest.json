@@ -1,15 +1,15 @@
 {
   "artifact": "verifier_health_latest",
-  "generated_cdt": "2026-05-31 04:46:12 CDT",
+  "generated_cdt": "2026-05-31 04:46:42 CDT",
   "branch": "research/operator-promotion-audit-2026-05-30",
-  "head": "9df8d040",
+  "head": "e31e2128",
   "handoff_mirror": {
     "dir": "/tmp/arc_agi_handoff_sync",
     "available": true,
     "branch": "research/deep-research-handoff-2026-05-30",
     "expected_branch": "research/deep-research-handoff-2026-05-30",
-    "head": "4a4ea6cf",
-    "origin_head": "4a4ea6cf",
+    "head": "645e0b3a",
+    "origin_head": "645e0b3a",
     "head_matches_origin": true,
     "safe_status": []
   },
@@ -17,60 +17,60 @@
     "available": true,
     "heartbeat_stale_seconds": 390,
     "latest": {
+      "heartbeat": {
+        "hash": "e31e2128",
+        "subject": "chore(sync): heartbeat 04:46 CDT",
+        "commit_cdt": "2026-05-31 04:46:13 CDT",
+        "age_seconds_at_generation": 29
+      },
       "health": {
         "hash": "9df8d040",
         "subject": "chore(sync): health 04:42 CDT",
         "commit_cdt": "2026-05-31 04:42:25 CDT",
-        "age_seconds_at_generation": 227
-      },
-      "heartbeat": {
-        "hash": "d8fc40d2",
-        "subject": "chore(sync): heartbeat 04:42 CDT",
-        "commit_cdt": "2026-05-31 04:42:20 CDT",
-        "age_seconds_at_generation": 232
+        "age_seconds_at_generation": 257
       }
     }
   },
   "artifact_freshness": {
     "stale_threshold_seconds": 900,
-    "max_age_seconds_at_generation": 293,
+    "max_age_seconds_at_generation": 262,
     "missing": [],
     "stale": [],
     "artifacts": {
       "tmp/dsl_enumeration_latest.json": {
         "exists": true,
-        "mtime_cdt": "2026-05-31 04:41:20 CDT",
-        "age_seconds_at_generation": 291
+        "mtime_cdt": "2026-05-31 04:46:20 CDT",
+        "age_seconds_at_generation": 22
       },
       "tmp/codex_sia_all23_sentinel.json": {
         "exists": true,
         "mtime_cdt": "2026-05-31 04:46:11 CDT",
-        "age_seconds_at_generation": 0
+        "age_seconds_at_generation": 30
       },
       "tmp/sia_lite_latest.json": {
         "exists": true,
-        "mtime_cdt": "2026-05-31 04:44:38 CDT",
-        "age_seconds_at_generation": 93
+        "mtime_cdt": "2026-05-31 04:46:20 CDT",
+        "age_seconds_at_generation": 22
       },
       "tmp/sia_lite_residual_mining.json": {
         "exists": true,
-        "mtime_cdt": "2026-05-31 04:44:38 CDT",
-        "age_seconds_at_generation": 93
+        "mtime_cdt": "2026-05-31 04:46:20 CDT",
+        "age_seconds_at_generation": 22
       },
       "tmp/claude_sketch_enumeration.json": {
         "exists": true,
-        "mtime_cdt": "2026-05-31 04:41:21 CDT",
-        "age_seconds_at_generation": 290
+        "mtime_cdt": "2026-05-31 04:46:21 CDT",
+        "age_seconds_at_generation": 21
       },
       "tmp/legend_lattice_synthetic_latest.json": {
         "exists": true,
-        "mtime_cdt": "2026-05-31 04:41:18 CDT",
-        "age_seconds_at_generation": 293
+        "mtime_cdt": "2026-05-31 04:46:18 CDT",
+        "age_seconds_at_generation": 24
       },
       "tmp/verifier_refresh_latest.json": {
         "exists": true,
         "mtime_cdt": "2026-05-31 04:42:20 CDT",
-        "age_seconds_at_generation": 231
+        "age_seconds_at_generation": 262
       }
     }
   },
@@ -108,7 +108,7 @@
       {
         "pid": "14488",
         "ppid": "1",
-        "etime": "15:00",
+        "etime": "15:31",
         "categories": [
           "verifier_loop"
         ],
@@ -117,7 +117,7 @@
       {
         "pid": "14489",
         "ppid": "14488",
-        "etime": "15:00",
+        "etime": "15:31",
         "categories": [
           "verifier_loop"
         ],
@@ -128,12 +128,7 @@
   "tmux_sessions": [
     "arc2_codex_verifier: 1 windows (created Sun May 31 04:31:12 2026)"
   ],
-  "safe_status": [
-    " M ARC2_AGENT_COORDINATION_STATUS.md",
-    " M tmp/codex_sia_all23_sentinel.json",
-    " M tmp/sia_lite_latest.json",
-    " M tmp/sia_lite_residual_mining.json"
-  ],
+  "safe_status": [],
   "integration_ready": [],
   "manual_review_candidates": [],
   "parked_candidates": [
@@ -192,15 +187,13 @@
       "tripwire": false,
       "updated_at": "2026-05-31T04:44:26-0500",
       "last_result_mtime_cdt": "2026-05-31 04:44:26 CDT",
-      "latest_result_age_seconds_at_generation": 105,
+      "latest_result_age_seconds_at_generation": 135,
       "stale_threshold_seconds": 1800,
       "is_stale": false
     },
     "tripwire_runs": [],
     "positive_reductions": 1
   },
-  "status": "attention",
-  "warnings": [
-    "safe coordination paths have uncommitted changes"
-  ]
+  "status": "ok",
+  "warnings": []
 }
