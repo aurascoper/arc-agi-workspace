@@ -126,12 +126,62 @@ def learn_changed_output_color(train: list[dict[str, Any]]) -> int | None:
     return colors.most_common(1)[0][0] if colors else None
 
 
+def canonical_window(grid: Grid, r0: int, c0: int, h: int, w: int, background: int) -> tuple[tuple[int, ...], ...]:
+    # Keep colour values: these are train-fitted templates, not shape-only keys.
+    return tuple(tuple(grid[r0 + r][c0 + c] for c in range(w)) for r in range(h))
+
+
+def learn_frame_occurrence_templates(train: list[dict[str, Any]]) -> dict[str, Any] | None:
+    """Learn small templates whose surrounding background is framed in output.
+
+    This is an audited matcher/occurrences scaffold. It intentionally searches a
+    tiny fixed family of glyph window sizes and returns only typed data:
+    draw colour + window sizes + canonical train templates.
+    """
+    if not same_shape_train(train):
+        return None
+    draw_color = learn_bg_draw_color(train)
+    if draw_color is None:
+        return None
+    by_size: dict[str, set[tuple[tuple[int, ...], ...]]] = {}
+    for p in train:
+        gi, go = norm(p["input"]), norm(p["output"])
+        h, w = dims(gi)
+        background = bg(gi)
+        for wh, ww in ((3, 3), (3, 4), (3, 5), (4, 3), (5, 3)):
+            if h < wh + 2 or w < ww + 2:
+                continue
+            key = f"{wh}x{ww}"
+            for r0 in range(1, h - wh):
+                for c0 in range(1, w - ww):
+                    cells = [gi[r0 + r][c0 + c] for r in range(wh) for c in range(ww)]
+                    if sum(v != background for v in cells) < 2:
+                        continue
+                    frame_changed = 0
+                    frame_bg = 0
+                    for rr in range(r0 - 1, r0 + wh + 1):
+                        for cc in range(c0 - 1, c0 + ww + 1):
+                            if r0 <= rr < r0 + wh and c0 <= cc < c0 + ww:
+                                continue
+                            if gi[rr][cc] == background:
+                                frame_bg += 1
+                                if go[rr][cc] == draw_color:
+                                    frame_changed += 1
+                    if frame_bg and frame_changed >= max(2, frame_bg // 3):
+                        by_size.setdefault(key, set()).add(canonical_window(gi, r0, c0, wh, ww, background))
+    serial = {key: [list(map(list, tpl)) for tpl in sorted(vals)] for key, vals in by_size.items() if vals}
+    if not serial:
+        return None
+    return {"color": draw_color, "templates": serial}
+
+
 FITTERS = {
     "color_transition_map": learn_color_transition_map,
     "dominant_transition_map": learn_dominant_transition_map,
     "full_color_transition_map": learn_full_color_transition_map,
     "bg_draw_color": learn_bg_draw_color,
     "changed_output_color": learn_changed_output_color,
+    "frame_occurrence_templates": learn_frame_occurrence_templates,
 }
 
 
@@ -418,6 +468,36 @@ def op_bar_marker_bracket_route(grid: Any, args: dict[str, Any]) -> Grid:
     return g
 
 
+def op_frame_occurrences(grid: Any, args: dict[str, Any]) -> Grid:
+    g = norm(grid)
+    h, w = dims(g)
+    spec = args.get("spec") or {}
+    color = int(spec.get("color"))
+    templates = spec.get("templates") or {}
+    background = bg(g)
+    for key, raw_templates in templates.items():
+        try:
+            wh_s, ww_s = key.split("x")
+            wh, ww = int(wh_s), int(ww_s)
+        except Exception:
+            continue
+        wanted = {tuple(tuple(int(v) for v in row) for row in tpl) for tpl in raw_templates}
+        if h < wh + 2 or w < ww + 2:
+            continue
+        for r0 in range(1, h - wh):
+            for c0 in range(1, w - ww):
+                tpl = canonical_window(g, r0, c0, wh, ww, background)
+                if tpl not in wanted:
+                    continue
+                for rr in range(r0 - 1, r0 + wh + 1):
+                    for cc in range(c0 - 1, c0 + ww + 1):
+                        if r0 <= rr < r0 + wh and c0 <= cc < c0 + ww:
+                            continue
+                        if g[rr][cc] == background:
+                            g[rr][cc] = color
+    return g
+
+
 def op_route_singletons(grid: Any, args: dict[str, Any]) -> Grid:
     g = norm(grid)
     fill = args.get("color", "same")
@@ -446,6 +526,7 @@ OPS = {
     "fill_enclosed": op_fill_enclosed,
     "bar_bracket_route": op_bar_bracket_route,
     "bar_marker_bracket_route": op_bar_marker_bracket_route,
+    "frame_occurrences": op_frame_occurrences,
     "route_singletons": op_route_singletons,
 }
 
@@ -531,6 +612,10 @@ DEFAULT_PROGRAMS: list[Program] = [
                 },
             }
         ],
+    },
+    {
+        "name": "frame_occurrences",
+        "pipeline": [{"op": "frame_occurrences", "args": {"spec": {"learn": "frame_occurrence_templates"}}}],
     },
 ]
 
