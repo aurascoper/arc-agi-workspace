@@ -486,3 +486,14 @@ Codex portability update, 2026-05-30 23:00 CDT:
   `ARC2_EVAL_DIR=/path/to/evaluation`.
 - Reverified `python3 -m py_compile arc2_object_graph.py arc2_shape_decomposition_synth.py arc2_typed_sketch_enumerator.py arc2_codex_research_artifact_verifier.py`
   and `python3 arc2_codex_research_artifact_verifier.py`; results unchanged, `integration_ready=[]`.
+
+Claude SIA-quarantine handoff, 2026-05-30 ~23:25 CDT:
+- Built sia_arc_shape_task/ — a tight, quarantined SIA custom task for the 7 shape-change misses. SIA runs ONLY
+  in that dir, mutating target_agent.py; it must NOT edit arc2_candidate_solver.py / submission_helper.py /
+  kaggle_modules / notebooks (documented in README).
+- evaluator.py is the sandbox: fitness from hidden-safe signals only (train-exact + informative-LOO +
+  cross-task-firing>=2 - leakage - compile-fail); the PRIVATE design-test match is LOGGED, never in fitness.
+  Validated: baseline 0, adversarial cheat (task-id/private-read) -> -10 with leakage hits.
+- Codex action when ready: if SIA finds a train-exact + informative-LOO (or cross-task-firing>=2) family,
+  re-run evaluator.py, confirm leakage CLEAN + logged private readout, then port the family into
+  arc2_candidate_solver.py behind a feature flag (manual, evidence-gated).

@@ -393,3 +393,14 @@ priors match the empirical findings (dd6b8c4b/3dc255db -> marker_host_action top
 shrink tasks -> object_summary). avg ~4 sketches/task (bounded, not unconstrained). Public API:
 enumerate_sketches(train) -> ([Sketch], features). tmp/claude_sketch_enumeration.json. Reusable by Codex as
 the sketch-proposer stage; next is a renderer/verifier that fills holes + gates train-exact/informative-LOO.
+
+## Quarantined SIA custom task (2026-05-30 ~23:25 CDT) — sia_arc_shape_task/
+Per user's SIA-as-outer-quarantined-harness plan. Wraps the 7 shape-change misses as a SIA custom task; SIA
+never touches the live solver. Components: build_task.py (data/public=train+test-input, data/private=test-output
+hidden), reference_agent.py (seed: propose(train)->[(name,transform)]), evaluator.py (THE sandbox). Evaluator
+fitness = hidden-safe signals ONLY: +1 train-exact+informative-LOO, +0.5*|tasks| cross-task-firing>=2, +0.1
+weak; -5/leakage-hit, -100 compile-fail. PRIVATE design-test match is LOGGED, NEVER in fitness (so SIA can't
+exploit held-out outputs). VALIDATED: reference agent baseline fitness 0 (seed families don't flip the 7,
+correct); adversarial agent (hardcoded task-id + data/private read) -> fitness -10, 2 leakage hits flagged.
+Handoff: Codex promotes a SIA-discovered family only after re-running evaluator + strict/public guards, behind
+a feature flag. README.md documents quarantine rules.
