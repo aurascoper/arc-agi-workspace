@@ -340,7 +340,9 @@ def evaluate(agent_path: Path) -> dict:
                 priv_match = False
         report["private_readout"][tid] = priv_match
         report["tasks"].append({"task_id": tid, "n_candidates": len(cands), "n_train_exact": len(te),
-                                "train_exact_names": [nm for nm, _ in te][:5], "informative_loo": loo,
+                                "train_exact_names": [nm for nm, _ in te][:5],
+                                "train_exact_names_all": [nm for nm, _ in te],
+                                "informative_loo": loo,
                                 "informative_loo_names": loo_names[:5],
                                 "same_name_loo_names": same_name_loo_names[:5],
                                 "vacuous_loo_names": vacuous_loo_names[:5],

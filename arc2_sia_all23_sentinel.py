@@ -57,6 +57,20 @@ def run_eval(agent: Path) -> dict[str, Any]:
         report["stdout_tail"] = proc.stdout[-2000:]
         return report
     tasks = data.get("tasks", [])
+    train_exact_name_tasks: dict[str, list[str]] = {}
+    for task in tasks:
+        if not isinstance(task, dict):
+            continue
+        tid = task.get("task_id")
+        for name in task.get("train_exact_names_all", task.get("train_exact_names", [])):
+            train_exact_name_tasks.setdefault(name, []).append(tid)
+    top_train_exact_names = {
+        name: tids
+        for name, tids in sorted(
+            train_exact_name_tasks.items(),
+            key=lambda kv: (-len(kv[1]), kv[0]),
+        )[:20]
+    }
     report.update({
         "fitness": data.get("fitness"),
         "n_leakage_hits": len(data.get("leakage_hits", [])),
@@ -70,6 +84,8 @@ def run_eval(agent: Path) -> dict[str, Any]:
             if isinstance(t, dict) and t.get("vacuous_loo_names")
         },
         "cross_task_firing": data.get("cross_task_firing", {}),
+        "train_exact_name_tasks": train_exact_name_tasks,
+        "top_train_exact_names": top_train_exact_names,
         "private_true_total": sum(1 for v in data.get("private_readout", {}).values() if v is True),
     })
     return report
@@ -105,6 +121,8 @@ def main() -> None:
             f"vacuous={report.get('vacuous_loo')} cross={len(report.get('cross_task_firing', {}))} "
             f"private_true={report.get('private_true_total')} ready={report.get('integration_ready')}"
         )
+        if report.get("top_train_exact_names"):
+            print(f"    train_exact_name_tasks={report['top_train_exact_names']}")
     print(f"integration_ready={[r['agent'] for r in ready]}")
     print(f"wrote {OUT_JSON.relative_to(WORKSPACE)}")
 
