@@ -12,6 +12,7 @@ WORKSPACE = Path(__file__).resolve().parent
 TASK_DIR = WORKSPACE / "sia_arc_all23_task"
 EVALUATOR = TASK_DIR / "evaluator.py"
 OUT_JSON = WORKSPACE / "tmp" / "codex_sia_all23_sentinel.json"
+RUN_DIRS = (TASK_DIR / "runs", WORKSPACE / "runs")
 
 
 def agent_paths() -> list[Path]:
@@ -20,8 +21,9 @@ def agent_paths() -> list[Path]:
         path = (TASK_DIR / rel).resolve()
         if path.exists():
             paths.append(path)
-    for path in sorted(TASK_DIR.glob("runs/run_*/gen_*/target_agent.py")):
-        paths.append(path.resolve())
+    for run_dir in RUN_DIRS:
+        for path in sorted(run_dir.glob("run_*/gen_*/target_agent.py")):
+            paths.append(path.resolve())
     seen: set[Path] = set()
     out: list[Path] = []
     for path in paths:

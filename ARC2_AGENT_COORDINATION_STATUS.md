@@ -725,3 +725,18 @@ Codex SIA compatibility update, 2026-05-31 00:08 CDT:
     `python3 sia_arc_all23_task/evaluate.py --gen-dir /tmp/sia_all23_gen_smoke`
 - Smoke result: `status=success`, `fitness=0.1`, `leaks=0`, `train_exact_total=2`, both `3dc255db` apex-ray
   candidates remain `train_exact_fixed_loo_vacuous`; no promotion evidence.
+
+Codex SIA run-discovery hardening, 2026-05-31 00:10 CDT:
+
+- Updated both SIA sentinels to scan target agents in task-local and workspace-root run directories:
+  - `sia_arc_all23_task/runs/run_*/gen_*/target_agent.py`
+  - `sia_arc_shape_task/runs/run_*/gen_*/target_agent.py`
+  - `runs/run_*/gen_*/target_agent.py`
+- Rationale: official SIA invocations may write `runs/` relative to the launch cwd, not inside the custom task
+  directory. This keeps Codex verification from missing generations if SIA is launched from the workspace root.
+- Verified commands:
+  - `python3 -m py_compile arc2_sia_all23_sentinel.py arc2_sia_shape_sentinel.py sia_arc_all23_task/evaluate.py sia_arc_all23_task/evaluator.py sia_arc_shape_task/evaluator.py`
+  - `python3 arc2_sia_all23_sentinel.py`
+  - `python3 arc2_sia_shape_sentinel.py`
+- Current status unchanged: all-23 sentinel has only the two `3dc255db` apex-ray train-exact/vacuous candidates,
+  `loo_tasks=0`, `cross=0`, `integration_ready=[]`; shape sentinel has `train_exact=0`, `integration_ready=[]`.
