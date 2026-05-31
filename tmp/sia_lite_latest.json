@@ -61,8 +61,106 @@
     {
       "run_id": "sia_lite_gpt54_cb2d8a2c_hill_001",
       "tripwire": false,
-      "last_generation": null,
-      "generations": []
+      "last_generation": 3,
+      "generations": [
+        {
+          "generation": "gen_1",
+          "status": "success",
+          "fitness": -0.0,
+          "leaks": 0,
+          "loo_tasks": 0,
+          "cross": {},
+          "train_exact": 0,
+          "shape_exact": 5,
+          "target_train_exact": 0,
+          "target_informative_loo": false,
+          "target_shape_exact": 1,
+          "target_best_diff": 164,
+          "target_best_name": "rowcol_scaffold_recolor:s=3:m=2"
+        },
+        {
+          "generation": "gen_2",
+          "status": "success",
+          "fitness": -0.0,
+          "leaks": 0,
+          "loo_tasks": 0,
+          "cross": {},
+          "train_exact": 0,
+          "shape_exact": 5,
+          "target_train_exact": 0,
+          "target_informative_loo": false,
+          "target_shape_exact": 1,
+          "target_best_diff": 164,
+          "target_best_name": "rowcol_scaffold_recolor:s=3:m=2"
+        },
+        {
+          "generation": "gen_3",
+          "status": "success",
+          "fitness": -0.0,
+          "leaks": 0,
+          "loo_tasks": 0,
+          "cross": {},
+          "train_exact": 0,
+          "shape_exact": 8,
+          "target_train_exact": 0,
+          "target_informative_loo": false,
+          "target_shape_exact": 2,
+          "target_best_diff": 164,
+          "target_best_name": "rowcol_scaffold_recolor:s=3:m=2"
+        }
+      ]
+    },
+    {
+      "run_id": "sia_lite_gpt54_faa9f03d_001",
+      "tripwire": false,
+      "last_generation": 3,
+      "generations": [
+        {
+          "generation": "gen_1",
+          "status": "success",
+          "fitness": 0.1,
+          "leaks": 0,
+          "loo_tasks": 0,
+          "cross": {},
+          "train_exact": 2,
+          "shape_exact": 391,
+          "target_train_exact": 0,
+          "target_informative_loo": false,
+          "target_shape_exact": 25,
+          "target_best_diff": 50,
+          "target_best_name": "apex_ray:2:any_single:min_frag_border"
+        },
+        {
+          "generation": "gen_2",
+          "status": "success",
+          "fitness": -100.0,
+          "leaks": 0,
+          "loo_tasks": 0,
+          "cross": {},
+          "train_exact": 0,
+          "shape_exact": 0,
+          "target_train_exact": null,
+          "target_informative_loo": null,
+          "target_shape_exact": null,
+          "target_best_diff": null,
+          "target_best_name": null
+        },
+        {
+          "generation": "gen_3",
+          "status": "success",
+          "fitness": 0.1,
+          "leaks": 0,
+          "loo_tasks": 0,
+          "cross": {},
+          "train_exact": 2,
+          "shape_exact": 391,
+          "target_train_exact": 0,
+          "target_informative_loo": false,
+          "target_shape_exact": 25,
+          "target_best_diff": 50,
+          "target_best_name": "apex_ray:2:any_single:min_frag_border"
+        }
+      ]
     },
     {
       "run_id": "sia_lite_gpt54mini_142ca369_001",
