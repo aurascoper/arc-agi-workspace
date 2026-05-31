@@ -80,17 +80,29 @@ def heartbeat_text(refresh_outputs: dict) -> str:
     ts, _hm = now()
     dsl = load_json("tmp/dsl_enumeration_latest.json") or {}
     sentinel = load_json("tmp/codex_sia_all23_sentinel.json") or {}
+    sia_latest = load_json("tmp/sia_lite_latest.json") or {}
     exact = dsl.get("train_exact_tasks", [])
     informative = dsl.get("informative_loo_tasks", [])
     cross = dsl.get("cross_task_firing", {})
     ready = sentinel.get("integration_ready", [])
+    latest_run = None
+    runs = sia_latest.get("runs", [])
+    if runs:
+        latest_run = runs[-1]
     failed = [k for k, v in refresh_outputs.items() if v["returncode"] != 0]
     lines = [
         f"\nCodex heartbeat — {ts}:\n",
         "- Verifier cycle refreshed DSL/SIA/sketch/sentinel artifacts.",
+        f"- Shared mirror branch: `{MIRROR_BRANCH}`.",
         f"- DSL frontier: train_exact={exact}, informative_loo={informative}, cross={cross}.",
         f"- SIA sentinel integration_ready={ready}.",
     ]
+    if latest_run:
+        lines.append(
+            "- Latest SIA-lite summary: "
+            f"run_id={latest_run.get('run_id')}, last_generation={latest_run.get('last_generation')}, "
+            f"tripwire={latest_run.get('tripwire')}."
+        )
     if failed:
         lines.append(f"- WARNING: refresh command failures={failed}; see cycle stdout/stderr tails in local logs.")
     else:

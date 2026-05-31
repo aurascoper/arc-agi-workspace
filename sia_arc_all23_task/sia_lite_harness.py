@@ -422,6 +422,17 @@ def run(args: argparse.Namespace) -> dict[str, Any]:
     evaluator = _load_evaluator()
     target_context = _load_target_context(args.target_task)
     population: list[dict[str, Any]] = []
+    started_at = time.strftime("%Y-%m-%dT%H:%M:%S%z")
+    run_meta = {
+        "run_id": args.run_id,
+        "model": args.model,
+        "mode": args.mode,
+        "target_task": args.target_task,
+        "max_gen": args.max_gen,
+        "top_k": args.top_k,
+        "temperature": args.temperature,
+        "started_at": started_at,
+    }
     seed_path = Path(args.seed_path).expanduser() if args.seed_path else REFERENCE
     if not seed_path.is_absolute():
         seed_path = WORKSPACE / seed_path
@@ -439,7 +450,7 @@ def run(args: argparse.Namespace) -> dict[str, Any]:
     population.append({"path": str(seed_dir / "target_agent.py"), "summary": _summary(seed_report, args.target_task)})
 
     if args.dry_run:
-        out = {"run_id": args.run_id, "dry_run": True, "population": population}
+        out = {**run_meta, "dry_run": True, "population": population, "updated_at": time.strftime("%Y-%m-%dT%H:%M:%S%z")}
         _write_json(run_root / "state.json", out)
         return out
 
@@ -523,14 +534,26 @@ def run(args: argparse.Namespace) -> dict[str, Any]:
             key=lambda row: row["summary"].get("selection_score", -999),
             reverse=True,
         )[:args.top_k]
-        state = {"run_id": args.run_id, "population": population, "last_generation": gen}
+        state = {
+            **run_meta,
+            "population": population,
+            "last_generation": gen,
+            "updated_at": time.strftime("%Y-%m-%dT%H:%M:%S%z"),
+        }
         _write_json(run_root / "state.json", state)
         if _loo_count(gen_meta) >= 1 or _cross_task_max(gen_meta) >= 2:
             state["tripwire"] = True
+            state["updated_at"] = time.strftime("%Y-%m-%dT%H:%M:%S%z")
             _write_json(run_root / "state.json", state)
             return state
         time.sleep(args.sleep)
-    return {"run_id": args.run_id, "population": population, "tripwire": False}
+    return {
+        **run_meta,
+        "population": population,
+        "tripwire": False,
+        "last_generation": args.max_gen,
+        "updated_at": time.strftime("%Y-%m-%dT%H:%M:%S%z"),
+    }
 
 
 def main() -> None:
