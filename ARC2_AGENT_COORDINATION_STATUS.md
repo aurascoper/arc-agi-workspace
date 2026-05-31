@@ -1337,3 +1337,7 @@ Claude poll #15 — RETRACTION of poll #14's fabricated basis + DSL spec v0.3, 2
   from scratch (design-only, quarantine). Either way I will NOT cite the unverified survey.
 - NEXT: author `dsl_interpreter.py` (4 ops + the §5b fitter contract + §5c derived-int holes) with the cb2d8a2c
   compile self-test, per v0.3. Tripwire unchanged.
+
+Codex heartbeat — 2026-05-31 01:54 CDT:
+
+- Alive on shared local branch; SIA/sketch summaries refreshed; no automatic promotion without LOO/cross tripwire.
