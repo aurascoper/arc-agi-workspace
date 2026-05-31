@@ -1,0 +1,154 @@
+{
+  "positive_reductions": [
+    {
+      "run_id": "sia_lite_gpt54mini_cb2d8a2c_001",
+      "generation": "gen_5",
+      "target_task": "cb2d8a2c",
+      "fitness": -0.0,
+      "leaks": 0,
+      "cross": {},
+      "target_train_exact": 0,
+      "target_informative_loo": false,
+      "target_shape_exact": 2,
+      "target_best_diff": 127,
+      "target_best_name": "rowcol_cross_fill:row=2:col=2",
+      "per_pair_diff": [
+        25,
+        32,
+        41,
+        29
+      ],
+      "run_seed_diff": 131,
+      "run_delta": 4
+    }
+  ],
+  "best_by_target": {
+    "142ca369": {
+      "run_id": "sia_lite_gpt54mini_142ca369_001",
+      "generation": "gen_2",
+      "target_task": "142ca369",
+      "fitness": -0.0,
+      "leaks": 0,
+      "cross": {},
+      "target_train_exact": 0,
+      "target_informative_loo": false,
+      "target_shape_exact": 1,
+      "target_best_diff": 110,
+      "target_best_name": "diag_renderer:1=fill0,2=fill0,3=fill0,5=fill0",
+      "per_pair_diff": [
+        56,
+        28,
+        26
+      ],
+      "run_seed_diff": 110,
+      "run_delta": 0
+    },
+    "7b0280bc": {
+      "run_id": "sia_lite_gpt54_7b0280bc_001",
+      "generation": "gen_1",
+      "target_task": "7b0280bc",
+      "fitness": 0.1,
+      "leaks": 0,
+      "cross": {},
+      "target_train_exact": 0,
+      "target_informative_loo": false,
+      "target_shape_exact": 23,
+      "target_best_diff": 71,
+      "target_best_name": "enclosed_region_fill:unique",
+      "per_pair_diff": [
+        27,
+        14,
+        30
+      ],
+      "run_seed_diff": 71,
+      "run_delta": 0
+    },
+    "88bcf3b4": {
+      "run_id": "sia_lite_gpt54mini_88bcf3b4_001",
+      "generation": "gen_1",
+      "target_task": "88bcf3b4",
+      "fitness": 0.1,
+      "leaks": 0,
+      "cross": {},
+      "target_train_exact": 0,
+      "target_informative_loo": false,
+      "target_shape_exact": 28,
+      "target_best_diff": 51,
+      "target_best_name": "apex_ray:2:away_from_frag:min_frag_border",
+      "per_pair_diff": [
+        8,
+        8,
+        16,
+        9,
+        10
+      ],
+      "run_seed_diff": 51,
+      "run_delta": 0
+    },
+    "cb2d8a2c": {
+      "run_id": "sia_lite_gpt54mini_cb2d8a2c_001",
+      "generation": "gen_5",
+      "target_task": "cb2d8a2c",
+      "fitness": -0.0,
+      "leaks": 0,
+      "cross": {},
+      "target_train_exact": 0,
+      "target_informative_loo": false,
+      "target_shape_exact": 2,
+      "target_best_diff": 127,
+      "target_best_name": "rowcol_cross_fill:row=2:col=2",
+      "per_pair_diff": [
+        25,
+        32,
+        41,
+        29
+      ],
+      "run_seed_diff": 131,
+      "run_delta": 4
+    },
+    "d8e07eb2": {
+      "run_id": "sia_lite_gpt54mini_d8e07eb2_001",
+      "generation": "gen_2",
+      "target_task": "d8e07eb2",
+      "fitness": 0.1,
+      "leaks": 0,
+      "cross": {},
+      "target_train_exact": 0,
+      "target_informative_loo": false,
+      "target_shape_exact": 25,
+      "target_best_diff": 745,
+      "target_best_name": "enclosed_region_fill:unique",
+      "per_pair_diff": [
+        203,
+        203,
+        119,
+        120,
+        100
+      ],
+      "run_seed_diff": 745,
+      "run_delta": 0
+    },
+    "faa9f03d": {
+      "run_id": "sia_lite_gpt54_faa9f03d_001",
+      "generation": "gen_1",
+      "target_task": "faa9f03d",
+      "fitness": 0.1,
+      "leaks": 0,
+      "cross": {},
+      "target_train_exact": 0,
+      "target_informative_loo": false,
+      "target_shape_exact": 25,
+      "target_best_diff": 50,
+      "target_best_name": "apex_ray:2:any_single:min_frag_border",
+      "per_pair_diff": [
+        9,
+        14,
+        12,
+        15
+      ],
+      "run_seed_diff": 50,
+      "run_delta": 0
+    }
+  },
+  "n_rows": 45
+}
