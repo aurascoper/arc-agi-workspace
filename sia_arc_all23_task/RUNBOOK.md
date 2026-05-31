@@ -71,6 +71,34 @@ SIA writes generations to `runs/run_<run_id>/gen_<n>/` relative to the launch
 directory. The Codex sentinel scans both workspace-root `runs/` and
 task-local `sia_arc_all23_task/runs/`.
 
+## Run SIA-Lite
+
+If the full SIA/OpenHands backend is unavailable, use the local SIA-lite harness.
+It calls the OpenAI Chat Completions API directly, writes the same
+`runs/<run_id>/gen_<n>/target_agent.py` layout, gates with `py_compile` and the
+existing leakage scan, then scores with `evaluate.py`.
+
+Dry-run the seed without making an API call:
+
+```bash
+python3 sia_arc_all23_task/sia_lite_harness.py \
+  --run-id sia_lite_smoke \
+  --dry-run
+```
+
+Run a bounded mutation loop:
+
+```bash
+python3 sia_arc_all23_task/sia_lite_harness.py \
+  --run-id sia_lite_arc2_001 \
+  --model gpt-4.1-mini \
+  --temperature 0.8 \
+  --max-gen 8
+```
+
+If the OpenAI key returns `insufficient_quota`, the harness records a
+`generation_error` result and leaves the seed score intact.
+
 ## Promotion Contract
 
 A generated agent is only worth Codex integration work if the sentinel reports:
