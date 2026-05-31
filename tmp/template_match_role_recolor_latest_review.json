@@ -1,9 +1,20 @@
 {
   "artifact": "template_match_role_recolor_v1_review",
-  "generated_cdt": "2026-05-31 05:51:54 CDT",
+  "generated_cdt": "2026-05-31 05:58:51 CDT",
   "generator_path": "/Users/aurascoper/Downloads/template_match_role_recolor_v1.py",
   "generator_name": "template_match_role_recolor_v1.py",
   "generator_version": 1,
+  "generator_sha256": "df720376f58931b7b1cc94b81a91149462e6b9d7eaa564ea202d6b83156b0570",
+  "available_generators": [
+    {
+      "name": "template_match_role_recolor_v1.py",
+      "path": "/Users/aurascoper/Downloads/template_match_role_recolor_v1.py",
+      "version": 1,
+      "size_bytes": 21382,
+      "sha256": "df720376f58931b7b1cc94b81a91149462e6b9d7eaa564ea202d6b83156b0570",
+      "mtime_cdt": "2026-05-31 05:28:03 CDT"
+    }
+  ],
   "seeds": [
     0,
     1,

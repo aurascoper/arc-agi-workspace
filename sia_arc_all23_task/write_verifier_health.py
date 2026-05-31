@@ -28,6 +28,7 @@ FRESHNESS_PATHS = [
     "tmp/sia_lite_latest.json",
     "tmp/sia_lite_residual_mining.json",
     "tmp/sia_search_policy_latest.json",
+    "tmp/claude_artifact_watch_latest.json",
     "tmp/template_match_role_recolor_latest_review.json",
     "tmp/template_match_role_recolor_v1_review.json",
     "tmp/claude_sketch_enumeration.json",
@@ -54,6 +55,7 @@ SAFE_STATUS_PATHS = [
     "tmp/sia_lite_latest.json",
     "tmp/sia_lite_residual_mining.json",
     "tmp/sia_search_policy_latest.json",
+    "tmp/claude_artifact_watch_latest.json",
     "tmp/template_match_role_recolor_latest_review.json",
     "tmp/template_match_role_recolor_v1_review.json",
     "tmp/claude_sketch_enumeration.json",
@@ -245,6 +247,7 @@ def main() -> None:
     sia_latest = load_json("tmp/sia_lite_latest.json") or {}
     residuals = load_json("tmp/sia_lite_residual_mining.json") or {}
     sia_policy = load_json("tmp/sia_search_policy_latest.json") or {}
+    claude_watch = load_json("tmp/claude_artifact_watch_latest.json") or {}
     template_match_review = load_json("tmp/template_match_role_recolor_latest_review.json") or load_json("tmp/template_match_role_recolor_v1_review.json") or {}
     refresh = load_json("tmp/verifier_refresh_latest.json") or {}
     freshness = artifact_freshness(generated_dt)
@@ -296,6 +299,9 @@ def main() -> None:
         warnings.append("active-branch push process visible at health generation")
     if processes.get("counts", {}).get("github_arc_agi_transfer"):
         warnings.append("arc-agi GitHub transfer process visible at health generation")
+    align = claude_watch.get("template_match_review_alignment", {})
+    if align and align.get("latest_template_exists") and not align.get("latest_is_reviewed"):
+        warnings.append("latest template-match generator is not reviewed")
     if freshness["missing"]:
         warnings.append("refreshed artifact missing")
     if freshness["stale"]:
@@ -377,6 +383,15 @@ def main() -> None:
             "verdict": template_match_review.get("verdict"),
             "findings": template_match_review.get("findings", []),
             "admitted_counts": template_match_review.get("admitted_counts", {}),
+        },
+        "claude_artifact_watch": {
+            "generated_cdt": claude_watch.get("generated_cdt"),
+            "template_match_review_alignment": claude_watch.get("template_match_review_alignment", {}),
+            "download_counts": {
+                key: row.get("count")
+                for key, row in (claude_watch.get("downloads", {}) or {}).items()
+                if isinstance(row, dict)
+            },
         },
         "status": "attention" if warnings else "ok",
         "warnings": warnings,

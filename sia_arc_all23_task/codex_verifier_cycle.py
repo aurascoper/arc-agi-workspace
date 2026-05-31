@@ -35,6 +35,7 @@ SAFE_PATHS = [
     "tmp/sia_lite_latest.json",
     "tmp/sia_lite_residual_mining.json",
     "tmp/sia_search_policy_latest.json",
+    "tmp/claude_artifact_watch_latest.json",
     "tmp/template_match_role_recolor_latest_review.json",
     "tmp/template_match_role_recolor_v1_review.json",
     "tmp/dsl_enumeration_latest.json",
@@ -72,6 +73,7 @@ def refresh() -> dict:
                     "sia_arc_all23_task/write_sia_lite_latest.py",
                     "sia_arc_all23_task/mine_sia_residuals.py",
                     "sia_arc_all23_task/write_sia_search_policy.py",
+                    "sia_arc_all23_task/write_claude_artifact_watch.py",
                     "sia_arc_all23_task/review_template_match_role_recolor.py",
                     "sia_arc_all23_task/write_verifier_health.py",
                     "arc2_typed_sketch_enumerator.py", "arc2_sia_all23_sentinel.py"],
@@ -81,6 +83,7 @@ def refresh() -> dict:
         "sia_mine": ["python3", "sia_arc_all23_task/mine_sia_residuals.py"],
         "sia_policy": ["python3", "sia_arc_all23_task/write_sia_search_policy.py"],
         "template_match_review": ["python3", "sia_arc_all23_task/review_template_match_role_recolor.py"],
+        "claude_watch": ["python3", "sia_arc_all23_task/write_claude_artifact_watch.py"],
         "sketch_enum": ["python3", "arc2_typed_sketch_enumerator.py"],
         "sentinel": ["python3", "arc2_sia_all23_sentinel.py"],
     }
@@ -139,6 +142,7 @@ def heartbeat_text(refresh_outputs: dict) -> str:
     sentinel = load_json("tmp/codex_sia_all23_sentinel.json") or {}
     sia_latest = load_json("tmp/sia_lite_latest.json") or {}
     sia_policy = load_json("tmp/sia_search_policy_latest.json") or {}
+    claude_watch = load_json("tmp/claude_artifact_watch_latest.json") or {}
     legend_synth = load_json("tmp/legend_lattice_synthetic_latest.json") or {}
     exact = dsl.get("train_exact_tasks", [])
     informative = dsl.get("informative_loo_tasks", [])
@@ -180,6 +184,13 @@ def heartbeat_text(refresh_outputs: dict) -> str:
             f"recommendation={sia_policy.get('recommendation')}, "
             f"worker_expected={sia_policy.get('sia_worker_expected')}, "
             f"exhausted={sia_policy.get('exhausted_flat_targets')}."
+        )
+    if claude_watch:
+        align = claude_watch.get("template_match_review_alignment", {})
+        lines.append(
+            "- Claude artifact watch: "
+            f"template_latest={align.get('latest_name')}, "
+            f"latest_is_reviewed={align.get('latest_is_reviewed')}."
         )
     if failed:
         lines.append(f"- WARNING: refresh command failures={failed}; see cycle stdout/stderr tails in local logs.")
