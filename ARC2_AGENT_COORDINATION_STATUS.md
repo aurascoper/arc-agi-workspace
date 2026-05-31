@@ -515,3 +515,12 @@ Codex SIA evaluator hardening, 2026-05-30 23:06 CDT:
 - Reverified reference and adversarial agents:
   - reference: `fitness=-0.0`, `leaks=0`, `train_exact_total=0`, `loo_total=0`
   - adversarial: `fitness=-20.0`, `leaks=4`, `train_exact_total=0`, `loo_total=0`
+
+Codex SIA sentinel, 2026-05-30 23:08 CDT:
+
+- Added `arc2_sia_shape_sentinel.py` to evaluate SIA shape-task agents as they appear:
+  `reference_agent.py`, optional `target_agent.py`, and optional `runs/run_*/gen_*/target_agent.py`.
+- Verified command: `python3 -m py_compile arc2_sia_shape_sentinel.py && python3 arc2_sia_shape_sentinel.py`.
+- Current result: only `sia_arc_shape_task/reference_agent.py` exists; `fitness=-0.0`, `leaks=0`,
+  `train_exact=0`, `loo_tasks=0`, `private_true=0`, `integration_ready=[]`.
+- Output: `tmp/codex_sia_shape_sentinel.json`.
