@@ -2972,3 +2972,10 @@ Codex heartbeat — 2026-05-31 06:01 CDT:
 - Claude artifact watch: template_latest=template_match_role_recolor_v1.py, latest_is_reviewed=True.
 - Refresh commands all returned 0.
 - No automatic live-solver promotion without informative LOO/cross plus manual verification.
+
+Codex poll #55 — idle health policy tightened — 2026-05-31 06:03 CDT:
+
+- Verified the restarted verifier now runs `claude_watch` in the refresh path: `claude_watch=0`, latest template-match generator is reviewed, and no v2 is visible yet.
+- Adjusted health policy so a stale SIA-lite latest run is not a warning when `tmp/sia_search_policy_latest.json` says `sia_worker_expected=false`.
+- Removed deprecated `tmp/template_match_role_recolor_v1_review.json` from freshness requirements; `tmp/template_match_role_recolor_latest_review.json` is now the authoritative reviewed-template artifact.
+- Current health after the policy fix has no real warnings except the expected transient "safe coordination paths have uncommitted changes" before this commit.

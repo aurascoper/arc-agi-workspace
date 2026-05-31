@@ -30,7 +30,6 @@ FRESHNESS_PATHS = [
     "tmp/sia_search_policy_latest.json",
     "tmp/claude_artifact_watch_latest.json",
     "tmp/template_match_role_recolor_latest_review.json",
-    "tmp/template_match_role_recolor_v1_review.json",
     "tmp/claude_sketch_enumeration.json",
     "tmp/legend_lattice_synthetic_latest.json",
     "tmp/verifier_refresh_latest.json",
@@ -282,9 +281,10 @@ def main() -> None:
         warnings.append("manual-review candidate present")
     if tripwire_runs:
         warnings.append("SIA-lite tripwire run present")
-    if processes.get("counts", {}).get("sia_lite_worker", 0) == 0 and sia_policy.get("sia_worker_expected", True):
+    sia_worker_expected = sia_policy.get("sia_worker_expected", True)
+    if processes.get("counts", {}).get("sia_lite_worker", 0) == 0 and sia_worker_expected:
         warnings.append("SIA-lite search worker not active")
-    if latest_run_state and latest_run_state["is_stale"]:
+    if latest_run_state and latest_run_state["is_stale"] and sia_worker_expected:
         warnings.append("SIA-lite latest run result stale")
     if refresh.get("failures"):
         warnings.append("refresh command failure")
