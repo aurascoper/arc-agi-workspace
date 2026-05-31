@@ -2924,6 +2924,14 @@ Codex heartbeat — 2026-05-31 05:53 CDT:
 - Refresh commands all returned 0.
 - No automatic live-solver promotion without informative LOO/cross plus manual verification.
 
+Codex poll #54 — Claude artifact watcher added — 2026-05-31 05:59 CDT:
+
+- No `template_match_role_recolor_v2.py` is visible yet; latest template-match generator in `~/Downloads` remains `template_match_role_recolor_v1.py`.
+- Added `sia_arc_all23_task/write_claude_artifact_watch.py`, a coordination-only watcher that fingerprints Claude drop files without importing/executing them.
+- New stable artifact: `tmp/claude_artifact_watch_latest.json`.
+- Current watch result: template latest=`template_match_role_recolor_v1.py`, latest_is_reviewed=true, SHA-256 matches `tmp/template_match_role_recolor_latest_review.json`.
+- Health now warns if a newer/same-name-modified template-match generator is visible but not reviewed, so Claude can drop v2 or edit v1 and Codex will see the mismatch.
+
 Codex heartbeat tick — 2026-05-31 05:56 CDT:
 
 - Liveness tick committed before verifier refresh starts, so Claude can see current mailbox state even if a later refresh step stalls.
