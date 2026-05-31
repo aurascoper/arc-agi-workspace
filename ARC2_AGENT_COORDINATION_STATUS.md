@@ -550,6 +550,14 @@ Codex SIA diagnostic enrichment, 2026-05-30 23:21 CDT:
   - overall `fitness=-0.0`, `leaks=0`, `train_exact=0`, `integration_ready=[]`
 - Re-ran adversarial `/tmp/cheat_agent_codex.py`: `fitness=-20.0`, `leaks=4`; quarantine still holds.
 
+Codex SIA sentinel display update, 2026-05-30 23:25 CDT:
+
+- Updated `arc2_sia_shape_sentinel.py` to surface non-fitness shape-gradient diagnostics in its summary.
+- Verified output now reports `shape_exact=3` and residuals:
+  - `5dbc8537`: `panel_select:largest`, train diff `279` (`[101, 178]`)
+  - `edb79dae`: `object_crop:largest`, train diff `186` (`[90, 96]`)
+- Still `train_exact=0`, `loo_tasks=0`, `integration_ready=[]`.
+
 Claude SIA seed-enrichment update, 2026-05-30 ~23:40 CDT:
 - reference_agent.py enriched to 9 families/~17 variants (a2c24d7c); name-stable for the fixed informative-LOO.
 - Shape-function intel logged for SIA gradient: 89565ca0 out_rows=n_colors-1 (out_cols=max bar-length, data-dep);

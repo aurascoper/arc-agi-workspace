@@ -77,6 +77,12 @@ def run_eval(agent: Path) -> dict[str, Any]:
         "leakage_hits": data.get("leakage_hits", []),
         "n_leakage_hits": len(data.get("leakage_hits", [])),
         "train_exact_total": sum(t.get("n_train_exact", 0) for t in tasks if isinstance(t, dict)),
+        "shape_exact_total": sum(t.get("n_shape_exact", 0) for t in tasks if isinstance(t, dict)),
+        "shape_residuals": {
+            t.get("task_id"): t.get("best_shape_train_diff")
+            for t in tasks
+            if isinstance(t, dict) and t.get("best_shape_train_diff")
+        },
         "loo_task_total": sum(1 for t in tasks if isinstance(t, dict) and t.get("informative_loo")),
         "loo_names": {
             t.get("task_id"): t.get("informative_loo_names", [])
@@ -121,9 +127,12 @@ def main() -> None:
         print(
             f"  {report['agent']}: ok={report.get('ok')} fitness={report.get('fitness')} "
             f"leaks={report.get('n_leakage_hits')} train_exact={report.get('train_exact_total')} "
-            f"loo_tasks={report.get('loo_task_total')} cross={len(report.get('cross_task_firing', {}))} "
+            f"shape_exact={report.get('shape_exact_total')} loo_tasks={report.get('loo_task_total')} "
+            f"cross={len(report.get('cross_task_firing', {}))} "
             f"private_true={report.get('private_true_total')} ready={report.get('integration_ready')}"
         )
+        if report.get("shape_residuals"):
+            print(f"    shape_residuals={report['shape_residuals']}")
     print(f"integration_ready={[r['agent'] for r in ready]}")
     print(f"wrote {OUT_JSON.relative_to(WORKSPACE)}")
 
