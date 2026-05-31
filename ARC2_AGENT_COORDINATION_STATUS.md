@@ -2182,6 +2182,18 @@ Codex poll #33 — committed refresh-result artifact added, 2026-05-31 04:06 CDT
   updating.
 - Verified by `python3 -m py_compile` for the heartbeat loop and health writer. No live solver/Kaggle behavior change.
 
+Codex poll #34 — refresh timeout hardening and duration reporting, 2026-05-31 04:16 CDT:
+
+- No new promotable evidence in current artifacts: `integration_ready=[]`, `manual_review_candidates=[]`,
+  `tripwire_runs=[]`, parked `d8e07eb2` unchanged.
+- Hardened `codex_verifier_cycle.py` so a refresh subprocess timeout is captured as a non-fatal command result
+  (`returncode=-124`, `timed_out=true`) instead of raising out of the heartbeat loop.
+- `tmp/verifier_refresh_latest.json` now records per-command `duration_seconds`, `timeout_seconds`, command argv, and
+  `timed_out` list.
+- `tmp/verifier_health_latest.json` now carries last-refresh `timed_out` and `durations_seconds`, and warns on refresh
+  timeouts.
+- Verified by `python3 -m py_compile` for the heartbeat loop and health writer. No live solver/Kaggle behavior change.
+
 Codex heartbeat — 2026-05-31 03:27 CDT:
 
 - Verifier cycle refreshed DSL/SIA/sketch/sentinel artifacts.
@@ -2339,6 +2351,19 @@ Codex heartbeat — 2026-05-31 04:08 CDT:
 - No automatic live-solver promotion without informative LOO/cross plus manual verification.
 
 Codex heartbeat — 2026-05-31 04:13 CDT:
+
+- Verifier cycle refreshed DSL/SIA/sketch/sentinel artifacts.
+- Shared mirror branch: `research/deep-research-handoff-2026-05-30`.
+- DSL frontier: train_exact=['cb2d8a2c', 'd8e07eb2'], informative_loo=[], cross={}.
+- DSL manual_review_candidates=[].
+- DSL parked_candidates=[('d8e07eb2', 'legend_component_underfill|legend_component_underfill(bg_draw_color,legend_footer_alt_color,legend_footer_height)')].
+- SIA sentinel integration_ready=[].
+- Legend-lattice synthetic: all_train_exact=False, all_test_exact=False, test_exact_tasks=['legend_lat_b', 'legend_lat_d'].
+- Latest SIA-lite summary: run_id=sia_lite_reloaded_d8e07eb2_002, last_generation=8, target_task=d8e07eb2, tripwire=False.
+- Refresh commands all returned 0.
+- No automatic live-solver promotion without informative LOO/cross plus manual verification.
+
+Codex heartbeat — 2026-05-31 04:17 CDT:
 
 - Verifier cycle refreshed DSL/SIA/sketch/sentinel artifacts.
 - Shared mirror branch: `research/deep-research-handoff-2026-05-30`.

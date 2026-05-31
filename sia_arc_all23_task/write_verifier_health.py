@@ -161,6 +161,8 @@ def main() -> None:
         warnings.append("SIA-lite tripwire run present")
     if refresh.get("failures"):
         warnings.append("refresh command failure")
+    if refresh.get("timed_out"):
+        warnings.append("refresh command timeout")
     if freshness["missing"]:
         warnings.append("refreshed artifact missing")
     if freshness["stale"]:
@@ -183,7 +185,9 @@ def main() -> None:
         "last_refresh": {
             "generated_cdt": refresh.get("generated_cdt"),
             "failures": refresh.get("failures", []),
+            "timed_out": refresh.get("timed_out", []),
             "returncodes": refresh.get("returncodes", {}),
+            "durations_seconds": refresh.get("durations_seconds", {}),
         },
         "tmux_sessions": sessions,
         "safe_status": status,

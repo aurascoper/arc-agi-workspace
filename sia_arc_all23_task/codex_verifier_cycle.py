@@ -52,6 +52,14 @@ def now() -> tuple[str, str]:
     return dt.strftime("%Y-%m-%d %H:%M %Z"), dt.strftime("%H:%M %Z")
 
 
+def tail_text(value) -> str:
+    if value is None:
+        return ""
+    if isinstance(value, bytes):
+        value = value.decode("utf-8", errors="replace")
+    return str(value)[-2000:]
+
+
 def refresh() -> dict:
     outputs = {}
     commands = {
@@ -70,12 +78,29 @@ def refresh() -> dict:
         "sentinel": ["python3", "arc2_sia_all23_sentinel.py"],
     }
     for label, cmd in commands.items():
-        proc = run(cmd, timeout=600 if label == "sentinel" else 300, check=False)
-        outputs[label] = {
-            "returncode": proc.returncode,
-            "stdout_tail": proc.stdout[-2000:],
-            "stderr_tail": proc.stderr[-2000:],
-        }
+        timeout = 600 if label == "sentinel" else 300
+        started = time.monotonic()
+        try:
+            proc = run(cmd, timeout=timeout, check=False)
+            outputs[label] = {
+                "command": cmd,
+                "returncode": proc.returncode,
+                "timed_out": False,
+                "timeout_seconds": timeout,
+                "duration_seconds": round(time.monotonic() - started, 3),
+                "stdout_tail": tail_text(proc.stdout),
+                "stderr_tail": tail_text(proc.stderr),
+            }
+        except subprocess.TimeoutExpired as exc:
+            outputs[label] = {
+                "command": cmd,
+                "returncode": -124,
+                "timed_out": True,
+                "timeout_seconds": timeout,
+                "duration_seconds": round(time.monotonic() - started, 3),
+                "stdout_tail": tail_text(exc.stdout),
+                "stderr_tail": tail_text(exc.stderr),
+            }
     return outputs
 
 
@@ -85,7 +110,9 @@ def write_refresh_artifact(refresh_outputs: dict) -> None:
         "artifact": "verifier_refresh_latest",
         "generated_cdt": ts,
         "failures": [label for label, row in refresh_outputs.items() if row["returncode"] != 0],
+        "timed_out": [label for label, row in refresh_outputs.items() if row.get("timed_out")],
         "returncodes": {label: row["returncode"] for label, row in refresh_outputs.items()},
+        "durations_seconds": {label: row.get("duration_seconds") for label, row in refresh_outputs.items()},
         "outputs": refresh_outputs,
     }
     (WORKSPACE / "tmp").mkdir(exist_ok=True)
