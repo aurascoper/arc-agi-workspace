@@ -1,6 +1,6 @@
 {
   "artifact": "synthetic_family_ledger_latest",
-  "generated_cdt": "2026-05-31 06:21:47 CDT",
+  "generated_cdt": "2026-05-31 06:26:41 CDT",
   "entries": [
     {
       "family": "template_match_role_recolor",
@@ -16,7 +16,7 @@
       },
       "review": {
         "artifact": "tmp/template_match_role_recolor_latest_review.json",
-        "generated_cdt": "2026-05-31 06:21:46 CDT",
+        "generated_cdt": "2026-05-31 06:26:41 CDT",
         "verdict": "not_ledger_safe",
         "oracle_mismatches": 0,
         "admitted_counts": {
