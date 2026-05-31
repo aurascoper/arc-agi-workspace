@@ -350,6 +350,35 @@ def solve_unique_role_once(inp, bg, query):
     return apply_recolor(inp, work, color_of)
 
 
+def solve_bijection_next_unused(inp, bg, query):
+    """Greedy injective role assignment.
+
+    Use the exact matched role if it has not been used yet; otherwise assign the
+    next unused legend role in slot order. This checks the looser joint-constraint
+    family Claude discussed separately from the stricter skip-if-used sibling.
+    """
+    legend = legend_entries(inp, bg)
+    by_shape = {row["canon"]: row["color"] for row in legend}
+    work = work_objects(inp, bg, query)
+    used = set()
+
+    def color_of(row):
+        exact = by_shape.get(row["canon"])
+        if exact is None:
+            return None
+        if exact not in used:
+            used.add(exact)
+            return exact
+        for entry in legend:
+            color = entry["color"]
+            if color not in used:
+                used.add(color)
+                return color
+        return None
+
+    return apply_recolor(inp, work, color_of)
+
+
 def pair0_table_solver(task):
     bg = task["meta"]["bg"]
     query = task["meta"]["query"]
@@ -444,6 +473,7 @@ def main() -> None:
         "hardcoded_H": solve_hardcoded_h,
         "hardcoded_W": solve_hardcoded_w,
         "unique_role_once": solve_unique_role_once,
+        "bijection_next_unused": solve_bijection_next_unused,
     }
     admitted = {name: 0 for name in solvers}
     admitted["pair0_table"] = 0
@@ -545,6 +575,14 @@ def main() -> None:
             "axis": "binding/global",
             "admitted_tasks": admitted["unique_role_once"],
             "distinguishing_grid": "repeated work shapes require repeated role colour, not one-use bijection",
+            "fix": "force repeated matched shapes/roles on >=2 train instances per task",
+        })
+    if admitted["bijection_next_unused"]:
+        blocking_findings.append({
+            "name": "bijection_next_unused",
+            "axis": "binding/global",
+            "admitted_tasks": admitted["bijection_next_unused"],
+            "distinguishing_grid": "repeated work shapes require repeated role colour, not a greedy injective fallback",
             "fix": "force repeated matched shapes/roles on >=2 train instances per task",
         })
     if admitted["by_bbox"]:

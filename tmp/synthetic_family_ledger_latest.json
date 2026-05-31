@@ -1,6 +1,6 @@
 {
   "artifact": "synthetic_family_ledger_latest",
-  "generated_cdt": "2026-05-31 06:37:29 CDT",
+  "generated_cdt": "2026-05-31 06:42:41 CDT",
   "entries": [
     {
       "family": "template_match_role_recolor",
@@ -16,7 +16,7 @@
       },
       "review": {
         "artifact": "tmp/template_match_role_recolor_latest_review.json",
-        "generated_cdt": "2026-05-31 06:35:33 CDT",
+        "generated_cdt": "2026-05-31 06:42:10 CDT",
         "verdict": "not_ledger_safe",
         "oracle_mismatches": 0,
         "admitted_counts": {
@@ -32,6 +32,7 @@
           "hardcoded_H": 0,
           "hardcoded_W": 5,
           "unique_role_once": 0,
+          "bijection_next_unused": 0,
           "pair0_table": 0
         },
         "review_scope": {
@@ -120,7 +121,7 @@
       },
       "review": {
         "artifact": "tmp/count_marked_objects_latest_review.json",
-        "generated_cdt": "2026-05-31 06:37:29 CDT",
+        "generated_cdt": "2026-05-31 06:42:41 CDT",
         "verdict": "not_ledger_safe",
         "oracle_mismatches": 0,
         "output_count_mismatches": 0,

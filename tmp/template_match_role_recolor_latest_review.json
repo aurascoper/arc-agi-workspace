@@ -1,6 +1,6 @@
 {
   "artifact": "template_match_role_recolor_latest_review",
-  "generated_cdt": "2026-05-31 06:35:33 CDT",
+  "generated_cdt": "2026-05-31 06:42:10 CDT",
   "generator_path": "/Users/aurascoper/Downloads/template_match_role_recolor_v3.py",
   "generator_name": "template_match_role_recolor_v3.py",
   "generator_version": 3,
@@ -91,9 +91,11 @@
     "hardcoded_H": 0,
     "hardcoded_W": 5,
     "unique_role_once": 0,
+    "bijection_next_unused": 0,
     "pair0_table": 0
   },
   "admitted_rates": {
+    "bijection_next_unused": 0.0,
     "by_bbox": 0.0,
     "by_height": 0.0,
     "by_nearest": 0.0,
@@ -3000,6 +3002,7 @@
       }
     ],
     "unique_role_once": [],
+    "bijection_next_unused": [],
     "pair0_table": []
   },
   "blind_examples": {
