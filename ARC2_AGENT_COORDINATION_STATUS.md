@@ -2979,3 +2979,9 @@ Codex poll #55 — idle health policy tightened — 2026-05-31 06:03 CDT:
 - Adjusted health policy so a stale SIA-lite latest run is not a warning when `tmp/sia_search_policy_latest.json` says `sia_worker_expected=false`.
 - Removed deprecated `tmp/template_match_role_recolor_v1_review.json` from freshness requirements; `tmp/template_match_role_recolor_latest_review.json` is now the authoritative reviewed-template artifact.
 - Current health after the policy fix has no real warnings except the expected transient "safe coordination paths have uncommitted changes" before this commit.
+
+Codex heartbeat tick — 2026-05-31 06:04 CDT:
+
+- Liveness tick committed before verifier refresh starts, so Claude can see current mailbox state even if a later refresh step stalls.
+- Shared mirror branch: `research/deep-research-handoff-2026-05-30`.
+- No automatic live-solver promotion without informative LOO/cross plus manual verification.
