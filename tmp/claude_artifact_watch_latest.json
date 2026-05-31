@@ -1,0 +1,126 @@
+{
+  "artifact": "claude_artifact_watch_latest",
+  "generated_cdt": "2026-05-31 05:58:51 CDT",
+  "downloads": {
+    "template_match_role_recolor": {
+      "pattern": "/Users/aurascoper/Downloads/template_match_role_recolor_v*.py",
+      "count": 1,
+      "latest": {
+        "name": "template_match_role_recolor_v1.py",
+        "path": "/Users/aurascoper/Downloads/template_match_role_recolor_v1.py",
+        "version": 1,
+        "size_bytes": 21382,
+        "sha256": "df720376f58931b7b1cc94b81a91149462e6b9d7eaa564ea202d6b83156b0570",
+        "mtime_cdt": "2026-05-31 05:28:03 CDT"
+      },
+      "files": [
+        {
+          "name": "template_match_role_recolor_v1.py",
+          "path": "/Users/aurascoper/Downloads/template_match_role_recolor_v1.py",
+          "version": 1,
+          "size_bytes": 21382,
+          "sha256": "df720376f58931b7b1cc94b81a91149462e6b9d7eaa564ea202d6b83156b0570",
+          "mtime_cdt": "2026-05-31 05:28:03 CDT"
+        }
+      ]
+    },
+    "count_marked_objects": {
+      "pattern": "/Users/aurascoper/Downloads/count_marked_objects*v*.py",
+      "count": 3,
+      "latest": {
+        "name": "count_marked_objects_v5.py",
+        "path": "/Users/aurascoper/Downloads/count_marked_objects_v5.py",
+        "version": 5,
+        "size_bytes": 29317,
+        "sha256": "59bad14c06bb7f54e4048c7d974c62a2ded287d8403fc4b16280e5dcd98af59a",
+        "mtime_cdt": "2026-05-31 04:57:09 CDT"
+      },
+      "files": [
+        {
+          "name": "count_marked_objects_v2.py",
+          "path": "/Users/aurascoper/Downloads/count_marked_objects_v2.py",
+          "version": 2,
+          "size_bytes": 23054,
+          "sha256": "a17a1c661f92a47acd07fbdc45bdc9c5b5bed59c8f1be72982251f5fa094b8d7",
+          "mtime_cdt": "2026-05-31 04:13:48 CDT"
+        },
+        {
+          "name": "count_marked_objects_v3.py",
+          "path": "/Users/aurascoper/Downloads/count_marked_objects_v3.py",
+          "version": 3,
+          "size_bytes": 24822,
+          "sha256": "058059d15adfee345018a398b39ac92df9396b14a86b3fce1c3c7499c801d65f",
+          "mtime_cdt": "2026-05-31 04:28:58 CDT"
+        },
+        {
+          "name": "count_marked_objects_v5.py",
+          "path": "/Users/aurascoper/Downloads/count_marked_objects_v5.py",
+          "version": 5,
+          "size_bytes": 29317,
+          "sha256": "59bad14c06bb7f54e4048c7d974c62a2ded287d8403fc4b16280e5dcd98af59a",
+          "mtime_cdt": "2026-05-31 04:57:09 CDT"
+        }
+      ]
+    }
+  },
+  "workspace_artifacts": [
+    {
+      "path": "CLAUDE_TRACK_STATUS.md",
+      "exists": true,
+      "size_bytes": 34449,
+      "mtime_cdt": "2026-05-30 23:20:45 CDT"
+    },
+    {
+      "path": "CLAUDE_TRACK_RESULTS.json",
+      "exists": true,
+      "size_bytes": 2096,
+      "mtime_cdt": "2026-05-30 20:40:22 CDT"
+    },
+    {
+      "path": "arc2_relational_synth_report.md",
+      "exists": true,
+      "size_bytes": 14619,
+      "mtime_cdt": "2026-05-30 22:09:40 CDT"
+    },
+    {
+      "path": "arc2_synthesis_architecture_plan.md",
+      "exists": true,
+      "size_bytes": 9567,
+      "mtime_cdt": "2026-05-30 22:34:37 CDT"
+    },
+    {
+      "path": "tmp/claude_relational_synth_results.json",
+      "exists": true,
+      "size_bytes": 18171,
+      "mtime_cdt": "2026-05-30 23:21:00 CDT"
+    },
+    {
+      "path": "tmp/claude_sketch_enumeration.json",
+      "exists": true,
+      "size_bytes": 75780,
+      "mtime_cdt": "2026-05-31 05:57:53 CDT"
+    },
+    {
+      "path": "tmp/template_match_role_recolor_latest_review.json",
+      "exists": true,
+      "size_bytes": 55483,
+      "mtime_cdt": "2026-05-31 05:58:51 CDT"
+    }
+  ],
+  "template_match_review_alignment": {
+    "latest_template_exists": true,
+    "review_exists": true,
+    "latest_name": "template_match_role_recolor_v1.py",
+    "latest_version": 1,
+    "latest_sha256": "df720376f58931b7b1cc94b81a91149462e6b9d7eaa564ea202d6b83156b0570",
+    "reviewed_name": "template_match_role_recolor_v1.py",
+    "reviewed_version": 1,
+    "reviewed_sha256": "df720376f58931b7b1cc94b81a91149462e6b9d7eaa564ea202d6b83156b0570",
+    "latest_is_reviewed": true,
+    "action": "latest template-match generator is reviewed"
+  },
+  "notes": [
+    "This watcher fingerprints Claude drop files but does not import or execute them.",
+    "The template-match reviewer, not this watcher, performs the cold synthetic-family review."
+  ]
+}

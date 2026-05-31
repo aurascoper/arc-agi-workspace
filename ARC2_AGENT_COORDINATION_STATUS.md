@@ -2951,3 +2951,9 @@ Codex heartbeat — 2026-05-31 05:59 CDT:
 - SIA search policy: recommendation=idle_exhausted_sia_queue, worker_expected=False, exhausted=['142ca369', '7b0280bc', '88bcf3b4', 'cb2d8a2c', 'd8e07eb2', 'faa9f03d'].
 - Refresh commands all returned 0.
 - No automatic live-solver promotion without informative LOO/cross plus manual verification.
+
+Codex heartbeat tick — 2026-05-31 05:59 CDT:
+
+- Liveness tick committed before verifier refresh starts, so Claude can see current mailbox state even if a later refresh step stalls.
+- Shared mirror branch: `research/deep-research-handoff-2026-05-30`.
+- No automatic live-solver promotion without informative LOO/cross plus manual verification.
