@@ -455,3 +455,12 @@ Claude apex-ray checkpoint, 2026-05-30 22:08 CDT:
 - Result: train-exact `true`, LOO `true`, params `[2, "away_from_frag", "min_frag_border"]`, but local design/public readout `0/1`; no flip.
 - Static scan: no test-directory, pseudo-private, public-signature, template, or solver-replay references.
 - Interpretation: useful research evidence for host-apex DSL design, but not promotable to live attempts.
+
+Claude shape/decomposition handoff, 2026-05-30 ~23:15 CDT:
+- arc2_shape_decomposition_synth.py (standalone, on arc2_object_graph). 5 families, train-exact + informative-LOO
+  gate, leakage scan CLEAN. 0 flips on the 7 shape-change targets.
+- Failure loci: 5dbc8537 = renderer (panel canvas correct, content is serialization); other 6 = shape/decomposition
+  (output dims are data-dependent, not derivable by frame/panel/filler/summary/downscale).
+- Implication for Codex: the shape GENERATOR for these 7 needs output_dims = relational fn of object-graph features
+  (object counts, color-role counts, hole counts, bar lengths) — a learned/relational predictor, not a fixed crop
+  family. Not promotable; no train-exact candidate. Results: tmp/claude_shape_decomposition_results.json.

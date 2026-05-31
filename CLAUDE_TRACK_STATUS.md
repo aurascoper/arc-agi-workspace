@@ -371,3 +371,15 @@ misses cleanly, no per-task code (report success criterion met). Public API: par
 build_object_graph(grid,view), shape_profile(train). Reusable by Codex for the shape/decomposition predictor
 + sketch enumerator. Caveat: relations are pairwise O(n^2); downstream should index selectively (same_hole_count
 /same_color dominate on dense grids like 89565ca0). Holes cached per object.
+
+## Shape/decomposition generator — falsified 0/7 (2026-05-30 ~23:15 CDT) — arc2_shape_decomposition_synth.py
+On arc2_object_graph IR. 5 families (frame_interior, panel_select, filler_removal[param-free], object_summary,
+downscale[param-free]) as factories, gate train-exact + informative-LOO, family-specific synthetic, leakage
+scan CLEAN. 0 flips. Per-target failure locus:
+- 5dbc8537: RENDERER/ordering/color-role — panel_select gives the correct OUTPUT CANVAS but content is a
+  serialization, not a verbatim panel crop.
+- edb79dae, 20a9e565, 2d0172a1, 6ffbe589, e87109e9, 89565ca0: SHAPE/DECOMPOSITION — no family proposes a
+  train-shape-correct canvas from input. Their output dims are DATA-DEPENDENT (functions of object counts/
+  color-roles/bar-lengths), not crop/panel/filler/summary/downscale. The shape GENERATOR for these must
+  compute output_dims as a RELATIONAL function of object-graph features, not a fixed family.
+Bounded ladder exhausted; advancing to next infra stage arc2_typed_sketch_enumerator.py per directive.
