@@ -1261,3 +1261,36 @@ Claude poll #13 — DELIVERED the relational DSL spec, 2026-05-31 01:36 CDT:
 Codex heartbeat — 2026-05-31 01:44 CDT:
 
 - Alive on shared local branch; SIA/sketch summaries refreshed; no automatic promotion without LOO/cross tripwire.
+
+Claude poll #14 — DSL spec v0.2 after expert review + GENERATOR PIVOT, 2026-05-31 01:45 CDT:
+
+- BIG NEWS (changes our generator plan): user supplied a branch inventory + expert review. The decisive datum:
+  branch `search-comparison` benchmarked enumerative-BFS / neural-guided-PQ / CEGIS / LLM-emits-DSL on 5
+  representative tasks and **enumerative + library-learning had the BEST mean performance — beating LLM-emits-DSL**.
+  Combined with our own falsification (LLM free-form Python = 0/14), the conclusion is: the LLM should NOT be the
+  program author. The engine is ENUMERATION over the typed DSL + `param-refit` (LOO grid-search/CMA-ES) +
+  DreamCoder-style library learning; the LLM is at most a neural-guided PRIORITY over the BFS frontier.
+- I revised `sia_arc_all23_task/RELATIONAL_DSL_SPEC.md` -> v0.2 incorporating the pivot + 6 review fixes:
+  (1) added `copy_object`/`transfer_pattern` (variable input-dependent template; `stamp` was constant-only);
+  (2) ALL draw ops are STRICT NO-OPs on empty target sets (unconditional pipelines emulate "if exists then act");
+  (3) added relational predicates `symmetry_partner_of`, `connected_component_with(marker)`, `on_rail(rail)`;
+  (4) added parser views `connected` + `multicolor`; (5) CONSTRAINED trigger-fitters to a fixed parametric family
+  (e.g. "region has N cells of colour C") — no arbitrary predicates; (6) start op-set at 4 {recolor_map, route,
+  fill_enclosed, project_ray} and grow.
+- BRANCH RECONCILIATION (do NOT duplicate): reuse `object-selectors` (RCC-8/LOS/symmetry-partner/key-template) for
+  §3 predicates; reuse `param-refit` (LOO grid-search/CMA-ES) for §5 fitters; `dsl-v0.2-relational` is the impl home
+  this spec is the contract for; re-run `search-comparison` after any op-set change.
+- MY ONE ADDITION beyond the review: add an MDL / shortest-pipeline prior to the enumerator so a long train-exact
+  pipeline can't win by memorization — library-learning provides this naturally, but make it explicit; it pairs with
+  the existing fold-varying-LOO gate to block overfit programs.
+- QUESTION FOR CODEX: given enumerate+library-learn beats LLM-emit, do we RETIRE the SIA-lite LLM-mutator lane to an
+  ablation baseline and build `enumerate_dsl.py` (type-directed BFS + library learning over the op registry, scoring
+  via the SAME `evaluate.py`) as the primary generator? I will author the design-only `dsl_interpreter.py` (op
+  registry + fitter dispatch to param-refit + compile); can you own `enumerate_dsl.py` + the frontier scorer?
+- NEXT (my artifact): author `sia_arc_all23_task/dsl_interpreter.py` (stdlib-only, quarantine) for the 4 starter ops
+  with fitter stubs that call the param-refit procedure, plus a self-test compiling a hand-written cb2d8a2c pipeline
+  (`recolor_map(1->2)` + a fill op) and confirming the `1->2` half reproduces + leakage-clean. Tripwire unchanged.
+
+Codex heartbeat — 2026-05-31 01:49 CDT:
+
+- Alive on shared local branch; SIA/sketch summaries refreshed; no automatic promotion without LOO/cross tripwire.

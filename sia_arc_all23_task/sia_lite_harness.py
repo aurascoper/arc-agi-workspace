@@ -27,8 +27,10 @@ TASK_DIR = Path(__file__).resolve().parent
 WORKSPACE = TASK_DIR.parent
 REFERENCE = TASK_DIR / "reference" / "reference_target_agent.py"
 MUTATOR_PROMPT = TASK_DIR / "MUTATOR_SYSTEM_PROMPT.md"
+DSL_MUTATOR_PROMPT = TASK_DIR / "DSL_MUTATOR_SYSTEM_PROMPT.md"
 EVALUATE = TASK_DIR / "evaluate.py"
 EVALUATOR = TASK_DIR / "evaluator.py"
+import dsl_interpreter as DSL
 
 
 def _load_evaluator():
@@ -39,8 +41,8 @@ def _load_evaluator():
     return mod._load_base()
 
 
-def _read_prompt() -> str:
-    text = MUTATOR_PROMPT.read_text()
+def _read_prompt(path: Path = MUTATOR_PROMPT) -> str:
+    text = path.read_text()
     marker = "## SYSTEM PROMPT"
     if marker in text:
         return text[text.index(marker):]
@@ -50,6 +52,12 @@ def _read_prompt() -> str:
 def _extract_python(text: str) -> str:
     blocks = re.findall(r"```(?:python)?\s*(.*?)```", text, flags=re.DOTALL | re.IGNORECASE)
     return (blocks[-1] if blocks else text).strip() + "\n"
+
+
+def _extract_json(text: str) -> Any:
+    blocks = re.findall(r"```(?:json)?\s*(.*?)```", text, flags=re.DOTALL | re.IGNORECASE)
+    raw = (blocks[-1] if blocks else text).strip()
+    return json.loads(raw)
 
 
 def _call_openai(model: str, temperature: float, messages: list[dict[str, str]], max_tokens: int) -> str:
@@ -363,6 +371,51 @@ def _write_json(path: Path, data: Any) -> None:
     path.write_text(json.dumps(data, indent=2))
 
 
+def _prompt_for_dsl(
+    seed_programs: list[dict[str, Any]],
+    best_rows: list[dict[str, Any]],
+    target_context: str = "",
+    residual_context: str = "",
+    focus: str = "",
+) -> list[dict[str, str]]:
+    score_text = json.dumps(best_rows, indent=2)[:12000]
+    programs_text = json.dumps(seed_programs, indent=2)[:16000]
+    focus_text = f"\nAdditional focus from harness:\n{focus.strip()}\n" if focus.strip() else ""
+    target_text = f"\n{target_context}\n" if target_context else ""
+    residual_text = f"\n{residual_context}\n" if residual_context else ""
+    user = f"""Mutate the current best ARC2 DSL program set.
+
+Current best score summaries:
+```json
+{score_text}
+```
+{target_text}{residual_text}{focus_text}
+
+Current best DSL programs:
+```json
+{programs_text}
+```
+
+Return exactly one full JSON list of programs in a single fenced json block.
+"""
+    return [{"role": "system", "content": _read_prompt(DSL_MUTATOR_PROMPT)}, {"role": "user", "content": user}]
+
+
+def _write_dsl_agent(path: Path, programs: list[dict[str, Any]]) -> None:
+    path.write_text(
+        "import importlib.util\n"
+        "from pathlib import Path\n\n"
+        "_workspace = Path(__file__).resolve().parents[3]\n"
+        "_dsl_path = _workspace / 'sia_arc_all23_task' / 'dsl_interpreter.py'\n"
+        "_spec = importlib.util.spec_from_file_location('arc2_sia_dsl_interpreter', _dsl_path)\n"
+        "_dsl = importlib.util.module_from_spec(_spec)\n"
+        "_spec.loader.exec_module(_dsl)\n\n"
+        f"PROGRAMS = {json.dumps(programs, indent=2)}\n\n"
+        "def propose(train):\n"
+        "    return _dsl.propose_from_programs(train, PROGRAMS)\n"
+    )
+
+
 def run(args: argparse.Namespace) -> dict[str, Any]:
     run_root = WORKSPACE / "runs" / args.run_id
     run_root.mkdir(parents=True, exist_ok=True)
@@ -372,11 +425,16 @@ def run(args: argparse.Namespace) -> dict[str, Any]:
     seed_path = Path(args.seed_path).expanduser() if args.seed_path else REFERENCE
     if not seed_path.is_absolute():
         seed_path = WORKSPACE / seed_path
-    seed_source = seed_path.read_text()
+    seed_programs = DSL.DEFAULT_PROGRAMS
+    seed_source = json.dumps(seed_programs, indent=2) if args.mode == "dsl" else seed_path.read_text()
 
     seed_dir = run_root / "seed"
     seed_dir.mkdir(exist_ok=True)
-    (seed_dir / "target_agent.py").write_text(seed_source)
+    if args.mode == "dsl":
+        _write_json(seed_dir / "programs.json", seed_programs)
+        _write_dsl_agent(seed_dir / "target_agent.py", seed_programs)
+    else:
+        (seed_dir / "target_agent.py").write_text(seed_source)
     seed_report = _score(seed_dir)
     population.append({"path": str(seed_dir / "target_agent.py"), "summary": _summary(seed_report, args.target_task)})
 
@@ -389,22 +447,46 @@ def run(args: argparse.Namespace) -> dict[str, Any]:
         gen_dir = run_root / f"gen_{gen}"
         gen_dir.mkdir(exist_ok=True)
         best = max(population, key=lambda row: row["summary"].get("selection_score", -999))
-        seed_source = Path(best["path"]).read_text()
+        best_path = Path(best["path"])
+        if args.mode == "dsl":
+            programs_path = best_path.parent / "programs.json"
+            seed_programs = json.loads(programs_path.read_text()) if programs_path.exists() else DSL.DEFAULT_PROGRAMS
+            seed_source = json.dumps(seed_programs, indent=2)
+        else:
+            seed_source = best_path.read_text()
         gen_meta: dict[str, Any] = {"generation": gen, "seed": best}
         try:
-            content = _call_openai(
-                args.model,
-                args.temperature,
-                _prompt_for(
-                    seed_source,
-                    [_prompt_safe_summary(p["summary"]) for p in population],
-                    target_context,
-                    _seed_residual_context(Path(best["path"]), args.target_task, evaluator),
-                    args.focus,
-                ),
-                args.max_tokens,
-            )
-            code = _extract_python(content)
+            if args.mode == "dsl":
+                content = _call_openai(
+                    args.model,
+                    args.temperature,
+                    _prompt_for_dsl(
+                        seed_programs,
+                        [_prompt_safe_summary(p["summary"]) for p in population],
+                        target_context,
+                        _seed_residual_context(best_path, args.target_task, evaluator),
+                        args.focus,
+                    ),
+                    args.max_tokens,
+                )
+                programs = _extract_json(content)
+                if not isinstance(programs, list):
+                    raise ValueError("DSL response must be a JSON list")
+                code = None
+            else:
+                content = _call_openai(
+                    args.model,
+                    args.temperature,
+                    _prompt_for(
+                        seed_source,
+                        [_prompt_safe_summary(p["summary"]) for p in population],
+                        target_context,
+                        _seed_residual_context(best_path, args.target_task, evaluator),
+                        args.focus,
+                    ),
+                    args.max_tokens,
+                )
+                code = _extract_python(content)
             gen_meta["raw_response"] = content
         except Exception as exc:
             gen_meta.update({"status": "generation_error", "error": str(exc), "fitness": -100.0})
@@ -413,7 +495,11 @@ def run(args: argparse.Namespace) -> dict[str, Any]:
             break
 
         agent = gen_dir / "target_agent.py"
-        agent.write_text(code)
+        if args.mode == "dsl":
+            _write_json(gen_dir / "programs.json", programs)
+            _write_dsl_agent(agent, programs)
+        else:
+            agent.write_text(code)
         ok, compile_log = _py_compile(agent)
         gen_meta["compile_ok"] = ok
         gen_meta["compile_log"] = compile_log
@@ -459,6 +545,7 @@ def main() -> None:
     ap.add_argument("--target-task", help="Inject this public task's train pairs into the mutator prompt; id is omitted from the prompt.")
     ap.add_argument("--focus", default="", help="Additional train-only mutation guidance appended to the user prompt.")
     ap.add_argument("--seed-path", help="Optional initial target_agent.py path for hill-climbing from a near-miss generation.")
+    ap.add_argument("--mode", choices=["python", "dsl"], default="python")
     ap.add_argument("--dry-run", action="store_true")
     args = ap.parse_args()
     out = run(args)
