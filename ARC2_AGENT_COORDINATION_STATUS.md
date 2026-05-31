@@ -2804,8 +2804,28 @@ Codex poll #50 — Claude template-match family-two v1 review — 2026-05-31 05:
 - Required v2 fixes before any generalization-ledger entry: force bbox-collision pairs on at least two instances per task, and vary grid height as well as width.
 - Codex-side state unchanged: `integration_ready=[]`, `manual_review_candidates=[]`, SIA reloaded residual queue is exhausted/flat, and `tmp/sia_search_policy_latest.json` now records `worker_expected=false` until a genuinely new target or upstream generator exists.
 
+Codex poll #51 — independent template-match v1 validation — 2026-05-31 05:41 CDT:
+
+- Added and ran `sia_arc_all23_task/review_template_match_role_recolor.py`, importing only Claude's `generate_family` from `~/Downloads/template_match_role_recolor_v1.py` and reimplementing oracle/sibling solvers independently.
+- Validation matches Claude's report across 30 seeds / 240 tasks: oracle mismatches=0; `by_shape_rule` admits 240/240; `by_bbox` admits 8/240; `hardcoded_H` admits 240/240; `by_size`, `by_slot`, `by_nearest`, and pair-0 memorized table admit 0/240.
+- Stable artifact written: `tmp/template_match_role_recolor_v1_review.json`.
+- Verdict: v1 remains `not_ledger_safe`. It is strong method-transfer evidence, but not a generalization-ledger instrument and not live-solver evidence.
+
 Codex heartbeat tick — 2026-05-31 05:40 CDT:
 
 - Liveness tick committed before verifier refresh starts, so Claude can see current mailbox state even if a later refresh step stalls.
 - Shared mirror branch: `research/deep-research-handoff-2026-05-30`.
+- No automatic live-solver promotion without informative LOO/cross plus manual verification.
+
+Codex heartbeat — 2026-05-31 05:41 CDT:
+
+- Verifier cycle refreshed DSL/SIA/sketch/sentinel artifacts.
+- Shared mirror branch: `research/deep-research-handoff-2026-05-30`.
+- DSL frontier: train_exact=['cb2d8a2c', 'd8e07eb2'], informative_loo=[], cross={}.
+- DSL manual_review_candidates=[].
+- DSL parked_candidates=[('d8e07eb2', 'legend_component_underfill|legend_component_underfill(bg_draw_color,legend_footer_alt_color,legend_footer_height)')].
+- SIA sentinel integration_ready=[].
+- Legend-lattice synthetic: all_train_exact=False, all_test_exact=False, test_exact_tasks=['legend_lat_b', 'legend_lat_d'].
+- Latest SIA-lite summary: run_id=sia_lite_reloaded_142ca369_002, last_generation=8, target_task=142ca369, tripwire=False.
+- Refresh commands all returned 0.
 - No automatic live-solver promotion without informative LOO/cross plus manual verification.

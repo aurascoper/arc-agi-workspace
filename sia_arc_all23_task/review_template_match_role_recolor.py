@@ -1,0 +1,302 @@
+"""Cold review for Claude's template_match_role_recolor synthetic family.
+
+This is coordination-only validation for a generator dropped outside the repo
+(default: ~/Downloads/template_match_role_recolor_v1.py). It imports only the
+generator's `generate_family`, then reimplements the oracle and diagnostic
+siblings independently from the text spec:
+
+- rule: match neutral work objects to legend entries by exact canonical shape;
+- definition sibling: match by bounding-box shape instead;
+- domain sibling: use a literal row bound H=13;
+- baseline siblings: size/slot/nearest and pair-0 memorized mapping.
+
+The output is a stable JSON readout for Codex/Claude polling. It is not a live
+candidate and never edits the solver.
+"""
+
+from __future__ import annotations
+
+import importlib.util
+import json
+import os
+from collections import Counter
+from pathlib import Path
+from types import ModuleType
+from zoneinfo import ZoneInfo
+from datetime import datetime
+
+
+WORKSPACE = Path(__file__).resolve().parent.parent
+DEFAULT_GENERATOR = Path.home() / "Downloads" / "template_match_role_recolor_v1.py"
+OUT = WORKSPACE / "tmp" / "template_match_role_recolor_v1_review.json"
+
+N4 = ((1, 0), (-1, 0), (0, 1), (0, -1))
+LEG_CLO = 0
+LEG_CHI = 2
+WORK_CLO = 4
+HARDCODED_H = 13
+
+
+def load_generator(path: Path) -> ModuleType:
+    spec = importlib.util.spec_from_file_location("template_match_role_recolor_generator", path)
+    if spec is None or spec.loader is None:
+        raise RuntimeError(f"could not import generator at {path}")
+    module = importlib.util.module_from_spec(spec)
+    spec.loader.exec_module(module)
+    if not hasattr(module, "generate_family"):
+        raise RuntimeError(f"{path} does not expose generate_family")
+    return module
+
+
+def canon(cells):
+    mr = min(r for r, _ in cells)
+    mc = min(c for _, c in cells)
+    return frozenset((r - mr, c - mc) for r, c in cells)
+
+
+def bbox(cells):
+    rs = [r for r, _ in cells]
+    cs = [c for _, c in cells]
+    return (max(rs) - min(rs) + 1, max(cs) - min(cs) + 1)
+
+
+def centroid(cells):
+    return (sum(r for r, _ in cells) / len(cells), sum(c for _, c in cells) / len(cells))
+
+
+def objects(grid, bg, rlo, rhi, clo, chi):
+    h, w = len(grid), len(grid[0])
+    rhi = min(rhi, h - 1)
+    chi = min(chi, w - 1)
+    seen = [[False] * w for _ in range(h)]
+    out = []
+    for r in range(rlo, rhi + 1):
+        for c in range(clo, chi + 1):
+            if seen[r][c] or grid[r][c] == bg:
+                continue
+            color = grid[r][c]
+            stack = [(r, c)]
+            seen[r][c] = True
+            cells = []
+            while stack:
+                rr, cc = stack.pop()
+                cells.append((rr, cc))
+                for dr, dc in N4:
+                    nr, nc = rr + dr, cc + dc
+                    if rlo <= nr <= rhi and clo <= nc <= chi and not seen[nr][nc] and grid[nr][nc] == color:
+                        seen[nr][nc] = True
+                        stack.append((nr, nc))
+            out.append({"color": color, "cells": frozenset(cells)})
+    return out
+
+
+def legend_entries(grid, bg, rhi=None):
+    if rhi is None:
+        rhi = len(grid) - 1
+    entries = []
+    for obj in objects(grid, bg, 0, rhi, LEG_CLO, LEG_CHI):
+        cells = obj["cells"]
+        entries.append({
+            "color": obj["color"],
+            "cells": cells,
+            "canon": canon(cells),
+            "bbox": bbox(cells),
+            "top": min(r for r, _ in cells),
+            "centroid": centroid(cells),
+        })
+    entries.sort(key=lambda row: row["top"])
+    return entries
+
+
+def work_objects(grid, bg, query, rhi=None):
+    if rhi is None:
+        rhi = len(grid) - 1
+    rows = []
+    for obj in objects(grid, bg, 0, rhi, WORK_CLO, len(grid[0]) - 1):
+        if obj["color"] == query:
+            cells = obj["cells"]
+            rows.append({"cells": cells, "canon": canon(cells), "bbox": bbox(cells), "centroid": centroid(cells)})
+    rows.sort(key=lambda row: (min(r for r, _ in row["cells"]), min(c for _, c in row["cells"])))
+    return rows
+
+
+def apply_recolor(inp, work_rows, color_of):
+    out = [row[:] for row in inp]
+    for row in work_rows:
+        color = color_of(row)
+        if color is None:
+            continue
+        for r, c in row["cells"]:
+            out[r][c] = color
+    return out
+
+
+def solve_by_shape(inp, bg, query):
+    legend = legend_entries(inp, bg)
+    by_shape = {row["canon"]: row["color"] for row in legend}
+    work = work_objects(inp, bg, query)
+    return apply_recolor(inp, work, lambda row: by_shape.get(row["canon"]))
+
+
+def solve_by_bbox(inp, bg, query):
+    legend = legend_entries(inp, bg)
+    by_box = {}
+    for row in legend:
+        by_box.setdefault(row["bbox"], row["color"])
+    work = work_objects(inp, bg, query)
+    return apply_recolor(inp, work, lambda row: by_box.get(row["bbox"]))
+
+
+def solve_by_size(inp, bg, query):
+    legend = legend_entries(inp, bg)
+    by_size = {}
+    for row in legend:
+        by_size.setdefault(len(row["cells"]), row["color"])
+    work = work_objects(inp, bg, query)
+    return apply_recolor(inp, work, lambda row: by_size.get(len(row["cells"])))
+
+
+def solve_by_slot(inp, bg, query):
+    legend = legend_entries(inp, bg)
+    work = work_objects(inp, bg, query)
+    return apply_recolor(inp, work, lambda row: legend[work.index(row) % len(legend)]["color"])
+
+
+def solve_by_nearest(inp, bg, query):
+    legend = legend_entries(inp, bg)
+    work = work_objects(inp, bg, query)
+
+    def nearest(row):
+        rr, cc = row["centroid"]
+        best = min(legend, key=lambda entry: (entry["centroid"][0] - rr) ** 2 + (entry["centroid"][1] - cc) ** 2)
+        return best["color"]
+
+    return apply_recolor(inp, work, nearest)
+
+
+def solve_hardcoded_h(inp, bg, query):
+    rhi = HARDCODED_H - 1
+    legend = legend_entries(inp, bg, rhi=rhi)
+    by_shape = {row["canon"]: row["color"] for row in legend}
+    work = work_objects(inp, bg, query, rhi=rhi)
+    return apply_recolor(inp, work, lambda row: by_shape.get(row["canon"]))
+
+
+def pair0_table_solver(task):
+    bg = task["meta"]["bg"]
+    query = task["meta"]["query"]
+    first_inp = task["train"][0][0]
+    table = {row["canon"]: row["color"] for row in legend_entries(first_inp, bg)}
+
+    def solve(inp, _bg, _query):
+        work = work_objects(inp, bg, query)
+        return apply_recolor(inp, work, lambda row: table.get(row["canon"]))
+
+    return solve
+
+
+def admits_task(task, solver) -> bool:
+    bg = task["meta"]["bg"]
+    query = task["meta"]["query"]
+    return all(solver(inp, bg, query) == out for inp, out in task["train"])
+
+
+def task_domain(task):
+    dims = sorted({(len(inp), len(inp[0])) for inp, _out in task["train"]})
+    legend_boxes = []
+    for inp, _out in task["train"]:
+        bg = task["meta"]["bg"]
+        boxes = [row["bbox"] for row in legend_entries(inp, bg)]
+        legend_boxes.append(boxes)
+    return {"dims": dims, "legend_bboxes": legend_boxes}
+
+
+def main() -> None:
+    generator_path = Path(os.environ.get("TEMPLATE_MATCH_ROLE_RECOLOR_GENERATOR", DEFAULT_GENERATOR)).expanduser()
+    module = load_generator(generator_path)
+    seeds = list(range(30))
+    num_tasks = 8
+    solvers = {
+        "by_shape_rule": solve_by_shape,
+        "by_bbox": solve_by_bbox,
+        "by_size": solve_by_size,
+        "by_slot": solve_by_slot,
+        "by_nearest": solve_by_nearest,
+        "hardcoded_H": solve_hardcoded_h,
+    }
+    admitted = {name: 0 for name in solvers}
+    admitted["pair0_table"] = 0
+    per_seed = []
+    oracle_mismatches = 0
+    all_dims = Counter()
+    examples = {name: [] for name in admitted}
+
+    for seed in seeds:
+        family = module.generate_family(seed=seed, num_tasks=num_tasks)
+        seed_counts = {name: 0 for name in admitted}
+        for task_index, task in enumerate(family):
+            for inp, out in task["train"] + task.get("test", []):
+                if solve_by_shape(inp, task["meta"]["bg"], task["meta"]["query"]) != out:
+                    oracle_mismatches += 1
+            for dim in task_domain(task)["dims"]:
+                all_dims[str(dim)] += 1
+            for name, solver in solvers.items():
+                if admits_task(task, solver):
+                    admitted[name] += 1
+                    seed_counts[name] += 1
+                    if len(examples[name]) < 5:
+                        examples[name].append({"seed": seed, "task_index": task_index, "domain": task_domain(task)})
+            table_solver = pair0_table_solver(task)
+            if admits_task(task, table_solver):
+                admitted["pair0_table"] += 1
+                seed_counts["pair0_table"] += 1
+                if len(examples["pair0_table"]) < 5:
+                    examples["pair0_table"].append({"seed": seed, "task_index": task_index, "domain": task_domain(task)})
+        per_seed.append({"seed": seed, "admitted": seed_counts})
+
+    total_tasks = len(seeds) * num_tasks
+    findings = []
+    if admitted["by_bbox"]:
+        findings.append({
+            "name": "by_bbox",
+            "axis": "definition/correspondence",
+            "admitted_tasks": admitted["by_bbox"],
+            "distinguishing_grid": "legend contains two shapes with same bbox but different canonical cells",
+            "fix": "force bbox-collision pairs on >=2 train instances per task",
+        })
+    if admitted["hardcoded_H"]:
+        findings.append({
+            "name": "hardcoded_H",
+            "axis": "domain/dimension",
+            "admitted_tasks": admitted["hardcoded_H"],
+            "distinguishing_grid": "vary grid height and place a work object in rows outside the literal H=13 bound",
+            "fix": "vary H as well as W",
+        })
+
+    out = {
+        "artifact": "template_match_role_recolor_v1_review",
+        "generated_cdt": datetime.now(ZoneInfo("America/Chicago")).strftime("%Y-%m-%d %H:%M:%S %Z"),
+        "generator_path": str(generator_path),
+        "seeds": seeds,
+        "num_tasks_per_seed": num_tasks,
+        "total_tasks": total_tasks,
+        "oracle_mismatches": oracle_mismatches,
+        "admitted_counts": admitted,
+        "admitted_rates": {name: admitted[name] / total_tasks for name in sorted(admitted)},
+        "dimension_histogram": dict(sorted(all_dims.items())),
+        "examples": examples,
+        "findings": findings,
+        "verdict": "not_ledger_safe" if findings or oracle_mismatches else "passes_review",
+        "notes": [
+            "This reviewer imports only generate_family and reimplements oracle/siblings independently.",
+            "The artifact is method-track evidence only and never a live candidate.",
+        ],
+    }
+    OUT.parent.mkdir(exist_ok=True)
+    OUT.write_text(json.dumps(out, indent=2) + "\n")
+    print(f"wrote {OUT.relative_to(WORKSPACE)} verdict={out['verdict']} findings={[f['name'] for f in findings]}")
+    print(f"admitted={admitted} oracle_mismatches={oracle_mismatches}/{total_tasks}")
+
+
+if __name__ == "__main__":
+    main()
