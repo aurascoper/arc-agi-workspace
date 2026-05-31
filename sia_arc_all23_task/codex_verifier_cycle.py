@@ -38,6 +38,7 @@ SAFE_PATHS = [
     "tmp/codex_sia_all23_sentinel.json",
     "tmp/legend_lattice_synthetic_latest.json",
     "tmp/verifier_health_latest.json",
+    "tmp/verifier_refresh_latest.json",
 ]
 
 
@@ -76,6 +77,19 @@ def refresh() -> dict:
             "stderr_tail": proc.stderr[-2000:],
         }
     return outputs
+
+
+def write_refresh_artifact(refresh_outputs: dict) -> None:
+    ts, _hm = now()
+    out = {
+        "artifact": "verifier_refresh_latest",
+        "generated_cdt": ts,
+        "failures": [label for label, row in refresh_outputs.items() if row["returncode"] != 0],
+        "returncodes": {label: row["returncode"] for label, row in refresh_outputs.items()},
+        "outputs": refresh_outputs,
+    }
+    (WORKSPACE / "tmp").mkdir(exist_ok=True)
+    (WORKSPACE / "tmp" / "verifier_refresh_latest.json").write_text(json.dumps(out, indent=2) + "\n")
 
 
 def load_json(path: str):
@@ -193,6 +207,7 @@ def push_active_branch() -> None:
 
 def cycle(push: bool, commit: bool) -> None:
     outputs = refresh()
+    write_refresh_artifact(outputs)
     append_heartbeat(outputs)
     made_commit = commit_current("heartbeat") if commit else False
     if push and commit and made_commit:

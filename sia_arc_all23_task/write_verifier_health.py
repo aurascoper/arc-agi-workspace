@@ -27,6 +27,7 @@ FRESHNESS_PATHS = [
     "tmp/sia_lite_residual_mining.json",
     "tmp/claude_sketch_enumeration.json",
     "tmp/legend_lattice_synthetic_latest.json",
+    "tmp/verifier_refresh_latest.json",
 ]
 SAFE_STATUS_PATHS = [
     ".gitignore",
@@ -39,6 +40,7 @@ SAFE_STATUS_PATHS = [
     "tmp/sia_lite_residual_mining.json",
     "tmp/claude_sketch_enumeration.json",
     "tmp/legend_lattice_synthetic_latest.json",
+    "tmp/verifier_refresh_latest.json",
 ]
 
 
@@ -127,6 +129,7 @@ def main() -> None:
     synth = load_json("tmp/legend_lattice_synthetic_latest.json") or {}
     sia_latest = load_json("tmp/sia_lite_latest.json") or {}
     residuals = load_json("tmp/sia_lite_residual_mining.json") or {}
+    refresh = load_json("tmp/verifier_refresh_latest.json") or {}
     freshness = artifact_freshness(generated_dt)
     status = git_lines(["status", "--short", "--", *SAFE_STATUS_PATHS])
     sessions = tmux_sessions()
@@ -156,6 +159,8 @@ def main() -> None:
         warnings.append("manual-review candidate present")
     if tripwire_runs:
         warnings.append("SIA-lite tripwire run present")
+    if refresh.get("failures"):
+        warnings.append("refresh command failure")
     if freshness["missing"]:
         warnings.append("refreshed artifact missing")
     if freshness["stale"]:
@@ -175,6 +180,11 @@ def main() -> None:
         "head": (run(["git", "rev-parse", "--short", "HEAD"]).stdout.strip() or None),
         "handoff_mirror": mirror,
         "artifact_freshness": freshness,
+        "last_refresh": {
+            "generated_cdt": refresh.get("generated_cdt"),
+            "failures": refresh.get("failures", []),
+            "returncodes": refresh.get("returncodes", {}),
+        },
         "tmux_sessions": sessions,
         "safe_status": status,
         "integration_ready": integration_ready,
