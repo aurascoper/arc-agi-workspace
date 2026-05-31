@@ -22,7 +22,6 @@ WORKSPACE = Path(__file__).resolve().parent
 sys.path.insert(0, str(WORKSPACE))
 import arc2_object_graph as OG  # noqa: E402
 import arc2_shape_decomposition_synth as SD  # noqa: E402 (reuse shape/decomp factories)
-import arc2_apex_ray_router as AR  # noqa: E402 (reuse apex-ray executor)
 import arc2_typed_sketch_enumerator as SK  # noqa: E402 (priors)
 
 EVAL = Path(os.environ.get("ARC2_EVAL_DIR", WORKSPACE / "arc_agi_2_data" / "evaluation"))
@@ -42,6 +41,89 @@ def equal(a, b):
 
 # ===================================================================== executor library
 # Each executor: train -> list[(name, transform)]   (candidates whose transform is at least train-shape-valid)
+DIRS = {"up": (-1, 0), "down": (1, 0), "left": (0, -1), "right": (0, 1)}
+
+
+def _bbox(cells):
+    rs = [r for r, _ in cells]
+    cs = [c for _, c in cells]
+    return (min(rs), min(cs), max(rs), max(cs))
+
+
+def _single_cell_tips(cells):
+    rs = [r for r, _ in cells]
+    cs = [c for _, c in cells]
+    extremes = {
+        "up": [cell for cell in cells if cell[0] == min(rs)],
+        "down": [cell for cell in cells if cell[0] == max(rs)],
+        "left": [cell for cell in cells if cell[1] == min(cs)],
+        "right": [cell for cell in cells if cell[1] == max(cs)],
+    }
+    return {d: ex[0] for d, ex in extremes.items() if len(ex) == 1}
+
+
+def _border_distance(r, c, d, h, w):
+    if d == "up":
+        return r
+    if d == "down":
+        return h - 1 - r
+    if d == "left":
+        return c
+    return w - 1 - c
+
+
+def make_apex_router(min_host, tip_choice, length_rule):
+    def transform(grid):
+        g = [row[:] for row in norm(grid)]
+        bg = OG.background(grid)
+        h, w = len(g), len(g[0])
+        by_color = {}
+        for r in range(h):
+            for c in range(w):
+                if g[r][c] != bg:
+                    by_color.setdefault(g[r][c], set()).add((r, c))
+        for hc, hcells in by_color.items():
+            if len(hcells) < min_host:
+                continue
+            r0, c0, r1, c1 = _bbox(hcells)
+            tips = _single_cell_tips(hcells)
+            if not tips:
+                continue
+            for mc, mcells in by_color.items():
+                if mc == hc or len(mcells) > len(hcells):
+                    continue
+                frag = {(r, c) for (r, c) in mcells if r0 <= r <= r1 and c0 <= c <= c1}
+                if not frag:
+                    continue
+                if tip_choice == "any_single":
+                    if len(tips) != 1:
+                        continue
+                    d = next(iter(tips))
+                elif tip_choice == "away_from_frag":
+                    fcr = sum(r for r, _ in frag) / len(frag)
+                    fcc = sum(c for _, c in frag) / len(frag)
+                    hcr = sum(r for r, _ in hcells) / len(hcells)
+                    hcc = sum(c for _, c in hcells) / len(hcells)
+                    d = max(tips, key=lambda key: DIRS[key][0] * (hcr - fcr) + DIRS[key][1] * (hcc - fcc))
+                else:
+                    d = max(tips, key=lambda key: _border_distance(tips[key][0], tips[key][1], key, h, w))
+                tip = tips[d]
+                dr, dc = DIRS[d]
+                bd = _border_distance(tip[0], tip[1], d, h, w)
+                length = min(len(frag), bd) if length_rule == "min_frag_border" else bd
+                for r, c in frag:
+                    g[r][c] = bg
+                rr, cc = tip[0] + dr, tip[1] + dc
+                drawn = 0
+                while drawn < length and 0 <= rr < h and 0 <= cc < w:
+                    g[rr][cc] = mc
+                    rr += dr
+                    cc += dc
+                    drawn += 1
+        return g
+    return transform
+
+
 def ex_shape_decomp(train):
     out = []
     for fname, variants in SD.FAMILIES.items():
@@ -61,7 +143,7 @@ def ex_marker_host(train):
     for mh in (2, 3):
         for tip in ("away_from_frag", "any_single"):
             for lr in ("min_frag_border", "to_border"):
-                t = AR.make_router(mh, tip, lr)
+                t = make_apex_router(mh, tip, lr)
                 out.append((f"apex_ray:{mh}:{tip}:{lr}", t))
     return out
 
