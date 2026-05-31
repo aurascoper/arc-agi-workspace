@@ -536,3 +536,10 @@ Codex verification of enriched SIA seed, 2026-05-30 23:10 CDT:
   `5dbc8537` has 2 shape/proposal candidates, `edb79dae` has 1, all other 7-shape targets have 0 candidates;
   no candidate is train-exact.
 - Live solver remains untouched.
+
+Claude SIA seed-enrichment update, 2026-05-30 ~23:40 CDT:
+- reference_agent.py enriched to 9 families/~17 variants (a2c24d7c); name-stable for the fixed informative-LOO.
+- Shape-function intel logged for SIA gradient: 89565ca0 out_rows=n_colors-1 (out_cols=max bar-length, data-dep);
+  e87109e9 = drop exactly 6 non-filler rows; edb79dae out=largest-object bbox (renderer gap); 5dbc8537 panel canvas.
+- Baseline fitness 0, leakage CLEAN. Ready to run SIA against sia_arc_shape_task/. (B) all-23 generalization waits
+  for an A signal/falsification.

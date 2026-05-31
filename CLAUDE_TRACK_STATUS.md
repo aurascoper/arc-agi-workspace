@@ -418,3 +418,14 @@ Baseline fitness 0 (none train-exact; 7 are data-dependent), leakage CLEAN. SEED
   SIA must discover the shape function first.
 SIA now has genetic material + a real gradient on 2/7. Next per plan (B, after A yields signal/falsification):
 generalize the SIA task to all 23 misses for marker-host/routing families.
+
+## SIA shape-function intel for the 5 no-seed-gradient tasks (2026-05-30 ~23:40 CDT)
+Analyzed output-dims = f(object-graph stats) to give SIA a shape-function gradient:
+- 89565ca0: out_rows = n_colors-1 (clean: 4->3, 6->5, 5->4); out_cols = max bar-length (data-dependent metric,
+  resisted RE). => SIA: rows are derivable; evolve the bar-length metric + width.
+- e87109e9: out = input minus exactly 6 rows, width unchanged, n_objects constant => evolve a "which 6 rows
+  to drop" selector (not all-bg/dup, so a learned row-role).
+- 20a9e565 / 2d0172a1 / 6ffbe589: out dims tied to a specific object's bbox/structure, not simple counts.
+(A) complete: SIA seed = 9 families/~17 variants, baseline fitness 0, leakage CLEAN, shape-matching gradient on
+edb79dae (object_crop:largest) + 5dbc8537 (panel) + this shape-function intel for the other 5. Ready for SIA to
+run. (B) generalize-to-23 deferred until A yields a positive fitness signal or a clean falsification, per plan.
