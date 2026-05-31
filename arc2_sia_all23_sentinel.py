@@ -1,0 +1,113 @@
+"""Codex sentinel for the quarantined all-23 SIA task."""
+
+from __future__ import annotations
+
+import json
+import subprocess
+import sys
+from pathlib import Path
+from typing import Any
+
+WORKSPACE = Path(__file__).resolve().parent
+TASK_DIR = WORKSPACE / "sia_arc_all23_task"
+EVALUATOR = TASK_DIR / "evaluator.py"
+OUT_JSON = WORKSPACE / "tmp" / "codex_sia_all23_sentinel.json"
+
+
+def agent_paths() -> list[Path]:
+    paths: list[Path] = []
+    for rel in ("reference_agent.py", "../sia_arc_shape_task/strong_seed_agent.py", "target_agent.py"):
+        path = (TASK_DIR / rel).resolve()
+        if path.exists():
+            paths.append(path)
+    for path in sorted(TASK_DIR.glob("runs/run_*/gen_*/target_agent.py")):
+        paths.append(path.resolve())
+    seen: set[Path] = set()
+    out: list[Path] = []
+    for path in paths:
+        if path not in seen:
+            seen.add(path)
+            out.append(path)
+    return out
+
+
+def run_eval(agent: Path) -> dict[str, Any]:
+    proc = subprocess.run(
+        [sys.executable, str(EVALUATOR), "--agent", str(agent), "--json"],
+        cwd=WORKSPACE,
+        text=True,
+        stdout=subprocess.PIPE,
+        stderr=subprocess.PIPE,
+        timeout=240,
+    )
+    report: dict[str, Any] = {
+        "agent": str(agent.relative_to(WORKSPACE)),
+        "returncode": proc.returncode,
+        "ok": proc.returncode == 0,
+        "stderr_tail": proc.stderr[-2000:],
+    }
+    if proc.returncode != 0:
+        report["stdout_tail"] = proc.stdout[-2000:]
+        return report
+    try:
+        data = json.loads(proc.stdout)
+    except Exception as exc:
+        report["ok"] = False
+        report["parse_error"] = repr(exc)
+        report["stdout_tail"] = proc.stdout[-2000:]
+        return report
+    tasks = data.get("tasks", [])
+    report.update({
+        "fitness": data.get("fitness"),
+        "n_leakage_hits": len(data.get("leakage_hits", [])),
+        "leakage_hits": data.get("leakage_hits", []),
+        "train_exact_total": sum(t.get("n_train_exact", 0) for t in tasks if isinstance(t, dict)),
+        "shape_exact_total": sum(t.get("n_shape_exact", 0) for t in tasks if isinstance(t, dict)),
+        "loo_task_total": sum(1 for t in tasks if isinstance(t, dict) and t.get("informative_loo")),
+        "vacuous_loo": {
+            t.get("task_id"): t.get("vacuous_loo_names", [])
+            for t in tasks
+            if isinstance(t, dict) and t.get("vacuous_loo_names")
+        },
+        "cross_task_firing": data.get("cross_task_firing", {}),
+        "private_true_total": sum(1 for v in data.get("private_readout", {}).values() if v is True),
+    })
+    return report
+
+
+def integration_ready(report: dict[str, Any]) -> bool:
+    if not report.get("ok") or report.get("n_leakage_hits"):
+        return False
+    if report.get("loo_task_total", 0) > 0:
+        return True
+    return bool(report.get("cross_task_firing"))
+
+
+def main() -> None:
+    OUT_JSON.parent.mkdir(exist_ok=True)
+    reports = [run_eval(path) for path in agent_paths()]
+    for report in reports:
+        report["integration_ready"] = integration_ready(report)
+    ready = [r for r in reports if r.get("integration_ready")]
+    out = {
+        "lane": "sia_all23_sentinel",
+        "agents": reports,
+        "integration_ready": [r["agent"] for r in ready],
+        "integration_ready_bool": bool(ready),
+    }
+    OUT_JSON.write_text(json.dumps(out, indent=2))
+    print("Codex SIA all-23 sentinel")
+    for report in reports:
+        print(
+            f"  {report['agent']}: ok={report.get('ok')} fitness={report.get('fitness')} "
+            f"leaks={report.get('n_leakage_hits')} train_exact={report.get('train_exact_total')} "
+            f"shape_exact={report.get('shape_exact_total')} loo_tasks={report.get('loo_task_total')} "
+            f"vacuous={report.get('vacuous_loo')} cross={len(report.get('cross_task_firing', {}))} "
+            f"private_true={report.get('private_true_total')} ready={report.get('integration_ready')}"
+        )
+    print(f"integration_ready={[r['agent'] for r in ready]}")
+    print(f"wrote {OUT_JSON.relative_to(WORKSPACE)}")
+
+
+if __name__ == "__main__":
+    main()
