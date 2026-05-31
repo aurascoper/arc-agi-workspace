@@ -168,13 +168,14 @@ def _selection_score(summary: dict[str, Any]) -> float:
     fitness = summary.get("fitness")
     score = float(fitness if fitness is not None else -100.0)
     if summary.get("target_task"):
+        score = 0.1 * float(fitness if fitness is not None else -100.0)
         if summary.get("target_train_exact", 0):
-            score += 3.0
-        if summary.get("target_informative_loo"):
             score += 5.0
+        if summary.get("target_informative_loo"):
+            score += 10.0
         diff = summary.get("target_best_shape_diff")
         if isinstance(diff, int):
-            score += max(0.0, 1.0 - min(diff, 250) / 250.0)
+            score += 2.0 * max(0.0, 1.0 - min(diff, 250) / 250.0)
         if summary.get("target_shape_exact", 0):
             score += 0.05
     return round(score, 4)
@@ -288,7 +289,10 @@ def run(args: argparse.Namespace) -> dict[str, Any]:
     evaluator = _load_evaluator()
     target_context = _load_target_context(args.target_task)
     population: list[dict[str, Any]] = []
-    seed_source = REFERENCE.read_text()
+    seed_path = Path(args.seed_path).expanduser() if args.seed_path else REFERENCE
+    if not seed_path.is_absolute():
+        seed_path = WORKSPACE / seed_path
+    seed_source = seed_path.read_text()
 
     seed_dir = run_root / "seed"
     seed_dir.mkdir(exist_ok=True)
@@ -373,6 +377,7 @@ def main() -> None:
     ap.add_argument("--sleep", type=float, default=0.0)
     ap.add_argument("--target-task", help="Inject this public task's train pairs into the mutator prompt; id is omitted from the prompt.")
     ap.add_argument("--focus", default="", help="Additional train-only mutation guidance appended to the user prompt.")
+    ap.add_argument("--seed-path", help="Optional initial target_agent.py path for hill-climbing from a near-miss generation.")
     ap.add_argument("--dry-run", action="store_true")
     args = ap.parse_args()
     out = run(args)
