@@ -507,3 +507,11 @@ Codex SIA verifier update, 2026-05-30 23:03 CDT:
   `private`, `test_outputs`, `arc_agi_2_data`, and `evaluation`, in addition to task IDs/templates/signatures.
 - Re-ran an adversarial `/tmp/cheat_agent_codex.py`: fitness `-20.0`, four leakage hits
   (private split, held-out outputs, hardcoded task ID twice). Quarantine still holds.
+
+Codex SIA evaluator hardening, 2026-05-30 23:06 CDT:
+
+- Tightened `informative_loo` so a full-train candidate only gets LOO credit when the same candidate name/family
+  is re-derived on every leave-one-out fold. A different fallback candidate can no longer donate LOO credit.
+- Reverified reference and adversarial agents:
+  - reference: `fitness=-0.0`, `leaks=0`, `train_exact_total=0`, `loo_total=0`
+  - adversarial: `fitness=-20.0`, `leaks=4`, `train_exact_total=0`, `loo_total=0`

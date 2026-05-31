@@ -99,9 +99,13 @@ def train_exact(t, train):
         return False
 
 
-def informative_loo(propose, train):
-    """Re-call the agent's propose() on each n-1 subset; SOME re-proposed candidate must reproduce the held
-    pair. Tests whether the agent's PROCEDURE re-derives a held-pair-correct program (genuine, non-vacuous)."""
+def informative_loo(propose, train, required_name=None):
+    """Re-call propose() on each n-1 subset and require a stable candidate family/name.
+
+    A full-train candidate should not receive LOO credit merely because a different
+    candidate produced by the subset happens to solve the held pair. For promotion
+    evidence, the same named family must be re-derived on every fold.
+    """
     if len(train) <= 1:
         return False
     for i in range(len(train)):
@@ -112,7 +116,9 @@ def informative_loo(propose, train):
         except Exception:
             return False
         ok = False
-        for _name, t in cands or []:
+        for name, t in cands or []:
+            if required_name is not None and name != required_name:
+                continue
             try:
                 if equal(_call(t, deepcopy(held["input"])), held["output"]):
                     ok = True
@@ -168,11 +174,13 @@ def evaluate(agent_path: Path) -> dict:
             continue
         te = [(nm, t) for nm, t in cands if train_exact(t, train)]
         loo = False
+        loo_names = []
         best = None
         for nm, t in te:
             train_exact_names.setdefault(nm, set()).add(tid)
-            if informative_loo(agent.propose, train):
+            if informative_loo(agent.propose, train, required_name=nm):
                 loo = True
+                loo_names.append(nm)
             best = best or (nm, t)
         # PRIVATE readout (LOG ONLY, not in fitness)
         priv_match = None
@@ -186,6 +194,7 @@ def evaluate(agent_path: Path) -> dict:
         report["private_readout"][tid] = priv_match
         report["tasks"].append({"task_id": tid, "n_candidates": len(cands), "n_train_exact": len(te),
                                 "train_exact_names": [nm for nm, _ in te][:5], "informative_loo": loo,
+                                "informative_loo_names": loo_names[:5],
                                 "synthetic_color_perm": synthetic_color_perm(best[1], train) if best else None})
         if loo:
             fitness += 1.0

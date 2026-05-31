@@ -26,7 +26,8 @@ def propose(train) -> list[(name: str, transform)]   # transform: grid -> grid, 
 ## Fitness (what SIA maximizes — hidden-safe signals only)
 The evaluator (`evaluator.py`) computes:
 - `+1.0` per task with a **train-exact + informative-LOO** candidate (re-`propose()` on each n-1 subset must
-  reproduce the held pair → genuine re-derivation, not a fixed/vacuous program),
+  reproduce the held pair with the same candidate name → genuine family re-derivation, not a fixed/vacuous
+  program or a different fallback candidate),
 - `+0.5·|tasks|` per candidate **name** that is train-exact on **≥2** public tasks (cross-task firing),
 - `+0.1` per task with any train-exact candidate (weak partial credit),
 - `−5.0` per **leakage** hit (task-id dispatch, reads of `data/private`, output templates, signature/replay),
