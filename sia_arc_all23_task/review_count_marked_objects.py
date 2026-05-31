@@ -283,6 +283,32 @@ def task_domain(task):
     }
 
 
+def literal_dim_case_info(task, h, w, vals, ns, diffs):
+    dims = [(len(inp), len(inp[0])) for inp, _out in task["train"]]
+    max_h = max(dim_h for dim_h, _ in dims)
+    max_w = max(dim_w for _, dim_w in dims)
+    missed_pairs = [
+        idx for idx, (got, want) in enumerate(zip(vals, ns))
+        if got != want
+    ]
+    return {
+        "box": [h, w],
+        "below_max_h": h < max_h,
+        "below_max_w": w < max_w,
+        "axis_class": (
+            "both_axes" if h < max_h and w < max_w
+            else "height_only" if h < max_h
+            else "width_only" if w < max_w
+            else "not_smaller"
+        ),
+        "diffs": diffs,
+        "missed_pairs": missed_pairs,
+        "vals": vals,
+        "Ns": ns,
+        "domain": task_domain(task),
+    }
+
+
 def main() -> None:
     generator_path = Path(os.environ["COUNT_MARKED_OBJECTS_GENERATOR"]).expanduser() \
         if os.environ.get("COUNT_MARKED_OBJECTS_GENERATOR") else default_generator_path()
@@ -300,6 +326,18 @@ def main() -> None:
     examples = {}
     fragile_examples = {}
     literal_examples = {"admitted": [], "fragile": []}
+    literal_axis_counts = {
+        "admitted": Counter(),
+        "fragile": Counter(),
+    }
+    literal_box_counts = {
+        "admitted": Counter(),
+        "fragile": Counter(),
+    }
+    literal_task_case_counts = {
+        "admitted": Counter(),
+        "fragile": Counter(),
+    }
     oracle_mismatches = 0
     output_count_mismatches = 0
 
@@ -342,16 +380,23 @@ def main() -> None:
                     task,
                     lambda inp, h=h, w=w: len(components(inp, inp[0][0], 2, h - 1, 1, w - 1, N4)),
                 )
+                info = literal_dim_case_info(task, h, w, vals, ns, diff)
                 if diff == 0:
                     literal_dim_admitted_cases += 1
                     literal_dim_admitted_tasks.add((seed, task_index))
+                    literal_axis_counts["admitted"][info["axis_class"]] += 1
+                    literal_box_counts["admitted"][str([h, w])] += 1
+                    literal_task_case_counts["admitted"][f"{seed}:{task_index}"] += 1
                     if len(literal_examples["admitted"]) < 5:
-                        literal_examples["admitted"].append({"seed": seed, "task_index": task_index, "box": [h, w], "vals": vals, "Ns": ns, "domain": task_domain(task)})
+                        literal_examples["admitted"].append({"seed": seed, "task_index": task_index, **info})
                 elif diff < 2:
                     literal_dim_fragile_cases += 1
                     literal_dim_fragile_tasks.add((seed, task_index))
+                    literal_axis_counts["fragile"][info["axis_class"]] += 1
+                    literal_box_counts["fragile"][str([h, w])] += 1
+                    literal_task_case_counts["fragile"][f"{seed}:{task_index}"] += 1
                     if len(literal_examples["fragile"]) < 5:
-                        literal_examples["fragile"].append({"seed": seed, "task_index": task_index, "box": [h, w], "diffs": diff, "vals": vals, "Ns": ns, "domain": task_domain(task)})
+                        literal_examples["fragile"].append({"seed": seed, "task_index": task_index, **info})
 
     blocking = []
     scope_survivors = []
@@ -382,6 +427,7 @@ def main() -> None:
             "kind": "domain/dimension",
             "admitted_tasks": len(literal_dim_admitted_tasks),
             "admitted_cases": literal_dim_admitted_cases,
+            "axis_case_counts": dict(sorted(literal_axis_counts["admitted"].items())),
             "fix": "ensure every literal interior box smaller than max train dimensions undercounts on train",
         })
     if literal_dim_fragile_cases:
@@ -390,6 +436,7 @@ def main() -> None:
             "kind": "domain/dimension",
             "admitted_tasks": len(literal_dim_fragile_tasks),
             "admitted_cases": literal_dim_fragile_cases,
+            "axis_case_counts": dict(sorted(literal_axis_counts["fragile"].items())),
             "fix": "force every smaller literal interior box to disagree on >=2 train pairs/task",
         })
 
@@ -421,6 +468,24 @@ def main() -> None:
         "literal_dim_fragile_cases": literal_dim_fragile_cases,
         "literal_dim_admitted_tasks": len(literal_dim_admitted_tasks),
         "literal_dim_fragile_tasks": len(literal_dim_fragile_tasks),
+        "literal_dim_diagnostics": {
+            "axis_case_counts": {
+                "admitted": dict(sorted(literal_axis_counts["admitted"].items())),
+                "fragile": dict(sorted(literal_axis_counts["fragile"].items())),
+            },
+            "top_box_counts": {
+                "admitted": literal_box_counts["admitted"].most_common(10),
+                "fragile": literal_box_counts["fragile"].most_common(10),
+            },
+            "top_task_case_counts": {
+                "admitted": literal_task_case_counts["admitted"].most_common(10),
+                "fragile": literal_task_case_counts["fragile"].most_common(10),
+            },
+            "affected_tasks": {
+                "admitted": sorted([list(row) for row in literal_dim_admitted_tasks])[:50],
+                "fragile": sorted([list(row) for row in literal_dim_fragile_tasks])[:50],
+            },
+        },
         "blocking_findings": blocking,
         "scope_survivors": scope_survivors,
         "weak_tail": weak_tail,

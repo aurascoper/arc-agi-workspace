@@ -1,6 +1,6 @@
 {
   "artifact": "synthetic_family_ledger_latest",
-  "generated_cdt": "2026-05-31 06:47:45 CDT",
+  "generated_cdt": "2026-05-31 06:52:36 CDT",
   "entries": [
     {
       "family": "template_match_role_recolor",
@@ -16,7 +16,7 @@
       },
       "review": {
         "artifact": "tmp/template_match_role_recolor_latest_review.json",
-        "generated_cdt": "2026-05-31 06:46:48 CDT",
+        "generated_cdt": "2026-05-31 06:50:32 CDT",
         "verdict": "not_ledger_safe",
         "oracle_mismatches": 0,
         "admitted_counts": {
@@ -122,7 +122,7 @@
       },
       "review": {
         "artifact": "tmp/count_marked_objects_latest_review.json",
-        "generated_cdt": "2026-05-31 06:47:45 CDT",
+        "generated_cdt": "2026-05-31 06:52:36 CDT",
         "verdict": "not_ledger_safe",
         "oracle_mismatches": 0,
         "output_count_mismatches": 0,
