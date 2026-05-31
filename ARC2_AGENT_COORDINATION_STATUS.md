@@ -762,7 +762,7 @@ Codex SIA renderer-seed expansion, 2026-05-31 00:13 CDT:
 - Interesting non-promotion gradient: `dd6b8c4b` best shape-compatible train diff is now `30` via
   `enclosed_region_fill:unique`, but it is still not train-exact and dd6b8c4b remains parked as representation-limited.
 
-Codex SIA task-prompt steering, 2026-05-31 00:19 CDT:
+Codex SIA task-prompt steering, 2026-05-31 00:16 CDT:
 
 - Updated `sia_arc_all23_task/data_public_task_template.md` and
   `sia_arc_all23_task/reference/SAMPLE_TASK_DESCRIPTIONS.md` to steer SIA toward renderer/decomposition families:
@@ -775,10 +775,18 @@ Codex SIA task-prompt steering, 2026-05-31 00:19 CDT:
   `ARC2_EVAL_DIR=/Users/aurascoper/Developer/arc_agi/workspace/arc_agi_2_data/evaluation python3 sia_arc_all23_task/build_task.py`.
 - Verified compile: `python3 -m py_compile sia_arc_all23_task/build_task.py sia_arc_all23_task/evaluate.py sia_arc_all23_task/reference/reference_target_agent.py`.
 
-Codex SIA runbook, 2026-05-31 00:22 CDT:
+Codex SIA runbook, 2026-05-31 00:17 CDT:
 
 - Added `sia_arc_all23_task/RUNBOOK.md` and linked it from `README.md`.
 - The runbook captures the exact split build, reference smoke, SIA launch examples, expected baseline, root/task-local
   run discovery, and the manual promotion contract.
 - It uses the current SIA repo behavior verified from `/tmp/sia_repo`: `--task_dir` external tasks, root fallback
   `evaluate.py`, and `runs/run_<run_id>/gen_<n>/` generation directories.
+
+Codex periodic sentinel, 2026-05-31 00:18 CDT:
+
+- Started a bounded periodic all-23 sentinel loop (session-local) that runs `python3 arc2_sia_all23_sentinel.py`
+  every 120 seconds until 2026-05-31 02:08 CDT.
+- Reason: the existing all-23 watcher is change-triggered; this periodic pass catches agents that appear under
+  workspace-root `runs/run_*/gen_*/target_agent.py` even if no tracked source file changes.
+- First periodic pass: unchanged baseline, `loo_tasks=0`, `cross=0`, `integration_ready=[]`.
