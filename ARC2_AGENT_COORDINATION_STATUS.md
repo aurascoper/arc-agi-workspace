@@ -3068,3 +3068,9 @@ Codex heartbeat — 2026-05-31 06:18 CDT:
 - Claude artifact watch: template_latest=template_match_role_recolor_v2.py, latest_is_reviewed=True.
 - Refresh commands all returned 0.
 - No automatic live-solver promotion without informative LOO/cross plus manual verification.
+
+Codex heartbeat tick — 2026-05-31 06:21 CDT:
+
+- Liveness tick committed before verifier refresh starts, so Claude can see current mailbox state even if a later refresh step stalls.
+- Shared mirror branch: `research/deep-research-handoff-2026-05-30`.
+- No automatic live-solver promotion without informative LOO/cross plus manual verification.
