@@ -175,6 +175,24 @@ def learn_frame_occurrence_templates(train: list[dict[str, Any]]) -> dict[str, A
     return {"color": draw_color, "templates": serial}
 
 
+def learn_legend_footer_alt_color(train: list[dict[str, Any]]) -> int | None:
+    draw_color = learn_bg_draw_color(train)
+    votes = Counter()
+    for p in train:
+        gi, go = norm(p["input"]), norm(p["output"])
+        if dims(gi) != dims(go):
+            return None
+        background = bg(gi)
+        seps = full_separator_rows(gi, background)
+        if len(seps) < 2:
+            continue
+        for r in range(seps[1] + 1, len(gi)):
+            for c in range(len(gi[0])):
+                if gi[r][c] == background and go[r][c] != background and go[r][c] != draw_color:
+                    votes[go[r][c]] += 1
+    return votes.most_common(1)[0][0] if votes else None
+
+
 FITTERS = {
     "color_transition_map": learn_color_transition_map,
     "dominant_transition_map": learn_dominant_transition_map,
@@ -182,6 +200,7 @@ FITTERS = {
     "bg_draw_color": learn_bg_draw_color,
     "changed_output_color": learn_changed_output_color,
     "frame_occurrence_templates": learn_frame_occurrence_templates,
+    "legend_footer_alt_color": learn_legend_footer_alt_color,
 }
 
 
@@ -498,6 +517,129 @@ def op_frame_occurrences(grid: Any, args: dict[str, Any]) -> Grid:
     return g
 
 
+def glyph_slot_key(grid: Grid, r0: int, c0: int, background: int) -> tuple[tuple[int, ...], ...] | None:
+    cells = []
+    out = []
+    for r in range(r0, r0 + 3):
+        row = []
+        for c in range(c0, c0 + 3):
+            if not (0 <= r < len(grid) and 0 <= c < len(grid[0])):
+                return None
+            value = grid[r][c]
+            row.append(-1 if value == background else value)
+            if value != background:
+                cells.append((r, c))
+        out.append(tuple(row))
+    return tuple(out) if cells else None
+
+
+def full_separator_rows(grid: Grid, background: int) -> list[int]:
+    rows = []
+    for r, row in enumerate(grid):
+        if row and len(set(row)) == 1 and row[0] != background:
+            rows.append(r)
+    return rows
+
+
+def slot_columns_from_band(grid: Grid, row_start: int, background: int) -> list[int]:
+    if row_start + 2 >= len(grid):
+        return []
+    cols = []
+    active = []
+    for c in range(len(grid[0])):
+        if any(grid[r][c] != background for r in range(row_start, row_start + 3)):
+            active.append(c)
+    if not active:
+        return []
+    runs = []
+    start = prev = active[0]
+    for c in active[1:]:
+        if c == prev + 1:
+            prev = c
+        else:
+            runs.append((start, prev))
+            start = prev = c
+    runs.append((start, prev))
+    for start, end in runs:
+        if end - start + 1 <= 3:
+            cols.append(start)
+    return cols
+
+
+def op_legend_slot_frames(grid: Any, args: dict[str, Any]) -> Grid:
+    """Frame body glyph slots whose exact 3x3 symbol occurs in the top legend.
+
+    This is a strict, train-free matcher scaffold for d8e07eb2-style grids:
+    full-width separator rows define a legend area above and a body area below.
+    It intentionally only renders body slot frames; top/footer effects remain a
+    separate candidate family so this op cannot hide a task-specific wrapper.
+    """
+    g = norm(grid)
+    h, _w = dims(g)
+    background = bg(g)
+    color = int(args["color"])
+    alt_color = args.get("alt_color")
+    alt_color = int(alt_color) if alt_color is not None else None
+    seps = full_separator_rows(g, background)
+    if len(seps) < 2:
+        return g
+    first, second = seps[0], seps[1]
+    top_row = first - 4
+    first_body_row = first + 3
+    if top_row < 0 or first_body_row + 2 >= h:
+        return g
+    slot_cols = slot_columns_from_band(g, first_body_row, background)
+    if not slot_cols:
+        slot_cols = [c for c in range(2, max(2, len(g[0]) - 2), 5)]
+    top_keys = {
+        key
+        for c0 in slot_cols
+        for key in [glyph_slot_key(g, top_row, c0, background)]
+        if key is not None
+    }
+    if not top_keys:
+        return g
+    matched = []
+    for slot_r, r0 in enumerate(range(first_body_row, max(first_body_row, second - 3), 5)):
+        for slot_c, c0 in enumerate(slot_cols):
+            key = glyph_slot_key(g, r0, c0, background)
+            if key not in top_keys:
+                continue
+            matched.append({"slot": (slot_r, slot_c), "bbox": (r0 - 1, c0 - 1, r0 + 3, c0 + 3)})
+
+    def underfill_rect(r0: int, c0: int, r1: int, c1: int, draw: int) -> None:
+        r0 = max(0, r0)
+        c0 = max(0, c0)
+        r1 = min(h - 1, r1)
+        c1 = min(len(g[0]) - 1, c1)
+        for rr in range(r0, r1 + 1):
+            for cc in range(c0, c1 + 1):
+                if g[rr][cc] == background:
+                    g[rr][cc] = draw
+
+    same_slot_row = bool(matched) and len({m["slot"][0] for m in matched}) == 1
+    same_slot_col = bool(matched) and len({m["slot"][1] for m in matched}) == 1
+    aligned = same_slot_row or same_slot_col
+    if aligned and matched:
+        r0 = min(m["bbox"][0] for m in matched)
+        c0 = min(m["bbox"][1] for m in matched)
+        r1 = max(m["bbox"][2] for m in matched)
+        c1 = max(m["bbox"][3] for m in matched)
+        underfill_rect(r0, c0, r1, c1, color)
+        underfill_rect(max(0, top_row - 1), 0, min(h - 1, first - 1), len(g[0]) - 1, color)
+    else:
+        for m in matched:
+            underfill_rect(*m["bbox"], color)
+
+    if alt_color is not None:
+        footer = color if aligned else alt_color
+        for rr in range(second + 1, h):
+            for cc in range(len(g[0])):
+                if g[rr][cc] == background:
+                    g[rr][cc] = footer
+    return g
+
+
 def op_route_singletons(grid: Any, args: dict[str, Any]) -> Grid:
     g = norm(grid)
     fill = args.get("color", "same")
@@ -527,6 +669,7 @@ OPS = {
     "bar_bracket_route": op_bar_bracket_route,
     "bar_marker_bracket_route": op_bar_marker_bracket_route,
     "frame_occurrences": op_frame_occurrences,
+    "legend_slot_frames": op_legend_slot_frames,
     "route_singletons": op_route_singletons,
 }
 
@@ -616,6 +759,13 @@ DEFAULT_PROGRAMS: list[Program] = [
     {
         "name": "frame_occurrences",
         "pipeline": [{"op": "frame_occurrences", "args": {"spec": {"learn": "frame_occurrence_templates"}}}],
+    },
+    {
+        "name": "legend_slot_frames",
+        "pipeline": [{"op": "legend_slot_frames", "args": {
+            "color": {"learn": "bg_draw_color"},
+            "alt_color": {"learn": "legend_footer_alt_color"},
+        }}],
     },
 ]
 

@@ -1,9 +1,10 @@
 {
   "artifact": "dsl_enumeration_latest",
-  "programs_enumerated": 21,
+  "programs_enumerated": 22,
   "tasks": 23,
   "train_exact_tasks": [
-    "cb2d8a2c"
+    "cb2d8a2c",
+    "d8e07eb2"
   ],
   "informative_loo_tasks": [],
   "cross_task_firing": {},
@@ -310,7 +311,7 @@
     },
     {
       "task_id": "16b78196",
-      "n_compiled": 17,
+      "n_compiled": 18,
       "best": {
         "name": "full_color_transition_map|recolor_map(full_color_transition_map)",
         "shape_exact": true,
@@ -4362,17 +4363,17 @@
     },
     {
       "task_id": "d8e07eb2",
-      "n_compiled": 10,
+      "n_compiled": 11,
       "best": {
-        "name": "enum_bar_route:bg_draw|bar_bracket_route(bg_draw_color)",
+        "name": "legend_slot_frames|legend_slot_frames(bg_draw_color,legend_footer_alt_color)",
         "shape_exact": true,
-        "train_diff": 740,
+        "train_diff": 0,
         "per_pair_diff": [
-          202,
-          202,
-          118,
-          119,
-          99
+          0,
+          0,
+          0,
+          0,
+          0
         ],
         "pred_shapes": [
           [
@@ -4397,22 +4398,200 @@
           ]
         ],
         "error": null,
-        "program_name": "enum_bar_route:bg_draw",
-        "signature": "enum_bar_route:bg_draw|bar_bracket_route(bg_draw_color)",
+        "program_name": "legend_slot_frames",
+        "signature": "legend_slot_frames|legend_slot_frames(bg_draw_color,legend_footer_alt_color)",
         "generality": {
           "magic_int_constants": {
-            "bar_bracket_route": [
+            "legend_slot_frames": [
               3,
+              4,
               5
             ]
           },
           "blockers": [
             "magic_int_constants"
           ]
-        }
+        },
+        "loo": {
+          "passes": true,
+          "informative": false,
+          "admission_type": "train_exact_fixed_loo_vacuous"
+        },
+        "synthetic_d4_exact": {
+          "hflip": true,
+          "vflip": false,
+          "rot90": false,
+          "rot180": false,
+          "rot270": false,
+          "anti_diag": false
+        },
+        "synthetic_padding_exact": {
+          "pad_1": false,
+          "pad_asym": false,
+          "pad_topless": false
+        },
+        "cross_task_count": 1,
+        "admission_ready": false,
+        "promotion_blockers": [
+          "magic_int_constants",
+          "no_informative_loo_or_cross",
+          "synthetic_d4_fail",
+          "synthetic_padding_fail"
+        ]
       },
-      "train_exact": [],
+      "train_exact": [
+        {
+          "name": "legend_slot_frames|legend_slot_frames(bg_draw_color,legend_footer_alt_color)",
+          "shape_exact": true,
+          "train_diff": 0,
+          "per_pair_diff": [
+            0,
+            0,
+            0,
+            0,
+            0
+          ],
+          "pred_shapes": [
+            [
+              30,
+              22
+            ],
+            [
+              30,
+              22
+            ],
+            [
+              30,
+              22
+            ],
+            [
+              30,
+              22
+            ],
+            [
+              30,
+              22
+            ]
+          ],
+          "error": null,
+          "program_name": "legend_slot_frames",
+          "signature": "legend_slot_frames|legend_slot_frames(bg_draw_color,legend_footer_alt_color)",
+          "generality": {
+            "magic_int_constants": {
+              "legend_slot_frames": [
+                3,
+                4,
+                5
+              ]
+            },
+            "blockers": [
+              "magic_int_constants"
+            ]
+          },
+          "loo": {
+            "passes": true,
+            "informative": false,
+            "admission_type": "train_exact_fixed_loo_vacuous"
+          },
+          "synthetic_d4_exact": {
+            "hflip": true,
+            "vflip": false,
+            "rot90": false,
+            "rot180": false,
+            "rot270": false,
+            "anti_diag": false
+          },
+          "synthetic_padding_exact": {
+            "pad_1": false,
+            "pad_asym": false,
+            "pad_topless": false
+          },
+          "cross_task_count": 1,
+          "admission_ready": false,
+          "promotion_blockers": [
+            "magic_int_constants",
+            "no_informative_loo_or_cross",
+            "synthetic_d4_fail",
+            "synthetic_padding_fail"
+          ]
+        }
+      ],
       "top": [
+        {
+          "name": "legend_slot_frames|legend_slot_frames(bg_draw_color,legend_footer_alt_color)",
+          "shape_exact": true,
+          "train_diff": 0,
+          "per_pair_diff": [
+            0,
+            0,
+            0,
+            0,
+            0
+          ],
+          "pred_shapes": [
+            [
+              30,
+              22
+            ],
+            [
+              30,
+              22
+            ],
+            [
+              30,
+              22
+            ],
+            [
+              30,
+              22
+            ],
+            [
+              30,
+              22
+            ]
+          ],
+          "error": null,
+          "program_name": "legend_slot_frames",
+          "signature": "legend_slot_frames|legend_slot_frames(bg_draw_color,legend_footer_alt_color)",
+          "generality": {
+            "magic_int_constants": {
+              "legend_slot_frames": [
+                3,
+                4,
+                5
+              ]
+            },
+            "blockers": [
+              "magic_int_constants"
+            ]
+          },
+          "loo": {
+            "passes": true,
+            "informative": false,
+            "admission_type": "train_exact_fixed_loo_vacuous"
+          },
+          "synthetic_d4_exact": {
+            "hflip": true,
+            "vflip": false,
+            "rot90": false,
+            "rot180": false,
+            "rot270": false,
+            "anti_diag": false
+          },
+          "synthetic_padding_exact": {
+            "pad_1": false,
+            "pad_asym": false,
+            "pad_topless": false
+          },
+          "cross_task_count": 1,
+          "admission_ready": false,
+          "promotion_blockers": [
+            "magic_int_constants",
+            "no_informative_loo_or_cross",
+            "synthetic_d4_fail",
+            "synthetic_padding_fail"
+          ]
+        },
         {
           "name": "enum_bar_route:bg_draw|bar_bracket_route(bg_draw_color)",
           "shape_exact": true,
@@ -4702,47 +4881,6 @@
           "error": null,
           "program_name": "dominant_recolor_map",
           "signature": "dominant_recolor_map|recolor_map(dominant_transition_map)",
-          "generality": {
-            "magic_int_constants": {},
-            "blockers": []
-          }
-        },
-        {
-          "name": "enum_recolor:dominant_transition_map|recolor_map(dominant_transition_map)",
-          "shape_exact": true,
-          "train_diff": 1859,
-          "per_pair_diff": [
-            290,
-            290,
-            418,
-            418,
-            443
-          ],
-          "pred_shapes": [
-            [
-              30,
-              22
-            ],
-            [
-              30,
-              22
-            ],
-            [
-              30,
-              22
-            ],
-            [
-              30,
-              22
-            ],
-            [
-              30,
-              22
-            ]
-          ],
-          "error": null,
-          "program_name": "enum_recolor:dominant_transition_map",
-          "signature": "enum_recolor:dominant_transition_map|recolor_map(dominant_transition_map)",
           "generality": {
             "magic_int_constants": {},
             "blockers": []
