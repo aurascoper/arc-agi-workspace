@@ -1,10 +1,10 @@
 {
   "artifact": "verifier_health_latest",
-  "generated_cdt": "2026-05-31 03:49:12 CDT",
+  "generated_cdt": "2026-05-31 03:53:03 CDT",
   "branch": "research/operator-promotion-audit-2026-05-30",
-  "head": "26691dd0",
+  "head": "3360fe05",
   "tmux_sessions": [
-    "arc2_codex_verifier: 1 windows (created Sun May 31 03:38:07 2026)"
+    "arc2_codex_verifier: 1 windows (created Sun May 31 03:52:05 2026)"
   ],
   "safe_status": [],
   "integration_ready": [],
@@ -34,6 +34,32 @@
       "legend_lat_b",
       "legend_lat_d"
     ]
+  },
+  "sia_lite": {
+    "n_runs": 20,
+    "latest_run": {
+      "run_id": "sia_lite_reloaded_d8e07eb2_002",
+      "target_task": "d8e07eb2",
+      "last_generation": 8,
+      "tripwire": false,
+      "best_generation": {
+        "generation": "gen_8",
+        "status": "success",
+        "fitness": 0.1,
+        "leaks": 0,
+        "loo_tasks": 0,
+        "cross": {},
+        "train_exact": 2,
+        "shape_exact": 439,
+        "target_train_exact": 0,
+        "target_informative_loo": false,
+        "target_shape_exact": 25,
+        "target_best_diff": 745,
+        "target_best_name": "enclosed_region_fill:unique"
+      }
+    },
+    "tripwire_runs": [],
+    "positive_reductions": 1
   },
   "status": "ok",
   "warnings": []

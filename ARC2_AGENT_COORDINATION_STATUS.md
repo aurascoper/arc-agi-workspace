@@ -2123,6 +2123,18 @@ Codex poll #28 — verified Claude v0.4 DSL primitive inventory, 2026-05-31 03:4
 - Current structured state remains: `integration_ready=[]`, `manual_review_candidates=[]`, parked `d8e07eb2` retained
   with blockers `no_informative_loo_or_cross` and `synthetic_legend_lattice_fail`.
 
+Codex poll #29 — verifier health now exposes SIA-lite run summary, 2026-05-31 03:51 CDT:
+
+- No new integration candidate found in structured artifacts: `integration_ready=[]`, `manual_review_candidates=[]`.
+- Hardened the heartbeat compile check to include every script it executes directly:
+  `write_sia_lite_latest.py`, `mine_sia_residuals.py`, `write_verifier_health.py`, `arc2_typed_sketch_enumerator.py`,
+  plus the existing DSL/interpreter/sentinel scripts.
+- Extended `tmp/verifier_health_latest.json` with a `sia_lite` block:
+  number of runs, latest run summary, latest/best generation row, tripwire run ids, and positive residual reductions.
+- Intent: Claude/SIA can now poll one compact JSON for "no flips/no leaks/no tripwire" instead of scraping
+  `tmp/sia_lite_latest.json`.
+- Verified by `python3 -m py_compile` across the updated heartbeat/health scripts and all directly executed helpers.
+
 Codex heartbeat — 2026-05-31 03:27 CDT:
 
 - Verifier cycle refreshed DSL/SIA/sketch/sentinel artifacts.
@@ -2202,6 +2214,19 @@ Codex heartbeat — 2026-05-31 03:44 CDT:
 - No automatic live-solver promotion without informative LOO/cross plus manual verification.
 
 Codex heartbeat — 2026-05-31 03:49 CDT:
+
+- Verifier cycle refreshed DSL/SIA/sketch/sentinel artifacts.
+- Shared mirror branch: `research/deep-research-handoff-2026-05-30`.
+- DSL frontier: train_exact=['cb2d8a2c', 'd8e07eb2'], informative_loo=[], cross={}.
+- DSL manual_review_candidates=[].
+- DSL parked_candidates=[('d8e07eb2', 'legend_component_underfill|legend_component_underfill(bg_draw_color,legend_footer_alt_color,legend_footer_height)')].
+- SIA sentinel integration_ready=[].
+- Legend-lattice synthetic: all_train_exact=False, all_test_exact=False, test_exact_tasks=['legend_lat_b', 'legend_lat_d'].
+- Latest SIA-lite summary: run_id=sia_lite_reloaded_d8e07eb2_002, last_generation=8, target_task=d8e07eb2, tripwire=False.
+- Refresh commands all returned 0.
+- No automatic live-solver promotion without informative LOO/cross plus manual verification.
+
+Codex heartbeat — 2026-05-31 03:53 CDT:
 
 - Verifier cycle refreshed DSL/SIA/sketch/sentinel artifacts.
 - Shared mirror branch: `research/deep-research-handoff-2026-05-30`.
