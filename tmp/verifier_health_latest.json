@@ -1,15 +1,15 @@
 {
   "artifact": "verifier_health_latest",
-  "generated_cdt": "2026-05-31 04:47:36 CDT",
+  "generated_cdt": "2026-05-31 04:51:18 CDT",
   "branch": "research/operator-promotion-audit-2026-05-30",
-  "head": "9314d770",
+  "head": "eddda3b0",
   "handoff_mirror": {
     "dir": "/tmp/arc_agi_handoff_sync",
     "available": true,
     "branch": "research/deep-research-handoff-2026-05-30",
     "expected_branch": "research/deep-research-handoff-2026-05-30",
-    "head": "532c3920",
-    "origin_head": "532c3920",
+    "head": "e1e761bc",
+    "origin_head": "e1e761bc",
     "head_matches_origin": true,
     "safe_status": []
   },
@@ -17,60 +17,60 @@
     "available": true,
     "heartbeat_stale_seconds": 390,
     "latest": {
+      "health": {
+        "hash": "eddda3b0",
+        "subject": "chore(sync): health 04:47 CDT",
+        "commit_cdt": "2026-05-31 04:47:36 CDT",
+        "age_seconds_at_generation": 222
+      },
       "heartbeat": {
         "hash": "9314d770",
         "subject": "chore(sync): heartbeat 04:47 CDT",
         "commit_cdt": "2026-05-31 04:47:31 CDT",
-        "age_seconds_at_generation": 5
-      },
-      "health": {
-        "hash": "de4ddc07",
-        "subject": "chore(sync): health 04:46 CDT",
-        "commit_cdt": "2026-05-31 04:46:43 CDT",
-        "age_seconds_at_generation": 53
+        "age_seconds_at_generation": 227
       }
     }
   },
   "artifact_freshness": {
     "stale_threshold_seconds": 900,
-    "max_age_seconds_at_generation": 78,
+    "max_age_seconds_at_generation": 299,
     "missing": [],
     "stale": [],
     "artifacts": {
       "tmp/dsl_enumeration_latest.json": {
         "exists": true,
         "mtime_cdt": "2026-05-31 04:46:20 CDT",
-        "age_seconds_at_generation": 76
+        "age_seconds_at_generation": 297
       },
       "tmp/codex_sia_all23_sentinel.json": {
         "exists": true,
         "mtime_cdt": "2026-05-31 04:47:31 CDT",
-        "age_seconds_at_generation": 5
+        "age_seconds_at_generation": 226
       },
       "tmp/sia_lite_latest.json": {
         "exists": true,
         "mtime_cdt": "2026-05-31 04:46:20 CDT",
-        "age_seconds_at_generation": 76
+        "age_seconds_at_generation": 297
       },
       "tmp/sia_lite_residual_mining.json": {
         "exists": true,
         "mtime_cdt": "2026-05-31 04:46:20 CDT",
-        "age_seconds_at_generation": 76
+        "age_seconds_at_generation": 297
       },
       "tmp/claude_sketch_enumeration.json": {
         "exists": true,
         "mtime_cdt": "2026-05-31 04:46:21 CDT",
-        "age_seconds_at_generation": 75
+        "age_seconds_at_generation": 297
       },
       "tmp/legend_lattice_synthetic_latest.json": {
         "exists": true,
         "mtime_cdt": "2026-05-31 04:46:18 CDT",
-        "age_seconds_at_generation": 78
+        "age_seconds_at_generation": 299
       },
       "tmp/verifier_refresh_latest.json": {
         "exists": true,
         "mtime_cdt": "2026-05-31 04:47:31 CDT",
-        "age_seconds_at_generation": 5
+        "age_seconds_at_generation": 226
       }
     }
   },
@@ -100,35 +100,18 @@
   "process_state": {
     "available": true,
     "counts": {
-      "verifier_loop": 2,
+      "verifier_loop": 0,
+      "sia_lite_worker": 0,
       "active_branch_push": 0,
       "github_arc_agi_transfer": 0
     },
-    "matching_processes": [
-      {
-        "pid": "14488",
-        "ppid": "1",
-        "etime": "16:24",
-        "categories": [
-          "verifier_loop"
-        ],
-        "command": "tmux new-session -d -s arc2_codex_verifier cd /Users/aurascoper/Developer/arc_agi/workspace && python3 sia_arc_all23_task/codex_verifier_cycle.py --loop --interval 300 --push > tmp/codex_verifier_cycle.log 2>&1"
-      },
-      {
-        "pid": "14489",
-        "ppid": "14488",
-        "etime": "16:24",
-        "categories": [
-          "verifier_loop"
-        ],
-        "command": "/opt/homebrew/Cellar/python@3.14/3.14.5/Frameworks/Python.framework/Versions/3.14/Resources/Python.app/Contents/MacOS/Python sia_arc_all23_task/codex_verifier_cycle.py --loop --interval 300 --push"
-      }
-    ]
+    "matching_processes": []
   },
-  "tmux_sessions": [
-    "arc2_codex_verifier: 1 windows (created Sun May 31 04:31:12 2026)"
+  "tmux_sessions": [],
+  "safe_status": [
+    " M ARC2_AGENT_COORDINATION_STATUS.md",
+    " M sia_arc_all23_task/write_verifier_health.py"
   ],
-  "safe_status": [],
   "integration_ready": [],
   "manual_review_candidates": [],
   "parked_candidates": [
@@ -187,13 +170,17 @@
       "tripwire": false,
       "updated_at": "2026-05-31T04:44:26-0500",
       "last_result_mtime_cdt": "2026-05-31 04:44:26 CDT",
-      "latest_result_age_seconds_at_generation": 189,
+      "latest_result_age_seconds_at_generation": 411,
       "stale_threshold_seconds": 1800,
       "is_stale": false
     },
     "tripwire_runs": [],
     "positive_reductions": 1
   },
-  "status": "ok",
-  "warnings": []
+  "status": "attention",
+  "warnings": [
+    "arc2_codex_verifier tmux session not visible",
+    "safe coordination paths have uncommitted changes",
+    "SIA-lite search worker not active"
+  ]
 }

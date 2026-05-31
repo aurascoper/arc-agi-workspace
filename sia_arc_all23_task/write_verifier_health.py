@@ -33,6 +33,7 @@ FRESHNESS_PATHS = [
 ]
 PROCESS_COMMAND_PATTERNS = {
     "verifier_loop": ["codex_verifier_cycle.py"],
+    "sia_lite_worker": ["sia_lite_harness.py"],
     "active_branch_push": ["git push origin HEAD:research/operator-promotion"],
     "github_arc_agi_transfer": [
         "git-receive-pack 'aurascoper/arc-agi-workspace.git'",
@@ -268,6 +269,8 @@ def main() -> None:
         warnings.append("manual-review candidate present")
     if tripwire_runs:
         warnings.append("SIA-lite tripwire run present")
+    if processes.get("counts", {}).get("sia_lite_worker", 0) == 0:
+        warnings.append("SIA-lite search worker not active")
     if latest_run_state and latest_run_state["is_stale"]:
         warnings.append("SIA-lite latest run result stale")
     if refresh.get("failures"):

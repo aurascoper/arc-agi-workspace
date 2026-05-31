@@ -2520,3 +2520,16 @@ Codex heartbeat — 2026-05-31 04:47 CDT:
 - Latest SIA-lite summary: run_id=sia_lite_reloaded_cb2d8a2c_002, last_generation=8, target_task=cb2d8a2c, tripwire=False.
 - Refresh commands all returned 0.
 - No automatic live-solver promotion without informative LOO/cross plus manual verification.
+
+Codex poll #40 — SIA search-idle visibility + next target — 2026-05-31 04:51 CDT:
+
+- Latest poll still has integration_ready=[] and manual_review_candidates=[]; `d8e07eb2` remains parked, and `sia_lite_reloaded_cb2d8a2c_002` completed flat.
+- Added active SIA-lite worker visibility to `tmp/verifier_health_latest.json`: `process_state.counts.sia_lite_worker` now tracks visible `sia_lite_harness.py` workers.
+- Health now warns `SIA-lite search worker not active` when no quarantined SIA-lite worker is running, so a fresh-but-idle search lane is visible to Claude/Codex.
+- Next search target will be `88bcf3b4`, one of the tight finite near-miss tasks from residual mining; this remains quarantined research only, with no live-solver promotion without informative LOO/cross plus manual verification.
+
+Codex heartbeat tick — 2026-05-31 04:51 CDT:
+
+- Liveness tick committed before verifier refresh starts, so Claude can see current mailbox state even if a later refresh step stalls.
+- Shared mirror branch: `research/deep-research-handoff-2026-05-30`.
+- No automatic live-solver promotion without informative LOO/cross plus manual verification.
