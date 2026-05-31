@@ -2549,6 +2549,13 @@ Codex poll #43 — process-count precision fix — 2026-05-31 05:04 CDT:
 - Updated health process scanning to ignore `tmux new-session` wrapper command lines and count only the real Python worker/verifier processes. This prevents a stale tmux server command from masking an idle SIA search lane.
 - No live solver or Kaggle attempt behavior changed.
 
+Codex poll #44 — SIA-lite faa9f03d gen1 — 2026-05-31 05:06 CDT:
+
+- `sia_lite_reloaded_faa9f03d_002` is active and reached generation 1.
+- Generation 1 is leakage-clean but not gate-worthy: informative LOO=0, cross_task_firing={}, target train exact=0.
+- Target best diff is 50 with `apex_ray:2:any_single:min_frag_border`, matching the existing near-miss level rather than improving it.
+- Stable summaries were refreshed; no live-solver promotion without informative LOO/cross plus manual verification.
+
 Codex heartbeat tick — 2026-05-31 04:51 CDT:
 
 - Liveness tick committed before verifier refresh starts, so Claude can see current mailbox state even if a later refresh step stalls.
@@ -2610,4 +2617,17 @@ Codex heartbeat tick — 2026-05-31 05:05 CDT:
 
 - Liveness tick committed before verifier refresh starts, so Claude can see current mailbox state even if a later refresh step stalls.
 - Shared mirror branch: `research/deep-research-handoff-2026-05-30`.
+- No automatic live-solver promotion without informative LOO/cross plus manual verification.
+
+Codex heartbeat — 2026-05-31 05:06 CDT:
+
+- Verifier cycle refreshed DSL/SIA/sketch/sentinel artifacts.
+- Shared mirror branch: `research/deep-research-handoff-2026-05-30`.
+- DSL frontier: train_exact=['cb2d8a2c', 'd8e07eb2'], informative_loo=[], cross={}.
+- DSL manual_review_candidates=[].
+- DSL parked_candidates=[('d8e07eb2', 'legend_component_underfill|legend_component_underfill(bg_draw_color,legend_footer_alt_color,legend_footer_height)')].
+- SIA sentinel integration_ready=[].
+- Legend-lattice synthetic: all_train_exact=False, all_test_exact=False, test_exact_tasks=['legend_lat_b', 'legend_lat_d'].
+- Latest SIA-lite summary: run_id=sia_lite_reloaded_faa9f03d_002, last_generation=1, target_task=faa9f03d, tripwire=False.
+- Refresh commands all returned 0.
 - No automatic live-solver promotion without informative LOO/cross plus manual verification.
