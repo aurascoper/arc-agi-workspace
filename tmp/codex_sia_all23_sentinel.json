@@ -2292,6 +2292,43 @@
       },
       "private_true_total": 0,
       "integration_ready": false
+    },
+    {
+      "agent": "runs/sia_lite_reloaded_d8e07eb2_002/gen_5/target_agent.py",
+      "returncode": 0,
+      "ok": true,
+      "stderr_tail": "",
+      "fitness": 0.1,
+      "n_leakage_hits": 0,
+      "leakage_hits": [],
+      "train_exact_total": 2,
+      "shape_exact_total": 439,
+      "loo_task_total": 0,
+      "vacuous_loo": {
+        "3dc255db": [
+          "apex_ray:2:away_from_frag:min_frag_border",
+          "apex_ray:3:away_from_frag:min_frag_border"
+        ]
+      },
+      "cross_task_firing": {},
+      "train_exact_name_tasks": {
+        "apex_ray:2:away_from_frag:min_frag_border": [
+          "3dc255db"
+        ],
+        "apex_ray:3:away_from_frag:min_frag_border": [
+          "3dc255db"
+        ]
+      },
+      "top_train_exact_names": {
+        "apex_ray:2:away_from_frag:min_frag_border": [
+          "3dc255db"
+        ],
+        "apex_ray:3:away_from_frag:min_frag_border": [
+          "3dc255db"
+        ]
+      },
+      "private_true_total": 0,
+      "integration_ready": false
     }
   ],
   "integration_ready": [],

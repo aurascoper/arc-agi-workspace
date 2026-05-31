@@ -1222,10 +1222,10 @@
     {
       "run_id": "sia_lite_reloaded_d8e07eb2_002",
       "tripwire": false,
-      "last_generation": 4,
+      "last_generation": 5,
       "target_task": "d8e07eb2",
-      "updated_at": "2026-05-31T02:46:19-0500",
-      "last_result_mtime": 1780213579.8109627,
+      "updated_at": "2026-05-31T02:48:48-0500",
+      "last_result_mtime": 1780213728.2628126,
       "generations": [
         {
           "generation": "gen_1",
@@ -1284,6 +1284,21 @@
           "target_train_exact": 0,
           "target_informative_loo": false,
           "target_shape_exact": 26,
+          "target_best_diff": 745,
+          "target_best_name": "enclosed_region_fill:unique"
+        },
+        {
+          "generation": "gen_5",
+          "status": "success",
+          "fitness": 0.1,
+          "leaks": 0,
+          "loo_tasks": 0,
+          "cross": {},
+          "train_exact": 2,
+          "shape_exact": 439,
+          "target_train_exact": 0,
+          "target_informative_loo": false,
+          "target_shape_exact": 25,
           "target_best_diff": 745,
           "target_best_name": "enclosed_region_fill:unique"
         }
