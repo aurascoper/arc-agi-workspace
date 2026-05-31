@@ -1,6 +1,6 @@
 {
   "artifact": "verifier_refresh_latest",
-  "generated_cdt": "2026-05-31 04:57 CDT",
+  "generated_cdt": "2026-05-31 05:02 CDT",
   "failures": [],
   "timed_out": [],
   "returncodes": {
@@ -13,13 +13,13 @@
     "sentinel": 0
   },
   "durations_seconds": {
-    "compile": 0.122,
-    "legend_synth": 0.18,
-    "dsl_enum": 2.048,
-    "sia_latest": 0.084,
-    "sia_mine": 0.077,
-    "sketch_enum": 0.469,
-    "sentinel": 63.416
+    "compile": 0.108,
+    "legend_synth": 0.171,
+    "dsl_enum": 2.032,
+    "sia_latest": 0.085,
+    "sia_mine": 0.073,
+    "sketch_enum": 0.46,
+    "sentinel": 63.792
   },
   "outputs": {
     "compile": {
@@ -40,7 +40,7 @@
       "returncode": 0,
       "timed_out": false,
       "timeout_seconds": 300,
-      "duration_seconds": 0.122,
+      "duration_seconds": 0.108,
       "stdout_tail": "",
       "stderr_tail": ""
     },
@@ -52,7 +52,7 @@
       "returncode": 0,
       "timed_out": false,
       "timeout_seconds": 300,
-      "duration_seconds": 0.18,
+      "duration_seconds": 0.171,
       "stdout_tail": "wrote /Users/aurascoper/Developer/arc_agi/workspace/tmp/legend_lattice_synthetic_latest.json\ntasks=5 all_train_exact=False all_test_exact=False test_exact=['legend_lat_b', 'legend_lat_d']\n",
       "stderr_tail": ""
     },
@@ -64,7 +64,7 @@
       "returncode": 0,
       "timed_out": false,
       "timeout_seconds": 300,
-      "duration_seconds": 2.048,
+      "duration_seconds": 2.032,
       "stdout_tail": "wrote /Users/aurascoper/Developer/arc_agi/workspace/tmp/dsl_enumeration_latest.json\nprograms=23 train_exact=['cb2d8a2c', 'd8e07eb2'] informative_loo=[] cross={}\ncb2d8a2c ['bar_marker_bracket_route|bar_marker_bracket_route(bg_draw_color,full_color_transition_map)', 'enum_bar_marker_route:full_map+bg_draw|bar_marker_bracket_route(bg_draw_color,full_color_transition_map)']\nd8e07eb2 ['legend_slot_frames|legend_slot_frames(bg_draw_color,legend_footer_alt_color)', 'legend_component_underfill|legend_component_underfill(bg_draw_color,legend_footer_alt_color,legend_footer_height)']\n",
       "stderr_tail": ""
     },
@@ -76,7 +76,7 @@
       "returncode": 0,
       "timed_out": false,
       "timeout_seconds": 300,
-      "duration_seconds": 0.084,
+      "duration_seconds": 0.085,
       "stdout_tail": "",
       "stderr_tail": ""
     },
@@ -88,7 +88,7 @@
       "returncode": 0,
       "timed_out": false,
       "timeout_seconds": 300,
-      "duration_seconds": 0.077,
+      "duration_seconds": 0.073,
       "stdout_tail": "wrote /Users/aurascoper/Developer/arc_agi/workspace/tmp/sia_lite_residual_mining.json\ncb2d8a2c sia_lite_gpt54mini_cb2d8a2c_001/gen_5 delta=4 diff=127 name=rowcol_cross_fill:row=2:col=2\n",
       "stderr_tail": ""
     },
@@ -100,7 +100,7 @@
       "returncode": 0,
       "timed_out": false,
       "timeout_seconds": 300,
-      "duration_seconds": 0.469,
+      "duration_seconds": 0.46,
       "stdout_tail": "0.90', 'draw_from_background:0.68', 'global_region_recolor:0.62', 'route_connect:0.50', 'panel_compose:0.50', 'select_transform_place:0.45', 'frame_crop:0.45', 'recolor_by_relation:0.35']\n  271d71e2: shape=same     sketches= 7 top=bracket_route_recolor(0.92) \n           ['bracket_route_recolor:0.92', 'marker_host_action:0.90', 'route_connect:0.50', 'panel_compose:0.50', 'select_transform_place:0.45', 'frame_crop:0.45', 'recolor_by_relation:0.35']\n  faa9f03d: shape=same     sketches= 4 top=bracket_route_recolor(0.92) \n           ['bracket_route_recolor:0.92', 'route_connect:0.50', 'select_transform_place:0.45', 'recolor_by_relation:0.35']\n  35ab12c3: shape=same     sketches= 6 top=draw_from_background(0.68) \n           ['draw_from_background:0.68', 'global_region_recolor:0.62', 'panel_compose:0.50', 'select_transform_place:0.45', 'route_connect:0.40', 'recolor_by_relation:0.35']\n  20a9e565: shape=shrink   sketches= 2 top=object_summary(0.78) \n           ['object_summary:0.78', 'panel_compose:0.50']\n  2d0172a1: shape=shrink   sketches= 1 top=marker_host_action(0.90) \n           ['marker_host_action:0.90']\n  6ffbe589: shape=shrink   sketches= 3 top=marker_host_action(0.90) \n           ['marker_host_action:0.90', 'object_summary:0.87', 'panel_compose:0.50']\n  e87109e9: shape=constant sketches= 3 top=marker_host_action(0.90) \n           ['marker_host_action:0.90', 'object_summary:0.73', 'panel_compose:0.50']\n  89565ca0: shape=shrink   sketches= 2 top=object_summary(1.29) \n           ['object_summary:1.29', 'marker_host_action:0.90']\n\ntemplate coverage (tasks where each fires): {'route_connect': 16, 'recolor_by_relation': 16, 'select_transform_place': 15, 'panel_compose': 14, 'marker_host_action': 12, 'draw_from_background': 10, 'global_region_recolor': 9, 'frame_crop': 8, 'bracket_route_recolor': 7, 'object_summary': 6}\navg sketches/task: 4.9 (bounded typed search space, not unconstrained enumeration)\ntasks with >=1 sketch: 23/23\nwrote tmp/claude_sketch_enumeration.json\n",
       "stderr_tail": ""
     },
@@ -112,7 +112,7 @@
       "returncode": 0,
       "timed_out": false,
       "timeout_seconds": 600,
-      "duration_seconds": 63.416,
+      "duration_seconds": 63.792,
       "stdout_tail": "_tasks={'apex_ray:2:away_from_frag:min_frag_border': ['3dc255db'], 'apex_ray:3:away_from_frag:min_frag_border': ['3dc255db']}\n  runs/sia_lite_reloaded_d8e07eb2_002/gen_5/target_agent.py: ok=True fitness=0.1 leaks=0 train_exact=2 shape_exact=439 loo_tasks=0 vacuous={'3dc255db': ['apex_ray:2:away_from_frag:min_frag_border', 'apex_ray:3:away_from_frag:min_frag_border']} cross=0 private_true=0 ready=False\n    train_exact_name_tasks={'apex_ray:2:away_from_frag:min_frag_border': ['3dc255db'], 'apex_ray:3:away_from_frag:min_frag_border': ['3dc255db']}\n  runs/sia_lite_reloaded_d8e07eb2_002/gen_6/target_agent.py: ok=True fitness=-100.0 leaks=0 train_exact=0 shape_exact=0 loo_tasks=0 vacuous={} cross=0 private_true=0 ready=False\n  runs/sia_lite_reloaded_d8e07eb2_002/gen_7/target_agent.py: ok=True fitness=0.1 leaks=0 train_exact=2 shape_exact=425 loo_tasks=0 vacuous={'3dc255db': ['apex_ray:2:away_from_frag:min_frag_border', 'apex_ray:3:away_from_frag:min_frag_border']} cross=0 private_true=0 ready=False\n    train_exact_name_tasks={'apex_ray:2:away_from_frag:min_frag_border': ['3dc255db'], 'apex_ray:3:away_from_frag:min_frag_border': ['3dc255db']}\n  runs/sia_lite_reloaded_d8e07eb2_002/gen_8/target_agent.py: ok=True fitness=0.1 leaks=0 train_exact=2 shape_exact=439 loo_tasks=0 vacuous={'3dc255db': ['apex_ray:2:away_from_frag:min_frag_border', 'apex_ray:3:away_from_frag:min_frag_border']} cross=0 private_true=0 ready=False\n    train_exact_name_tasks={'apex_ray:2:away_from_frag:min_frag_border': ['3dc255db'], 'apex_ray:3:away_from_frag:min_frag_border': ['3dc255db']}\nintegration_ready=[]\nmanual_review_candidates=[]\nparked_candidates=[('d8e07eb2', 'legend_component_underfill|legend_component_underfill(bg_draw_color,legend_footer_alt_color,legend_footer_height)')]\nlegend_lattice_synthetic={'tasks': 5, 'all_train_exact': False, 'all_test_exact': False, 'train_exact_tasks': ['legend_lat_b'], 'test_exact_tasks': ['legend_lat_b', 'legend_lat_d']}\nwrote tmp/codex_sia_all23_sentinel.json\n",
       "stderr_tail": ""
     }

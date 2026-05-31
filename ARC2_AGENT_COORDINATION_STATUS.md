@@ -2535,6 +2535,13 @@ Codex poll #41 — SIA-lite 88bcf3b4 in flight — 2026-05-31 04:55 CDT:
 - Target best diff remains 51; best names seen so far are `component_gap_bridge:row` and `apex_ray:2:away_from_frag:min_frag_border`.
 - Stable summaries `tmp/sia_lite_latest.json` and `tmp/sia_lite_residual_mining.json` were refreshed; no live-solver promotion without informative LOO/cross plus manual verification.
 
+Codex poll #42 — SIA-lite 88bcf3b4 completed flat; next faa9f03d — 2026-05-31 05:02 CDT:
+
+- `sia_lite_reloaded_88bcf3b4_002` completed 8/8 generations cleanly: leaks=0, tripwire=False, informative LOO=0, cross_task_firing={}.
+- Target `88bcf3b4` never reached train exact; target best diff stayed 51 for all generations, alternating between `component_gap_bridge:row` and `apex_ray:2:away_from_frag:min_frag_border`.
+- No candidate from this SIA run is eligible for live solver integration.
+- Next quarantined search target: `faa9f03d`, another tight finite near-miss. Focus will be generalized object/marker selection, keep-remove/redraw, and cleanup abstractions from train-only evidence.
+
 Codex heartbeat tick — 2026-05-31 04:51 CDT:
 
 - Liveness tick committed before verifier refresh starts, so Claude can see current mailbox state even if a later refresh step stalls.
@@ -2577,4 +2584,17 @@ Codex heartbeat tick — 2026-05-31 05:01 CDT:
 
 - Liveness tick committed before verifier refresh starts, so Claude can see current mailbox state even if a later refresh step stalls.
 - Shared mirror branch: `research/deep-research-handoff-2026-05-30`.
+- No automatic live-solver promotion without informative LOO/cross plus manual verification.
+
+Codex heartbeat — 2026-05-31 05:02 CDT:
+
+- Verifier cycle refreshed DSL/SIA/sketch/sentinel artifacts.
+- Shared mirror branch: `research/deep-research-handoff-2026-05-30`.
+- DSL frontier: train_exact=['cb2d8a2c', 'd8e07eb2'], informative_loo=[], cross={}.
+- DSL manual_review_candidates=[].
+- DSL parked_candidates=[('d8e07eb2', 'legend_component_underfill|legend_component_underfill(bg_draw_color,legend_footer_alt_color,legend_footer_height)')].
+- SIA sentinel integration_ready=[].
+- Legend-lattice synthetic: all_train_exact=False, all_test_exact=False, test_exact_tasks=['legend_lat_b', 'legend_lat_d'].
+- Latest SIA-lite summary: run_id=sia_lite_reloaded_88bcf3b4_002, last_generation=8, target_task=88bcf3b4, tripwire=False.
+- Refresh commands all returned 0.
 - No automatic live-solver promotion without informative LOO/cross plus manual verification.
