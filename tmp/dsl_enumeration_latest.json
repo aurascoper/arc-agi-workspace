@@ -1,6 +1,6 @@
 {
   "artifact": "dsl_enumeration_latest",
-  "programs_enumerated": 22,
+  "programs_enumerated": 23,
   "tasks": 23,
   "train_exact_tasks": [
     "cb2d8a2c",
@@ -4363,7 +4363,7 @@
     },
     {
       "task_id": "d8e07eb2",
-      "n_compiled": 11,
+      "n_compiled": 12,
       "best": {
         "name": "legend_slot_frames|legend_slot_frames(bg_draw_color,legend_footer_alt_color)",
         "shape_exact": true,
@@ -4591,6 +4591,53 @@
             "synthetic_d4_fail",
             "synthetic_padding_fail"
           ]
+        },
+        {
+          "name": "legend_component_underfill|legend_component_underfill(bg_draw_color,legend_footer_alt_color,legend_footer_height)",
+          "shape_exact": true,
+          "train_diff": 5,
+          "per_pair_diff": [
+            0,
+            0,
+            0,
+            5,
+            0
+          ],
+          "pred_shapes": [
+            [
+              30,
+              22
+            ],
+            [
+              30,
+              22
+            ],
+            [
+              30,
+              22
+            ],
+            [
+              30,
+              22
+            ],
+            [
+              30,
+              22
+            ]
+          ],
+          "error": null,
+          "program_name": "legend_component_underfill",
+          "signature": "legend_component_underfill|legend_component_underfill(bg_draw_color,legend_footer_alt_color,legend_footer_height)",
+          "generality": {
+            "magic_int_constants": {
+              "legend_component_underfill": [
+                3
+              ]
+            },
+            "blockers": [
+              "magic_int_constants"
+            ]
+          }
         },
         {
           "name": "enum_bar_route:bg_draw|bar_bracket_route(bg_draw_color)",
@@ -4840,47 +4887,6 @@
           "error": null,
           "program_name": "frame_occurrences",
           "signature": "frame_occurrences|frame_occurrences(frame_occurrence_templates)",
-          "generality": {
-            "magic_int_constants": {},
-            "blockers": []
-          }
-        },
-        {
-          "name": "dominant_recolor_map|recolor_map(dominant_transition_map)",
-          "shape_exact": true,
-          "train_diff": 1859,
-          "per_pair_diff": [
-            290,
-            290,
-            418,
-            418,
-            443
-          ],
-          "pred_shapes": [
-            [
-              30,
-              22
-            ],
-            [
-              30,
-              22
-            ],
-            [
-              30,
-              22
-            ],
-            [
-              30,
-              22
-            ],
-            [
-              30,
-              22
-            ]
-          ],
-          "error": null,
-          "program_name": "dominant_recolor_map",
-          "signature": "dominant_recolor_map|recolor_map(dominant_transition_map)",
           "generality": {
             "magic_int_constants": {},
             "blockers": []

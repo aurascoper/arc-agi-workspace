@@ -193,6 +193,29 @@ def learn_legend_footer_alt_color(train: list[dict[str, Any]]) -> int | None:
     return votes.most_common(1)[0][0] if votes else None
 
 
+def learn_legend_footer_height(train: list[dict[str, Any]]) -> int | None:
+    heights = set()
+    draw_color = learn_bg_draw_color(train)
+    for p in train:
+        gi, go = norm(p["input"]), norm(p["output"])
+        if dims(gi) != dims(go):
+            return None
+        background = bg(gi)
+        seps = full_separator_rows(gi, background)
+        if len(seps) < 2:
+            return None
+        changed_rows = [
+            r
+            for r in range(seps[1] + 1, len(gi))
+            if any(gi[r][c] == background and go[r][c] != background for c in range(len(gi[0])))
+        ]
+        if changed_rows:
+            heights.add(max(changed_rows) - seps[1])
+        elif draw_color is not None:
+            heights.add(0)
+    return heights.pop() if len(heights) == 1 else None
+
+
 FITTERS = {
     "color_transition_map": learn_color_transition_map,
     "dominant_transition_map": learn_dominant_transition_map,
@@ -201,6 +224,7 @@ FITTERS = {
     "changed_output_color": learn_changed_output_color,
     "frame_occurrence_templates": learn_frame_occurrence_templates,
     "legend_footer_alt_color": learn_legend_footer_alt_color,
+    "legend_footer_height": learn_legend_footer_height,
 }
 
 
@@ -534,11 +558,85 @@ def glyph_slot_key(grid: Grid, r0: int, c0: int, background: int) -> tuple[tuple
 
 
 def full_separator_rows(grid: Grid, background: int) -> list[int]:
+    non_bg = [(r, c) for r, row in enumerate(grid) for c, value in enumerate(row) if value != background]
+    if not non_bg:
+        return []
+    cmin = min(c for _r, c in non_bg)
+    cmax = max(c for _r, c in non_bg)
+    content_width = cmax - cmin + 1
     rows = []
     for r, row in enumerate(grid):
-        if row and len(set(row)) == 1 and row[0] != background:
+        cells = [(c, value) for c, value in enumerate(row) if value != background]
+        if not cells:
+            continue
+        cols = [c for c, _value in cells]
+        values = {value for _c, value in cells}
+        if len(values) == 1 and len(cells) == content_width and min(cols) == cmin and max(cols) == cmax:
             rows.append(r)
     return rows
+
+
+def content_bbox(grid: Grid, background: int) -> tuple[int, int, int, int] | None:
+    cells = [(r, c) for r, row in enumerate(grid) for c, value in enumerate(row) if value != background]
+    if not cells:
+        return None
+    return min(r for r, _c in cells), min(c for _r, c in cells), max(r for r, _c in cells), max(c for _r, c in cells)
+
+
+def components8(cells: set[tuple[int, int]]) -> list[set[tuple[int, int]]]:
+    remaining = set(cells)
+    out = []
+    while remaining:
+        start = next(iter(remaining))
+        q = deque([start])
+        remaining.remove(start)
+        comp = {start}
+        while q:
+            r, c = q.popleft()
+            for dr in (-1, 0, 1):
+                for dc in (-1, 0, 1):
+                    if dr == 0 and dc == 0:
+                        continue
+                    nb = (r + dr, c + dc)
+                    if nb in remaining:
+                        remaining.remove(nb)
+                        comp.add(nb)
+                        q.append(nb)
+        out.append(comp)
+    return out
+
+
+def glyph_components_in_rows(grid: Grid, row_start: int, row_end: int, background: int) -> list[dict[str, Any]]:
+    cells = {
+        (r, c)
+        for r in range(max(0, row_start), min(len(grid), row_end + 1))
+        for c, value in enumerate(grid[r])
+        if value != background
+    }
+    out = []
+    for comp in components8(cells):
+        rs = [r for r, _c in comp]
+        cs = [c for _r, c in comp]
+        r0, r1, c0, c1 = min(rs), max(rs), min(cs), max(cs)
+        key = tuple(
+            tuple(grid[r][c] if (r, c) in comp else -1 for c in range(c0, c1 + 1))
+            for r in range(r0, r1 + 1)
+        )
+        out.append({"cells": comp, "bbox": (r0, c0, r1, c1), "key": key})
+    return out
+
+
+def underfill_rect_grid(g: Grid, background: int, r0: int, c0: int, r1: int, c1: int, draw: int) -> None:
+    h = len(g)
+    w = len(g[0]) if g else 0
+    r0 = max(0, r0)
+    c0 = max(0, c0)
+    r1 = min(h - 1, r1)
+    c1 = min(w - 1, c1)
+    for rr in range(r0, r1 + 1):
+        for cc in range(c0, c1 + 1):
+            if g[rr][cc] == background:
+                g[rr][cc] = draw
 
 
 def slot_columns_from_band(grid: Grid, row_start: int, background: int) -> list[int]:
@@ -640,6 +738,52 @@ def op_legend_slot_frames(grid: Any, args: dict[str, Any]) -> Grid:
     return g
 
 
+def op_legend_component_underfill(grid: Any, args: dict[str, Any]) -> Grid:
+    """Magic-light glyph matcher based on connected components and separators."""
+    g = norm(grid)
+    background = bg(g)
+    color = int(args["color"])
+    alt_color = args.get("alt_color")
+    alt_color = int(alt_color) if alt_color is not None else None
+    footer_height = int(args.get("footer_height", 0))
+    seps = full_separator_rows(g, background)
+    bbox = content_bbox(g, background)
+    if len(seps) < 2 or bbox is None:
+        return g
+    _rmin, cmin, _rmax, cmax = bbox
+    first, second = seps[0], seps[1]
+    legend = glyph_components_in_rows(g, 0, first - 1, background)
+    body = glyph_components_in_rows(g, first + 1, second - 1, background)
+    legend_keys = {item["key"] for item in legend}
+    matched = [item for item in body if item["key"] in legend_keys]
+    if not matched:
+        return g
+    same_row = len({item["bbox"][0] for item in matched}) == 1
+    same_col = len({item["bbox"][1] for item in matched}) == 1
+    aligned = same_row or same_col
+    if aligned:
+        r0 = min(item["bbox"][0] for item in matched) - 1
+        c0 = min(item["bbox"][1] for item in matched) - 1
+        r1 = max(item["bbox"][2] for item in matched) + 1
+        c1 = max(item["bbox"][3] for item in matched) + 1
+        underfill_rect_grid(g, background, r0, c0, r1, c1, color)
+        if legend:
+            lr0 = min(item["bbox"][0] for item in legend) - 1
+            lr1 = max(item["bbox"][2] for item in legend) + 1
+            underfill_rect_grid(g, background, lr0, cmin, lr1, cmax, color)
+    else:
+        for item in matched:
+            r0, c0, r1, c1 = item["bbox"]
+            underfill_rect_grid(g, background, r0 - 1, c0 - 1, r1 + 1, c1 + 1, color)
+    if alt_color is not None and footer_height:
+        footer = color if aligned else alt_color
+        for rr in range(second + 1, min(len(g), second + footer_height + 1)):
+            for cc in range(cmin, cmax + 1):
+                if g[rr][cc] == background:
+                    g[rr][cc] = footer
+    return g
+
+
 def op_route_singletons(grid: Any, args: dict[str, Any]) -> Grid:
     g = norm(grid)
     fill = args.get("color", "same")
@@ -670,6 +814,7 @@ OPS = {
     "bar_marker_bracket_route": op_bar_marker_bracket_route,
     "frame_occurrences": op_frame_occurrences,
     "legend_slot_frames": op_legend_slot_frames,
+    "legend_component_underfill": op_legend_component_underfill,
     "route_singletons": op_route_singletons,
 }
 
@@ -765,6 +910,14 @@ DEFAULT_PROGRAMS: list[Program] = [
         "pipeline": [{"op": "legend_slot_frames", "args": {
             "color": {"learn": "bg_draw_color"},
             "alt_color": {"learn": "legend_footer_alt_color"},
+        }}],
+    },
+    {
+        "name": "legend_component_underfill",
+        "pipeline": [{"op": "legend_component_underfill", "args": {
+            "color": {"learn": "bg_draw_color"},
+            "alt_color": {"learn": "legend_footer_alt_color"},
+            "footer_height": {"learn": "legend_footer_height"},
         }}],
     },
 ]
