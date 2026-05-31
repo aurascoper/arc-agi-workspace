@@ -1,15 +1,15 @@
 {
   "artifact": "verifier_health_latest",
-  "generated_cdt": "2026-05-31 05:06:32 CDT",
+  "generated_cdt": "2026-05-31 05:07:28 CDT",
   "branch": "research/operator-promotion-audit-2026-05-30",
-  "head": "182bf042",
+  "head": "17fd8718",
   "handoff_mirror": {
     "dir": "/tmp/arc_agi_handoff_sync",
     "available": true,
     "branch": "research/deep-research-handoff-2026-05-30",
     "expected_branch": "research/deep-research-handoff-2026-05-30",
-    "head": "801b32d6",
-    "origin_head": "801b32d6",
+    "head": "8adc187b",
+    "origin_head": "8adc187b",
     "head_matches_origin": true,
     "safe_status": []
   },
@@ -18,59 +18,59 @@
     "heartbeat_stale_seconds": 390,
     "latest": {
       "health": {
-        "hash": "182bf042",
+        "hash": "17fd8718",
         "subject": "chore(sync): health 05:06 CDT",
-        "commit_cdt": "2026-05-31 05:06:29 CDT",
-        "age_seconds_at_generation": 3
+        "commit_cdt": "2026-05-31 05:06:32 CDT",
+        "age_seconds_at_generation": 56
       },
       "heartbeat": {
         "hash": "b858f9a6",
         "subject": "chore(sync): heartbeat 05:06 CDT",
         "commit_cdt": "2026-05-31 05:06:23 CDT",
-        "age_seconds_at_generation": 9
+        "age_seconds_at_generation": 65
       }
     }
   },
   "artifact_freshness": {
     "stale_threshold_seconds": 900,
-    "max_age_seconds_at_generation": 75,
+    "max_age_seconds_at_generation": 132,
     "missing": [],
     "stale": [],
     "artifacts": {
       "tmp/dsl_enumeration_latest.json": {
         "exists": true,
         "mtime_cdt": "2026-05-31 05:05:18 CDT",
-        "age_seconds_at_generation": 73
+        "age_seconds_at_generation": 130
       },
       "tmp/codex_sia_all23_sentinel.json": {
         "exists": true,
         "mtime_cdt": "2026-05-31 05:06:23 CDT",
-        "age_seconds_at_generation": 8
+        "age_seconds_at_generation": 65
       },
       "tmp/sia_lite_latest.json": {
         "exists": true,
         "mtime_cdt": "2026-05-31 05:06:04 CDT",
-        "age_seconds_at_generation": 27
+        "age_seconds_at_generation": 83
       },
       "tmp/sia_lite_residual_mining.json": {
         "exists": true,
         "mtime_cdt": "2026-05-31 05:06:05 CDT",
-        "age_seconds_at_generation": 26
+        "age_seconds_at_generation": 83
       },
       "tmp/claude_sketch_enumeration.json": {
         "exists": true,
         "mtime_cdt": "2026-05-31 05:05:19 CDT",
-        "age_seconds_at_generation": 72
+        "age_seconds_at_generation": 129
       },
       "tmp/legend_lattice_synthetic_latest.json": {
         "exists": true,
         "mtime_cdt": "2026-05-31 05:05:16 CDT",
-        "age_seconds_at_generation": 75
+        "age_seconds_at_generation": 132
       },
       "tmp/verifier_refresh_latest.json": {
         "exists": true,
         "mtime_cdt": "2026-05-31 05:06:23 CDT",
-        "age_seconds_at_generation": 8
+        "age_seconds_at_generation": 65
       }
     }
   },
@@ -102,32 +102,14 @@
     "counts": {
       "verifier_loop": 1,
       "sia_lite_worker": 1,
-      "active_branch_push": 1,
-      "github_arc_agi_transfer": 1
+      "active_branch_push": 0,
+      "github_arc_agi_transfer": 0
     },
     "matching_processes": [
       {
-        "pid": "49147",
-        "ppid": "47648",
-        "etime": "00:03",
-        "categories": [
-          "active_branch_push"
-        ],
-        "command": "git push origin HEAD:research/operator-promotion-audit-2026-05-30"
-      },
-      {
-        "pid": "49148",
-        "ppid": "49147",
-        "etime": "00:03",
-        "categories": [
-          "github_arc_agi_transfer"
-        ],
-        "command": "/opt/homebrew/bin/ssh git@github.com git-receive-pack 'aurascoper/arc-agi-workspace.git'"
-      },
-      {
         "pid": "46240",
         "ppid": "34104",
-        "etime": "02:33",
+        "etime": "03:29",
         "categories": [
           "sia_lite_worker"
         ],
@@ -136,7 +118,7 @@
       {
         "pid": "47648",
         "ppid": "34104",
-        "etime": "01:21",
+        "etime": "02:17",
         "categories": [
           "verifier_loop"
         ],
@@ -207,16 +189,13 @@
       "tripwire": false,
       "updated_at": "2026-05-31T05:05:26-0500",
       "last_result_mtime_cdt": "2026-05-31 05:05:26 CDT",
-      "latest_result_age_seconds_at_generation": 65,
+      "latest_result_age_seconds_at_generation": 122,
       "stale_threshold_seconds": 1800,
       "is_stale": false
     },
     "tripwire_runs": [],
     "positive_reductions": 1
   },
-  "status": "attention",
-  "warnings": [
-    "active-branch push process visible at health generation",
-    "arc-agi GitHub transfer process visible at health generation"
-  ]
+  "status": "ok",
+  "warnings": []
 }
