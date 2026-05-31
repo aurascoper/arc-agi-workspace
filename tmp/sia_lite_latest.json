@@ -1494,10 +1494,10 @@
     {
       "run_id": "sia_lite_reloaded_7b0280bc_002",
       "tripwire": false,
-      "last_generation": 4,
+      "last_generation": 8,
       "target_task": "7b0280bc",
-      "updated_at": "2026-05-31T05:19:48-0500",
-      "last_result_mtime": 1780222788.3507044,
+      "updated_at": "2026-05-31T05:24:27-0500",
+      "last_result_mtime": 1780223067.2194362,
       "generations": [
         {
           "generation": "gen_1",
@@ -1558,6 +1558,66 @@
           "target_shape_exact": 27,
           "target_best_diff": 71,
           "target_best_name": "enclosed_region_fill_learned"
+        },
+        {
+          "generation": "gen_5",
+          "status": "success",
+          "fitness": 0.1,
+          "leaks": 0,
+          "loo_tasks": 0,
+          "cross": {},
+          "train_exact": 2,
+          "shape_exact": 408,
+          "target_train_exact": 0,
+          "target_informative_loo": false,
+          "target_shape_exact": 26,
+          "target_best_diff": 92,
+          "target_best_name": "apex_ray:2:away_from_frag:min_frag_border"
+        },
+        {
+          "generation": "gen_6",
+          "status": "success",
+          "fitness": 0.1,
+          "leaks": 0,
+          "loo_tasks": 0,
+          "cross": {},
+          "train_exact": 2,
+          "shape_exact": 410,
+          "target_train_exact": 0,
+          "target_informative_loo": false,
+          "target_shape_exact": 26,
+          "target_best_diff": 92,
+          "target_best_name": "apex_ray:2:away_from_frag:min_frag_border"
+        },
+        {
+          "generation": "gen_7",
+          "status": "success",
+          "fitness": 0.1,
+          "leaks": 0,
+          "loo_tasks": 0,
+          "cross": {},
+          "train_exact": 2,
+          "shape_exact": 407,
+          "target_train_exact": 0,
+          "target_informative_loo": false,
+          "target_shape_exact": 26,
+          "target_best_diff": 92,
+          "target_best_name": "apex_ray:2:away_from_frag:min_frag_border"
+        },
+        {
+          "generation": "gen_8",
+          "status": "success",
+          "fitness": 0.1,
+          "leaks": 0,
+          "loo_tasks": 0,
+          "cross": {},
+          "train_exact": 2,
+          "shape_exact": 407,
+          "target_train_exact": 0,
+          "target_informative_loo": false,
+          "target_shape_exact": 26,
+          "target_best_diff": 92,
+          "target_best_name": "apex_ray:2:away_from_frag:min_frag_border"
         }
       ]
     }
