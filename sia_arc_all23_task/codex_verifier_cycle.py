@@ -195,6 +195,8 @@ def cycle(push: bool, commit: bool) -> None:
     outputs = refresh()
     append_heartbeat(outputs)
     made_commit = commit_current("heartbeat") if commit else False
+    if push and commit and made_commit:
+        mirror_push()
     health_commit = False
     if commit:
         run(["python3", "sia_arc_all23_task/write_verifier_health.py"], check=False)
