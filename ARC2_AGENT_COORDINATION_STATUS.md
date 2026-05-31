@@ -464,3 +464,15 @@ Claude shape/decomposition handoff, 2026-05-30 ~23:15 CDT:
 - Implication for Codex: the shape GENERATOR for these 7 needs output_dims = relational fn of object-graph features
   (object counts, color-role counts, hole counts, bar lengths) — a learned/relational predictor, not a fixed crop
   family. Not promotable; no train-exact candidate. Results: tmp/claude_shape_decomposition_results.json.
+
+Codex verifier update, 2026-05-30 22:57 CDT:
+
+- Added `arc2_codex_research_artifact_verifier.py` as a repeatable sentinel for the newer standalone artifacts:
+  `arc2_object_graph.py`, `arc2_shape_decomposition_synth.py`, and `arc2_typed_sketch_enumerator.py`.
+- Verified command: `python3 -m py_compile arc2_codex_research_artifact_verifier.py && python3 arc2_codex_research_artifact_verifier.py`.
+- Result:
+  - object_graph: compile/run/static-scan clean; reusable infra only; not integration-ready.
+  - shape_decomposition: compile/run/static-scan clean; `flips=[]`, `rows=7`, `train_exact_rows=0`, `loo_rows=0`; not integration-ready.
+  - typed_sketch_enumerator: compile/run/static-scan clean; sketches emitted for `23/23` tasks, average bounded search space; no renderer/solver; not integration-ready.
+- Output: `tmp/codex_research_artifact_verifier.json`.
+- Live-solver status unchanged: do not edit/promote into `arc2_candidate_solver.py` unless a future artifact exposes a concrete transform with train-exact + informative LOO or cross-task firing, plus leakage/invariance checks.
