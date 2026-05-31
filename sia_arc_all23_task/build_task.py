@@ -26,6 +26,9 @@ TARGETS = [
 def main():
     (HERE / "data" / "public").mkdir(parents=True, exist_ok=True)
     (HERE / "data" / "private").mkdir(parents=True, exist_ok=True)
+    template = HERE / "data_public_task_template.md"
+    if template.exists():
+        (HERE / "data" / "public" / "task.md").write_text(template.read_text())
     for tid in TARGETS:
         task = json.loads((EVAL / f"{tid}.json").read_text())
         public = {"train": task["train"], "test": [{"input": t["input"]} for t in task["test"]]}

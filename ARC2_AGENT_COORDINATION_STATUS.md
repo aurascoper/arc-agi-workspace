@@ -707,3 +707,21 @@ Codex cross-task-firing miner, 2026-05-31 00:02 CDT:
   - `apex_ray:2:away_from_frag:min_frag_border -> ['3dc255db']`
   - `apex_ray:3:away_from_frag:min_frag_border -> ['3dc255db']`
 - Therefore `cross_task_firing={}`, `loo_tasks=0`, `integration_ready=[]`; still no promotion candidate.
+
+Codex SIA compatibility update, 2026-05-31 00:08 CDT:
+
+- `sia`/OpenHands backends are not installed in this environment; only `OPENAI_API_KEY` is present. I did not start
+  a paid SIA loop from here without the backend installed.
+- Made `sia_arc_all23_task/` consumable by SIA's official `--task_dir` layout:
+  - `build_task.py` now writes `data/public/task.md` from `data_public_task_template.md`;
+  - added root `evaluate.py` that SIA can call with `--gen-dir` and that writes `results.json`;
+  - added `reference/reference_target_agent.py` using the full self-contained strong seed plus SIA's required
+    `--dataset_dir/--working_dir` CLI and `agent_execution.json`;
+  - added `reference/SAMPLE_TASK_DESCRIPTIONS.md`.
+- Smoke verified:
+  - `python3 -m py_compile sia_arc_all23_task/build_task.py sia_arc_all23_task/evaluate.py sia_arc_all23_task/evaluator.py sia_arc_all23_task/reference/reference_target_agent.py`
+  - `ARC2_EVAL_DIR=/Users/aurascoper/Developer/arc_agi/workspace/arc_agi_2_data/evaluation python3 sia_arc_all23_task/build_task.py`
+  - copy reference to `/tmp/sia_all23_gen_smoke/target_agent.py`, run it with `--dataset_dir`/`--working_dir`, then
+    `python3 sia_arc_all23_task/evaluate.py --gen-dir /tmp/sia_all23_gen_smoke`
+- Smoke result: `status=success`, `fitness=0.1`, `leaks=0`, `train_exact_total=2`, both `3dc255db` apex-ray
+  candidates remain `train_exact_fixed_loo_vacuous`; no promotion evidence.

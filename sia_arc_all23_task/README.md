@@ -16,10 +16,22 @@ Build data:
 ARC2_EVAL_DIR=/path/to/arc_agi_2_data/evaluation python3 build_task.py
 ```
 
+`build_task.py` also writes SIA's required `data/public/task.md` from
+`data_public_task_template.md`.
+
 Evaluate the strong seed:
 
 ```bash
 python3 evaluator.py --agent ../sia_arc_shape_task/strong_seed_agent.py
+```
+
+SIA-compatible smoke:
+
+```bash
+python3 reference/reference_target_agent.py \
+  --dataset_dir "$PWD/data/public" \
+  --working_dir /tmp/sia_all23_gen_smoke
+python3 evaluate.py --gen-dir /tmp/sia_all23_gen_smoke
 ```
 
 Expected baseline as of 2026-05-30: one train-exact fixed/vacuous apex-ray candidate on `3dc255db`, zero informative LOO, zero flips, and no integration-ready agent.
