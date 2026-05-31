@@ -2435,5 +2435,17 @@
       "manual_review_reason": "train-exact, magic-clean, LOO-passing, synthetic-invariance-clean; blocked only by no informative LOO/cross evidence"
     }
   ],
-  "manual_review_bool": true
+  "manual_review_bool": true,
+  "legend_lattice_synthetic": {
+    "tasks": 5,
+    "all_train_exact": false,
+    "all_test_exact": false,
+    "train_exact_tasks": [
+      "legend_lat_b"
+    ],
+    "test_exact_tasks": [
+      "legend_lat_b",
+      "legend_lat_d"
+    ]
+  }
 }

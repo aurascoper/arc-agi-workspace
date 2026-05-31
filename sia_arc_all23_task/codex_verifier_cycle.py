@@ -34,6 +34,7 @@ SAFE_PATHS = [
     "tmp/sia_lite_residual_mining.json",
     "tmp/dsl_enumeration_latest.json",
     "tmp/codex_sia_all23_sentinel.json",
+    "tmp/legend_lattice_synthetic_latest.json",
 ]
 
 
@@ -52,8 +53,9 @@ def refresh() -> dict:
     commands = {
         "compile": ["python3", "-m", "py_compile", "sia_arc_all23_task/dsl_interpreter.py",
                     "sia_arc_all23_task/enumerate_dsl.py", "sia_arc_all23_task/sia_lite_harness.py",
-                    "arc2_sia_all23_sentinel.py"],
+                    "sia_arc_all23_task/legend_lattice_synthetic.py", "arc2_sia_all23_sentinel.py"],
         "dsl_enum": ["python3", "sia_arc_all23_task/enumerate_dsl.py"],
+        "legend_synth": ["python3", "sia_arc_all23_task/legend_lattice_synthetic.py"],
         "sia_latest": ["python3", "sia_arc_all23_task/write_sia_lite_latest.py"],
         "sia_mine": ["python3", "sia_arc_all23_task/mine_sia_residuals.py"],
         "sketch_enum": ["python3", "arc2_typed_sketch_enumerator.py"],
@@ -81,6 +83,7 @@ def heartbeat_text(refresh_outputs: dict) -> str:
     dsl = load_json("tmp/dsl_enumeration_latest.json") or {}
     sentinel = load_json("tmp/codex_sia_all23_sentinel.json") or {}
     sia_latest = load_json("tmp/sia_lite_latest.json") or {}
+    legend_synth = load_json("tmp/legend_lattice_synthetic_latest.json") or {}
     exact = dsl.get("train_exact_tasks", [])
     informative = dsl.get("informative_loo_tasks", [])
     cross = dsl.get("cross_task_firing", {})
@@ -99,6 +102,13 @@ def heartbeat_text(refresh_outputs: dict) -> str:
         f"- DSL manual_review_candidates={[(r.get('task_id'), r.get('signature')) for r in review]}.",
         f"- SIA sentinel integration_ready={ready}.",
     ]
+    if legend_synth:
+        lines.append(
+            "- Legend-lattice synthetic: "
+            f"all_train_exact={legend_synth.get('all_train_exact')}, "
+            f"all_test_exact={legend_synth.get('all_test_exact')}, "
+            f"test_exact_tasks={legend_synth.get('test_exact_tasks')}."
+        )
     if latest_run:
         lines.append(
             "- Latest SIA-lite summary: "

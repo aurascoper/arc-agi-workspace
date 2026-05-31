@@ -26,3 +26,4 @@ tmp/*
 !tmp/claude_sketch_enumeration.json
 !tmp/dsl_enumeration_latest.json
 !tmp/codex_sia_all23_sentinel.json
+!tmp/legend_lattice_synthetic_latest.json

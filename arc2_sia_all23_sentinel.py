@@ -14,6 +14,7 @@ EVALUATOR = TASK_DIR / "evaluator.py"
 OUT_JSON = WORKSPACE / "tmp" / "codex_sia_all23_sentinel.json"
 RUN_DIRS = (TASK_DIR / "runs", WORKSPACE / "runs")
 DSL_FRONTIER_JSON = WORKSPACE / "tmp" / "dsl_enumeration_latest.json"
+LEGEND_SYNTH_JSON = WORKSPACE / "tmp" / "legend_lattice_synthetic_latest.json"
 
 
 def agent_paths() -> list[Path]:
@@ -123,6 +124,22 @@ def dsl_manual_review_candidates() -> list[dict[str, Any]]:
     return out
 
 
+def legend_synthetic_summary() -> dict[str, Any] | None:
+    if not LEGEND_SYNTH_JSON.exists():
+        return None
+    try:
+        data = json.loads(LEGEND_SYNTH_JSON.read_text())
+    except Exception:
+        return None
+    return {
+        "tasks": data.get("tasks"),
+        "all_train_exact": data.get("all_train_exact"),
+        "all_test_exact": data.get("all_test_exact"),
+        "train_exact_tasks": data.get("train_exact_tasks", []),
+        "test_exact_tasks": data.get("test_exact_tasks", []),
+    }
+
+
 def main() -> None:
     OUT_JSON.parent.mkdir(exist_ok=True)
     reports = [run_eval(path) for path in agent_paths()]
@@ -130,6 +147,7 @@ def main() -> None:
         report["integration_ready"] = integration_ready(report)
     ready = [r for r in reports if r.get("integration_ready")]
     manual_review = dsl_manual_review_candidates()
+    legend_synth = legend_synthetic_summary()
     out = {
         "lane": "sia_all23_sentinel",
         "agents": reports,
@@ -137,6 +155,7 @@ def main() -> None:
         "integration_ready_bool": bool(ready),
         "manual_review_candidates": manual_review,
         "manual_review_bool": bool(manual_review),
+        "legend_lattice_synthetic": legend_synth,
     }
     OUT_JSON.write_text(json.dumps(out, indent=2))
     print("Codex SIA all-23 sentinel")
@@ -152,6 +171,7 @@ def main() -> None:
             print(f"    train_exact_name_tasks={report['top_train_exact_names']}")
     print(f"integration_ready={[r['agent'] for r in ready]}")
     print(f"manual_review_candidates={[(r.get('task_id'), r.get('signature')) for r in manual_review]}")
+    print(f"legend_lattice_synthetic={legend_synth}")
     print(f"wrote {OUT_JSON.relative_to(WORKSPACE)}")
 
 
