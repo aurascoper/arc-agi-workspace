@@ -1,114 +1,124 @@
-# Relational DSL spec v0.2 — design-only (Claude-owned), revised after expert review + branch inventory
+# Relational DSL spec v0.3 — design-only (Claude-owned)
 
-## What changed in v0.2 (and why)
-Review + the `search-comparison` benchmark forced one HEADLINE change and six fixes.
-- HEADLINE — GENERATOR PIVOT: `search-comparison` found **enumerative BFS + library-learning** had the best mean
-  performance on the 14 tasks, beating LLM-emits-DSL-program. So the LLM is NOT the program author. The engine is
-  ENUMERATION over the typed DSL + `param-refit` (LOO grid-search/CMA-ES) + DreamCoder-style library learning; the
-  LLM (if used at all) is only a neural-guided PRIORITY function over the BFS frontier. This also explains our own
-  result: free-form-Python LLM mutation failed, and per the benchmark even LLM-emit-DSL underperforms enumeration.
-- Six fixes from review: (1) add a variable-template COPY op; (2) draw ops are strict no-ops on empty targets;
-  (3) richer relational selection predicates; (4) richer parser views; (5) constrain the filter/trigger fitter
-  language (no arbitrary predicates); (6) start the op-set at 4 and grow.
+## v0.3 changelog — RETRACTION + hardening
+v0.2 was contaminated by a fabricated "branch inventory + literature survey" that arrived as text. RETRACTED here:
+- The claim that a `search-comparison` branch BENCHMARKED enumerate-BFS > LLM-emit-DSL (9/14 etc.). No such measured
+  result exists. The "generator pivot" must NOT cite it.
+- The "branch reconciliation" to `object-selectors` / `param-refit` / `dsl-v0.2-relational` as verified existing code.
+  Treat those as components TO BUILD, not assume-existing.
+- The "MindsAI example-parameter refinement" provenance (paper/repo/arXiv do not exist). The technique (abstract
+  params out of the program name, refit per fold, reject if inconsistent) is REAL and is what this spec already does;
+  it just has no such named source.
+What survives unchanged: our OWN measured evidence (task-conditioned free-form-Python LLM fit 0/14 renderer tasks,
+flat diffs) and our hand-probes of the real grids `7b0280bc`/`cb2d8a2c`/`d8e07eb2`/`88bcf3b4` (all relational/global
+cores). Those were run locally on `arc_agi_2_data/evaluation` and are trustworthy.
+NEW in v0.3 (from independent review): fitter-as-leak-surface contract (§5b), derived-integer hole family (§5c),
+`extract`/`stamp_dynamic` instead of a hole-breaking `transfer_pattern` (§4), empty-selection vs inconsistent-fit
+distinction (§6), and "spend op budget on SELECTORS before generative ops" (§3).
 
-Evidence recap: task-conditioned free-form-Python LLM (one-shot + hill-climb, gpt-4.1-mini/4.1) fit 0/14 renderer
-tasks to train-exact (flat diffs 51/50/71/110/745). Bottleneck = REPRESENTATION + SEARCH METHOD, not model strength.
-Programs gate IDENTICALLY through the existing `evaluator.py` (train-exact + name-stable fold-varying LOO; readout
-log-only; leakage scan).
+## Real grounding (to be verified by the planned research run — do NOT treat as settled)
+- Our measured result: free-form-Python LLM mutation = 0/14 train-exact (one-shot + hill-climb). This is real.
+- Direction supported by genuine literature (verify exact claims/IDs before quoting): BARC "Combining Induction and
+  Transduction for Abstract Reasoning" (induction track) ~arXiv:2411.02272; DreamCoder (wake-sleep LIBRARY LEARNING +
+  enumeration); CEGIS (counterexample-guided hole-filling); Hodel `github.com/michaelhodel/arc-dsl` whose REAL
+  primitives are fill/paint/underfill/recolor/connect/shoot/gravitate over Grid/Object/Patch/Indices.
+- OPEN QUESTION (do not assert): does enumeration+library-learning beat LLM-emit-DSL on OUR residual? We have NOT
+  measured this. Plan: build both and run our OWN comparison before committing. The only thing our data licenses is
+  "free-form-Python LLM author is insufficient" — not "enumeration wins."
 
 ## 1. Typed values
-`Grid`(=Image) · `ObjSet` · `Obj` · `Region` · `Marker` · `Color` · `Dir`(4/8) · `Int` · `Bool` ·
-`RelationGraph` · `AnchorPath`. (Aligns with the `dsl-v0.2-relational` branch types Image/Object/RelationGraph/
-AnchorPath.) Every op is typed; ill-typed compositions rejected at compile time.
+`Grid` · `ObjSet` · `Obj` · `Region` · `Marker` · `Color` · `Dir`(4/8) · `Int` · `Bool` · `RelationGraph` ·
+`Template` (a concrete cell-mask + colours, possibly produced at runtime — see §4). Every op typed; ill-typed
+compositions rejected at compile time.
 
-## 2. Parser primitives  (Grid -> values; pure, no params)
-- `objects(view)` view ∈ {color, ignore_color, **connected**, **multicolor**, rectangles, frames, lines, holes,
-  panels} — added `connected` (4-conn ignoring a learned colour set) and `multicolor` (all non-bg as one object) per
-  review #4, for multicolour-template tasks.
-- `markers()` · `enclosed_regions()` · `panels()` · `bands(sep_color)` · `rails(color)` · `background()`
-- `relation_graph(objset)` -> RelationGraph (RCC-8 / distance / containment / alignment edges — REUSE the
-  `object-selectors` branch extractors; do NOT reimplement).
+## 2. Parser primitives (Grid -> values; pure, no params)
+`objects(view)` view ∈ {color, ignore_color, connected, multicolor, rectangles, frames, lines, holes, panels} ·
+`markers()` · `enclosed_regions()` · `panels()` · `bands(sep_color)` · `rails(color)` · `background()` ·
+`relation_graph(objset)` (RCC-8 / distance / containment / alignment edges).
 
-## 3. Selection / filter  (value -> value; params LEARNED from train)
+## 3. Selection / filter (value -> value)  — PRIORITIZE THESE over new generative ops
+Our hand-probes say the hard part is WHICH object/region is acted on, not HOW it's drawn. Spend the op budget here.
 - `filter(objset, pred)` pred ∈ {size==k, size_rank==r, color==c, shape==template, touches(role), los_to(role),
-  unique_shape, in_region(R), **symmetry_partner_of(obj)**, **connected_component_with(marker)**, **on_rail(rail)**}
-  — the three bold predicates added per review #3; all sourced from the `object-selectors` branch (symmetry-partner
-  matcher, LOS path membership, RCC-8). HOLES (k/r/c/template/obj) fit on train.
+  unique_shape, in_region(R), symmetry_partner_of(obj), connected_component_with(marker), on_rail(rail)}
 - `select(objset, role)` role ∈ {largest, smallest, unique_color, by_count_rank=r}
-- `anchor(objset)` -> Marker/Obj (distinguished element; centroid if no degree<=1 cell exists)
+- `anchor(objset)` -> Marker/Obj (centroid if no degree<=1 cell)
 
-## 4. Generative / draw ops  (each pure `Grid -> Grid`; STRICT NO-OP on empty target set, per review #2)
-- `recolor_map(grid, {c_in:c_out})`            — global colour map (may be many-to-one; learned)
-- `route(grid, A, B, color, mode)`             — connect A,B (markers/objs/centroids) sharing row/col/diag
-- `fill_enclosed(grid, regions, color|rule)`   — fill enclosed regions; const or enclosing-colour rule
-- `project_ray(grid, src, dir, color, stop)`   — rays; stop ∈ {border, first_nonbg, **until_color(c)**, len=k}
-  (added `until_color` per review #5b)
-- `bbox_fill(grid, objset, color)`             — fill bounding box of selected objects
-- `symmetry_complete(grid, axis)`              — mirror/rotate-complete; axis learned
-- `recolor_by_template(grid, objset, map)`     — objects matching a learned (D4-canonical polyomino) template -> colour
-- `move_to_anchor(grid, objset, anchor, along=rail)` — translate objects toward anchor along a guide line
-- `stamp(grid, markers, template)`             — paint a learned FIXED NxN template at each marker
-- **`copy_object(grid, src_region_or_obj, [markers])`** — extract the CURRENT-GRID content of a selected
-  source object/region and paint it at each marker. This is the variable-template primitive from review #1
-  (= MindsAI `copyObject` / the `dsl-v0.2-relational` `place_n_cells_by_rule` family). `stamp` = constant template;
-  `copy_object` = input-dependent template. BOTH are needed.
-A program is a PIPELINE of these (left-to-right). Empty-target no-op makes unconditional pipelines emulate
-"if object exists then act" without an explicit conditional (review #2).
+## 4. Generative / draw ops (each pure `Grid -> Grid`; STRICT NO-OP on empty target set)
+- `recolor_map(grid, {c_in:c_out})` · `route(grid, A, B, color, mode)` · `fill_enclosed(grid, regions, color|rule)` ·
+  `project_ray(grid, src, dir, color, stop)` stop ∈ {border, first_nonbg, until_color(c), len=k} ·
+  `bbox_fill(grid, objset, color)` · `symmetry_complete(grid, axis)` ·
+  `recolor_by_template(grid, objset, map)` · `move_to_anchor(grid, objset, anchor, along=rail)` ·
+  `stamp(grid, markers, template)` — `template` is a LEARNED CONSTANT mask (a value-hole; same across all examples).
+- VARIABLE-TEMPLATE (input-dependent) — split into two ops so "holes are VALUES" stays invariant (review override of
+  attachment-5's `transfer_pattern`, whose source-region selector is NOT a value):
+  - `extract(grid, region_or_obj) -> Template`  — pure runtime dataflow; NO hole. The region/obj is produced by §3
+    selection ops upstream in the pipeline.
+  - `stamp_dynamic(grid, template, objset) -> Grid` — paints the dataflow `Template` at each target; NO learned
+    template hole. The template arrives by dataflow, not by fitting.
+  This keeps every `{"learn": key}` a concrete typed VALUE; a runtime-selected source is expressed by op composition.
 
-## 5. Program format + fitters
-A JSON pipeline of typed op-calls; HOLES `{"learn": key}` fit ONLY from train; inconsistent fit across pairs ->
-program rejected (prevents overfit). Example:
-```json
-{"name":"recolor+place_cells",
- "pipeline":[{"op":"recolor_map","args":{"map":{"learn":"color_bijection"}}},
-             {"op":"fill_enclosed","args":{"regions":{"op":"enclosed_regions"},
-                                           "color":{"learn":"enclosing_or_const"}}}]}
-```
-- `name` = op-STRUCTURE signature with params abstracted -> NAME-STABLE across folds.
-- Fitters (REUSE the `param-refit` branch: LOO grid-search / CMA-ES over colour constants, coordinates, ints):
-  `color_bijection`, `enclosing_or_const`, ray-`len/until_color`, template (D4-canonical polyomino), axis, anchor.
-- CONSTRAINED TRIGGER FITTERS (review #5): a learned filter/trigger predicate is NOT arbitrary code — it is chosen
-  from a fixed parametric family, e.g. `band/region contains exactly N cells of colour C`, `count(objset)==k`,
-  `non_empty`, `has_color(c)`. The fitter outputs (family_id, params); anything outside the family is unrepresentable.
+## 5. Holes, fitters, and the fitter contract
+A program is a JSON pipeline; HOLES `{"learn": key}` are fit ONLY from train; inconsistent fit -> REJECT candidate.
+`name` = op-structure with params abstracted -> NAME-STABLE; learned params re-fit per fold -> FOLD-VARYING.
 
-## 6. Gate contract (identical to today)
-- A reference interpreter (`sia_arc_all23_task/dsl_interpreter.py`, design-only, stdlib-only, quarantine dir, NEVER
-  imported by live solver) compiles pipeline+fitted-params -> `propose(train) -> [(name, transform)]`.
-- NAME-STABLE: drop a train pair -> re-fit -> SAME name. FOLD-VARYING: learned params re-fit per fold so the
-  fingerprint differs -> earns `informative_loo`, not `train_exact_fixed_loo_vacuous`. (A perfectly fold-invariant
-  param-free program scores loo=0 and is NOT promoted — accepted: we'd rather miss a trivial recolor than risk a
-  leak. Such a program may still earn promotion via cross>=2.)
-- LEAKAGE IMPOSSIBLE BY CONSTRUCTION: emission is op-names + learn-keys only; no file/grid-literal/task-id is
-  representable. Existing leakage scan still runs (defense-in-depth). Strict JSON parse: unknown keys -> reject.
-- Readout LOG-ONLY; tripwire (loo_tasks>=1 OR cross>=2) unchanged.
+### 5a. Hole value types
+`Color`, `Int`, `Dir`, `Template`(constant mask), `colour-map`, `axis`, `predicate-from-fixed-enum`.
 
-## 7. GENERATOR STRATEGY (the v0.2 headline — per `search-comparison`)
-Ranked by the benchmark's mean performance on the 14 tasks:
-1. **Enumerative BFS + library-learning (PRIMARY).** Iterative-deepening over typed op-pipelines (depth 1->3),
-   type-directed so only well-typed continuations are expanded; after each train-exact skeleton, run `param-refit`
-   (LOO) to instantiate constants; DreamCoder-style: abstract recurring 2-3-op sub-pipelines into named library ops
-   and re-enumerate with the grown library (this is what won).
-2. **Neural-guided priority queue (SECONDARY).** A small LM scorer orders the BFS frontier (which op to try next
-   given the train diff). The LLM's role is PRIORITY, not authorship.
-3. **LLM-emits-DSL-program (TERTIARY / ablation).** Keep as a baseline only; the benchmark says it underperforms (1).
-4. **CEGIS** as a fallback for tasks where a counterexample-guided constraint loop fits param-heavy skeletons.
-START SMALL (review #6): op-set = {recolor_map, route, fill_enclosed, project_ray}; verify the enumerator hits
-2-3-step pipelines on the easiest residual before growing the op-set.
+### 5b. FITTER CONTRACT (the real leak surface — review's key catch)
+The JSON can't encode grid literals/task-ids, but each fitter is code with full read access to train pairs, so a
+SLOPPY fitter is the leak. Hard contract for the closed, audited fitter registry:
+- INPUT: the list of train pairs only. OUTPUT: a single typed value (§5a) — never arbitrary code, never a closure
+  over a specific task.
+- FORBIDDEN: hashing grids, branching on grid-size constants, any per-task lookup table, anything that could encode
+  task identity. A fitter that is train-exact + fold-stable by MEMORIZING must be impossible to write within the
+  contract.
+- TESTS (per fitter): (i) recovers known params on synthetic pairs; (ii) rejects inconsistent pairs; (iii)
+  ADVERSARIAL — two DIFFERENT synthetic tasks that share a rule must yield the SAME `name` and the fitter must return
+  the correct (different) param for each. Test (iii) is what catches a memorizing fitter.
 
-## 8. Reconciliation with existing branches (do NOT duplicate)
-- `dsl-v0.2-relational`: this spec's ops map onto its primitives (match_template≈recolor_by_template,
-  flood_trigger≈fill_enclosed+trigger, move_object_to_anchor_along_rail≈move_to_anchor, place_n_cells_by_rule≈
-  copy_object/fill, select_by_symmetry_partner≈filter symmetry_partner_of). Treat `dsl-v0.2-relational` as the impl
-  home; this file is the contract/spec it should satisfy.
-- `object-selectors`: provides §3's relational predicates (RCC-8, distance, containment, LOS, symmetry-partner,
-  key-template). The DSL `filter`/`relation_graph` CALL these — no reimplementation.
-- `param-refit`: provides §5's fitters (LOO grid-search / CMA-ES). The interpreter's `{"learn"}` keys dispatch here.
-- `search-comparison`: dictates §7 ranking (enumerate+library-learn primary). Re-run it after any op-set change.
+### 5c. DERIVED-INTEGER hole family (review's second catch — most likely silent failure on redraw tasks)
+An `Int` hole (cells-to-place N, ray length, band count) is often a FUNCTION of the input, not a constant. A
+grid-search over constant ints will overfit train then fail LOO/test. So an `Int` hole's fitter output space is:
+`const=k` OR a DERIVED integer ∈ {count(objset), size(obj), width(obj), height(obj), n_colors(region),
+distance(a,b)}. This is the integer analogue of `fill_enclosed`'s `enclosing_or_const` colour rule. The fitter
+prefers a derived form that holds across ALL pairs over a constant that only fits by luck.
 
-## 9. Wiring + tripwire (Codex lane, when ready)
-1. `dsl_interpreter.py` (Claude, quarantine): op registry + fitter dispatch (-> `param-refit`) + `compile`.
-2. `enumerate_dsl.py` (Codex or Claude): type-directed BFS + library learning over the op registry; scores each
-   compiled program through the SAME `evaluate.py`; optional LM frontier scorer.
-3. Same promotion contract: a DSL program train-exact + fold-varying-LOO (or cross>=2) on a renderer-14 -> HALT for
-   joint verification -> port the compiled transform behind a disabled flag -> frozen + 120/120 public guard ->
-   enable iff green. Claude never touches the live solver.
+## 6. Gate contract (identical to today, with one sharpening)
+- Reference interpreter `sia_arc_all23_task/dsl_interpreter.py` (design-only, stdlib-only, quarantine, NEVER imported
+  by the live solver) compiles pipeline+fitted-params -> `propose(train) -> [(name, transform)]`.
+- SHARPEN (review): distinguish two empty/inconsistent cases that the spec previously blurred —
+  - EMPTY primary selection at RUNTIME -> the op is IDENTITY (no-op) for that grid. (Lets unconditional pipelines
+    emulate "if exists then act".)
+  - INCONSISTENT FIT across train folds -> the whole candidate is REJECTED (no candidate emitted). NOT a no-op.
+    (Prevents a program looking train-exact-by-accident on folds where the selection happened to be empty.)
+- NAME-STABLE + FOLD-VARYING as above -> `informative_loo`, not `train_exact_fixed_loo_vacuous`. Param-free
+  fold-invariant programs score loo=0 and are not promoted unless cross>=2 (accepted).
+- LEAKAGE: emission is op-names + learn-keys only (no file/grid-literal/task-id representable); the fitter contract
+  (§5b) closes the second leak surface; existing leakage scan runs as defense-in-depth; readout LOG-ONLY; tripwire
+  (loo_tasks>=1 OR cross>=2) unchanged.
+
+## 7. Generator strategy (re-grounded — NO fabricated benchmark)
+What our data licenses: free-form-Python LLM authorship is insufficient (measured). What it does NOT license: that
+enumeration wins (unmeasured). So:
+- BUILD a type-directed enumerator (iterative-deepening BFS over typed pipelines depth 1->3, well-typed
+  continuations only) + `param-refit` fitters + DreamCoder-style library learning (abstract recurring sub-pipelines).
+  Add an MDL / shortest-pipeline prior so a long pipeline can't win by memorization (pairs with the fold-varying gate
+  to block overfit). [Direction supported by DreamCoder/CEGIS/BARC-induction — verify before quoting.]
+- KEEP the LLM only as an optional neural-guided PRIORITY over the enumerator frontier, AND as an honest ABLATION
+  baseline (LLM-emits-DSL) — so WE measure enumerate vs LLM-emit on our residual instead of asserting it.
+- START at 4 ops {recolor_map, route, fill_enclosed, project_ray}; grow only after the enumerator hits a 2-3-step
+  train-exact pipeline on the easiest residual task.
+
+## 8. Components to BUILD (not assume-existing) + what the research run should verify
+- BUILD: `dsl_interpreter.py` (Claude, quarantine) op registry + fitter dispatch + compile; `enumerate_dsl.py`
+  (type-directed BFS + library learning) scoring via the SAME `evaluate.py`; the closed fitter registry (§5b);
+  the param-refit fitters (LOO grid-search over §5a value spaces).
+- VERIFY VIA RESEARCH (replace the fabricated survey): real primitive sets (Hodel's actual DSL), the actual 2024 ARC
+  Prize results (BARC paper-award; verify arXiv:2411.02272), whether any published method actually compares
+  enumeration vs LLM-program-emission on ARC, and DreamCoder/CEGIS as cited. Ground the survey against the REAL grids
+  of `7b0280bc`/`cb2d8a2c`/`d8e07eb2` (available locally in `arc_agi_2_data/evaluation`).
+
+## 9. Promotion (unchanged)
+A DSL program train-exact + fold-varying-LOO (or cross>=2) on a renderer-14 -> HALT for joint verification -> port the
+compiled transform behind a disabled flag -> frozen + 120/120 public guard -> enable iff green. Claude never touches
+the live solver.
