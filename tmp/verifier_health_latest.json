@@ -1,63 +1,63 @@
 {
   "artifact": "verifier_health_latest",
-  "generated_cdt": "2026-05-31 04:17:26 CDT",
+  "generated_cdt": "2026-05-31 04:23:49 CDT",
   "branch": "research/operator-promotion-audit-2026-05-30",
-  "head": "0f7d6460",
+  "head": "d8dcc7c6",
   "handoff_mirror": {
     "dir": "/tmp/arc_agi_handoff_sync",
     "available": true,
     "branch": "research/deep-research-handoff-2026-05-30",
     "expected_branch": "research/deep-research-handoff-2026-05-30",
-    "head": "bf2b744a",
-    "origin_head": "bf2b744a",
+    "head": "36f93cea",
+    "origin_head": "36f93cea",
     "head_matches_origin": true,
     "safe_status": []
   },
   "artifact_freshness": {
     "stale_threshold_seconds": 900,
-    "max_age_seconds_at_generation": 64,
+    "max_age_seconds_at_generation": 59,
     "missing": [],
     "stale": [],
     "artifacts": {
       "tmp/dsl_enumeration_latest.json": {
         "exists": true,
-        "mtime_cdt": "2026-05-31 04:16:24 CDT",
-        "age_seconds_at_generation": 62
+        "mtime_cdt": "2026-05-31 04:22:52 CDT",
+        "age_seconds_at_generation": 57
       },
       "tmp/codex_sia_all23_sentinel.json": {
         "exists": true,
-        "mtime_cdt": "2026-05-31 04:17:20 CDT",
+        "mtime_cdt": "2026-05-31 04:23:44 CDT",
         "age_seconds_at_generation": 5
       },
       "tmp/sia_lite_latest.json": {
         "exists": true,
-        "mtime_cdt": "2026-05-31 04:16:24 CDT",
-        "age_seconds_at_generation": 62
+        "mtime_cdt": "2026-05-31 04:22:52 CDT",
+        "age_seconds_at_generation": 57
       },
       "tmp/sia_lite_residual_mining.json": {
         "exists": true,
-        "mtime_cdt": "2026-05-31 04:16:24 CDT",
-        "age_seconds_at_generation": 62
+        "mtime_cdt": "2026-05-31 04:22:52 CDT",
+        "age_seconds_at_generation": 57
       },
       "tmp/claude_sketch_enumeration.json": {
         "exists": true,
-        "mtime_cdt": "2026-05-31 04:16:24 CDT",
-        "age_seconds_at_generation": 61
+        "mtime_cdt": "2026-05-31 04:22:52 CDT",
+        "age_seconds_at_generation": 56
       },
       "tmp/legend_lattice_synthetic_latest.json": {
         "exists": true,
-        "mtime_cdt": "2026-05-31 04:16:22 CDT",
-        "age_seconds_at_generation": 64
+        "mtime_cdt": "2026-05-31 04:22:50 CDT",
+        "age_seconds_at_generation": 59
       },
       "tmp/verifier_refresh_latest.json": {
         "exists": true,
-        "mtime_cdt": "2026-05-31 04:17:20 CDT",
+        "mtime_cdt": "2026-05-31 04:23:44 CDT",
         "age_seconds_at_generation": 5
       }
     }
   },
   "last_refresh": {
-    "generated_cdt": "2026-05-31 04:17 CDT",
+    "generated_cdt": "2026-05-31 04:23 CDT",
     "failures": [],
     "timed_out": [],
     "returncodes": {
@@ -70,17 +70,45 @@
       "sentinel": 0
     },
     "durations_seconds": {
-      "compile": 0.099,
-      "legend_synth": 0.165,
-      "dsl_enum": 2.038,
+      "compile": 0.109,
+      "legend_synth": 0.174,
+      "dsl_enum": 2.076,
       "sia_latest": 0.081,
-      "sia_mine": 0.067,
-      "sketch_enum": 0.452,
-      "sentinel": 55.982
+      "sia_mine": 0.071,
+      "sketch_enum": 0.465,
+      "sentinel": 51.849
     }
   },
+  "process_state": {
+    "available": true,
+    "counts": {
+      "verifier_loop": 2,
+      "active_branch_push": 0,
+      "github_arc_agi_transfer": 0
+    },
+    "matching_processes": [
+      {
+        "pid": "6229",
+        "ppid": "1",
+        "etime": "01:01",
+        "categories": [
+          "verifier_loop"
+        ],
+        "command": "tmux new-session -d -s arc2_codex_verifier cd /Users/aurascoper/Developer/arc_agi/workspace && python3 sia_arc_all23_task/codex_verifier_cycle.py --loop --interval 300 --push > tmp/codex_verifier_cycle.log 2>&1"
+      },
+      {
+        "pid": "6230",
+        "ppid": "6229",
+        "etime": "01:01",
+        "categories": [
+          "verifier_loop"
+        ],
+        "command": "/opt/homebrew/Cellar/python@3.14/3.14.5/Frameworks/Python.framework/Versions/3.14/Resources/Python.app/Contents/MacOS/Python sia_arc_all23_task/codex_verifier_cycle.py --loop --interval 300 --push"
+      }
+    ]
+  },
   "tmux_sessions": [
-    "arc2_codex_verifier: 1 windows (created Sun May 31 04:16:21 2026)"
+    "arc2_codex_verifier: 1 windows (created Sun May 31 04:22:49 2026)"
   ],
   "safe_status": [],
   "integration_ready": [],
