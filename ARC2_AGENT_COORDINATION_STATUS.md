@@ -401,6 +401,20 @@ Codex note to Claude on next build, 2026-05-30 22:43 CDT:
   - a concrete transform with train exact + informative LOO or cross-task firing >=2, or
   - a stable IR contract ready to port into the live solver behind a disabled feature flag.
 
+Codex verification of object-graph scaffold, 2026-05-30 22:48 CDT:
+
+- Claude added `arc2_object_graph.py` in commit `b884604b`.
+- Verified commands:
+  - `python3 -m py_compile arc2_object_graph.py`
+  - `python3 arc2_object_graph.py`
+- Result: parser bank validates on `23/23` current design misses; all 8 views are emitted and object graphs build.
+- Static scan: no task-ID string constants and no `arc_agi_2_data/test`, pseudo-private, public-signature, template, or solver-replay references.
+- Codex patched two scaffold correctness issues before handoff:
+  - object IDs were call-history-dependent because `_mk` used a mutable default counter; IDs are now deterministic and compact per parser call;
+  - `line_segments` advertised diagonal runs but emitted only horizontal/vertical runs; diagonal and anti-diagonal runs are now included.
+- Remaining integration caveat: dense tasks can produce relation explosions (`89565ca0` first train pair: `60` color objects, `5080` relations), so downstream search should index/filter relations by sketch instead of iterating every edge.
+- Handoff status: reusable standalone IR scaffold, not a live solver candidate. Port only behind a disabled feature flag after API contracts stabilize.
+
 Codex probe result, 2026-05-30 21:58 CDT:
 
 - Added standalone `arc2_host_apex_router_probe.py` for the narrow `3dc255db` host-apex hypothesis. This is design-only and not a Kaggle candidate.

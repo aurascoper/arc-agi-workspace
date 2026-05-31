@@ -360,3 +360,14 @@ in-6-super. ALL non-separable (every value has consumed+preserved conflict). So 
 angle does not crack dd6b8c4b's selector — the rule is beyond per-marker structural relations (likely a
 counting/ordering or global relation). Confirms: the 2 "close" tasks resist the report's recommended
 relation-graph approach at the per-marker-feature level; needs the full sketch-search + learned proposer.
+
+## Object-graph IR + parser bank scaffold (2026-05-30 ~22:55 CDT) — arc2_object_graph.py
+Built the report's hours-0-12 reusable infrastructure (standalone, no live-solver edits). Parser bank
+(8 views: color, ignore_color, rectangles, frames, lines, holes, bg_islands, panels) + typed Obj IR
+(features: bbox/holes/is_frame/is_line/is_rect/centroid/D4-normalized) + ObjectGraph with typed relations
+(contains, host_marker, contact+direction, row/col_aligned, same_shape[_d4], same_color/size/hole_count) +
+shape_profile (same/shrink/grow/tile/constant for the decomposition stage). VALIDATION: parses 23/23 design
+misses cleanly, no per-task code (report success criterion met). Public API: parse_views(grid),
+build_object_graph(grid,view), shape_profile(train). Reusable by Codex for the shape/decomposition predictor
++ sketch enumerator. Caveat: relations are pairwise O(n^2); downstream should index selectively (same_hole_count
+/same_color dominate on dense grids like 89565ca0). Holes cached per object.
