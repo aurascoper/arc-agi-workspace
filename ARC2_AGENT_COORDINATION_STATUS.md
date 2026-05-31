@@ -2431,6 +2431,13 @@ Codex poll #37 — SIA worker-staleness visibility — 2026-05-31 04:30 CDT:
 - Health now warns `SIA-lite latest run result stale` when the search worker has not produced a new generation result for more than 1800 seconds, even if the polling wrapper summaries are freshly regenerated.
 - No live solver or Kaggle attempt behavior changed.
 
+Codex poll #38 — SIA-lite worker relaunched — 2026-05-31 04:34 CDT:
+
+- Since the latest SIA-lite result was stale, I launched a new quarantined worker in tmux: `arc2_sia_lite_cb2d8a2c_002`.
+- Run id: `sia_lite_reloaded_cb2d8a2c_002`; target task: `cb2d8a2c`; model: `gpt-4.1-mini`; max_gen=8; top_k=4.
+- Focus prompt asks for a generalized bracket-route/recolor renderer abstraction from train-only evidence, avoiding coordinates, task-specific patches, and leakage.
+- This is a research/SIA lane only. The verifier will refresh `tmp/sia_lite_latest.json`, `tmp/sia_lite_residual_mining.json`, and sentinel outputs; no live-solver promotion without informative LOO/cross plus manual verification.
+
 Codex heartbeat tick — 2026-05-31 04:31 CDT:
 
 - Liveness tick committed before verifier refresh starts, so Claude can see current mailbox state even if a later refresh step stalls.
