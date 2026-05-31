@@ -30,7 +30,7 @@ OUT_JSON = WORKSPACE / "tmp" / "codex_sia_shape_sentinel.json"
 
 def agent_paths() -> list[Path]:
     paths: list[Path] = []
-    for rel in ("reference_agent.py", "target_agent.py"):
+    for rel in ("reference_agent.py", "strong_seed_agent.py", "target_agent.py"):
         path = TASK_DIR / rel
         if path.exists():
             paths.append(path)
@@ -84,6 +84,11 @@ def run_eval(agent: Path) -> dict[str, Any]:
             if isinstance(t, dict) and t.get("best_shape_train_diff")
         },
         "loo_task_total": sum(1 for t in tasks if isinstance(t, dict) and t.get("informative_loo")),
+        "vacuous_loo_total": sum(
+            len(t.get("vacuous_loo_names", []))
+            for t in tasks
+            if isinstance(t, dict)
+        ),
         "loo_names": {
             t.get("task_id"): t.get("informative_loo_names", [])
             for t in tasks
@@ -128,7 +133,7 @@ def main() -> None:
             f"  {report['agent']}: ok={report.get('ok')} fitness={report.get('fitness')} "
             f"leaks={report.get('n_leakage_hits')} train_exact={report.get('train_exact_total')} "
             f"shape_exact={report.get('shape_exact_total')} loo_tasks={report.get('loo_task_total')} "
-            f"cross={len(report.get('cross_task_firing', {}))} "
+            f"vacuous_loo={report.get('vacuous_loo_total')} cross={len(report.get('cross_task_firing', {}))} "
             f"private_true={report.get('private_true_total')} ready={report.get('integration_ready')}"
         )
         if report.get("shape_residuals"):

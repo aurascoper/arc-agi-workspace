@@ -24,6 +24,7 @@ Usage:  python3 evaluator.py --agent reference_agent.py        # prints fitness 
 from __future__ import annotations
 
 import argparse
+import ast
 import importlib.util
 import json
 import re
@@ -42,7 +43,7 @@ PER_CANDIDATE_TIMEOUT = 4  # seconds
 FORBIDDEN = [
     (r"\bsolve_[0-9a-f]{8}\b", "task-id dispatch"),
     (r"data.{0,80}private|private.{0,80}data", "reads the private split"),
-    (r"\bPRIVATE\b|\bprivate\b|\btest_outputs\b", "mentions held-out private outputs"),
+    (r"\btest_outputs\b", "mentions held-out private outputs"),
     (r"\barc_agi_2_data\b|\bevaluation\b", "bypasses SIA public split"),
     (r"\b(5dbc8537|edb79dae|20a9e565|2d0172a1|6ffbe589|e87109e9|89565ca0)\b", "hardcoded target task id"),
     (r"pseudo_private|public_signature|coordinate_signature", "forbidden signature/replay"),
@@ -54,15 +55,40 @@ FORBIDDEN = [
 
 def leakage_scan(agent_path: Path):
     src = agent_path.read_text()
+    docstring_lines = _docstring_lines(src)
     hits = []
     for pat, why in FORBIDDEN:
         for m in re.finditer(pat, src, re.MULTILINE):
             ln = src[:m.start()].count("\n") + 1
             line = src.splitlines()[ln - 1].strip()
-            if line.startswith("#") or line.startswith('"') or "FORBIDDEN" in line:
+            if ln in docstring_lines or line.startswith("#") or line.startswith('"') or "FORBIDDEN" in line:
                 continue
             hits.append({"why": why, "line": ln, "text": line[:80]})
     return hits
+
+
+def _docstring_lines(src: str) -> set[int]:
+    """Line numbers occupied by module/function/class docstrings."""
+    try:
+        tree = ast.parse(src)
+    except SyntaxError:
+        return set()
+    lines: set[int] = set()
+    for node in ast.walk(tree):
+        body = getattr(node, "body", None)
+        if not isinstance(body, list) or not body:
+            continue
+        first = body[0]
+        if (
+            isinstance(first, ast.Expr)
+            and isinstance(first.value, ast.Constant)
+            and isinstance(first.value.value, str)
+        ):
+            start = getattr(first, "lineno", None)
+            end = getattr(first, "end_lineno", start)
+            if start is not None and end is not None:
+                lines.update(range(start, end + 1))
+    return lines
 
 
 # ----------------------------------------------------------------- grids
@@ -112,6 +138,37 @@ def train_exact(t, train):
         return False
 
 
+def _stable_repr(v):
+    if isinstance(v, (str, int, float, bool, type(None))):
+        return repr(v)
+    if isinstance(v, (tuple, list)):
+        return "[" + ",".join(_stable_repr(x) for x in v[:20]) + (",..." if len(v) > 20 else "") + "]"
+    if isinstance(v, dict):
+        items = sorted(v.items(), key=lambda kv: repr(kv[0]))[:20]
+        return "{" + ",".join(f"{_stable_repr(k)}:{_stable_repr(val)}" for k, val in items) + "}"
+    return f"<{type(v).__name__}>"
+
+
+def transform_fingerprint(t):
+    """Best-effort structural fingerprint for fixed-vs-refit LOO diagnostics."""
+    code = getattr(t, "__code__", None)
+    closure = []
+    for cell in getattr(t, "__closure__", None) or []:
+        try:
+            closure.append(_stable_repr(cell.cell_contents))
+        except ValueError:
+            closure.append("<empty>")
+    if code is None:
+        return {"callable": type(t).__name__, "repr": repr(t)}
+    return {
+        "code": code.co_code.hex(),
+        "consts": _stable_repr(code.co_consts),
+        "names": list(code.co_names),
+        "defaults": _stable_repr(getattr(t, "__defaults__", None)),
+        "closure": closure,
+    }
+
+
 def candidate_train_diagnostics(cands, train):
     """Non-fitness diagnostics: shape matches and residuals on train only."""
     rows = []
@@ -150,22 +207,29 @@ def candidate_train_diagnostics(cands, train):
     return rows
 
 
-def informative_loo(propose, train, required_name=None):
+def loo_evidence(propose, train, required_name=None, full_transform=None):
     """Re-call propose() on each n-1 subset and require a stable candidate family/name.
 
     A full-train candidate should not receive LOO credit merely because a different
     candidate produced by the subset happens to solve the held pair. For promotion
-    evidence, the same named family must be re-derived on every fold.
+    evidence, the same named family must be re-derived on every fold. To avoid
+    vacuous credit for parameter-free fixed transforms, a single-task LOO pass is
+    counted as informative only when the re-derived transform fingerprint changes
+    on at least one fold. Fixed transforms should earn evidence via cross-task
+    firing instead.
     """
+    out = {"passes": False, "informative": False, "fingerprints": [], "admission_type": "loo_fail"}
     if len(train) <= 1:
-        return False
+        return out
+    full_fp = transform_fingerprint(full_transform) if full_transform is not None else None
+    fold_fps = []
     for i in range(len(train)):
         sub = [train[j] for j in range(len(train)) if j != i]
         held = train[i]
         try:
             cands = propose(sub)
         except Exception:
-            return False
+            return out
         ok = False
         for name, t in cands or []:
             if required_name is not None and name != required_name:
@@ -173,12 +237,27 @@ def informative_loo(propose, train, required_name=None):
             try:
                 if equal(_call(t, deepcopy(held["input"])), held["output"]):
                     ok = True
+                    fold_fps.append(transform_fingerprint(t))
                     break
             except Exception:
                 continue
         if not ok:
-            return False
-    return True
+            return out
+    fp_strings = {json.dumps(fp, sort_keys=True) for fp in fold_fps}
+    if full_fp is not None:
+        fp_strings.add(json.dumps(full_fp, sort_keys=True))
+    varies = len(fp_strings) > 1
+    out.update({
+        "passes": True,
+        "informative": varies,
+        "fingerprints": fold_fps[:5],
+        "admission_type": "informative_loo" if varies else "train_exact_fixed_loo_vacuous",
+    })
+    return out
+
+
+def informative_loo(propose, train, required_name=None):
+    return loo_evidence(propose, train, required_name=required_name)["informative"]
 
 
 def synthetic_color_perm(t, train):
@@ -233,10 +312,20 @@ def evaluate(agent_path: Path) -> dict:
         te = [(nm, t) for nm, t in cands if train_exact(t, train)]
         loo = False
         loo_names = []
+        same_name_loo_names = []
+        vacuous_loo_names = []
+        loo_evidence_rows = {}
         best = None
         for nm, t in te:
             train_exact_names.setdefault(nm, set()).add(tid)
-            if informative_loo(agent.propose, train, required_name=nm):
+            ev = loo_evidence(agent.propose, train, required_name=nm, full_transform=t)
+            loo_evidence_rows[nm] = {"passes": ev["passes"], "informative": ev["informative"],
+                                     "admission_type": ev["admission_type"]}
+            if ev["passes"]:
+                same_name_loo_names.append(nm)
+            if ev["admission_type"] == "train_exact_fixed_loo_vacuous":
+                vacuous_loo_names.append(nm)
+            if ev["informative"]:
                 loo = True
                 loo_names.append(nm)
             best = best or (nm, t)
@@ -253,6 +342,9 @@ def evaluate(agent_path: Path) -> dict:
         report["tasks"].append({"task_id": tid, "n_candidates": len(cands), "n_train_exact": len(te),
                                 "train_exact_names": [nm for nm, _ in te][:5], "informative_loo": loo,
                                 "informative_loo_names": loo_names[:5],
+                                "same_name_loo_names": same_name_loo_names[:5],
+                                "vacuous_loo_names": vacuous_loo_names[:5],
+                                "loo_evidence": loo_evidence_rows,
                                 "n_shape_exact": len(shape_exact_names),
                                 "shape_exact_names": shape_exact_names[:10],
                                 "best_shape_train_diff": (

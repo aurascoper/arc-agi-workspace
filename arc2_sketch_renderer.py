@@ -178,10 +178,43 @@ def train_exact(t, train):
         return False
 
 
-def informative_loo(name, train):
-    """Name-stable: re-run propose() on each n-1 subset; the SAME named candidate must reproduce the held pair."""
+def _stable_repr(v):
+    if isinstance(v, (str, int, float, bool, type(None))):
+        return repr(v)
+    if isinstance(v, (tuple, list)):
+        return "[" + ",".join(_stable_repr(x) for x in v[:20]) + (",..." if len(v) > 20 else "") + "]"
+    if isinstance(v, dict):
+        items = sorted(v.items(), key=lambda kv: repr(kv[0]))[:20]
+        return "{" + ",".join(f"{_stable_repr(k)}:{_stable_repr(val)}" for k, val in items) + "}"
+    return f"<{type(v).__name__}>"
+
+
+def transform_fingerprint(t):
+    code = getattr(t, "__code__", None)
+    closure = []
+    for cell in getattr(t, "__closure__", None) or []:
+        try:
+            closure.append(_stable_repr(cell.cell_contents))
+        except ValueError:
+            closure.append("<empty>")
+    if code is None:
+        return {"callable": type(t).__name__, "repr": repr(t)}
+    return {
+        "code": code.co_code.hex(),
+        "consts": _stable_repr(code.co_consts),
+        "names": list(code.co_names),
+        "defaults": _stable_repr(getattr(t, "__defaults__", None)),
+        "closure": closure,
+    }
+
+
+def loo_evidence(name, train, full_transform=None):
+    """Same-name LOO plus a non-vacuity check for fold-varying/refit transforms."""
+    out = {"passes": False, "informative": False, "admission_type": "loo_fail"}
     if len(train) <= 1:
-        return False
+        return out
+    full_fp = transform_fingerprint(full_transform) if full_transform is not None else None
+    fold_fps = []
     for i in range(len(train)):
         sub = [train[j] for j in range(len(train)) if j != i]
         held = train[i]
@@ -191,10 +224,21 @@ def informative_loo(name, train):
             return False
         try:
             if not equal(t(deepcopy(held["input"])), held["output"]):
-                return False
+                return out
+            fold_fps.append(transform_fingerprint(t))
         except Exception:
-            return False
-    return True
+            return out
+    fp_strings = {json.dumps(fp, sort_keys=True) for fp in fold_fps}
+    if full_fp is not None:
+        fp_strings.add(json.dumps(full_fp, sort_keys=True))
+    varies = len(fp_strings) > 1
+    out.update({"passes": True, "informative": varies,
+                "admission_type": "informative_loo" if varies else "train_exact_fixed_loo_vacuous"})
+    return out
+
+
+def informative_loo(name, train):
+    return loo_evidence(name, train)["informative"]
 
 
 def synthetic_color_perm(t, train):
@@ -216,14 +260,16 @@ def run_task(tid):
     flip = False
     if te:
         nm, t = te[0]
-        loo = informative_loo(nm, train)
+        loo_ev = loo_evidence(nm, train, full_transform=t)
+        loo = loo_ev["informative"]
         syn = synthetic_color_perm(t, train)
         tep = sum(1 for p in test if equal(t(deepcopy(p["input"])), p["output"]))  # readout only
         flip = loo and tep == len(test)
-        out.update({"best": nm, "informative_loo": loo, "synthetic": syn,
+        out.update({"best": nm, "same_name_loo": loo_ev["passes"], "informative_loo": loo,
+                    "loo_admission_type": loo_ev["admission_type"], "synthetic": syn,
                     "design_test": f"{tep}/{len(test)}", "flip": flip})
         out["failure_locus"] = "NONE (flip)" if flip else (
-            "train-exact + informative-LOO but design-test-fail" if loo else "train-exact but LOO-not-name-stable")
+            "train-exact + informative-LOO but design-test-fail" if loo else loo_ev["admission_type"])
     else:
         out.update({"best": None, "flip": False,
                     "failure_locus": "no train-exact candidate from the executor library"})
@@ -249,6 +295,7 @@ def main():
     print("End-to-end sketch renderer over 23 design misses:\n")
     for r in rows:
         tag = (f"train_exact={r['n_train_exact']} best={r.get('best')} loo={r.get('informative_loo')} "
+               f"loo_type={r.get('loo_admission_type')} "
                f"test={r.get('design_test')} flip={r.get('flip')}" if r["n_train_exact"] else "no train-exact")
         print(f"  {r['task_id']}: cands={r['n_candidates']:2} {tag}")
     print(f"\ntasks with a train-exact candidate: {[r['task_id'] for r in te_tasks]}")

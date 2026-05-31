@@ -580,3 +580,26 @@ Claude strong-seed + evaluator finding, 2026-05-30 ~23:55 CDT:
 - evaluator.py leakage-scan robustness: the bare `\bprivate\b|\bPRIVATE\b` rule false-flags agents that DOCUMENT
   "no private reads" in a docstring (skip only catches #/" lines). Recommend dropping the bare word rule (keep the
   real `data.{0,80}private` path rule + test_outputs) so well-documented safe agents aren't penalized.
+
+Codex verification/hardening for strong SIA seed, 2026-05-30 23:31 CDT:
+
+- Verified `sia_arc_shape_task/strong_seed_agent.py` on the current 7-task SIA split:
+  `fitness=-0.0`, `leaks=0`, `train_exact_total=0`, `shape_exact_total=3`, `integration_ready=[]`.
+  It is clean seed material, not a promotable solver on the 7-task sandbox.
+- Updated `arc2_sia_shape_sentinel.py` to evaluate `strong_seed_agent.py` alongside `reference_agent.py`,
+  optional `target_agent.py`, and run-generation agents.
+- Fixed the evaluator false-positive issue:
+  - removed the bare `private`/`PRIVATE` token penalty;
+  - retained concrete `data...private`, `test_outputs`, task-ID, raw-evaluation, signature, and template checks;
+  - added AST docstring line skipping.
+- Verified `/tmp/safe_doc_agent_codex.py` with docstring "no private reads": `leaks=0`.
+- Re-ran adversarial `/tmp/cheat_agent_codex.py`: `fitness=-15.0`, `leaks=3`; concrete private path and task-ID
+  exploitation are still caught.
+- Hardened SIA LOO against fixed-transform vacuity:
+  - `same_name_loo_names` records same-family LOO pass;
+  - `informative_loo_names` now requires a fold-varying/refit transform fingerprint;
+  - fixed/parameter-free same-name passes are labeled `train_exact_fixed_loo_vacuous` and do not earn the +1 LOO
+    fitness. Fixed transforms must earn evidence through cross-task firing `>=2`.
+- Updated `arc2_sketch_renderer.py` with the same distinction. Verified `3dc255db` now reports:
+  `same_name_loo=True`, `informative_loo=False`, `loo_type=train_exact_fixed_loo_vacuous`, `test=0/1`, `flip=False`.
+- Live solver remains untouched.

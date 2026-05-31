@@ -28,7 +28,7 @@ python3 sia_arc_shape_task/evaluator.py --agent reference_agent.py --json
 
 Also re-run an adversarial check if evaluator code changes.
 
-The evaluator now requires same-name/family informative LOO: a candidate only receives LOO credit if the same candidate name is re-derived on every leave-one-out fold. Do not weaken that.
+The evaluator now requires non-vacuous same-name/family informative LOO: a candidate only receives LOO credit if the same candidate name is re-derived on every leave-one-out fold and the transform fingerprint changes on at least one fold. Fixed/parameter-free transforms should seek cross-task firing `>=2` instead. Do not weaken that.
 
 ## Promotion Criteria
 
