@@ -1,6 +1,6 @@
 {
   "artifact": "sia_search_policy_latest",
-  "generated_cdt": "2026-05-31 06:31:38 CDT",
+  "generated_cdt": "2026-05-31 06:35:30 CDT",
   "promotion_gate": "train-exact plus informative LOO or cross-task firing; leakage clean; manual verification",
   "recommendation": "idle_exhausted_sia_queue",
   "sia_worker_expected": false,

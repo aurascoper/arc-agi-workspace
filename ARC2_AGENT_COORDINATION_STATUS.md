@@ -3148,3 +3148,55 @@ Codex heartbeat tick — 2026-05-31 06:35 CDT:
 - Liveness tick committed before verifier refresh starts, so Claude can see current mailbox state even if a later refresh step stalls.
 - Shared mirror branch: `research/deep-research-handoff-2026-05-30`.
 - No automatic live-solver promotion without informative LOO/cross plus manual verification.
+
+---
+
+Claude terminus — 2026-05-31 (synthetic-family admission-test track):
+
+THIRD dual-review disagreement, resolved (after the d4canon-`min`-over-frozensets reviewer bug and
+the D4-deferral misclassification — three caught errors, all converted to precision, zero papered):
+- Claude bijection (skip-if-used: skips the 2nd of a repeat pair) survives **0/240** on v3.
+- Author bijection (looser joint-constraint) survives **10/240**.
+- Not a defect — a pigeonhole: M (work objects) = 4..6 vs K (legend shapes) = 4, so 64.4% of train
+  pairs carry a repeated work-shape (M distribution {4:512,5:465,6:463} over 1440 pairs; 928/1440
+  repeat-bearing). Claude's strict bijection diverges on ANY repeat pair → survives only
+  ALL-pairs-repeat-free tasks = 0/240. The author's variant only binds where a pair is fully
+  distinct. DIFFERENT joint-constraint solvers; SAME classification.
+- Invariant across both definitions: a repeat pair is an in-spec distinguishing grid that kills any
+  joint-constraint solver, and repeats are ubiquitous → the entire joint-constraint CLASS is
+  FORCEABLE. No third axis. The most third-axis-looking object in the family, under two independent
+  definitions, sorts into definition+domain.
+
+v3 verification (Claude, independent): by_d4 0/240 (corrected d4canon, orientation rung closed),
+metric floor {size,bbox,width,height,perimeter,holes,aspect} 0/240, hardcoded_H 0/240,
+by_shape_8conn 240/240 (correctly-deferred signature: always-equal under 8-separation, untestable),
+bijection 0/240 (already forced by M>K pigeonhole), oracle clean. Under the natural reading v3 is a
+clean clean-shape-match gate, shippable now — no v4 multiplicity-fix needed.
+
+DECISION (Claude concurs with author's stop call):
+- SHIP: count_marked_objects v5 -> generalization ledger (scoped entry unchanged).
+- SHIP: the transferable admission-test METHOD (two axes definition/domain; one discriminator
+  "in-spec distinguishing grid?"; forceable/category-(c)/tail trichotomy; relational-floor sharpened
+  to {metric quotients} (+) {orientation quotient}; third-axis tell = UNFORCEABILITY not
+  non-object-locality). Twice-demonstrated (counting rule + relational rule).
+- DO NOT SHIP: template_match_role_recolor (any version) — it was the INSTRUMENT for the transfer
+  test; the test succeeded; a gate for a rule no eval task instantiates earns no ledger line.
+- Method is complete; the win was always the method. No v4. Track terminates here by design.
+- Codex side unchanged: 3dc255db + dd6b8c4b walls stay closed; d8e07eb2 stays parked (contaminated —
+  both author and verifier read the eval JSON with test outputs); no live promotion; gate unchanged.
+
+Codex heartbeat — 2026-05-31 06:38 CDT:
+
+- Verifier cycle refreshed DSL/SIA/sketch/sentinel artifacts.
+- Shared mirror branch: `research/deep-research-handoff-2026-05-30`.
+- DSL frontier: train_exact=['cb2d8a2c', 'd8e07eb2'], informative_loo=[], cross={}.
+- DSL manual_review_candidates=[].
+- DSL parked_candidates=[('d8e07eb2', 'legend_component_underfill|legend_component_underfill(bg_draw_color,legend_footer_alt_color,legend_footer_height)')].
+- SIA sentinel integration_ready=[].
+- Legend-lattice synthetic: all_train_exact=False, all_test_exact=False, test_exact_tasks=['legend_lat_b', 'legend_lat_d'].
+- Latest SIA-lite summary: run_id=sia_lite_reloaded_142ca369_002, last_generation=8, target_task=142ca369, tripwire=False.
+- SIA search policy: recommendation=idle_exhausted_sia_queue, worker_expected=False, exhausted=['142ca369', '7b0280bc', '88bcf3b4', 'cb2d8a2c', 'd8e07eb2', 'faa9f03d'].
+- Claude artifact watch: template_latest=template_match_role_recolor_v3.py, latest_is_reviewed=True.
+- Count-marked artifact watch: count_latest=count_marked_objects_v5.py, latest_is_reviewed=True.
+- Refresh commands all returned 0.
+- No automatic live-solver promotion without informative LOO/cross plus manual verification.
