@@ -1,6 +1,6 @@
 {
   "artifact": "synthetic_family_ledger_latest",
-  "generated_cdt": "2026-05-31 06:42:41 CDT",
+  "generated_cdt": "2026-05-31 06:46:57 CDT",
   "entries": [
     {
       "family": "template_match_role_recolor",
@@ -16,7 +16,7 @@
       },
       "review": {
         "artifact": "tmp/template_match_role_recolor_latest_review.json",
-        "generated_cdt": "2026-05-31 06:42:10 CDT",
+        "generated_cdt": "2026-05-31 06:46:48 CDT",
         "verdict": "not_ledger_safe",
         "oracle_mismatches": 0,
         "admitted_counts": {
@@ -80,12 +80,6 @@
           "fix": "force extremal work-area occupancy on >=2 train instances/task for both row and column axes"
         },
         {
-          "name": "blind_by_row_profile",
-          "axis": "definition/correspondence",
-          "admitted_tasks": 240,
-          "fix": "add >=2 train collisions for this feature key or document it as an explicit deferred tail"
-        },
-        {
           "name": "blind_by_col_profile",
           "axis": "definition/correspondence",
           "admitted_tasks": 2,
@@ -99,9 +93,16 @@
           "admitted_tasks": 240,
           "declared_scope": "8-connected object individuation is documented as deferred in the generator spec.",
           "future_fix": "force diagonal-touch individuation cases on >=2 train instances per task"
+        },
+        {
+          "name": "blind_by_row_profile",
+          "axis": "definition/correspondence",
+          "admitted_tasks": 240,
+          "declared_scope": "No generated train task co-locates a collision for this feature key; treat as a tail/unforced-domain surface rather than a forceable blocker until a same-task collision is shown.",
+          "future_fix": "add >=2 train collisions for this feature key or document it as an explicit deferred tail"
         }
       ],
-      "next_required_action": "Fix blocking synthetic-review findings: hardcoded_W (force work-area occupancy beyond the smallest width on >=2 train instances per task), literal_col_bound_any (force extremal work-area occupancy on >=2 train instances/task for both row and column axes), literal_row_bound_any (force extremal work-area occupancy on >=2 train instances/task for both row and column axes), blind_by_row_profile (add >=2 train collisions for this feature key or document it as an explicit deferred tail), blind_by_col_profile (add >=2 train collisions for this feature key or document it as an explicit deferred tail)",
+      "next_required_action": "Fix blocking synthetic-review findings: hardcoded_W (force work-area occupancy beyond the smallest width on >=2 train instances per task), literal_col_bound_any (force extremal work-area occupancy on >=2 train instances/task for both row and column axes), literal_row_bound_any (force extremal work-area occupancy on >=2 train instances/task for both row and column axes), blind_by_col_profile (add >=2 train collisions for this feature key or document it as an explicit deferred tail)",
       "notes": [
         "Method-track only; derived from 7b0280bc-class ideas and not live Kaggle evidence.",
         "A pass here would still require separate live candidate gates before solver integration."

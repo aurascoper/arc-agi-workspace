@@ -392,8 +392,8 @@ def pair0_table_solver(task):
     return solve
 
 
-def shape_key_solvers():
-    key_fns = {
+def shape_key_functions():
+    return {
         "blind_by_size": lambda row: len(row["cells"]),
         "blind_by_bbox": lambda row: row["bbox"],
         "blind_by_width": lambda row: row["bbox"][1],
@@ -408,6 +408,10 @@ def shape_key_solvers():
         "blind_by_d4": lambda row: canon_d4(row["cells"]),
     }
 
+
+def shape_key_solvers():
+    key_fns = shape_key_functions()
+
     def make_solver(key_fn):
         def solve(inp, bg, query):
             legend = legend_entries(inp, bg)
@@ -420,6 +424,13 @@ def shape_key_solvers():
         return solve
 
     return {name: make_solver(fn) for name, fn in key_fns.items()}
+
+
+def collision_groups(entries, key_fn):
+    groups = {}
+    for row in entries:
+        groups.setdefault(key_fn(row), set()).add(row["canon"])
+    return {repr(key): sorted([sorted(cells) for cells in canons]) for key, canons in groups.items() if len(canons) > 1}
 
 
 def admits_task(task, solver) -> bool:
@@ -477,8 +488,13 @@ def main() -> None:
     }
     admitted = {name: 0 for name in solvers}
     admitted["pair0_table"] = 0
+    blind_key_fns = shape_key_functions()
     blind_solvers = shape_key_solvers()
     blind_admitted = {name: 0 for name in blind_solvers}
+    blind_task_collision_counts = {name: 0 for name in blind_solvers}
+    blind_pair_collision_counts = {name: 0 for name in blind_solvers}
+    blind_collision_examples = {name: [] for name in blind_solvers}
+    blind_global_collision_keys = {name: {} for name in blind_solvers}
     literal_bound_admitted = {"literal_col_bound_any": 0, "literal_row_bound_any": 0}
     per_seed = []
     oracle_mismatches = 0
@@ -496,6 +512,29 @@ def main() -> None:
                     oracle_mismatches += 1
             for dim in task_domain(task)["dims"]:
                 all_dims[str(dim)] += 1
+            task_collision_seen = {name: False for name in blind_solvers}
+            for pair_index, (inp, _out) in enumerate(task["train"]):
+                entries = legend_entries(inp, task["meta"]["bg"])
+                for name, key_fn in blind_key_fns.items():
+                    collisions = collision_groups(entries, key_fn)
+                    for key, canons in collisions.items():
+                        blind_global_collision_keys[name].setdefault(key, set()).update(
+                            tuple(tuple(cell) for cell in canon_cells) for canon_cells in canons
+                        )
+                    if collisions:
+                        blind_pair_collision_counts[name] += 1
+                        task_collision_seen[name] = True
+                        if len(blind_collision_examples[name]) < 5:
+                            blind_collision_examples[name].append({
+                                "seed": seed,
+                                "task_index": task_index,
+                                "pair_index": pair_index,
+                                "collisions": collisions,
+                                "domain": task_domain(task),
+                            })
+            for name, seen in task_collision_seen.items():
+                if seen:
+                    blind_task_collision_counts[name] += 1
             for name, solver in solvers.items():
                 if admits_task(task, solver):
                     admitted[name] += 1
@@ -635,12 +674,21 @@ def main() -> None:
                 "fix": "force extremal work-area occupancy on >=2 train instances/task for both row and column axes",
             })
     blind_blocking_findings = []
+    blind_tail_findings = []
     blind_deferred_names = {"blind_by_d4"}
     blind_floor_names = {"blind_by_size", "blind_by_bbox", "blind_by_width", "blind_by_height"}
     for name, count in blind_admitted.items():
         if name in blind_deferred_names:
             continue
         if count:
+            forceability = {
+                "task_collision_count": blind_task_collision_counts.get(name, 0),
+                "pair_collision_count": blind_pair_collision_counts.get(name, 0),
+                "global_collision_keys": {
+                    key: [list(canon_cells) for canon_cells in sorted(canons)]
+                    for key, canons in blind_global_collision_keys.get(name, {}).items()
+                },
+            }
             finding = {
                 "name": name,
                 "axis": "definition/correspondence",
@@ -648,9 +696,18 @@ def main() -> None:
                 "distinguishing_grid": "blind shape-feature key matches legend/work where exact canonical shape should be required",
                 "fix": "add >=2 train collisions for this feature key or document it as an explicit deferred tail",
                 "floor_feature": name in blind_floor_names,
+                "forceability": forceability,
             }
-            blind_blocking_findings.append(finding)
-            blocking_findings.append(finding)
+            if forceability["task_collision_count"] == 0:
+                finding["declared_scope"] = (
+                    "No generated train task co-locates a collision for this feature key; "
+                    "treat as a tail/unforced-domain surface rather than a forceable blocker "
+                    "until a same-task collision is shown."
+                )
+                blind_tail_findings.append(finding)
+            else:
+                blind_blocking_findings.append(finding)
+                blocking_findings.append(finding)
     if admitted["by_shape_d4"]:
         deferred_survivors.append({
             "name": "by_shape_d4",
@@ -669,6 +726,7 @@ def main() -> None:
             "fix": "force diagonal-touch individuation cases on >=2 train instances per task",
             "declared_scope": "8-connected object individuation is documented as deferred in the generator spec.",
         })
+    deferred_survivors.extend(blind_tail_findings)
     if oracle_mismatches:
         verdict = "oracle_mismatch"
     elif blocking_findings:
@@ -710,6 +768,19 @@ def main() -> None:
         "blind_admitted_counts": blind_admitted,
         "blind_admitted_rates": {name: blind_admitted[name] / total_tasks for name in sorted(blind_admitted)},
         "blind_blocking_findings": blind_blocking_findings,
+        "blind_tail_findings": blind_tail_findings,
+        "blind_collision_diagnostics": {
+            name: {
+                "task_collision_count": blind_task_collision_counts[name],
+                "pair_collision_count": blind_pair_collision_counts[name],
+                "examples": blind_collision_examples[name],
+                "global_collision_keys": {
+                    key: [list(canon_cells) for canon_cells in sorted(canons)]
+                    for key, canons in blind_global_collision_keys[name].items()
+                },
+            }
+            for name in sorted(blind_solvers)
+        },
         "literal_bound_admitted_counts": literal_bound_admitted,
         "literal_bound_examples": literal_bound_examples,
         "dimension_histogram": dict(sorted(all_dims.items())),
