@@ -1,6 +1,6 @@
 {
   "artifact": "count_marked_objects_latest_review",
-  "generated_cdt": "2026-05-31 06:52:36 CDT",
+  "generated_cdt": "2026-05-31 06:54:28 CDT",
   "generator_path": "/Users/aurascoper/Downloads/count_marked_objects_v5.py",
   "generator_name": "count_marked_objects_v5.py",
   "generator_version": 5,
@@ -91,12 +91,459 @@
   "literal_dim_fragile_cases": 205,
   "literal_dim_admitted_tasks": 21,
   "literal_dim_fragile_tasks": 141,
+  "literal_dim_diagnostics": {
+    "axis_case_counts": {
+      "admitted": {
+        "height_only": 5,
+        "width_only": 19
+      },
+      "fragile": {
+        "both_axes": 5,
+        "height_only": 67,
+        "width_only": 133
+      }
+    },
+    "top_box_counts": {
+      "admitted": [
+        [
+          "[16, 15]",
+          14
+        ],
+        [
+          "[15, 16]",
+          5
+        ],
+        [
+          "[16, 14]",
+          4
+        ],
+        [
+          "[15, 15]",
+          1
+        ]
+      ],
+      "fragile": [
+        [
+          "[16, 15]",
+          92
+        ],
+        [
+          "[15, 16]",
+          56
+        ],
+        [
+          "[16, 14]",
+          26
+        ],
+        [
+          "[15, 15]",
+          20
+        ],
+        [
+          "[14, 16]",
+          6
+        ],
+        [
+          "[15, 14]",
+          3
+        ],
+        [
+          "[14, 15]",
+          1
+        ],
+        [
+          "[16, 13]",
+          1
+        ]
+      ]
+    },
+    "top_task_case_counts": {
+      "admitted": [
+        [
+          "14:4",
+          2
+        ],
+        [
+          "26:7",
+          2
+        ],
+        [
+          "39:7",
+          2
+        ],
+        [
+          "0:1",
+          1
+        ],
+        [
+          "2:1",
+          1
+        ],
+        [
+          "4:4",
+          1
+        ],
+        [
+          "7:7",
+          1
+        ],
+        [
+          "11:5",
+          1
+        ],
+        [
+          "13:2",
+          1
+        ],
+        [
+          "13:3",
+          1
+        ]
+      ],
+      "fragile": [
+        [
+          "10:6",
+          3
+        ],
+        [
+          "14:5",
+          3
+        ],
+        [
+          "24:1",
+          3
+        ],
+        [
+          "27:7",
+          3
+        ],
+        [
+          "29:3",
+          3
+        ],
+        [
+          "29:7",
+          3
+        ],
+        [
+          "34:1",
+          3
+        ],
+        [
+          "35:7",
+          3
+        ],
+        [
+          "36:3",
+          3
+        ],
+        [
+          "38:5",
+          3
+        ]
+      ]
+    },
+    "affected_tasks": {
+      "admitted": [
+        [
+          0,
+          1
+        ],
+        [
+          2,
+          1
+        ],
+        [
+          4,
+          4
+        ],
+        [
+          7,
+          7
+        ],
+        [
+          11,
+          5
+        ],
+        [
+          13,
+          2
+        ],
+        [
+          13,
+          3
+        ],
+        [
+          14,
+          4
+        ],
+        [
+          21,
+          7
+        ],
+        [
+          26,
+          7
+        ],
+        [
+          29,
+          2
+        ],
+        [
+          29,
+          6
+        ],
+        [
+          30,
+          2
+        ],
+        [
+          31,
+          5
+        ],
+        [
+          32,
+          3
+        ],
+        [
+          32,
+          7
+        ],
+        [
+          36,
+          4
+        ],
+        [
+          36,
+          6
+        ],
+        [
+          37,
+          6
+        ],
+        [
+          39,
+          0
+        ],
+        [
+          39,
+          7
+        ]
+      ],
+      "fragile": [
+        [
+          0,
+          2
+        ],
+        [
+          0,
+          3
+        ],
+        [
+          0,
+          5
+        ],
+        [
+          0,
+          6
+        ],
+        [
+          1,
+          5
+        ],
+        [
+          1,
+          7
+        ],
+        [
+          2,
+          5
+        ],
+        [
+          2,
+          6
+        ],
+        [
+          2,
+          7
+        ],
+        [
+          3,
+          0
+        ],
+        [
+          3,
+          1
+        ],
+        [
+          3,
+          3
+        ],
+        [
+          3,
+          4
+        ],
+        [
+          3,
+          6
+        ],
+        [
+          3,
+          7
+        ],
+        [
+          4,
+          2
+        ],
+        [
+          4,
+          3
+        ],
+        [
+          5,
+          0
+        ],
+        [
+          5,
+          1
+        ],
+        [
+          5,
+          2
+        ],
+        [
+          5,
+          3
+        ],
+        [
+          5,
+          4
+        ],
+        [
+          5,
+          5
+        ],
+        [
+          5,
+          6
+        ],
+        [
+          5,
+          7
+        ],
+        [
+          6,
+          7
+        ],
+        [
+          7,
+          1
+        ],
+        [
+          7,
+          3
+        ],
+        [
+          7,
+          5
+        ],
+        [
+          7,
+          7
+        ],
+        [
+          8,
+          0
+        ],
+        [
+          8,
+          2
+        ],
+        [
+          8,
+          3
+        ],
+        [
+          8,
+          5
+        ],
+        [
+          8,
+          6
+        ],
+        [
+          9,
+          0
+        ],
+        [
+          9,
+          5
+        ],
+        [
+          9,
+          6
+        ],
+        [
+          10,
+          0
+        ],
+        [
+          10,
+          2
+        ],
+        [
+          10,
+          3
+        ],
+        [
+          10,
+          4
+        ],
+        [
+          10,
+          6
+        ],
+        [
+          11,
+          1
+        ],
+        [
+          11,
+          6
+        ],
+        [
+          12,
+          1
+        ],
+        [
+          12,
+          3
+        ],
+        [
+          12,
+          5
+        ],
+        [
+          13,
+          0
+        ],
+        [
+          13,
+          1
+        ]
+      ]
+    }
+  },
   "blocking_findings": [
     {
       "name": "literal_dim_admitted",
       "kind": "domain/dimension",
       "admitted_tasks": 21,
       "admitted_cases": 24,
+      "axis_case_counts": {
+        "height_only": 5,
+        "width_only": 19
+      },
       "fix": "ensure every literal interior box smaller than max train dimensions undercounts on train"
     },
     {
@@ -104,6 +551,11 @@
       "kind": "domain/dimension",
       "admitted_tasks": 141,
       "admitted_cases": 205,
+      "axis_case_counts": {
+        "both_axes": 5,
+        "height_only": 67,
+        "width_only": 133
+      },
       "fix": "force every smaller literal interior box to disagree on >=2 train pairs/task"
     }
   ],
@@ -2379,6 +2831,11 @@
           16,
           15
         ],
+        "below_max_h": false,
+        "below_max_w": true,
+        "axis_class": "width_only",
+        "diffs": 0,
+        "missed_pairs": [],
         "vals": [
           0,
           7,
@@ -2451,6 +2908,11 @@
           15,
           16
         ],
+        "below_max_h": true,
+        "below_max_w": false,
+        "axis_class": "height_only",
+        "diffs": 0,
+        "missed_pairs": [],
         "vals": [
           0,
           3,
@@ -2527,6 +2989,11 @@
           15,
           15
         ],
+        "below_max_h": false,
+        "below_max_w": true,
+        "axis_class": "width_only",
+        "diffs": 0,
+        "missed_pairs": [],
         "vals": [
           4,
           5,
@@ -2607,6 +3074,11 @@
           15,
           16
         ],
+        "below_max_h": true,
+        "below_max_w": false,
+        "axis_class": "height_only",
+        "diffs": 0,
+        "missed_pairs": [],
         "vals": [
           5,
           6,
@@ -2687,6 +3159,11 @@
           16,
           15
         ],
+        "below_max_h": false,
+        "below_max_w": true,
+        "axis_class": "width_only",
+        "diffs": 0,
+        "missed_pairs": [],
         "vals": [
           3,
           7,
@@ -2765,7 +3242,13 @@
           16,
           15
         ],
+        "below_max_h": false,
+        "below_max_w": true,
+        "axis_class": "width_only",
         "diffs": 1,
+        "missed_pairs": [
+          4
+        ],
         "vals": [
           0,
           7,
@@ -2846,7 +3329,13 @@
           15,
           16
         ],
+        "below_max_h": true,
+        "below_max_w": false,
+        "axis_class": "height_only",
         "diffs": 1,
+        "missed_pairs": [
+          1
+        ],
         "vals": [
           6,
           1,
@@ -2927,7 +3416,13 @@
           16,
           15
         ],
+        "below_max_h": false,
+        "below_max_w": true,
+        "axis_class": "width_only",
         "diffs": 1,
+        "missed_pairs": [
+          6
+        ],
         "vals": [
           6,
           2,
@@ -3008,7 +3503,13 @@
           16,
           14
         ],
+        "below_max_h": false,
+        "below_max_w": true,
+        "axis_class": "width_only",
         "diffs": 1,
+        "missed_pairs": [
+          4
+        ],
         "vals": [
           7,
           6,
@@ -3089,7 +3590,13 @@
           16,
           14
         ],
+        "below_max_h": false,
+        "below_max_w": true,
+        "axis_class": "width_only",
         "diffs": 1,
+        "missed_pairs": [
+          4
+        ],
         "vals": [
           0,
           2,
