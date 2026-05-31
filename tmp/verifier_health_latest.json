@@ -1,15 +1,15 @@
 {
   "artifact": "verifier_health_latest",
-  "generated_cdt": "2026-05-31 05:11:34 CDT",
+  "generated_cdt": "2026-05-31 05:15:09 CDT",
   "branch": "research/operator-promotion-audit-2026-05-30",
-  "head": "d491cc76",
+  "head": "8f53727a",
   "handoff_mirror": {
     "dir": "/tmp/arc_agi_handoff_sync",
     "available": true,
     "branch": "research/deep-research-handoff-2026-05-30",
     "expected_branch": "research/deep-research-handoff-2026-05-30",
-    "head": "b42d317a",
-    "origin_head": "b42d317a",
+    "head": "bcdce84d",
+    "origin_head": "bcdce84d",
     "head_matches_origin": true,
     "safe_status": []
   },
@@ -17,60 +17,60 @@
     "available": true,
     "heartbeat_stale_seconds": 390,
     "latest": {
+      "health": {
+        "hash": "515610c2",
+        "subject": "chore(sync): health 05:11 CDT",
+        "commit_cdt": "2026-05-31 05:11:34 CDT",
+        "age_seconds_at_generation": 215
+      },
       "heartbeat": {
         "hash": "d491cc76",
         "subject": "chore(sync): heartbeat 05:11 CDT",
         "commit_cdt": "2026-05-31 05:11:29 CDT",
-        "age_seconds_at_generation": 5
-      },
-      "health": {
-        "hash": "0adcc95b",
-        "subject": "chore(sync): health 05:07 CDT",
-        "commit_cdt": "2026-05-31 05:07:28 CDT",
-        "age_seconds_at_generation": 246
+        "age_seconds_at_generation": 220
       }
     }
   },
   "artifact_freshness": {
     "stale_threshold_seconds": 900,
-    "max_age_seconds_at_generation": 78,
+    "max_age_seconds_at_generation": 293,
     "missing": [],
     "stale": [],
     "artifacts": {
       "tmp/dsl_enumeration_latest.json": {
         "exists": true,
-        "mtime_cdt": "2026-05-31 05:10:18 CDT",
-        "age_seconds_at_generation": 76
+        "mtime_cdt": "2026-05-31 05:12:54 CDT",
+        "age_seconds_at_generation": 134
       },
       "tmp/codex_sia_all23_sentinel.json": {
         "exists": true,
-        "mtime_cdt": "2026-05-31 05:11:29 CDT",
-        "age_seconds_at_generation": 5
+        "mtime_cdt": "2026-05-31 05:14:06 CDT",
+        "age_seconds_at_generation": 63
       },
       "tmp/sia_lite_latest.json": {
         "exists": true,
-        "mtime_cdt": "2026-05-31 05:10:18 CDT",
-        "age_seconds_at_generation": 76
+        "mtime_cdt": "2026-05-31 05:14:31 CDT",
+        "age_seconds_at_generation": 38
       },
       "tmp/sia_lite_residual_mining.json": {
         "exists": true,
-        "mtime_cdt": "2026-05-31 05:10:18 CDT",
-        "age_seconds_at_generation": 76
+        "mtime_cdt": "2026-05-31 05:14:31 CDT",
+        "age_seconds_at_generation": 38
       },
       "tmp/claude_sketch_enumeration.json": {
         "exists": true,
         "mtime_cdt": "2026-05-31 05:10:19 CDT",
-        "age_seconds_at_generation": 75
+        "age_seconds_at_generation": 290
       },
       "tmp/legend_lattice_synthetic_latest.json": {
         "exists": true,
         "mtime_cdt": "2026-05-31 05:10:16 CDT",
-        "age_seconds_at_generation": 78
+        "age_seconds_at_generation": 293
       },
       "tmp/verifier_refresh_latest.json": {
         "exists": true,
         "mtime_cdt": "2026-05-31 05:11:29 CDT",
-        "age_seconds_at_generation": 5
+        "age_seconds_at_generation": 220
       }
     }
   },
@@ -107,18 +107,18 @@
     },
     "matching_processes": [
       {
-        "pid": "46240",
+        "pid": "57638",
         "ppid": "34104",
-        "etime": "07:35",
+        "etime": "00:05",
         "categories": [
           "sia_lite_worker"
         ],
-        "command": "/opt/homebrew/Cellar/python@3.14/3.14.5/Frameworks/Python.framework/Versions/3.14/Resources/Python.app/Contents/MacOS/Python sia_arc_all23_task/sia_lite_harness.py --run-id sia_lite_reloaded_faa9f03d_002 --model gpt-4.1-mini --temperature 0.8 --max-gen 8 --top-k 4 --target-task faa9f03d --focus Target faa9f03d using train-only evidence. Explore generalized object-role selection, keep/remove/redraw, marker-host grouping, cleanup, and shape-preserving object reconstruction. Avoid coordinates, task IDs, public/private templates, and local patches; propose reusable abstractions only."
+        "command": "/opt/homebrew/Cellar/python@3.14/3.14.5/Frameworks/Python.framework/Versions/3.14/Resources/Python.app/Contents/MacOS/Python sia_arc_all23_task/sia_lite_harness.py --run-id sia_lite_reloaded_7b0280bc_002 --model gpt-4.1-mini --temperature 0.8 --max-gen 8 --top-k 4 --target-task 7b0280bc --focus Target 7b0280bc using train-only evidence. Explore generalized color-role recovery, region fill, new-color inference, object-role recolor, and shape-preserving redraw. Avoid coordinates, task IDs, public/private templates, and local patches; propose reusable abstractions only."
       },
       {
         "pid": "47648",
         "ppid": "34104",
-        "etime": "06:23",
+        "etime": "09:58",
         "categories": [
           "verifier_loop"
         ],
@@ -128,7 +128,7 @@
   },
   "tmux_sessions": [
     "arc2_codex_verifier: 1 windows (created Sun May 31 05:05:11 2026)",
-    "arc2_sia_lite_faa9f03d_002: 1 windows (created Sun May 31 05:03:59 2026)"
+    "arc2_sia_lite_7b0280bc_002: 1 windows (created Sun May 31 05:15:04 2026)"
   ],
   "safe_status": [],
   "integration_ready": [],
@@ -164,10 +164,10 @@
     "latest_run": {
       "run_id": "sia_lite_reloaded_faa9f03d_002",
       "target_task": "faa9f03d",
-      "last_generation": 5,
+      "last_generation": 8,
       "tripwire": false,
       "best_generation": {
-        "generation": "gen_5",
+        "generation": "gen_8",
         "status": "success",
         "fitness": 0.1,
         "leaks": 0,
@@ -185,11 +185,11 @@
     "latest_run_state": {
       "run_id": "sia_lite_reloaded_faa9f03d_002",
       "target_task": "faa9f03d",
-      "last_generation": 5,
+      "last_generation": 8,
       "tripwire": false,
-      "updated_at": "2026-05-31T05:10:06-0500",
-      "last_result_mtime_cdt": "2026-05-31 05:10:06 CDT",
-      "latest_result_age_seconds_at_generation": 88,
+      "updated_at": "2026-05-31T05:13:49-0500",
+      "last_result_mtime_cdt": "2026-05-31 05:13:49 CDT",
+      "latest_result_age_seconds_at_generation": 79,
       "stale_threshold_seconds": 1800,
       "is_stale": false
     },

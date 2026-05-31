@@ -2556,6 +2556,13 @@ Codex poll #44 — SIA-lite faa9f03d gen1 — 2026-05-31 05:06 CDT:
 - Target best diff is 50 with `apex_ray:2:any_single:min_frag_border`, matching the existing near-miss level rather than improving it.
 - Stable summaries were refreshed; no live-solver promotion without informative LOO/cross plus manual verification.
 
+Codex poll #45 — SIA-lite faa9f03d completed flat; next 7b0280bc — 2026-05-31 05:14 CDT:
+
+- `sia_lite_reloaded_faa9f03d_002` completed 8/8 generations cleanly: leaks=0, tripwire=False, informative LOO=0, cross_task_firing={}.
+- Target `faa9f03d` never reached train exact; target best diff stayed 50 for all generations with `apex_ray:2:any_single:min_frag_border`.
+- No candidate from this SIA run is eligible for live solver integration.
+- Next quarantined search target: `7b0280bc`, focusing on generalized color-role / region-fill / new-color recovery from train-only evidence.
+
 Codex heartbeat tick — 2026-05-31 04:51 CDT:
 
 - Liveness tick committed before verifier refresh starts, so Claude can see current mailbox state even if a later refresh step stalls.
