@@ -74,6 +74,19 @@ def equal(a, b):
     return norm(a) == norm(b)
 
 
+def dims(g):
+    g = norm(g)
+    return (len(g), len(g[0]) if g else 0)
+
+
+def pixel_diff(a, b):
+    """Finite diff only for same-shape grids; otherwise None."""
+    aa, bb = norm(a), norm(b)
+    if dims(aa) != dims(bb):
+        return None
+    return sum(x != y for ra, rb in zip(aa, bb) for x, y in zip(ra, rb))
+
+
 class _Timeout(Exception):
     pass
 
@@ -97,6 +110,44 @@ def train_exact(t, train):
         return all(equal(_call(t, deepcopy(p["input"])), p["output"]) for p in train)
     except Exception:
         return False
+
+
+def candidate_train_diagnostics(cands, train):
+    """Non-fitness diagnostics: shape matches and residuals on train only."""
+    rows = []
+    for name, t in cands:
+        shape_ok = True
+        total_diff = 0
+        diffs = []
+        pred_shapes = []
+        error = None
+        for p in train:
+            try:
+                pred = _call(t, deepcopy(p["input"]))
+                pred_shape = dims(pred)
+                out_shape = dims(p["output"])
+                pred_shapes.append(pred_shape)
+                if pred_shape != out_shape:
+                    shape_ok = False
+                    diffs.append(None)
+                    continue
+                d = pixel_diff(pred, p["output"])
+                diffs.append(d)
+                total_diff += int(d or 0)
+            except Exception as exc:
+                error = type(exc).__name__
+                shape_ok = False
+                diffs.append(None)
+                break
+        rows.append({
+            "name": name,
+            "shape_exact": shape_ok,
+            "train_diff": total_diff if shape_ok else None,
+            "per_pair_diff": diffs,
+            "pred_shapes": pred_shapes[:5],
+            "error": error,
+        })
+    return rows
 
 
 def informative_loo(propose, train, required_name=None):
@@ -172,6 +223,13 @@ def evaluate(agent_path: Path) -> dict:
         except Exception as e:
             report["tasks"].append({"task_id": tid, "error": str(e)[:80], "train_exact": False})
             continue
+        cand_diag = candidate_train_diagnostics(cands, train)
+        shape_exact_names = [r["name"] for r in cand_diag if r["shape_exact"]]
+        best_shape = min(
+            (r for r in cand_diag if r["shape_exact"] and r["train_diff"] is not None),
+            key=lambda r: r["train_diff"],
+            default=None,
+        )
         te = [(nm, t) for nm, t in cands if train_exact(t, train)]
         loo = False
         loo_names = []
@@ -195,6 +253,13 @@ def evaluate(agent_path: Path) -> dict:
         report["tasks"].append({"task_id": tid, "n_candidates": len(cands), "n_train_exact": len(te),
                                 "train_exact_names": [nm for nm, _ in te][:5], "informative_loo": loo,
                                 "informative_loo_names": loo_names[:5],
+                                "n_shape_exact": len(shape_exact_names),
+                                "shape_exact_names": shape_exact_names[:10],
+                                "best_shape_train_diff": (
+                                    {"name": best_shape["name"], "diff": best_shape["train_diff"],
+                                     "per_pair_diff": best_shape["per_pair_diff"]}
+                                    if best_shape else None
+                                ),
                                 "synthetic_color_perm": synthetic_color_perm(best[1], train) if best else None})
         if loo:
             fitness += 1.0
@@ -223,6 +288,7 @@ def main():
         print("COMPILE ERROR:", rep["compile_error"])
     for t in rep["tasks"]:
         print(f"  {t['task_id']}: train_exact={t.get('n_train_exact', 0)} loo={t.get('informative_loo')} "
+              f"shape_exact={t.get('n_shape_exact', 0)} best_shape={t.get('best_shape_train_diff')} "
               f"synth={t.get('synthetic_color_perm')} names={t.get('train_exact_names', [])}")
     print(f"cross-task firing >=2: {rep.get('cross_task_firing', {})}")
     print(f"PRIVATE readout (LOG ONLY, not in fitness): {rep['private_readout']}")

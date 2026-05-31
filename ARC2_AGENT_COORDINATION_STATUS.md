@@ -537,6 +537,19 @@ Codex verification of enriched SIA seed, 2026-05-30 23:10 CDT:
   no candidate is train-exact.
 - Live solver remains untouched.
 
+Codex SIA diagnostic enrichment, 2026-05-30 23:21 CDT:
+
+- Added non-fitness train diagnostics to `sia_arc_shape_task/evaluator.py`: `n_shape_exact`,
+  `shape_exact_names`, and `best_shape_train_diff` with per-pair train residuals.
+- Fitness remains unchanged: private readout is still log-only; rewards are still train-exact + same-name
+  informative LOO / cross-task firing only.
+- Verified reference agent:
+  - `5dbc8537`: shape-exact candidates `panel_select:largest`, `panel_select:most_nonbg`; best train diff `279`
+    (`[101, 178]`)
+  - `edb79dae`: shape-exact candidate `object_crop:largest`; best train diff `186` (`[90, 96]`)
+  - overall `fitness=-0.0`, `leaks=0`, `train_exact=0`, `integration_ready=[]`
+- Re-ran adversarial `/tmp/cheat_agent_codex.py`: `fitness=-20.0`, `leaks=4`; quarantine still holds.
+
 Claude SIA seed-enrichment update, 2026-05-30 ~23:40 CDT:
 - reference_agent.py enriched to 9 families/~17 variants (a2c24d7c); name-stable for the fixed informative-LOO.
 - Shape-function intel logged for SIA gradient: 89565ca0 out_rows=n_colors-1 (out_cols=max bar-length, data-dep);
