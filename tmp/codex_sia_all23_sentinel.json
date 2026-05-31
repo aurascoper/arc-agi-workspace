@@ -1,0 +1,2151 @@
+{
+  "lane": "sia_all23_sentinel",
+  "agents": [
+    {
+      "agent": "sia_arc_all23_task/reference_agent.py",
+      "returncode": 0,
+      "ok": true,
+      "stderr_tail": "",
+      "fitness": 0.1,
+      "n_leakage_hits": 0,
+      "leakage_hits": [],
+      "train_exact_total": 2,
+      "shape_exact_total": 439,
+      "loo_task_total": 0,
+      "vacuous_loo": {
+        "3dc255db": [
+          "apex_ray:2:away_from_frag:min_frag_border",
+          "apex_ray:3:away_from_frag:min_frag_border"
+        ]
+      },
+      "cross_task_firing": {},
+      "train_exact_name_tasks": {
+        "apex_ray:2:away_from_frag:min_frag_border": [
+          "3dc255db"
+        ],
+        "apex_ray:3:away_from_frag:min_frag_border": [
+          "3dc255db"
+        ]
+      },
+      "top_train_exact_names": {
+        "apex_ray:2:away_from_frag:min_frag_border": [
+          "3dc255db"
+        ],
+        "apex_ray:3:away_from_frag:min_frag_border": [
+          "3dc255db"
+        ]
+      },
+      "private_true_total": 0,
+      "integration_ready": false
+    },
+    {
+      "agent": "sia_arc_shape_task/strong_seed_agent.py",
+      "returncode": 0,
+      "ok": true,
+      "stderr_tail": "",
+      "fitness": 0.1,
+      "n_leakage_hits": 0,
+      "leakage_hits": [],
+      "train_exact_total": 2,
+      "shape_exact_total": 439,
+      "loo_task_total": 0,
+      "vacuous_loo": {
+        "3dc255db": [
+          "apex_ray:2:away_from_frag:min_frag_border",
+          "apex_ray:3:away_from_frag:min_frag_border"
+        ]
+      },
+      "cross_task_firing": {},
+      "train_exact_name_tasks": {
+        "apex_ray:2:away_from_frag:min_frag_border": [
+          "3dc255db"
+        ],
+        "apex_ray:3:away_from_frag:min_frag_border": [
+          "3dc255db"
+        ]
+      },
+      "top_train_exact_names": {
+        "apex_ray:2:away_from_frag:min_frag_border": [
+          "3dc255db"
+        ],
+        "apex_ray:3:away_from_frag:min_frag_border": [
+          "3dc255db"
+        ]
+      },
+      "private_true_total": 0,
+      "integration_ready": false
+    },
+    {
+      "agent": "runs/sia_lite_dsl_cb2d8a2c_001/gen_1/target_agent.py",
+      "returncode": 0,
+      "ok": true,
+      "stderr_tail": "",
+      "fitness": -0.0,
+      "n_leakage_hits": 0,
+      "leakage_hits": [],
+      "train_exact_total": 0,
+      "shape_exact_total": 40,
+      "loo_task_total": 0,
+      "vacuous_loo": {},
+      "cross_task_firing": {},
+      "train_exact_name_tasks": {},
+      "top_train_exact_names": {},
+      "private_true_total": 0,
+      "integration_ready": false
+    },
+    {
+      "agent": "runs/sia_lite_dsl_cb2d8a2c_001/gen_2/target_agent.py",
+      "returncode": 0,
+      "ok": true,
+      "stderr_tail": "",
+      "fitness": -0.0,
+      "n_leakage_hits": 0,
+      "leakage_hits": [],
+      "train_exact_total": 0,
+      "shape_exact_total": 40,
+      "loo_task_total": 0,
+      "vacuous_loo": {},
+      "cross_task_firing": {},
+      "train_exact_name_tasks": {},
+      "top_train_exact_names": {},
+      "private_true_total": 0,
+      "integration_ready": false
+    },
+    {
+      "agent": "runs/sia_lite_dsl_cb2d8a2c_001/gen_3/target_agent.py",
+      "returncode": 0,
+      "ok": true,
+      "stderr_tail": "",
+      "fitness": -0.0,
+      "n_leakage_hits": 0,
+      "leakage_hits": [],
+      "train_exact_total": 0,
+      "shape_exact_total": 40,
+      "loo_task_total": 0,
+      "vacuous_loo": {},
+      "cross_task_firing": {},
+      "train_exact_name_tasks": {},
+      "top_train_exact_names": {},
+      "private_true_total": 0,
+      "integration_ready": false
+    },
+    {
+      "agent": "runs/sia_lite_dsl_cb2d8a2c_001/gen_4/target_agent.py",
+      "returncode": 0,
+      "ok": true,
+      "stderr_tail": "",
+      "fitness": -0.0,
+      "n_leakage_hits": 0,
+      "leakage_hits": [],
+      "train_exact_total": 0,
+      "shape_exact_total": 24,
+      "loo_task_total": 0,
+      "vacuous_loo": {},
+      "cross_task_firing": {},
+      "train_exact_name_tasks": {},
+      "top_train_exact_names": {},
+      "private_true_total": 0,
+      "integration_ready": false
+    },
+    {
+      "agent": "runs/sia_lite_gpt54_7b0280bc_001/gen_1/target_agent.py",
+      "returncode": 0,
+      "ok": true,
+      "stderr_tail": "",
+      "fitness": 0.1,
+      "n_leakage_hits": 0,
+      "leakage_hits": [],
+      "train_exact_total": 2,
+      "shape_exact_total": 359,
+      "loo_task_total": 0,
+      "vacuous_loo": {
+        "3dc255db": [
+          "apex_ray:2:away_from_frag:min_frag_border",
+          "apex_ray:3:away_from_frag:min_frag_border"
+        ]
+      },
+      "cross_task_firing": {},
+      "train_exact_name_tasks": {
+        "apex_ray:2:away_from_frag:min_frag_border": [
+          "3dc255db"
+        ],
+        "apex_ray:3:away_from_frag:min_frag_border": [
+          "3dc255db"
+        ]
+      },
+      "top_train_exact_names": {
+        "apex_ray:2:away_from_frag:min_frag_border": [
+          "3dc255db"
+        ],
+        "apex_ray:3:away_from_frag:min_frag_border": [
+          "3dc255db"
+        ]
+      },
+      "private_true_total": 0,
+      "integration_ready": false
+    },
+    {
+      "agent": "runs/sia_lite_gpt54_7b0280bc_001/gen_2/target_agent.py",
+      "returncode": 0,
+      "ok": true,
+      "stderr_tail": "",
+      "fitness": 0.1,
+      "n_leakage_hits": 0,
+      "leakage_hits": [],
+      "train_exact_total": 2,
+      "shape_exact_total": 391,
+      "loo_task_total": 0,
+      "vacuous_loo": {
+        "3dc255db": [
+          "apex_ray:2:away_from_frag:min_frag_border",
+          "apex_ray:3:away_from_frag:min_frag_border"
+        ]
+      },
+      "cross_task_firing": {},
+      "train_exact_name_tasks": {
+        "apex_ray:2:away_from_frag:min_frag_border": [
+          "3dc255db"
+        ],
+        "apex_ray:3:away_from_frag:min_frag_border": [
+          "3dc255db"
+        ]
+      },
+      "top_train_exact_names": {
+        "apex_ray:2:away_from_frag:min_frag_border": [
+          "3dc255db"
+        ],
+        "apex_ray:3:away_from_frag:min_frag_border": [
+          "3dc255db"
+        ]
+      },
+      "private_true_total": 0,
+      "integration_ready": false
+    },
+    {
+      "agent": "runs/sia_lite_gpt54_7b0280bc_001/gen_3/target_agent.py",
+      "returncode": 0,
+      "ok": true,
+      "stderr_tail": "",
+      "fitness": 0.1,
+      "n_leakage_hits": 0,
+      "leakage_hits": [],
+      "train_exact_total": 2,
+      "shape_exact_total": 391,
+      "loo_task_total": 0,
+      "vacuous_loo": {
+        "3dc255db": [
+          "apex_ray:2:away_from_frag:min_frag_border",
+          "apex_ray:3:away_from_frag:min_frag_border"
+        ]
+      },
+      "cross_task_firing": {},
+      "train_exact_name_tasks": {
+        "apex_ray:2:away_from_frag:min_frag_border": [
+          "3dc255db"
+        ],
+        "apex_ray:3:away_from_frag:min_frag_border": [
+          "3dc255db"
+        ]
+      },
+      "top_train_exact_names": {
+        "apex_ray:2:away_from_frag:min_frag_border": [
+          "3dc255db"
+        ],
+        "apex_ray:3:away_from_frag:min_frag_border": [
+          "3dc255db"
+        ]
+      },
+      "private_true_total": 0,
+      "integration_ready": false
+    },
+    {
+      "agent": "runs/sia_lite_gpt54_cb2d8a2c_hill_001/gen_1/target_agent.py",
+      "returncode": 0,
+      "ok": true,
+      "stderr_tail": "",
+      "fitness": -0.0,
+      "n_leakage_hits": 0,
+      "leakage_hits": [],
+      "train_exact_total": 0,
+      "shape_exact_total": 5,
+      "loo_task_total": 0,
+      "vacuous_loo": {},
+      "cross_task_firing": {},
+      "train_exact_name_tasks": {},
+      "top_train_exact_names": {},
+      "private_true_total": 0,
+      "integration_ready": false
+    },
+    {
+      "agent": "runs/sia_lite_gpt54_cb2d8a2c_hill_001/gen_2/target_agent.py",
+      "returncode": 0,
+      "ok": true,
+      "stderr_tail": "",
+      "fitness": -0.0,
+      "n_leakage_hits": 0,
+      "leakage_hits": [],
+      "train_exact_total": 0,
+      "shape_exact_total": 5,
+      "loo_task_total": 0,
+      "vacuous_loo": {},
+      "cross_task_firing": {},
+      "train_exact_name_tasks": {},
+      "top_train_exact_names": {},
+      "private_true_total": 0,
+      "integration_ready": false
+    },
+    {
+      "agent": "runs/sia_lite_gpt54_cb2d8a2c_hill_001/gen_3/target_agent.py",
+      "returncode": 0,
+      "ok": true,
+      "stderr_tail": "",
+      "fitness": -0.0,
+      "n_leakage_hits": 0,
+      "leakage_hits": [],
+      "train_exact_total": 0,
+      "shape_exact_total": 8,
+      "loo_task_total": 0,
+      "vacuous_loo": {},
+      "cross_task_firing": {},
+      "train_exact_name_tasks": {},
+      "top_train_exact_names": {},
+      "private_true_total": 0,
+      "integration_ready": false
+    },
+    {
+      "agent": "runs/sia_lite_gpt54_faa9f03d_001/gen_1/target_agent.py",
+      "returncode": 0,
+      "ok": true,
+      "stderr_tail": "",
+      "fitness": 0.1,
+      "n_leakage_hits": 0,
+      "leakage_hits": [],
+      "train_exact_total": 2,
+      "shape_exact_total": 391,
+      "loo_task_total": 0,
+      "vacuous_loo": {
+        "3dc255db": [
+          "apex_ray:2:away_from_frag:min_frag_border",
+          "apex_ray:3:away_from_frag:min_frag_border"
+        ]
+      },
+      "cross_task_firing": {},
+      "train_exact_name_tasks": {
+        "apex_ray:2:away_from_frag:min_frag_border": [
+          "3dc255db"
+        ],
+        "apex_ray:3:away_from_frag:min_frag_border": [
+          "3dc255db"
+        ]
+      },
+      "top_train_exact_names": {
+        "apex_ray:2:away_from_frag:min_frag_border": [
+          "3dc255db"
+        ],
+        "apex_ray:3:away_from_frag:min_frag_border": [
+          "3dc255db"
+        ]
+      },
+      "private_true_total": 0,
+      "integration_ready": false
+    },
+    {
+      "agent": "runs/sia_lite_gpt54_faa9f03d_001/gen_2/target_agent.py",
+      "returncode": 0,
+      "ok": true,
+      "stderr_tail": "",
+      "fitness": -100.0,
+      "n_leakage_hits": 0,
+      "leakage_hits": [],
+      "train_exact_total": 0,
+      "shape_exact_total": 0,
+      "loo_task_total": 0,
+      "vacuous_loo": {},
+      "cross_task_firing": {},
+      "train_exact_name_tasks": {},
+      "top_train_exact_names": {},
+      "private_true_total": 0,
+      "integration_ready": false
+    },
+    {
+      "agent": "runs/sia_lite_gpt54_faa9f03d_001/gen_3/target_agent.py",
+      "returncode": 0,
+      "ok": true,
+      "stderr_tail": "",
+      "fitness": 0.1,
+      "n_leakage_hits": 0,
+      "leakage_hits": [],
+      "train_exact_total": 2,
+      "shape_exact_total": 391,
+      "loo_task_total": 0,
+      "vacuous_loo": {
+        "3dc255db": [
+          "apex_ray:2:away_from_frag:min_frag_border",
+          "apex_ray:3:away_from_frag:min_frag_border"
+        ]
+      },
+      "cross_task_firing": {},
+      "train_exact_name_tasks": {
+        "apex_ray:2:away_from_frag:min_frag_border": [
+          "3dc255db"
+        ],
+        "apex_ray:3:away_from_frag:min_frag_border": [
+          "3dc255db"
+        ]
+      },
+      "top_train_exact_names": {
+        "apex_ray:2:away_from_frag:min_frag_border": [
+          "3dc255db"
+        ],
+        "apex_ray:3:away_from_frag:min_frag_border": [
+          "3dc255db"
+        ]
+      },
+      "private_true_total": 0,
+      "integration_ready": false
+    },
+    {
+      "agent": "runs/sia_lite_gpt54mini_142ca369_001/gen_1/target_agent.py",
+      "returncode": 0,
+      "ok": true,
+      "stderr_tail": "",
+      "fitness": -0.0,
+      "n_leakage_hits": 0,
+      "leakage_hits": [],
+      "train_exact_total": 0,
+      "shape_exact_total": 63,
+      "loo_task_total": 0,
+      "vacuous_loo": {},
+      "cross_task_firing": {},
+      "train_exact_name_tasks": {},
+      "top_train_exact_names": {},
+      "private_true_total": 0,
+      "integration_ready": false
+    },
+    {
+      "agent": "runs/sia_lite_gpt54mini_142ca369_001/gen_2/target_agent.py",
+      "returncode": 0,
+      "ok": true,
+      "stderr_tail": "",
+      "fitness": -0.0,
+      "n_leakage_hits": 0,
+      "leakage_hits": [],
+      "train_exact_total": 0,
+      "shape_exact_total": 10,
+      "loo_task_total": 0,
+      "vacuous_loo": {},
+      "cross_task_firing": {},
+      "train_exact_name_tasks": {},
+      "top_train_exact_names": {},
+      "private_true_total": 0,
+      "integration_ready": false
+    },
+    {
+      "agent": "runs/sia_lite_gpt54mini_142ca369_001/gen_3/target_agent.py",
+      "returncode": 0,
+      "ok": true,
+      "stderr_tail": "",
+      "fitness": 0.1,
+      "n_leakage_hits": 0,
+      "leakage_hits": [],
+      "train_exact_total": 2,
+      "shape_exact_total": 439,
+      "loo_task_total": 0,
+      "vacuous_loo": {
+        "3dc255db": [
+          "apex_ray:2:away_from_frag:min_frag_border",
+          "apex_ray:3:away_from_frag:min_frag_border"
+        ]
+      },
+      "cross_task_firing": {},
+      "train_exact_name_tasks": {
+        "apex_ray:2:away_from_frag:min_frag_border": [
+          "3dc255db"
+        ],
+        "apex_ray:3:away_from_frag:min_frag_border": [
+          "3dc255db"
+        ]
+      },
+      "top_train_exact_names": {
+        "apex_ray:2:away_from_frag:min_frag_border": [
+          "3dc255db"
+        ],
+        "apex_ray:3:away_from_frag:min_frag_border": [
+          "3dc255db"
+        ]
+      },
+      "private_true_total": 0,
+      "integration_ready": false
+    },
+    {
+      "agent": "runs/sia_lite_gpt54mini_142ca369_001/gen_4/target_agent.py",
+      "returncode": 0,
+      "ok": true,
+      "stderr_tail": "",
+      "fitness": -0.0,
+      "n_leakage_hits": 0,
+      "leakage_hits": [],
+      "train_exact_total": 0,
+      "shape_exact_total": 1,
+      "loo_task_total": 0,
+      "vacuous_loo": {},
+      "cross_task_firing": {},
+      "train_exact_name_tasks": {},
+      "top_train_exact_names": {},
+      "private_true_total": 0,
+      "integration_ready": false
+    },
+    {
+      "agent": "runs/sia_lite_gpt54mini_142ca369_001/gen_5/target_agent.py",
+      "returncode": 0,
+      "ok": true,
+      "stderr_tail": "",
+      "fitness": 0.1,
+      "n_leakage_hits": 0,
+      "leakage_hits": [],
+      "train_exact_total": 2,
+      "shape_exact_total": 439,
+      "loo_task_total": 0,
+      "vacuous_loo": {
+        "3dc255db": [
+          "apex_ray:2:away_from_frag:min_frag_border",
+          "apex_ray:3:away_from_frag:min_frag_border"
+        ]
+      },
+      "cross_task_firing": {},
+      "train_exact_name_tasks": {
+        "apex_ray:2:away_from_frag:min_frag_border": [
+          "3dc255db"
+        ],
+        "apex_ray:3:away_from_frag:min_frag_border": [
+          "3dc255db"
+        ]
+      },
+      "top_train_exact_names": {
+        "apex_ray:2:away_from_frag:min_frag_border": [
+          "3dc255db"
+        ],
+        "apex_ray:3:away_from_frag:min_frag_border": [
+          "3dc255db"
+        ]
+      },
+      "private_true_total": 0,
+      "integration_ready": false
+    },
+    {
+      "agent": "runs/sia_lite_gpt54mini_142ca369_001/gen_6/target_agent.py",
+      "returncode": 0,
+      "ok": true,
+      "stderr_tail": "",
+      "fitness": -0.0,
+      "n_leakage_hits": 0,
+      "leakage_hits": [],
+      "train_exact_total": 0,
+      "shape_exact_total": 5,
+      "loo_task_total": 0,
+      "vacuous_loo": {},
+      "cross_task_firing": {},
+      "train_exact_name_tasks": {},
+      "top_train_exact_names": {},
+      "private_true_total": 0,
+      "integration_ready": false
+    },
+    {
+      "agent": "runs/sia_lite_gpt54mini_7b0280bc_001/gen_1/target_agent.py",
+      "returncode": 0,
+      "ok": true,
+      "stderr_tail": "",
+      "fitness": -0.0,
+      "n_leakage_hits": 0,
+      "leakage_hits": [],
+      "train_exact_total": 0,
+      "shape_exact_total": 2,
+      "loo_task_total": 0,
+      "vacuous_loo": {},
+      "cross_task_firing": {},
+      "train_exact_name_tasks": {},
+      "top_train_exact_names": {},
+      "private_true_total": 0,
+      "integration_ready": false
+    },
+    {
+      "agent": "runs/sia_lite_gpt54mini_7b0280bc_001/gen_2/target_agent.py",
+      "returncode": 0,
+      "ok": true,
+      "stderr_tail": "",
+      "fitness": 0.1,
+      "n_leakage_hits": 0,
+      "leakage_hits": [],
+      "train_exact_total": 2,
+      "shape_exact_total": 439,
+      "loo_task_total": 0,
+      "vacuous_loo": {
+        "3dc255db": [
+          "apex_ray:2:away_from_frag:min_frag_border",
+          "apex_ray:3:away_from_frag:min_frag_border"
+        ]
+      },
+      "cross_task_firing": {},
+      "train_exact_name_tasks": {
+        "apex_ray:2:away_from_frag:min_frag_border": [
+          "3dc255db"
+        ],
+        "apex_ray:3:away_from_frag:min_frag_border": [
+          "3dc255db"
+        ]
+      },
+      "top_train_exact_names": {
+        "apex_ray:2:away_from_frag:min_frag_border": [
+          "3dc255db"
+        ],
+        "apex_ray:3:away_from_frag:min_frag_border": [
+          "3dc255db"
+        ]
+      },
+      "private_true_total": 0,
+      "integration_ready": false
+    },
+    {
+      "agent": "runs/sia_lite_gpt54mini_7b0280bc_001/gen_3/target_agent.py",
+      "returncode": 0,
+      "ok": true,
+      "stderr_tail": "",
+      "fitness": -0.0,
+      "n_leakage_hits": 0,
+      "leakage_hits": [],
+      "train_exact_total": 0,
+      "shape_exact_total": 9,
+      "loo_task_total": 0,
+      "vacuous_loo": {},
+      "cross_task_firing": {},
+      "train_exact_name_tasks": {},
+      "top_train_exact_names": {},
+      "private_true_total": 0,
+      "integration_ready": false
+    },
+    {
+      "agent": "runs/sia_lite_gpt54mini_7b0280bc_001/gen_4/target_agent.py",
+      "returncode": 0,
+      "ok": true,
+      "stderr_tail": "",
+      "fitness": 0.1,
+      "n_leakage_hits": 0,
+      "leakage_hits": [],
+      "train_exact_total": 2,
+      "shape_exact_total": 439,
+      "loo_task_total": 0,
+      "vacuous_loo": {
+        "3dc255db": [
+          "apex_ray:2:away_from_frag:min_frag_border",
+          "apex_ray:3:away_from_frag:min_frag_border"
+        ]
+      },
+      "cross_task_firing": {},
+      "train_exact_name_tasks": {
+        "apex_ray:2:away_from_frag:min_frag_border": [
+          "3dc255db"
+        ],
+        "apex_ray:3:away_from_frag:min_frag_border": [
+          "3dc255db"
+        ]
+      },
+      "top_train_exact_names": {
+        "apex_ray:2:away_from_frag:min_frag_border": [
+          "3dc255db"
+        ],
+        "apex_ray:3:away_from_frag:min_frag_border": [
+          "3dc255db"
+        ]
+      },
+      "private_true_total": 0,
+      "integration_ready": false
+    },
+    {
+      "agent": "runs/sia_lite_gpt54mini_7b0280bc_001/gen_5/target_agent.py",
+      "returncode": 0,
+      "ok": true,
+      "stderr_tail": "",
+      "fitness": -0.0,
+      "n_leakage_hits": 0,
+      "leakage_hits": [],
+      "train_exact_total": 0,
+      "shape_exact_total": 0,
+      "loo_task_total": 0,
+      "vacuous_loo": {},
+      "cross_task_firing": {},
+      "train_exact_name_tasks": {},
+      "top_train_exact_names": {},
+      "private_true_total": 0,
+      "integration_ready": false
+    },
+    {
+      "agent": "runs/sia_lite_gpt54mini_7b0280bc_001/gen_6/target_agent.py",
+      "returncode": 0,
+      "ok": true,
+      "stderr_tail": "",
+      "fitness": 0.1,
+      "n_leakage_hits": 0,
+      "leakage_hits": [],
+      "train_exact_total": 2,
+      "shape_exact_total": 442,
+      "loo_task_total": 0,
+      "vacuous_loo": {
+        "3dc255db": [
+          "apex_ray:2:away_from_frag:min_frag_border",
+          "apex_ray:3:away_from_frag:min_frag_border"
+        ]
+      },
+      "cross_task_firing": {},
+      "train_exact_name_tasks": {
+        "apex_ray:2:away_from_frag:min_frag_border": [
+          "3dc255db"
+        ],
+        "apex_ray:3:away_from_frag:min_frag_border": [
+          "3dc255db"
+        ]
+      },
+      "top_train_exact_names": {
+        "apex_ray:2:away_from_frag:min_frag_border": [
+          "3dc255db"
+        ],
+        "apex_ray:3:away_from_frag:min_frag_border": [
+          "3dc255db"
+        ]
+      },
+      "private_true_total": 0,
+      "integration_ready": false
+    },
+    {
+      "agent": "runs/sia_lite_gpt54mini_88bcf3b4_001/gen_1/target_agent.py",
+      "returncode": 0,
+      "ok": true,
+      "stderr_tail": "",
+      "fitness": 0.1,
+      "n_leakage_hits": 0,
+      "leakage_hits": [],
+      "train_exact_total": 2,
+      "shape_exact_total": 441,
+      "loo_task_total": 0,
+      "vacuous_loo": {
+        "3dc255db": [
+          "apex_ray:2:away_from_frag:min_frag_border",
+          "apex_ray:3:away_from_frag:min_frag_border"
+        ]
+      },
+      "cross_task_firing": {},
+      "train_exact_name_tasks": {
+        "apex_ray:2:away_from_frag:min_frag_border": [
+          "3dc255db"
+        ],
+        "apex_ray:3:away_from_frag:min_frag_border": [
+          "3dc255db"
+        ]
+      },
+      "top_train_exact_names": {
+        "apex_ray:2:away_from_frag:min_frag_border": [
+          "3dc255db"
+        ],
+        "apex_ray:3:away_from_frag:min_frag_border": [
+          "3dc255db"
+        ]
+      },
+      "private_true_total": 0,
+      "integration_ready": false
+    },
+    {
+      "agent": "runs/sia_lite_gpt54mini_88bcf3b4_001/gen_2/target_agent.py",
+      "returncode": 0,
+      "ok": true,
+      "stderr_tail": "",
+      "fitness": -0.0,
+      "n_leakage_hits": 0,
+      "leakage_hits": [],
+      "train_exact_total": 0,
+      "shape_exact_total": 57,
+      "loo_task_total": 0,
+      "vacuous_loo": {},
+      "cross_task_firing": {},
+      "train_exact_name_tasks": {},
+      "top_train_exact_names": {},
+      "private_true_total": 0,
+      "integration_ready": false
+    },
+    {
+      "agent": "runs/sia_lite_gpt54mini_88bcf3b4_001/gen_3/target_agent.py",
+      "returncode": 0,
+      "ok": true,
+      "stderr_tail": "",
+      "fitness": 0.1,
+      "n_leakage_hits": 0,
+      "leakage_hits": [],
+      "train_exact_total": 2,
+      "shape_exact_total": 444,
+      "loo_task_total": 0,
+      "vacuous_loo": {
+        "3dc255db": [
+          "apex_ray:2:away_from_frag:min_frag_border",
+          "apex_ray:3:away_from_frag:min_frag_border"
+        ]
+      },
+      "cross_task_firing": {},
+      "train_exact_name_tasks": {
+        "apex_ray:2:away_from_frag:min_frag_border": [
+          "3dc255db"
+        ],
+        "apex_ray:3:away_from_frag:min_frag_border": [
+          "3dc255db"
+        ]
+      },
+      "top_train_exact_names": {
+        "apex_ray:2:away_from_frag:min_frag_border": [
+          "3dc255db"
+        ],
+        "apex_ray:3:away_from_frag:min_frag_border": [
+          "3dc255db"
+        ]
+      },
+      "private_true_total": 0,
+      "integration_ready": false
+    },
+    {
+      "agent": "runs/sia_lite_gpt54mini_88bcf3b4_001/gen_4/target_agent.py",
+      "returncode": 0,
+      "ok": true,
+      "stderr_tail": "",
+      "fitness": -0.0,
+      "n_leakage_hits": 0,
+      "leakage_hits": [],
+      "train_exact_total": 0,
+      "shape_exact_total": 37,
+      "loo_task_total": 0,
+      "vacuous_loo": {},
+      "cross_task_firing": {},
+      "train_exact_name_tasks": {},
+      "top_train_exact_names": {},
+      "private_true_total": 0,
+      "integration_ready": false
+    },
+    {
+      "agent": "runs/sia_lite_gpt54mini_88bcf3b4_001/gen_5/target_agent.py",
+      "returncode": 0,
+      "ok": true,
+      "stderr_tail": "",
+      "fitness": -0.0,
+      "n_leakage_hits": 0,
+      "leakage_hits": [],
+      "train_exact_total": 0,
+      "shape_exact_total": 5,
+      "loo_task_total": 0,
+      "vacuous_loo": {},
+      "cross_task_firing": {},
+      "train_exact_name_tasks": {},
+      "top_train_exact_names": {},
+      "private_true_total": 0,
+      "integration_ready": false
+    },
+    {
+      "agent": "runs/sia_lite_gpt54mini_88bcf3b4_001/gen_6/target_agent.py",
+      "returncode": 0,
+      "ok": true,
+      "stderr_tail": "",
+      "fitness": 0.1,
+      "n_leakage_hits": 0,
+      "leakage_hits": [],
+      "train_exact_total": 2,
+      "shape_exact_total": 442,
+      "loo_task_total": 0,
+      "vacuous_loo": {
+        "3dc255db": [
+          "apex_ray:2:away_from_frag:min_frag_border",
+          "apex_ray:3:away_from_frag:min_frag_border"
+        ]
+      },
+      "cross_task_firing": {},
+      "train_exact_name_tasks": {
+        "apex_ray:2:away_from_frag:min_frag_border": [
+          "3dc255db"
+        ],
+        "apex_ray:3:away_from_frag:min_frag_border": [
+          "3dc255db"
+        ]
+      },
+      "top_train_exact_names": {
+        "apex_ray:2:away_from_frag:min_frag_border": [
+          "3dc255db"
+        ],
+        "apex_ray:3:away_from_frag:min_frag_border": [
+          "3dc255db"
+        ]
+      },
+      "private_true_total": 0,
+      "integration_ready": false
+    },
+    {
+      "agent": "runs/sia_lite_gpt54mini_cb2d8a2c_001/gen_1/target_agent.py",
+      "returncode": 0,
+      "ok": true,
+      "stderr_tail": "",
+      "fitness": -0.0,
+      "n_leakage_hits": 0,
+      "leakage_hits": [],
+      "train_exact_total": 0,
+      "shape_exact_total": 1,
+      "loo_task_total": 0,
+      "vacuous_loo": {},
+      "cross_task_firing": {},
+      "train_exact_name_tasks": {},
+      "top_train_exact_names": {},
+      "private_true_total": 0,
+      "integration_ready": false
+    },
+    {
+      "agent": "runs/sia_lite_gpt54mini_cb2d8a2c_001/gen_2/target_agent.py",
+      "returncode": 0,
+      "ok": true,
+      "stderr_tail": "",
+      "fitness": -0.0,
+      "n_leakage_hits": 0,
+      "leakage_hits": [],
+      "train_exact_total": 0,
+      "shape_exact_total": 3,
+      "loo_task_total": 0,
+      "vacuous_loo": {},
+      "cross_task_firing": {},
+      "train_exact_name_tasks": {},
+      "top_train_exact_names": {},
+      "private_true_total": 0,
+      "integration_ready": false
+    },
+    {
+      "agent": "runs/sia_lite_gpt54mini_cb2d8a2c_001/gen_3/target_agent.py",
+      "returncode": 0,
+      "ok": true,
+      "stderr_tail": "",
+      "fitness": -0.0,
+      "n_leakage_hits": 0,
+      "leakage_hits": [],
+      "train_exact_total": 0,
+      "shape_exact_total": 116,
+      "loo_task_total": 0,
+      "vacuous_loo": {},
+      "cross_task_firing": {},
+      "train_exact_name_tasks": {},
+      "top_train_exact_names": {},
+      "private_true_total": 0,
+      "integration_ready": false
+    },
+    {
+      "agent": "runs/sia_lite_gpt54mini_cb2d8a2c_001/gen_4/target_agent.py",
+      "returncode": 0,
+      "ok": true,
+      "stderr_tail": "",
+      "fitness": -0.0,
+      "n_leakage_hits": 0,
+      "leakage_hits": [],
+      "train_exact_total": 0,
+      "shape_exact_total": 4,
+      "loo_task_total": 0,
+      "vacuous_loo": {},
+      "cross_task_firing": {},
+      "train_exact_name_tasks": {},
+      "top_train_exact_names": {},
+      "private_true_total": 0,
+      "integration_ready": false
+    },
+    {
+      "agent": "runs/sia_lite_gpt54mini_cb2d8a2c_001/gen_5/target_agent.py",
+      "returncode": 0,
+      "ok": true,
+      "stderr_tail": "",
+      "fitness": -0.0,
+      "n_leakage_hits": 0,
+      "leakage_hits": [],
+      "train_exact_total": 0,
+      "shape_exact_total": 8,
+      "loo_task_total": 0,
+      "vacuous_loo": {},
+      "cross_task_firing": {},
+      "train_exact_name_tasks": {},
+      "top_train_exact_names": {},
+      "private_true_total": 0,
+      "integration_ready": false
+    },
+    {
+      "agent": "runs/sia_lite_gpt54mini_cb2d8a2c_001/gen_6/target_agent.py",
+      "returncode": 0,
+      "ok": true,
+      "stderr_tail": "",
+      "fitness": 0.1,
+      "n_leakage_hits": 0,
+      "leakage_hits": [],
+      "train_exact_total": 2,
+      "shape_exact_total": 439,
+      "loo_task_total": 0,
+      "vacuous_loo": {
+        "3dc255db": [
+          "apex_ray:2:away_from_frag:min_frag_border",
+          "apex_ray:3:away_from_frag:min_frag_border"
+        ]
+      },
+      "cross_task_firing": {},
+      "train_exact_name_tasks": {
+        "apex_ray:2:away_from_frag:min_frag_border": [
+          "3dc255db"
+        ],
+        "apex_ray:3:away_from_frag:min_frag_border": [
+          "3dc255db"
+        ]
+      },
+      "top_train_exact_names": {
+        "apex_ray:2:away_from_frag:min_frag_border": [
+          "3dc255db"
+        ],
+        "apex_ray:3:away_from_frag:min_frag_border": [
+          "3dc255db"
+        ]
+      },
+      "private_true_total": 0,
+      "integration_ready": false
+    },
+    {
+      "agent": "runs/sia_lite_gpt54mini_cb2d8a2c_hill_001/gen_1/target_agent.py",
+      "returncode": 0,
+      "ok": true,
+      "stderr_tail": "",
+      "fitness": -0.0,
+      "n_leakage_hits": 0,
+      "leakage_hits": [],
+      "train_exact_total": 0,
+      "shape_exact_total": 10,
+      "loo_task_total": 0,
+      "vacuous_loo": {},
+      "cross_task_firing": {},
+      "train_exact_name_tasks": {},
+      "top_train_exact_names": {},
+      "private_true_total": 0,
+      "integration_ready": false
+    },
+    {
+      "agent": "runs/sia_lite_gpt54mini_cb2d8a2c_hill_001/gen_2/target_agent.py",
+      "returncode": 0,
+      "ok": true,
+      "stderr_tail": "",
+      "fitness": -0.0,
+      "n_leakage_hits": 0,
+      "leakage_hits": [],
+      "train_exact_total": 0,
+      "shape_exact_total": 16,
+      "loo_task_total": 0,
+      "vacuous_loo": {},
+      "cross_task_firing": {},
+      "train_exact_name_tasks": {},
+      "top_train_exact_names": {},
+      "private_true_total": 0,
+      "integration_ready": false
+    },
+    {
+      "agent": "runs/sia_lite_gpt54mini_cb2d8a2c_hill_001/gen_3/target_agent.py",
+      "returncode": 0,
+      "ok": true,
+      "stderr_tail": "",
+      "fitness": -0.0,
+      "n_leakage_hits": 0,
+      "leakage_hits": [],
+      "train_exact_total": 0,
+      "shape_exact_total": 11,
+      "loo_task_total": 0,
+      "vacuous_loo": {},
+      "cross_task_firing": {},
+      "train_exact_name_tasks": {},
+      "top_train_exact_names": {},
+      "private_true_total": 0,
+      "integration_ready": false
+    },
+    {
+      "agent": "runs/sia_lite_gpt54mini_cb2d8a2c_hill_001/gen_4/target_agent.py",
+      "returncode": 0,
+      "ok": true,
+      "stderr_tail": "",
+      "fitness": -0.0,
+      "n_leakage_hits": 0,
+      "leakage_hits": [],
+      "train_exact_total": 0,
+      "shape_exact_total": 10,
+      "loo_task_total": 0,
+      "vacuous_loo": {},
+      "cross_task_firing": {},
+      "train_exact_name_tasks": {},
+      "top_train_exact_names": {},
+      "private_true_total": 0,
+      "integration_ready": false
+    },
+    {
+      "agent": "runs/sia_lite_gpt54mini_cb2d8a2c_hill_001/gen_5/target_agent.py",
+      "returncode": 0,
+      "ok": true,
+      "stderr_tail": "",
+      "fitness": -0.0,
+      "n_leakage_hits": 0,
+      "leakage_hits": [],
+      "train_exact_total": 0,
+      "shape_exact_total": 5,
+      "loo_task_total": 0,
+      "vacuous_loo": {},
+      "cross_task_firing": {},
+      "train_exact_name_tasks": {},
+      "top_train_exact_names": {},
+      "private_true_total": 0,
+      "integration_ready": false
+    },
+    {
+      "agent": "runs/sia_lite_gpt54mini_cb2d8a2c_hill_001/gen_6/target_agent.py",
+      "returncode": 0,
+      "ok": true,
+      "stderr_tail": "",
+      "fitness": -0.0,
+      "n_leakage_hits": 0,
+      "leakage_hits": [],
+      "train_exact_total": 0,
+      "shape_exact_total": 5,
+      "loo_task_total": 0,
+      "vacuous_loo": {},
+      "cross_task_firing": {},
+      "train_exact_name_tasks": {},
+      "top_train_exact_names": {},
+      "private_true_total": 0,
+      "integration_ready": false
+    },
+    {
+      "agent": "runs/sia_lite_gpt54mini_cb2d8a2c_residual_001/gen_1/target_agent.py",
+      "returncode": 0,
+      "ok": true,
+      "stderr_tail": "",
+      "fitness": -0.0,
+      "n_leakage_hits": 0,
+      "leakage_hits": [],
+      "train_exact_total": 0,
+      "shape_exact_total": 2,
+      "loo_task_total": 0,
+      "vacuous_loo": {},
+      "cross_task_firing": {},
+      "train_exact_name_tasks": {},
+      "top_train_exact_names": {},
+      "private_true_total": 0,
+      "integration_ready": false
+    },
+    {
+      "agent": "runs/sia_lite_gpt54mini_cb2d8a2c_residual_001/gen_2/target_agent.py",
+      "returncode": 0,
+      "ok": true,
+      "stderr_tail": "",
+      "fitness": -0.0,
+      "n_leakage_hits": 0,
+      "leakage_hits": [],
+      "train_exact_total": 0,
+      "shape_exact_total": 6,
+      "loo_task_total": 0,
+      "vacuous_loo": {},
+      "cross_task_firing": {},
+      "train_exact_name_tasks": {},
+      "top_train_exact_names": {},
+      "private_true_total": 0,
+      "integration_ready": false
+    },
+    {
+      "agent": "runs/sia_lite_gpt54mini_cb2d8a2c_residual_001/gen_3/target_agent.py",
+      "returncode": 0,
+      "ok": true,
+      "stderr_tail": "",
+      "fitness": -0.0,
+      "n_leakage_hits": 0,
+      "leakage_hits": [],
+      "train_exact_total": 0,
+      "shape_exact_total": 3,
+      "loo_task_total": 0,
+      "vacuous_loo": {},
+      "cross_task_firing": {},
+      "train_exact_name_tasks": {},
+      "top_train_exact_names": {},
+      "private_true_total": 0,
+      "integration_ready": false
+    },
+    {
+      "agent": "runs/sia_lite_gpt54mini_cb2d8a2c_residual_001/gen_4/target_agent.py",
+      "returncode": 0,
+      "ok": true,
+      "stderr_tail": "",
+      "fitness": -0.0,
+      "n_leakage_hits": 0,
+      "leakage_hits": [],
+      "train_exact_total": 0,
+      "shape_exact_total": 12,
+      "loo_task_total": 0,
+      "vacuous_loo": {},
+      "cross_task_firing": {},
+      "train_exact_name_tasks": {},
+      "top_train_exact_names": {},
+      "private_true_total": 0,
+      "integration_ready": false
+    },
+    {
+      "agent": "runs/sia_lite_gpt54mini_cb2d8a2c_residual_001/gen_5/target_agent.py",
+      "returncode": 0,
+      "ok": true,
+      "stderr_tail": "",
+      "fitness": -0.0,
+      "n_leakage_hits": 0,
+      "leakage_hits": [],
+      "train_exact_total": 0,
+      "shape_exact_total": 11,
+      "loo_task_total": 0,
+      "vacuous_loo": {},
+      "cross_task_firing": {},
+      "train_exact_name_tasks": {},
+      "top_train_exact_names": {},
+      "private_true_total": 0,
+      "integration_ready": false
+    },
+    {
+      "agent": "runs/sia_lite_gpt54mini_cb2d8a2c_residual_001/gen_6/target_agent.py",
+      "returncode": 0,
+      "ok": true,
+      "stderr_tail": "",
+      "fitness": -0.0,
+      "n_leakage_hits": 0,
+      "leakage_hits": [],
+      "train_exact_total": 0,
+      "shape_exact_total": 5,
+      "loo_task_total": 0,
+      "vacuous_loo": {},
+      "cross_task_firing": {},
+      "train_exact_name_tasks": {},
+      "top_train_exact_names": {},
+      "private_true_total": 0,
+      "integration_ready": false
+    },
+    {
+      "agent": "runs/sia_lite_gpt54mini_d8e07eb2_001/gen_1/target_agent.py",
+      "returncode": 0,
+      "ok": true,
+      "stderr_tail": "",
+      "fitness": -0.0,
+      "n_leakage_hits": 0,
+      "leakage_hits": [],
+      "train_exact_total": 0,
+      "shape_exact_total": 11,
+      "loo_task_total": 0,
+      "vacuous_loo": {},
+      "cross_task_firing": {},
+      "train_exact_name_tasks": {},
+      "top_train_exact_names": {},
+      "private_true_total": 0,
+      "integration_ready": false
+    },
+    {
+      "agent": "runs/sia_lite_gpt54mini_d8e07eb2_001/gen_2/target_agent.py",
+      "returncode": 0,
+      "ok": true,
+      "stderr_tail": "",
+      "fitness": 0.1,
+      "n_leakage_hits": 0,
+      "leakage_hits": [],
+      "train_exact_total": 2,
+      "shape_exact_total": 441,
+      "loo_task_total": 0,
+      "vacuous_loo": {
+        "3dc255db": [
+          "apex_ray:2:away_from_frag:min_frag_border",
+          "apex_ray:3:away_from_frag:min_frag_border"
+        ]
+      },
+      "cross_task_firing": {},
+      "train_exact_name_tasks": {
+        "apex_ray:2:away_from_frag:min_frag_border": [
+          "3dc255db"
+        ],
+        "apex_ray:3:away_from_frag:min_frag_border": [
+          "3dc255db"
+        ]
+      },
+      "top_train_exact_names": {
+        "apex_ray:2:away_from_frag:min_frag_border": [
+          "3dc255db"
+        ],
+        "apex_ray:3:away_from_frag:min_frag_border": [
+          "3dc255db"
+        ]
+      },
+      "private_true_total": 0,
+      "integration_ready": false
+    },
+    {
+      "agent": "runs/sia_lite_gpt54mini_d8e07eb2_001/gen_3/target_agent.py",
+      "returncode": 0,
+      "ok": true,
+      "stderr_tail": "",
+      "fitness": 0.1,
+      "n_leakage_hits": 0,
+      "leakage_hits": [],
+      "train_exact_total": 2,
+      "shape_exact_total": 439,
+      "loo_task_total": 0,
+      "vacuous_loo": {
+        "3dc255db": [
+          "apex_ray:2:away_from_frag:min_frag_border",
+          "apex_ray:3:away_from_frag:min_frag_border"
+        ]
+      },
+      "cross_task_firing": {},
+      "train_exact_name_tasks": {
+        "apex_ray:2:away_from_frag:min_frag_border": [
+          "3dc255db"
+        ],
+        "apex_ray:3:away_from_frag:min_frag_border": [
+          "3dc255db"
+        ]
+      },
+      "top_train_exact_names": {
+        "apex_ray:2:away_from_frag:min_frag_border": [
+          "3dc255db"
+        ],
+        "apex_ray:3:away_from_frag:min_frag_border": [
+          "3dc255db"
+        ]
+      },
+      "private_true_total": 0,
+      "integration_ready": false
+    },
+    {
+      "agent": "runs/sia_lite_gpt54mini_d8e07eb2_001/gen_4/target_agent.py",
+      "returncode": 0,
+      "ok": true,
+      "stderr_tail": "",
+      "fitness": 0.1,
+      "n_leakage_hits": 0,
+      "leakage_hits": [],
+      "train_exact_total": 2,
+      "shape_exact_total": 441,
+      "loo_task_total": 0,
+      "vacuous_loo": {
+        "3dc255db": [
+          "apex_ray:2:away_from_frag:min_frag_border",
+          "apex_ray:3:away_from_frag:min_frag_border"
+        ]
+      },
+      "cross_task_firing": {},
+      "train_exact_name_tasks": {
+        "apex_ray:2:away_from_frag:min_frag_border": [
+          "3dc255db"
+        ],
+        "apex_ray:3:away_from_frag:min_frag_border": [
+          "3dc255db"
+        ]
+      },
+      "top_train_exact_names": {
+        "apex_ray:2:away_from_frag:min_frag_border": [
+          "3dc255db"
+        ],
+        "apex_ray:3:away_from_frag:min_frag_border": [
+          "3dc255db"
+        ]
+      },
+      "private_true_total": 0,
+      "integration_ready": false
+    },
+    {
+      "agent": "runs/sia_lite_gpt54mini_d8e07eb2_001/gen_5/target_agent.py",
+      "returncode": 0,
+      "ok": true,
+      "stderr_tail": "",
+      "fitness": 0.1,
+      "n_leakage_hits": 0,
+      "leakage_hits": [],
+      "train_exact_total": 2,
+      "shape_exact_total": 443,
+      "loo_task_total": 0,
+      "vacuous_loo": {
+        "3dc255db": [
+          "apex_ray:2:away_from_frag:min_frag_border",
+          "apex_ray:3:away_from_frag:min_frag_border"
+        ]
+      },
+      "cross_task_firing": {},
+      "train_exact_name_tasks": {
+        "apex_ray:2:away_from_frag:min_frag_border": [
+          "3dc255db"
+        ],
+        "apex_ray:3:away_from_frag:min_frag_border": [
+          "3dc255db"
+        ]
+      },
+      "top_train_exact_names": {
+        "apex_ray:2:away_from_frag:min_frag_border": [
+          "3dc255db"
+        ],
+        "apex_ray:3:away_from_frag:min_frag_border": [
+          "3dc255db"
+        ]
+      },
+      "private_true_total": 0,
+      "integration_ready": false
+    },
+    {
+      "agent": "runs/sia_lite_gpt54mini_d8e07eb2_001/gen_6/target_agent.py",
+      "returncode": 0,
+      "ok": true,
+      "stderr_tail": "",
+      "fitness": -0.0,
+      "n_leakage_hits": 0,
+      "leakage_hits": [],
+      "train_exact_total": 0,
+      "shape_exact_total": 0,
+      "loo_task_total": 0,
+      "vacuous_loo": {},
+      "cross_task_firing": {},
+      "train_exact_name_tasks": {},
+      "top_train_exact_names": {},
+      "private_true_total": 0,
+      "integration_ready": false
+    },
+    {
+      "agent": "runs/sia_lite_gpt54mini_faa9f03d_001/gen_1/target_agent.py",
+      "returncode": 0,
+      "ok": true,
+      "stderr_tail": "",
+      "fitness": 0.1,
+      "n_leakage_hits": 0,
+      "leakage_hits": [],
+      "train_exact_total": 2,
+      "shape_exact_total": 441,
+      "loo_task_total": 0,
+      "vacuous_loo": {
+        "3dc255db": [
+          "apex_ray:2:away_from_frag:min_frag_border",
+          "apex_ray:3:away_from_frag:min_frag_border"
+        ]
+      },
+      "cross_task_firing": {},
+      "train_exact_name_tasks": {
+        "apex_ray:2:away_from_frag:min_frag_border": [
+          "3dc255db"
+        ],
+        "apex_ray:3:away_from_frag:min_frag_border": [
+          "3dc255db"
+        ]
+      },
+      "top_train_exact_names": {
+        "apex_ray:2:away_from_frag:min_frag_border": [
+          "3dc255db"
+        ],
+        "apex_ray:3:away_from_frag:min_frag_border": [
+          "3dc255db"
+        ]
+      },
+      "private_true_total": 0,
+      "integration_ready": false
+    },
+    {
+      "agent": "runs/sia_lite_gpt54mini_faa9f03d_001/gen_2/target_agent.py",
+      "returncode": 0,
+      "ok": true,
+      "stderr_tail": "",
+      "fitness": -0.0,
+      "n_leakage_hits": 0,
+      "leakage_hits": [],
+      "train_exact_total": 0,
+      "shape_exact_total": 19,
+      "loo_task_total": 0,
+      "vacuous_loo": {},
+      "cross_task_firing": {},
+      "train_exact_name_tasks": {},
+      "top_train_exact_names": {},
+      "private_true_total": 0,
+      "integration_ready": false
+    },
+    {
+      "agent": "runs/sia_lite_gpt54mini_faa9f03d_001/gen_3/target_agent.py",
+      "returncode": 0,
+      "ok": true,
+      "stderr_tail": "",
+      "fitness": 0.1,
+      "n_leakage_hits": 0,
+      "leakage_hits": [],
+      "train_exact_total": 2,
+      "shape_exact_total": 455,
+      "loo_task_total": 0,
+      "vacuous_loo": {
+        "3dc255db": [
+          "apex_ray:2:away_from_frag:min_frag_border",
+          "apex_ray:3:away_from_frag:min_frag_border"
+        ]
+      },
+      "cross_task_firing": {},
+      "train_exact_name_tasks": {
+        "apex_ray:2:away_from_frag:min_frag_border": [
+          "3dc255db"
+        ],
+        "apex_ray:3:away_from_frag:min_frag_border": [
+          "3dc255db"
+        ]
+      },
+      "top_train_exact_names": {
+        "apex_ray:2:away_from_frag:min_frag_border": [
+          "3dc255db"
+        ],
+        "apex_ray:3:away_from_frag:min_frag_border": [
+          "3dc255db"
+        ]
+      },
+      "private_true_total": 0,
+      "integration_ready": false
+    },
+    {
+      "agent": "runs/sia_lite_gpt54mini_faa9f03d_001/gen_4/target_agent.py",
+      "returncode": 0,
+      "ok": true,
+      "stderr_tail": "",
+      "fitness": 0.1,
+      "n_leakage_hits": 0,
+      "leakage_hits": [],
+      "train_exact_total": 2,
+      "shape_exact_total": 444,
+      "loo_task_total": 0,
+      "vacuous_loo": {
+        "3dc255db": [
+          "apex_ray:2:away_from_frag:min_frag_border",
+          "apex_ray:3:away_from_frag:min_frag_border"
+        ]
+      },
+      "cross_task_firing": {},
+      "train_exact_name_tasks": {
+        "apex_ray:2:away_from_frag:min_frag_border": [
+          "3dc255db"
+        ],
+        "apex_ray:3:away_from_frag:min_frag_border": [
+          "3dc255db"
+        ]
+      },
+      "top_train_exact_names": {
+        "apex_ray:2:away_from_frag:min_frag_border": [
+          "3dc255db"
+        ],
+        "apex_ray:3:away_from_frag:min_frag_border": [
+          "3dc255db"
+        ]
+      },
+      "private_true_total": 0,
+      "integration_ready": false
+    },
+    {
+      "agent": "runs/sia_lite_gpt54mini_faa9f03d_001/gen_5/target_agent.py",
+      "returncode": 0,
+      "ok": true,
+      "stderr_tail": "",
+      "fitness": -0.0,
+      "n_leakage_hits": 0,
+      "leakage_hits": [],
+      "train_exact_total": 0,
+      "shape_exact_total": 300,
+      "loo_task_total": 0,
+      "vacuous_loo": {},
+      "cross_task_firing": {},
+      "train_exact_name_tasks": {},
+      "top_train_exact_names": {},
+      "private_true_total": 0,
+      "integration_ready": false
+    },
+    {
+      "agent": "runs/sia_lite_gpt54mini_faa9f03d_001/gen_6/target_agent.py",
+      "returncode": 0,
+      "ok": true,
+      "stderr_tail": "",
+      "fitness": -0.0,
+      "n_leakage_hits": 0,
+      "leakage_hits": [],
+      "train_exact_total": 0,
+      "shape_exact_total": 2,
+      "loo_task_total": 0,
+      "vacuous_loo": {},
+      "cross_task_firing": {},
+      "train_exact_name_tasks": {},
+      "top_train_exact_names": {},
+      "private_true_total": 0,
+      "integration_ready": false
+    },
+    {
+      "agent": "runs/sia_lite_reloaded_001/gen_1/target_agent.py",
+      "returncode": 0,
+      "ok": true,
+      "stderr_tail": "",
+      "fitness": 0.1,
+      "n_leakage_hits": 0,
+      "leakage_hits": [],
+      "train_exact_total": 2,
+      "shape_exact_total": 439,
+      "loo_task_total": 0,
+      "vacuous_loo": {
+        "3dc255db": [
+          "apex_ray:2:away_from_frag:min_frag_border",
+          "apex_ray:3:away_from_frag:min_frag_border"
+        ]
+      },
+      "cross_task_firing": {},
+      "train_exact_name_tasks": {
+        "apex_ray:2:away_from_frag:min_frag_border": [
+          "3dc255db"
+        ],
+        "apex_ray:3:away_from_frag:min_frag_border": [
+          "3dc255db"
+        ]
+      },
+      "top_train_exact_names": {
+        "apex_ray:2:away_from_frag:min_frag_border": [
+          "3dc255db"
+        ],
+        "apex_ray:3:away_from_frag:min_frag_border": [
+          "3dc255db"
+        ]
+      },
+      "private_true_total": 0,
+      "integration_ready": false
+    },
+    {
+      "agent": "runs/sia_lite_reloaded_001/gen_2/target_agent.py",
+      "returncode": 0,
+      "ok": true,
+      "stderr_tail": "",
+      "fitness": 0.1,
+      "n_leakage_hits": 0,
+      "leakage_hits": [],
+      "train_exact_total": 2,
+      "shape_exact_total": 439,
+      "loo_task_total": 0,
+      "vacuous_loo": {
+        "3dc255db": [
+          "apex_ray:2:away_from_frag:min_frag_border",
+          "apex_ray:3:away_from_frag:min_frag_border"
+        ]
+      },
+      "cross_task_firing": {},
+      "train_exact_name_tasks": {
+        "apex_ray:2:away_from_frag:min_frag_border": [
+          "3dc255db"
+        ],
+        "apex_ray:3:away_from_frag:min_frag_border": [
+          "3dc255db"
+        ]
+      },
+      "top_train_exact_names": {
+        "apex_ray:2:away_from_frag:min_frag_border": [
+          "3dc255db"
+        ],
+        "apex_ray:3:away_from_frag:min_frag_border": [
+          "3dc255db"
+        ]
+      },
+      "private_true_total": 0,
+      "integration_ready": false
+    },
+    {
+      "agent": "runs/sia_lite_reloaded_001/gen_3/target_agent.py",
+      "returncode": 0,
+      "ok": true,
+      "stderr_tail": "",
+      "fitness": 0.1,
+      "n_leakage_hits": 0,
+      "leakage_hits": [],
+      "train_exact_total": 2,
+      "shape_exact_total": 445,
+      "loo_task_total": 0,
+      "vacuous_loo": {
+        "3dc255db": [
+          "apex_ray:2:away_from_frag:min_frag_border",
+          "apex_ray:3:away_from_frag:min_frag_border"
+        ]
+      },
+      "cross_task_firing": {},
+      "train_exact_name_tasks": {
+        "apex_ray:2:away_from_frag:min_frag_border": [
+          "3dc255db"
+        ],
+        "apex_ray:3:away_from_frag:min_frag_border": [
+          "3dc255db"
+        ]
+      },
+      "top_train_exact_names": {
+        "apex_ray:2:away_from_frag:min_frag_border": [
+          "3dc255db"
+        ],
+        "apex_ray:3:away_from_frag:min_frag_border": [
+          "3dc255db"
+        ]
+      },
+      "private_true_total": 0,
+      "integration_ready": false
+    },
+    {
+      "agent": "runs/sia_lite_reloaded_001/gen_4/target_agent.py",
+      "returncode": 0,
+      "ok": true,
+      "stderr_tail": "",
+      "fitness": -100.0,
+      "n_leakage_hits": 0,
+      "leakage_hits": [],
+      "train_exact_total": 0,
+      "shape_exact_total": 0,
+      "loo_task_total": 0,
+      "vacuous_loo": {},
+      "cross_task_firing": {},
+      "train_exact_name_tasks": {},
+      "top_train_exact_names": {},
+      "private_true_total": 0,
+      "integration_ready": false
+    },
+    {
+      "agent": "runs/sia_lite_reloaded_001/gen_5/target_agent.py",
+      "returncode": 0,
+      "ok": true,
+      "stderr_tail": "",
+      "fitness": 0.1,
+      "n_leakage_hits": 0,
+      "leakage_hits": [],
+      "train_exact_total": 2,
+      "shape_exact_total": 444,
+      "loo_task_total": 0,
+      "vacuous_loo": {
+        "3dc255db": [
+          "apex_ray:2:away_from_frag:min_frag_border",
+          "apex_ray:3:away_from_frag:min_frag_border"
+        ]
+      },
+      "cross_task_firing": {},
+      "train_exact_name_tasks": {
+        "apex_ray:2:away_from_frag:min_frag_border": [
+          "3dc255db"
+        ],
+        "apex_ray:3:away_from_frag:min_frag_border": [
+          "3dc255db"
+        ]
+      },
+      "top_train_exact_names": {
+        "apex_ray:2:away_from_frag:min_frag_border": [
+          "3dc255db"
+        ],
+        "apex_ray:3:away_from_frag:min_frag_border": [
+          "3dc255db"
+        ]
+      },
+      "private_true_total": 0,
+      "integration_ready": false
+    },
+    {
+      "agent": "runs/sia_lite_reloaded_001/gen_6/target_agent.py",
+      "returncode": 0,
+      "ok": true,
+      "stderr_tail": "",
+      "fitness": 0.1,
+      "n_leakage_hits": 0,
+      "leakage_hits": [],
+      "train_exact_total": 2,
+      "shape_exact_total": 444,
+      "loo_task_total": 0,
+      "vacuous_loo": {
+        "3dc255db": [
+          "apex_ray:2:away_from_frag:min_frag_border",
+          "apex_ray:3:away_from_frag:min_frag_border"
+        ]
+      },
+      "cross_task_firing": {},
+      "train_exact_name_tasks": {
+        "apex_ray:2:away_from_frag:min_frag_border": [
+          "3dc255db"
+        ],
+        "apex_ray:3:away_from_frag:min_frag_border": [
+          "3dc255db"
+        ]
+      },
+      "top_train_exact_names": {
+        "apex_ray:2:away_from_frag:min_frag_border": [
+          "3dc255db"
+        ],
+        "apex_ray:3:away_from_frag:min_frag_border": [
+          "3dc255db"
+        ]
+      },
+      "private_true_total": 0,
+      "integration_ready": false
+    },
+    {
+      "agent": "runs/sia_lite_reloaded_001/gen_7/target_agent.py",
+      "returncode": 0,
+      "ok": true,
+      "stderr_tail": "",
+      "fitness": 0.1,
+      "n_leakage_hits": 0,
+      "leakage_hits": [],
+      "train_exact_total": 2,
+      "shape_exact_total": 444,
+      "loo_task_total": 0,
+      "vacuous_loo": {
+        "3dc255db": [
+          "apex_ray:2:away_from_frag:min_frag_border",
+          "apex_ray:3:away_from_frag:min_frag_border"
+        ]
+      },
+      "cross_task_firing": {},
+      "train_exact_name_tasks": {
+        "apex_ray:2:away_from_frag:min_frag_border": [
+          "3dc255db"
+        ],
+        "apex_ray:3:away_from_frag:min_frag_border": [
+          "3dc255db"
+        ]
+      },
+      "top_train_exact_names": {
+        "apex_ray:2:away_from_frag:min_frag_border": [
+          "3dc255db"
+        ],
+        "apex_ray:3:away_from_frag:min_frag_border": [
+          "3dc255db"
+        ]
+      },
+      "private_true_total": 0,
+      "integration_ready": false
+    },
+    {
+      "agent": "runs/sia_lite_reloaded_001/gen_8/target_agent.py",
+      "returncode": 0,
+      "ok": true,
+      "stderr_tail": "",
+      "fitness": 0.1,
+      "n_leakage_hits": 0,
+      "leakage_hits": [],
+      "train_exact_total": 2,
+      "shape_exact_total": 444,
+      "loo_task_total": 0,
+      "vacuous_loo": {
+        "3dc255db": [
+          "apex_ray:2:away_from_frag:min_frag_border",
+          "apex_ray:3:away_from_frag:min_frag_border"
+        ]
+      },
+      "cross_task_firing": {},
+      "train_exact_name_tasks": {
+        "apex_ray:2:away_from_frag:min_frag_border": [
+          "3dc255db"
+        ],
+        "apex_ray:3:away_from_frag:min_frag_border": [
+          "3dc255db"
+        ]
+      },
+      "top_train_exact_names": {
+        "apex_ray:2:away_from_frag:min_frag_border": [
+          "3dc255db"
+        ],
+        "apex_ray:3:away_from_frag:min_frag_border": [
+          "3dc255db"
+        ]
+      },
+      "private_true_total": 0,
+      "integration_ready": false
+    },
+    {
+      "agent": "runs/sia_lite_reloaded_002/gen_1/target_agent.py",
+      "returncode": 0,
+      "ok": true,
+      "stderr_tail": "",
+      "fitness": 0.1,
+      "n_leakage_hits": 0,
+      "leakage_hits": [],
+      "train_exact_total": 2,
+      "shape_exact_total": 444,
+      "loo_task_total": 0,
+      "vacuous_loo": {
+        "3dc255db": [
+          "apex_ray:2:away_from_frag:min_frag_border",
+          "apex_ray:3:away_from_frag:min_frag_border"
+        ]
+      },
+      "cross_task_firing": {},
+      "train_exact_name_tasks": {
+        "apex_ray:2:away_from_frag:min_frag_border": [
+          "3dc255db"
+        ],
+        "apex_ray:3:away_from_frag:min_frag_border": [
+          "3dc255db"
+        ]
+      },
+      "top_train_exact_names": {
+        "apex_ray:2:away_from_frag:min_frag_border": [
+          "3dc255db"
+        ],
+        "apex_ray:3:away_from_frag:min_frag_border": [
+          "3dc255db"
+        ]
+      },
+      "private_true_total": 0,
+      "integration_ready": false
+    },
+    {
+      "agent": "runs/sia_lite_reloaded_002/gen_2/target_agent.py",
+      "returncode": 0,
+      "ok": true,
+      "stderr_tail": "",
+      "fitness": 0.1,
+      "n_leakage_hits": 0,
+      "leakage_hits": [],
+      "train_exact_total": 2,
+      "shape_exact_total": 439,
+      "loo_task_total": 0,
+      "vacuous_loo": {
+        "3dc255db": [
+          "apex_ray:2:away_from_frag:min_frag_border",
+          "apex_ray:3:away_from_frag:min_frag_border"
+        ]
+      },
+      "cross_task_firing": {},
+      "train_exact_name_tasks": {
+        "apex_ray:2:away_from_frag:min_frag_border": [
+          "3dc255db"
+        ],
+        "apex_ray:3:away_from_frag:min_frag_border": [
+          "3dc255db"
+        ]
+      },
+      "top_train_exact_names": {
+        "apex_ray:2:away_from_frag:min_frag_border": [
+          "3dc255db"
+        ],
+        "apex_ray:3:away_from_frag:min_frag_border": [
+          "3dc255db"
+        ]
+      },
+      "private_true_total": 0,
+      "integration_ready": false
+    },
+    {
+      "agent": "runs/sia_lite_reloaded_002/gen_3/target_agent.py",
+      "returncode": 0,
+      "ok": true,
+      "stderr_tail": "",
+      "fitness": 0.1,
+      "n_leakage_hits": 0,
+      "leakage_hits": [],
+      "train_exact_total": 2,
+      "shape_exact_total": 444,
+      "loo_task_total": 0,
+      "vacuous_loo": {
+        "3dc255db": [
+          "apex_ray:2:away_from_frag:min_frag_border",
+          "apex_ray:3:away_from_frag:min_frag_border"
+        ]
+      },
+      "cross_task_firing": {},
+      "train_exact_name_tasks": {
+        "apex_ray:2:away_from_frag:min_frag_border": [
+          "3dc255db"
+        ],
+        "apex_ray:3:away_from_frag:min_frag_border": [
+          "3dc255db"
+        ]
+      },
+      "top_train_exact_names": {
+        "apex_ray:2:away_from_frag:min_frag_border": [
+          "3dc255db"
+        ],
+        "apex_ray:3:away_from_frag:min_frag_border": [
+          "3dc255db"
+        ]
+      },
+      "private_true_total": 0,
+      "integration_ready": false
+    },
+    {
+      "agent": "runs/sia_lite_reloaded_002/gen_4/target_agent.py",
+      "returncode": 0,
+      "ok": true,
+      "stderr_tail": "",
+      "fitness": 0.1,
+      "n_leakage_hits": 0,
+      "leakage_hits": [],
+      "train_exact_total": 2,
+      "shape_exact_total": 444,
+      "loo_task_total": 0,
+      "vacuous_loo": {
+        "3dc255db": [
+          "apex_ray:2:away_from_frag:min_frag_border",
+          "apex_ray:3:away_from_frag:min_frag_border"
+        ]
+      },
+      "cross_task_firing": {},
+      "train_exact_name_tasks": {
+        "apex_ray:2:away_from_frag:min_frag_border": [
+          "3dc255db"
+        ],
+        "apex_ray:3:away_from_frag:min_frag_border": [
+          "3dc255db"
+        ]
+      },
+      "top_train_exact_names": {
+        "apex_ray:2:away_from_frag:min_frag_border": [
+          "3dc255db"
+        ],
+        "apex_ray:3:away_from_frag:min_frag_border": [
+          "3dc255db"
+        ]
+      },
+      "private_true_total": 0,
+      "integration_ready": false
+    },
+    {
+      "agent": "runs/sia_lite_reloaded_002/gen_5/target_agent.py",
+      "returncode": 0,
+      "ok": true,
+      "stderr_tail": "",
+      "fitness": 0.1,
+      "n_leakage_hits": 0,
+      "leakage_hits": [],
+      "train_exact_total": 2,
+      "shape_exact_total": 443,
+      "loo_task_total": 0,
+      "vacuous_loo": {
+        "3dc255db": [
+          "apex_ray:2:away_from_frag:min_frag_border",
+          "apex_ray:3:away_from_frag:min_frag_border"
+        ]
+      },
+      "cross_task_firing": {},
+      "train_exact_name_tasks": {
+        "apex_ray:2:away_from_frag:min_frag_border": [
+          "3dc255db"
+        ],
+        "apex_ray:3:away_from_frag:min_frag_border": [
+          "3dc255db"
+        ]
+      },
+      "top_train_exact_names": {
+        "apex_ray:2:away_from_frag:min_frag_border": [
+          "3dc255db"
+        ],
+        "apex_ray:3:away_from_frag:min_frag_border": [
+          "3dc255db"
+        ]
+      },
+      "private_true_total": 0,
+      "integration_ready": false
+    },
+    {
+      "agent": "runs/sia_lite_reloaded_002/gen_6/target_agent.py",
+      "returncode": 0,
+      "ok": true,
+      "stderr_tail": "",
+      "fitness": 0.1,
+      "n_leakage_hits": 0,
+      "leakage_hits": [],
+      "train_exact_total": 2,
+      "shape_exact_total": 444,
+      "loo_task_total": 0,
+      "vacuous_loo": {
+        "3dc255db": [
+          "apex_ray:2:away_from_frag:min_frag_border",
+          "apex_ray:3:away_from_frag:min_frag_border"
+        ]
+      },
+      "cross_task_firing": {},
+      "train_exact_name_tasks": {
+        "apex_ray:2:away_from_frag:min_frag_border": [
+          "3dc255db"
+        ],
+        "apex_ray:3:away_from_frag:min_frag_border": [
+          "3dc255db"
+        ]
+      },
+      "top_train_exact_names": {
+        "apex_ray:2:away_from_frag:min_frag_border": [
+          "3dc255db"
+        ],
+        "apex_ray:3:away_from_frag:min_frag_border": [
+          "3dc255db"
+        ]
+      },
+      "private_true_total": 0,
+      "integration_ready": false
+    },
+    {
+      "agent": "runs/sia_lite_reloaded_002/gen_7/target_agent.py",
+      "returncode": 0,
+      "ok": true,
+      "stderr_tail": "",
+      "fitness": 0.1,
+      "n_leakage_hits": 0,
+      "leakage_hits": [],
+      "train_exact_total": 2,
+      "shape_exact_total": 440,
+      "loo_task_total": 0,
+      "vacuous_loo": {
+        "3dc255db": [
+          "apex_ray:2:away_from_frag:min_frag_border",
+          "apex_ray:3:away_from_frag:min_frag_border"
+        ]
+      },
+      "cross_task_firing": {},
+      "train_exact_name_tasks": {
+        "apex_ray:2:away_from_frag:min_frag_border": [
+          "3dc255db"
+        ],
+        "apex_ray:3:away_from_frag:min_frag_border": [
+          "3dc255db"
+        ]
+      },
+      "top_train_exact_names": {
+        "apex_ray:2:away_from_frag:min_frag_border": [
+          "3dc255db"
+        ],
+        "apex_ray:3:away_from_frag:min_frag_border": [
+          "3dc255db"
+        ]
+      },
+      "private_true_total": 0,
+      "integration_ready": false
+    },
+    {
+      "agent": "runs/sia_lite_reloaded_002/gen_8/target_agent.py",
+      "returncode": 0,
+      "ok": true,
+      "stderr_tail": "",
+      "fitness": 0.1,
+      "n_leakage_hits": 0,
+      "leakage_hits": [],
+      "train_exact_total": 2,
+      "shape_exact_total": 392,
+      "loo_task_total": 0,
+      "vacuous_loo": {
+        "3dc255db": [
+          "apex_ray:2:away_from_frag:min_frag_border",
+          "apex_ray:3:away_from_frag:min_frag_border"
+        ]
+      },
+      "cross_task_firing": {},
+      "train_exact_name_tasks": {
+        "apex_ray:2:away_from_frag:min_frag_border": [
+          "3dc255db"
+        ],
+        "apex_ray:3:away_from_frag:min_frag_border": [
+          "3dc255db"
+        ]
+      },
+      "top_train_exact_names": {
+        "apex_ray:2:away_from_frag:min_frag_border": [
+          "3dc255db"
+        ],
+        "apex_ray:3:away_from_frag:min_frag_border": [
+          "3dc255db"
+        ]
+      },
+      "private_true_total": 0,
+      "integration_ready": false
+    }
+  ],
+  "integration_ready": [],
+  "integration_ready_bool": false
+}

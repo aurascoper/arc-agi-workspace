@@ -178,6 +178,52 @@ def synthetic_d4_exact(program: dict[str, Any], train: list[dict[str, Any]]) -> 
     return out
 
 
+def _background(grid) -> int:
+    counts: dict[int, int] = {}
+    for row in grid:
+        for value in row:
+            counts[int(value)] = counts.get(int(value), 0) + 1
+    return max(counts.items(), key=lambda kv: kv[1])[0]
+
+
+def _pad_grid(grid, fill: int, top: int, left: int, bottom: int, right: int):
+    h = len(grid)
+    w = len(grid[0]) if grid else 0
+    row = [fill] * (w + left + right)
+    return (
+        [row[:] for _ in range(top)]
+        + [[fill] * left + list(src) + [fill] * right for src in grid]
+        + [row[:] for _ in range(bottom)]
+    )
+
+
+def synthetic_padding_exact(program: dict[str, Any], train: list[dict[str, Any]]) -> dict[str, bool]:
+    variants = {
+        "pad_1": (1, 1, 1, 1),
+        "pad_asym": (1, 2, 2, 1),
+        "pad_topless": (0, 3, 1, 0),
+    }
+    out = {}
+    for label, pads in variants.items():
+        variant = []
+        for pair in train:
+            fill = _background(pair["input"])
+            variant.append({
+                "input": _pad_grid(pair["input"], fill, *pads),
+                "output": _pad_grid(pair["output"], fill, *pads),
+            })
+        compiled = DSL.compile_program(program, variant)
+        if compiled is None:
+            out[label] = False
+            continue
+        _name, fn = compiled
+        try:
+            out[label] = all(fn(deepcopy(p["input"])) == p["output"] for p in variant)
+        except Exception:
+            out[label] = False
+    return out
+
+
 def score_task(task_id: str, task: dict[str, Any], evaluator: Any, programs: list[dict[str, Any]]) -> dict[str, Any]:
     train = task["train"]
     compiled = []
@@ -201,6 +247,7 @@ def score_task(task_id: str, task: dict[str, Any], evaluator: Any, programs: lis
                 "admission_type": ev["admission_type"],
             }
             row["synthetic_d4_exact"] = synthetic_d4_exact(program, train)
+            row["synthetic_padding_exact"] = synthetic_padding_exact(program, train)
         rows.append(row)
     rows.sort(key=lambda r: (
         r.get("train_diff") is None,
@@ -236,6 +283,10 @@ def main() -> None:
             blockers = list((exact.get("generality") or {}).get("blockers", []))
             if not (exact.get("loo") or {}).get("informative") and cross_count < 2:
                 blockers.append("no_informative_loo_or_cross")
+            if exact.get("synthetic_d4_exact") and not all(exact["synthetic_d4_exact"].values()):
+                blockers.append("synthetic_d4_fail")
+            if exact.get("synthetic_padding_exact") and not all(exact["synthetic_padding_exact"].values()):
+                blockers.append("synthetic_padding_fail")
             exact["cross_task_count"] = cross_count
             exact["admission_ready"] = not blockers
             exact["promotion_blockers"] = blockers

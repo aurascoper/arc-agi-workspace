@@ -3880,10 +3880,16 @@
           "rot270": true,
           "anti_diag": true
         },
+        "synthetic_padding_exact": {
+          "pad_1": false,
+          "pad_asym": false,
+          "pad_topless": false
+        },
         "cross_task_count": 1,
         "admission_ready": false,
         "promotion_blockers": [
-          "no_informative_loo_or_cross"
+          "no_informative_loo_or_cross",
+          "synthetic_padding_fail"
         ]
       },
       "train_exact": [
@@ -3935,10 +3941,16 @@
             "rot270": true,
             "anti_diag": true
           },
+          "synthetic_padding_exact": {
+            "pad_1": false,
+            "pad_asym": false,
+            "pad_topless": false
+          },
           "cross_task_count": 1,
           "admission_ready": false,
           "promotion_blockers": [
-            "no_informative_loo_or_cross"
+            "no_informative_loo_or_cross",
+            "synthetic_padding_fail"
           ]
         },
         {
@@ -3989,10 +4001,16 @@
             "rot270": true,
             "anti_diag": true
           },
+          "synthetic_padding_exact": {
+            "pad_1": false,
+            "pad_asym": false,
+            "pad_topless": false
+          },
           "cross_task_count": 1,
           "admission_ready": false,
           "promotion_blockers": [
-            "no_informative_loo_or_cross"
+            "no_informative_loo_or_cross",
+            "synthetic_padding_fail"
           ]
         }
       ],
@@ -4045,10 +4063,16 @@
             "rot270": true,
             "anti_diag": true
           },
+          "synthetic_padding_exact": {
+            "pad_1": false,
+            "pad_asym": false,
+            "pad_topless": false
+          },
           "cross_task_count": 1,
           "admission_ready": false,
           "promotion_blockers": [
-            "no_informative_loo_or_cross"
+            "no_informative_loo_or_cross",
+            "synthetic_padding_fail"
           ]
         },
         {
@@ -4099,10 +4123,16 @@
             "rot270": true,
             "anti_diag": true
           },
+          "synthetic_padding_exact": {
+            "pad_1": false,
+            "pad_asym": false,
+            "pad_topless": false
+          },
           "cross_task_count": 1,
           "admission_ready": false,
           "promotion_blockers": [
-            "no_informative_loo_or_cross"
+            "no_informative_loo_or_cross",
+            "synthetic_padding_fail"
           ]
         },
         {
