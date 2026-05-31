@@ -1,15 +1,15 @@
 {
   "artifact": "verifier_health_latest",
-  "generated_cdt": "2026-05-31 04:57:44 CDT",
+  "generated_cdt": "2026-05-31 05:02:47 CDT",
   "branch": "research/operator-promotion-audit-2026-05-30",
-  "head": "85f85b02",
+  "head": "c715b059",
   "handoff_mirror": {
     "dir": "/tmp/arc_agi_handoff_sync",
     "available": true,
     "branch": "research/deep-research-handoff-2026-05-30",
     "expected_branch": "research/deep-research-handoff-2026-05-30",
-    "head": "173f3521",
-    "origin_head": "173f3521",
+    "head": "07d39890",
+    "origin_head": "07d39890",
     "head_matches_origin": true,
     "safe_status": []
   },
@@ -17,65 +17,65 @@
     "available": true,
     "heartbeat_stale_seconds": 390,
     "latest": {
-      "heartbeat": {
-        "hash": "85f85b02",
-        "subject": "chore(sync): heartbeat 04:57 CDT",
-        "commit_cdt": "2026-05-31 04:57:39 CDT",
-        "age_seconds_at_generation": 5
-      },
       "health": {
-        "hash": "aa95d314",
-        "subject": "chore(sync): health 04:52 CDT",
-        "commit_cdt": "2026-05-31 04:52:50 CDT",
-        "age_seconds_at_generation": 294
+        "hash": "c715b059",
+        "subject": "chore(sync): health 05:02 CDT",
+        "commit_cdt": "2026-05-31 05:02:45 CDT",
+        "age_seconds_at_generation": 2
+      },
+      "heartbeat": {
+        "hash": "9ed90fdf",
+        "subject": "chore(sync): heartbeat 05:02 CDT",
+        "commit_cdt": "2026-05-31 05:02:40 CDT",
+        "age_seconds_at_generation": 7
       }
     }
   },
   "artifact_freshness": {
     "stale_threshold_seconds": 900,
-    "max_age_seconds_at_generation": 71,
+    "max_age_seconds_at_generation": 74,
     "missing": [],
     "stale": [],
     "artifacts": {
       "tmp/dsl_enumeration_latest.json": {
         "exists": true,
-        "mtime_cdt": "2026-05-31 04:56:35 CDT",
-        "age_seconds_at_generation": 69
+        "mtime_cdt": "2026-05-31 05:01:35 CDT",
+        "age_seconds_at_generation": 71
       },
       "tmp/codex_sia_all23_sentinel.json": {
         "exists": true,
-        "mtime_cdt": "2026-05-31 04:57:39 CDT",
-        "age_seconds_at_generation": 5
+        "mtime_cdt": "2026-05-31 05:02:40 CDT",
+        "age_seconds_at_generation": 7
       },
       "tmp/sia_lite_latest.json": {
         "exists": true,
-        "mtime_cdt": "2026-05-31 04:56:35 CDT",
-        "age_seconds_at_generation": 69
+        "mtime_cdt": "2026-05-31 05:02:14 CDT",
+        "age_seconds_at_generation": 32
       },
       "tmp/sia_lite_residual_mining.json": {
         "exists": true,
-        "mtime_cdt": "2026-05-31 04:56:35 CDT",
-        "age_seconds_at_generation": 68
+        "mtime_cdt": "2026-05-31 05:02:14 CDT",
+        "age_seconds_at_generation": 32
       },
       "tmp/claude_sketch_enumeration.json": {
         "exists": true,
-        "mtime_cdt": "2026-05-31 04:56:36 CDT",
-        "age_seconds_at_generation": 68
+        "mtime_cdt": "2026-05-31 05:01:36 CDT",
+        "age_seconds_at_generation": 71
       },
       "tmp/legend_lattice_synthetic_latest.json": {
         "exists": true,
-        "mtime_cdt": "2026-05-31 04:56:33 CDT",
-        "age_seconds_at_generation": 71
+        "mtime_cdt": "2026-05-31 05:01:33 CDT",
+        "age_seconds_at_generation": 74
       },
       "tmp/verifier_refresh_latest.json": {
         "exists": true,
-        "mtime_cdt": "2026-05-31 04:57:39 CDT",
-        "age_seconds_at_generation": 5
+        "mtime_cdt": "2026-05-31 05:02:40 CDT",
+        "age_seconds_at_generation": 7
       }
     }
   },
   "last_refresh": {
-    "generated_cdt": "2026-05-31 04:57 CDT",
+    "generated_cdt": "2026-05-31 05:02 CDT",
     "failures": [],
     "timed_out": [],
     "returncodes": {
@@ -88,46 +88,55 @@
       "sentinel": 0
     },
     "durations_seconds": {
-      "compile": 0.122,
-      "legend_synth": 0.18,
-      "dsl_enum": 2.048,
-      "sia_latest": 0.084,
-      "sia_mine": 0.077,
-      "sketch_enum": 0.469,
-      "sentinel": 63.416
+      "compile": 0.108,
+      "legend_synth": 0.171,
+      "dsl_enum": 2.032,
+      "sia_latest": 0.085,
+      "sia_mine": 0.073,
+      "sketch_enum": 0.46,
+      "sentinel": 63.792
     }
   },
   "process_state": {
     "available": true,
     "counts": {
       "verifier_loop": 1,
-      "sia_lite_worker": 2,
-      "active_branch_push": 0,
-      "github_arc_agi_transfer": 0
+      "sia_lite_worker": 1,
+      "active_branch_push": 1,
+      "github_arc_agi_transfer": 1
     },
     "matching_processes": [
       {
         "pid": "34104",
         "ppid": "1",
-        "etime": "06:16",
+        "etime": "11:19",
         "categories": [
           "sia_lite_worker"
         ],
         "command": "tmux new-session -d -s arc2_sia_lite_88bcf3b4_002 cd /Users/aurascoper/Developer/arc_agi/workspace && python3 sia_arc_all23_task/sia_lite_harness.py --run-id sia_lite_reloaded_88bcf3b4_002 --model gpt-4.1-mini --temperature 0.8 --max-gen 8 --top-k 4 --target-task 88bcf3b4 --focus 'Target the tight residual on 88bcf3b4 using train-only evidence. Explore generalized marker-host, apex/direction, route/redraw, and object-role parameterization. Avoid coordinates, task IDs, public/private templates, and local patches; propose reusable abstractions only.' > tmp/sia_lite_reloaded_88bcf3b4_002.log 2>&1"
       },
       {
-        "pid": "34105",
-        "ppid": "34104",
-        "etime": "06:16",
+        "pid": "44947",
+        "ppid": "34107",
+        "etime": "00:02",
         "categories": [
-          "sia_lite_worker"
+          "active_branch_push"
         ],
-        "command": "/opt/homebrew/Cellar/python@3.14/3.14.5/Frameworks/Python.framework/Versions/3.14/Resources/Python.app/Contents/MacOS/Python sia_arc_all23_task/sia_lite_harness.py --run-id sia_lite_reloaded_88bcf3b4_002 --model gpt-4.1-mini --temperature 0.8 --max-gen 8 --top-k 4 --target-task 88bcf3b4 --focus Target the tight residual on 88bcf3b4 using train-only evidence. Explore generalized marker-host, apex/direction, route/redraw, and object-role parameterization. Avoid coordinates, task IDs, public/private templates, and local patches; propose reusable abstractions only."
+        "command": "git push origin HEAD:research/operator-promotion-audit-2026-05-30"
+      },
+      {
+        "pid": "44948",
+        "ppid": "44947",
+        "etime": "00:02",
+        "categories": [
+          "github_arc_agi_transfer"
+        ],
+        "command": "/opt/homebrew/bin/ssh git@github.com git-receive-pack 'aurascoper/arc-agi-workspace.git'"
       },
       {
         "pid": "34107",
         "ppid": "34104",
-        "etime": "06:16",
+        "etime": "11:19",
         "categories": [
           "verifier_loop"
         ],
@@ -136,8 +145,7 @@
     ]
   },
   "tmux_sessions": [
-    "arc2_codex_verifier: 1 windows (created Sun May 31 04:51:28 2026)",
-    "arc2_sia_lite_88bcf3b4_002: 1 windows (created Sun May 31 04:51:28 2026)"
+    "arc2_codex_verifier: 1 windows (created Sun May 31 04:51:28 2026)"
   ],
   "safe_status": [],
   "integration_ready": [],
@@ -173,38 +181,41 @@
     "latest_run": {
       "run_id": "sia_lite_reloaded_88bcf3b4_002",
       "target_task": "88bcf3b4",
-      "last_generation": 4,
+      "last_generation": 8,
       "tripwire": false,
       "best_generation": {
-        "generation": "gen_3",
+        "generation": "gen_8",
         "status": "success",
         "fitness": 0.1,
         "leaks": 0,
         "loo_tasks": 0,
         "cross": {},
-        "train_exact": 2,
-        "shape_exact": 439,
+        "train_exact": 1,
+        "shape_exact": 312,
         "target_train_exact": 0,
         "target_informative_loo": false,
-        "target_shape_exact": 28,
+        "target_shape_exact": 20,
         "target_best_diff": 51,
-        "target_best_name": "apex_ray:2:away_from_frag:min_frag_border"
+        "target_best_name": "component_gap_bridge:row"
       }
     },
     "latest_run_state": {
       "run_id": "sia_lite_reloaded_88bcf3b4_002",
       "target_task": "88bcf3b4",
-      "last_generation": 4,
+      "last_generation": 8,
       "tripwire": false,
-      "updated_at": "2026-05-31T04:56:17-0500",
-      "last_result_mtime_cdt": "2026-05-31 04:56:17 CDT",
-      "latest_result_age_seconds_at_generation": 87,
+      "updated_at": "2026-05-31T05:01:54-0500",
+      "last_result_mtime_cdt": "2026-05-31 05:01:54 CDT",
+      "latest_result_age_seconds_at_generation": 52,
       "stale_threshold_seconds": 1800,
       "is_stale": false
     },
     "tripwire_runs": [],
     "positive_reductions": 1
   },
-  "status": "ok",
-  "warnings": []
+  "status": "attention",
+  "warnings": [
+    "active-branch push process visible at health generation",
+    "arc-agi GitHub transfer process visible at health generation"
+  ]
 }
