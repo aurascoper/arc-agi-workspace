@@ -198,6 +198,13 @@ def heartbeat_text(refresh_outputs: dict) -> str:
             f"template_latest={align.get('latest_name')}, "
             f"latest_is_reviewed={align.get('latest_is_reviewed')}."
         )
+        count_align = claude_watch.get("count_marked_review_alignment", {})
+        if count_align:
+            lines.append(
+                "- Count-marked artifact watch: "
+                f"count_latest={count_align.get('latest_name')}, "
+                f"latest_is_reviewed={count_align.get('latest_is_reviewed')}."
+            )
     if failed:
         lines.append(f"- WARNING: refresh command failures={failed}; see cycle stdout/stderr tails in local logs.")
     else:

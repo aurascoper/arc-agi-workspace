@@ -1,15 +1,15 @@
 {
   "artifact": "verifier_health_latest",
-  "generated_cdt": "2026-05-31 06:33:06 CDT",
+  "generated_cdt": "2026-05-31 06:35:09 CDT",
   "branch": "research/operator-promotion-audit-2026-05-30",
-  "head": "de903f91",
+  "head": "98841ecb",
   "handoff_mirror": {
     "dir": "/tmp/arc_agi_handoff_sync",
     "available": true,
     "branch": "research/deep-research-handoff-2026-05-30",
     "expected_branch": "research/deep-research-handoff-2026-05-30",
-    "head": "0ec44ecc",
-    "origin_head": "0ec44ecc",
+    "head": "9a506c78",
+    "origin_head": "9a506c78",
     "head_matches_origin": true,
     "safe_status": []
   },
@@ -17,80 +17,85 @@
     "available": true,
     "heartbeat_stale_seconds": 390,
     "latest": {
+      "health": {
+        "hash": "db355bc4",
+        "subject": "chore(sync): health 06:33 CDT",
+        "commit_cdt": "2026-05-31 06:33:06 CDT",
+        "age_seconds_at_generation": 123
+      },
       "heartbeat": {
         "hash": "de903f91",
         "subject": "chore(sync): heartbeat 06:33 CDT",
         "commit_cdt": "2026-05-31 06:33:01 CDT",
-        "age_seconds_at_generation": 5
-      },
-      "health": {
-        "hash": "57180c02",
-        "subject": "chore(sync): health 06:28 CDT",
-        "commit_cdt": "2026-05-31 06:28:21 CDT",
-        "age_seconds_at_generation": 285
+        "age_seconds_at_generation": 128
       }
     }
   },
   "artifact_freshness": {
     "stale_threshold_seconds": 900,
-    "max_age_seconds_at_generation": 89,
+    "max_age_seconds_at_generation": 213,
     "missing": [],
     "stale": [],
     "artifacts": {
       "tmp/dsl_enumeration_latest.json": {
         "exists": true,
         "mtime_cdt": "2026-05-31 06:31:38 CDT",
-        "age_seconds_at_generation": 87
+        "age_seconds_at_generation": 211
       },
       "tmp/codex_sia_all23_sentinel.json": {
         "exists": true,
         "mtime_cdt": "2026-05-31 06:33:01 CDT",
-        "age_seconds_at_generation": 4
+        "age_seconds_at_generation": 128
       },
       "tmp/sia_lite_latest.json": {
         "exists": true,
         "mtime_cdt": "2026-05-31 06:31:38 CDT",
-        "age_seconds_at_generation": 87
+        "age_seconds_at_generation": 211
       },
       "tmp/sia_lite_residual_mining.json": {
         "exists": true,
         "mtime_cdt": "2026-05-31 06:31:38 CDT",
-        "age_seconds_at_generation": 87
+        "age_seconds_at_generation": 210
       },
       "tmp/sia_search_policy_latest.json": {
         "exists": true,
         "mtime_cdt": "2026-05-31 06:31:38 CDT",
-        "age_seconds_at_generation": 87
+        "age_seconds_at_generation": 210
       },
       "tmp/claude_artifact_watch_latest.json": {
         "exists": true,
-        "mtime_cdt": "2026-05-31 06:31:40 CDT",
-        "age_seconds_at_generation": 85
+        "mtime_cdt": "2026-05-31 06:34:56 CDT",
+        "age_seconds_at_generation": 12
       },
       "tmp/synthetic_family_ledger_latest.json": {
         "exists": true,
-        "mtime_cdt": "2026-05-31 06:31:41 CDT",
-        "age_seconds_at_generation": 85
+        "mtime_cdt": "2026-05-31 06:34:56 CDT",
+        "age_seconds_at_generation": 12
       },
       "tmp/template_match_role_recolor_latest_review.json": {
         "exists": true,
         "mtime_cdt": "2026-05-31 06:31:40 CDT",
-        "age_seconds_at_generation": 85
+        "age_seconds_at_generation": 208
+      },
+      "tmp/count_marked_objects_latest_review.json": {
+        "exists": true,
+        "mtime_cdt": "2026-05-31 06:32:08 CDT",
+        "age_seconds_at_generation": 180
       },
       "tmp/claude_sketch_enumeration.json": {
         "exists": true,
         "mtime_cdt": "2026-05-31 06:31:41 CDT",
-        "age_seconds_at_generation": 84
+        "age_seconds_at_generation": 207
       },
       "tmp/legend_lattice_synthetic_latest.json": {
         "exists": true,
         "mtime_cdt": "2026-05-31 06:31:36 CDT",
-        "age_seconds_at_generation": 89
+        "age_seconds_at_generation": 213
       },
       "tmp/verifier_refresh_latest.json": {
         "exists": true,
         "mtime_cdt": "2026-05-31 06:33:01 CDT",
-        "age_seconds_at_generation": 4
+        "age_seconds_at_generation": 128
       }
     }
   },
@@ -137,7 +142,7 @@
       {
         "pid": "15614",
         "ppid": "15613",
-        "etime": "21:36",
+        "etime": "23:39",
         "categories": [
           "verifier_loop"
         ],
@@ -207,7 +212,7 @@
       "tripwire": false,
       "updated_at": "2026-05-31T05:29:11-0500",
       "last_result_mtime_cdt": "2026-05-31 05:29:11 CDT",
-      "latest_result_age_seconds_at_generation": 3834,
+      "latest_result_age_seconds_at_generation": 3957,
       "stale_threshold_seconds": 1800,
       "is_stale": true
     },
@@ -290,8 +295,40 @@
       "pair0_table": 0
     }
   },
+  "count_marked_objects_review": {
+    "generated_cdt": "2026-05-31 06:32:08 CDT",
+    "generator_name": "count_marked_objects_v5.py",
+    "generator_version": 5,
+    "verdict": "not_ledger_safe",
+    "blocking_findings": [
+      {
+        "name": "literal_dim_admitted",
+        "kind": "domain/dimension",
+        "admitted_tasks": 21,
+        "admitted_cases": 24,
+        "fix": "ensure every literal interior box smaller than max train dimensions undercounts on train"
+      },
+      {
+        "name": "literal_dim_fragile",
+        "kind": "domain/dimension",
+        "admitted_tasks": 141,
+        "admitted_cases": 205,
+        "fix": "force every smaller literal interior box to disagree on >=2 train pairs/task"
+      }
+    ],
+    "admitted_counts": {
+      "cap_at_7": 320,
+      "count_size_le_6": 320,
+      "grow_keep_both": 320,
+      "grow_keep_col0": 320,
+      "grow_keep_row1": 320
+    },
+    "fragile_lt2_counts": {
+      "cap_at_6": 320
+    }
+  },
   "claude_artifact_watch": {
-    "generated_cdt": "2026-05-31 06:31:40 CDT",
+    "generated_cdt": "2026-05-31 06:34:56 CDT",
     "template_match_review_alignment": {
       "latest_template_exists": true,
       "review_exists": true,
@@ -304,18 +341,30 @@
       "latest_is_reviewed": true,
       "action": "latest template-match generator is reviewed"
     },
+    "count_marked_review_alignment": {
+      "latest_count_exists": true,
+      "review_exists": true,
+      "latest_name": "count_marked_objects_v5.py",
+      "latest_version": 5,
+      "latest_sha256": "59bad14c06bb7f54e4048c7d974c62a2ded287d8403fc4b16280e5dcd98af59a",
+      "reviewed_name": "count_marked_objects_v5.py",
+      "reviewed_version": 5,
+      "reviewed_sha256": "59bad14c06bb7f54e4048c7d974c62a2ded287d8403fc4b16280e5dcd98af59a",
+      "latest_is_reviewed": true,
+      "action": "latest count-marked generator is reviewed"
+    },
     "download_counts": {
       "template_match_role_recolor": 3,
       "count_marked_objects": 3
     }
   },
   "synthetic_family_ledger": {
-    "generated_cdt": "2026-05-31 06:31:40 CDT",
+    "generated_cdt": "2026-05-31 06:34:56 CDT",
     "summary": {
       "live_integration_ready": false,
       "template_latest_reviewed": true,
       "template_status": "not_ledger_safe",
-      "count_marked_status": "external_method_shipped_unverified_by_codex",
+      "count_marked_status": "not_ledger_safe",
       "sia_recommendation": "idle_exhausted_sia_queue"
     }
   },

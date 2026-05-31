@@ -31,6 +31,7 @@ FRESHNESS_PATHS = [
     "tmp/claude_artifact_watch_latest.json",
     "tmp/synthetic_family_ledger_latest.json",
     "tmp/template_match_role_recolor_latest_review.json",
+    "tmp/count_marked_objects_latest_review.json",
     "tmp/claude_sketch_enumeration.json",
     "tmp/legend_lattice_synthetic_latest.json",
     "tmp/verifier_refresh_latest.json",
@@ -59,6 +60,7 @@ SAFE_STATUS_PATHS = [
     "tmp/synthetic_family_ledger_latest.json",
     "tmp/template_match_role_recolor_latest_review.json",
     "tmp/template_match_role_recolor_v1_review.json",
+    "tmp/count_marked_objects_latest_review.json",
     "tmp/claude_sketch_enumeration.json",
     "tmp/legend_lattice_synthetic_latest.json",
     "tmp/verifier_refresh_latest.json",
@@ -251,6 +253,7 @@ def main() -> None:
     claude_watch = load_json("tmp/claude_artifact_watch_latest.json") or {}
     synthetic_ledger = load_json("tmp/synthetic_family_ledger_latest.json") or {}
     template_match_review = load_json("tmp/template_match_role_recolor_latest_review.json") or load_json("tmp/template_match_role_recolor_v1_review.json") or {}
+    count_marked_review = load_json("tmp/count_marked_objects_latest_review.json") or {}
     refresh = load_json("tmp/verifier_refresh_latest.json") or {}
     freshness = artifact_freshness(generated_dt)
     status = git_lines(["status", "--short", "--", *SAFE_STATUS_PATHS])
@@ -305,6 +308,9 @@ def main() -> None:
     align = claude_watch.get("template_match_review_alignment", {})
     if align and align.get("latest_template_exists") and not align.get("latest_is_reviewed"):
         warnings.append("latest template-match generator is not reviewed")
+    count_align = claude_watch.get("count_marked_review_alignment", {})
+    if count_align and count_align.get("latest_count_exists") and not count_align.get("latest_is_reviewed"):
+        warnings.append("latest count-marked generator is not reviewed")
     if freshness["missing"]:
         warnings.append("refreshed artifact missing")
     if freshness["stale"]:
@@ -387,9 +393,19 @@ def main() -> None:
             "findings": template_match_review.get("findings", []),
             "admitted_counts": template_match_review.get("admitted_counts", {}),
         },
+        "count_marked_objects_review": {
+            "generated_cdt": count_marked_review.get("generated_cdt"),
+            "generator_name": count_marked_review.get("generator_name"),
+            "generator_version": count_marked_review.get("generator_version"),
+            "verdict": count_marked_review.get("verdict"),
+            "blocking_findings": count_marked_review.get("blocking_findings", []),
+            "admitted_counts": count_marked_review.get("admitted_counts", {}),
+            "fragile_lt2_counts": count_marked_review.get("fragile_lt2_counts", {}),
+        },
         "claude_artifact_watch": {
             "generated_cdt": claude_watch.get("generated_cdt"),
             "template_match_review_alignment": claude_watch.get("template_match_review_alignment", {}),
+            "count_marked_review_alignment": claude_watch.get("count_marked_review_alignment", {}),
             "download_counts": {
                 key: row.get("count")
                 for key, row in (claude_watch.get("downloads", {}) or {}).items()
