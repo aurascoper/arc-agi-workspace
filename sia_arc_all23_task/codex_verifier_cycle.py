@@ -161,7 +161,12 @@ def mirror_push() -> None:
 def push_active_branch() -> None:
     branch = run(["git", "branch", "--show-current"], check=False).stdout.strip()
     if branch:
-        run(["git", "push", "origin", f"HEAD:{branch}"], check=False)
+        try:
+            run(["git", "push", "origin", f"HEAD:{branch}"], timeout=45, check=False)
+        except subprocess.TimeoutExpired:
+            # The full research branch can be much heavier than the slim handoff
+            # branch; never let a slow push stall the heartbeat cadence.
+            pass
 
 
 def cycle(push: bool, commit: bool) -> None:
