@@ -1,17 +1,17 @@
 {
   "artifact": "claude_artifact_watch_latest",
-  "generated_cdt": "2026-05-31 06:05:08 CDT",
+  "generated_cdt": "2026-05-31 06:06:43 CDT",
   "downloads": {
     "template_match_role_recolor": {
       "pattern": "/Users/aurascoper/Downloads/template_match_role_recolor_v*.py",
-      "count": 1,
+      "count": 2,
       "latest": {
-        "name": "template_match_role_recolor_v1.py",
-        "path": "/Users/aurascoper/Downloads/template_match_role_recolor_v1.py",
-        "version": 1,
-        "size_bytes": 21382,
-        "sha256": "df720376f58931b7b1cc94b81a91149462e6b9d7eaa564ea202d6b83156b0570",
-        "mtime_cdt": "2026-05-31 05:28:03 CDT"
+        "name": "template_match_role_recolor_v2.py",
+        "path": "/Users/aurascoper/Downloads/template_match_role_recolor_v2.py",
+        "version": 2,
+        "size_bytes": 25593,
+        "sha256": "a85f1e375c694e33288fbfb4b0f5695092589ae59df535a19483f7cbca0f863d",
+        "mtime_cdt": "2026-05-31 06:05:51 CDT"
       },
       "files": [
         {
@@ -21,6 +21,14 @@
           "size_bytes": 21382,
           "sha256": "df720376f58931b7b1cc94b81a91149462e6b9d7eaa564ea202d6b83156b0570",
           "mtime_cdt": "2026-05-31 05:28:03 CDT"
+        },
+        {
+          "name": "template_match_role_recolor_v2.py",
+          "path": "/Users/aurascoper/Downloads/template_match_role_recolor_v2.py",
+          "version": 2,
+          "size_bytes": 25593,
+          "sha256": "a85f1e375c694e33288fbfb4b0f5695092589ae59df535a19483f7cbca0f863d",
+          "mtime_cdt": "2026-05-31 06:05:51 CDT"
         }
       ]
     },
@@ -98,7 +106,7 @@
       "path": "tmp/claude_sketch_enumeration.json",
       "exists": true,
       "size_bytes": 75780,
-      "mtime_cdt": "2026-05-31 06:00:08 CDT"
+      "mtime_cdt": "2026-05-31 06:05:09 CDT"
     },
     {
       "path": "tmp/template_match_role_recolor_latest_review.json",
@@ -110,14 +118,14 @@
   "template_match_review_alignment": {
     "latest_template_exists": true,
     "review_exists": true,
-    "latest_name": "template_match_role_recolor_v1.py",
-    "latest_version": 1,
-    "latest_sha256": "df720376f58931b7b1cc94b81a91149462e6b9d7eaa564ea202d6b83156b0570",
+    "latest_name": "template_match_role_recolor_v2.py",
+    "latest_version": 2,
+    "latest_sha256": "a85f1e375c694e33288fbfb4b0f5695092589ae59df535a19483f7cbca0f863d",
     "reviewed_name": "template_match_role_recolor_v1.py",
     "reviewed_version": 1,
     "reviewed_sha256": "df720376f58931b7b1cc94b81a91149462e6b9d7eaa564ea202d6b83156b0570",
-    "latest_is_reviewed": true,
-    "action": "latest template-match generator is reviewed"
+    "latest_is_reviewed": false,
+    "action": "run review_template_match_role_recolor.py before using template-match evidence"
   },
   "notes": [
     "This watcher fingerprints Claude drop files but does not import or execute them.",
