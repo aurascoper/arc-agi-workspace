@@ -1,20 +1,58 @@
 {
   "artifact": "verifier_health_latest",
-  "generated_cdt": "2026-05-31 03:59:29 CDT",
+  "generated_cdt": "2026-05-31 04:03:50 CDT",
   "branch": "research/operator-promotion-audit-2026-05-30",
-  "head": "558b2fb4",
+  "head": "2ea7cbb3",
   "handoff_mirror": {
     "dir": "/tmp/arc_agi_handoff_sync",
     "available": true,
     "branch": "research/deep-research-handoff-2026-05-30",
     "expected_branch": "research/deep-research-handoff-2026-05-30",
-    "head": "68e22fda",
-    "origin_head": "68e22fda",
+    "head": "f8b95c50",
+    "origin_head": "f8b95c50",
     "head_matches_origin": true,
     "safe_status": []
   },
+  "artifact_freshness": {
+    "stale_threshold_seconds": 900,
+    "max_age_seconds_at_generation": 58,
+    "missing": [],
+    "stale": [],
+    "artifacts": {
+      "tmp/dsl_enumeration_latest.json": {
+        "exists": true,
+        "mtime_cdt": "2026-05-31 04:02:53 CDT",
+        "age_seconds_at_generation": 56
+      },
+      "tmp/codex_sia_all23_sentinel.json": {
+        "exists": true,
+        "mtime_cdt": "2026-05-31 04:03:45 CDT",
+        "age_seconds_at_generation": 5
+      },
+      "tmp/sia_lite_latest.json": {
+        "exists": true,
+        "mtime_cdt": "2026-05-31 04:02:53 CDT",
+        "age_seconds_at_generation": 56
+      },
+      "tmp/sia_lite_residual_mining.json": {
+        "exists": true,
+        "mtime_cdt": "2026-05-31 04:02:53 CDT",
+        "age_seconds_at_generation": 56
+      },
+      "tmp/claude_sketch_enumeration.json": {
+        "exists": true,
+        "mtime_cdt": "2026-05-31 04:02:54 CDT",
+        "age_seconds_at_generation": 55
+      },
+      "tmp/legend_lattice_synthetic_latest.json": {
+        "exists": true,
+        "mtime_cdt": "2026-05-31 04:02:51 CDT",
+        "age_seconds_at_generation": 58
+      }
+    }
+  },
   "tmux_sessions": [
-    "arc2_codex_verifier: 1 windows (created Sun May 31 03:58:29 2026)"
+    "arc2_codex_verifier: 1 windows (created Sun May 31 04:02:51 2026)"
   ],
   "safe_status": [],
   "integration_ready": [],
