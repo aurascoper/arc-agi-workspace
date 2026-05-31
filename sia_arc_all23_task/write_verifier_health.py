@@ -29,6 +29,7 @@ FRESHNESS_PATHS = [
     "tmp/sia_lite_residual_mining.json",
     "tmp/sia_search_policy_latest.json",
     "tmp/claude_artifact_watch_latest.json",
+    "tmp/synthetic_family_ledger_latest.json",
     "tmp/template_match_role_recolor_latest_review.json",
     "tmp/claude_sketch_enumeration.json",
     "tmp/legend_lattice_synthetic_latest.json",
@@ -55,6 +56,7 @@ SAFE_STATUS_PATHS = [
     "tmp/sia_lite_residual_mining.json",
     "tmp/sia_search_policy_latest.json",
     "tmp/claude_artifact_watch_latest.json",
+    "tmp/synthetic_family_ledger_latest.json",
     "tmp/template_match_role_recolor_latest_review.json",
     "tmp/template_match_role_recolor_v1_review.json",
     "tmp/claude_sketch_enumeration.json",
@@ -247,6 +249,7 @@ def main() -> None:
     residuals = load_json("tmp/sia_lite_residual_mining.json") or {}
     sia_policy = load_json("tmp/sia_search_policy_latest.json") or {}
     claude_watch = load_json("tmp/claude_artifact_watch_latest.json") or {}
+    synthetic_ledger = load_json("tmp/synthetic_family_ledger_latest.json") or {}
     template_match_review = load_json("tmp/template_match_role_recolor_latest_review.json") or load_json("tmp/template_match_role_recolor_v1_review.json") or {}
     refresh = load_json("tmp/verifier_refresh_latest.json") or {}
     freshness = artifact_freshness(generated_dt)
@@ -392,6 +395,10 @@ def main() -> None:
                 for key, row in (claude_watch.get("downloads", {}) or {}).items()
                 if isinstance(row, dict)
             },
+        },
+        "synthetic_family_ledger": {
+            "generated_cdt": synthetic_ledger.get("generated_cdt"),
+            "summary": synthetic_ledger.get("summary", {}),
         },
         "status": "attention" if warnings else "ok",
         "warnings": warnings,

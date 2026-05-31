@@ -36,6 +36,7 @@ SAFE_PATHS = [
     "tmp/sia_lite_residual_mining.json",
     "tmp/sia_search_policy_latest.json",
     "tmp/claude_artifact_watch_latest.json",
+    "tmp/synthetic_family_ledger_latest.json",
     "tmp/template_match_role_recolor_latest_review.json",
     "tmp/template_match_role_recolor_v1_review.json",
     "tmp/dsl_enumeration_latest.json",
@@ -75,6 +76,7 @@ def refresh() -> dict:
                     "sia_arc_all23_task/write_sia_search_policy.py",
                     "sia_arc_all23_task/write_claude_artifact_watch.py",
                     "sia_arc_all23_task/review_template_match_role_recolor.py",
+                    "sia_arc_all23_task/write_synthetic_family_ledger.py",
                     "sia_arc_all23_task/write_verifier_health.py",
                     "arc2_typed_sketch_enumerator.py", "arc2_sia_all23_sentinel.py"],
         "legend_synth": ["python3", "sia_arc_all23_task/legend_lattice_synthetic.py"],
@@ -84,6 +86,7 @@ def refresh() -> dict:
         "sia_policy": ["python3", "sia_arc_all23_task/write_sia_search_policy.py"],
         "template_match_review": ["python3", "sia_arc_all23_task/review_template_match_role_recolor.py"],
         "claude_watch": ["python3", "sia_arc_all23_task/write_claude_artifact_watch.py"],
+        "synthetic_ledger": ["python3", "sia_arc_all23_task/write_synthetic_family_ledger.py"],
         "sketch_enum": ["python3", "arc2_typed_sketch_enumerator.py"],
         "sentinel": ["python3", "arc2_sia_all23_sentinel.py"],
     }
