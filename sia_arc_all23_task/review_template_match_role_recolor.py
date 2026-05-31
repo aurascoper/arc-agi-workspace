@@ -31,10 +31,12 @@ DEFAULT_GENERATOR = Path.home() / "Downloads" / "template_match_role_recolor_v1.
 OUT = WORKSPACE / "tmp" / "template_match_role_recolor_v1_review.json"
 
 N4 = ((1, 0), (-1, 0), (0, 1), (0, -1))
+N8 = N4 + ((1, 1), (1, -1), (-1, 1), (-1, -1))
 LEG_CLO = 0
 LEG_CHI = 2
 WORK_CLO = 4
 HARDCODED_H = 13
+HARDCODED_W = 15
 
 
 def load_generator(path: Path) -> ModuleType:
@@ -60,11 +62,27 @@ def bbox(cells):
     return (max(rs) - min(rs) + 1, max(cs) - min(cs) + 1)
 
 
+def canon_d4(cells):
+    pts = list(canon(cells))
+
+    def variants(r, c):
+        return [
+            (r, c), (r, -c), (-r, c), (-r, -c),
+            (c, r), (c, -r), (-c, r), (-c, -r),
+        ]
+
+    forms = []
+    for idx in range(8):
+        transformed = [variants(r, c)[idx] for r, c in pts]
+        forms.append(tuple(sorted(canon(transformed))))
+    return min(forms)
+
+
 def centroid(cells):
     return (sum(r for r, _ in cells) / len(cells), sum(c for _, c in cells) / len(cells))
 
 
-def objects(grid, bg, rlo, rhi, clo, chi):
+def objects(grid, bg, rlo, rhi, clo, chi, neigh=N4):
     h, w = len(grid), len(grid[0])
     rhi = min(rhi, h - 1)
     chi = min(chi, w - 1)
@@ -81,7 +99,7 @@ def objects(grid, bg, rlo, rhi, clo, chi):
             while stack:
                 rr, cc = stack.pop()
                 cells.append((rr, cc))
-                for dr, dc in N4:
+                for dr, dc in neigh:
                     nr, nc = rr + dr, cc + dc
                     if rlo <= nr <= rhi and clo <= nc <= chi and not seen[nr][nc] and grid[nr][nc] == color:
                         seen[nr][nc] = True
@@ -90,11 +108,11 @@ def objects(grid, bg, rlo, rhi, clo, chi):
     return out
 
 
-def legend_entries(grid, bg, rhi=None):
+def legend_entries(grid, bg, rhi=None, chi=LEG_CHI, neigh=N4):
     if rhi is None:
         rhi = len(grid) - 1
     entries = []
-    for obj in objects(grid, bg, 0, rhi, LEG_CLO, LEG_CHI):
+    for obj in objects(grid, bg, 0, rhi, LEG_CLO, chi, neigh=neigh):
         cells = obj["cells"]
         entries.append({
             "color": obj["color"],
@@ -108,11 +126,13 @@ def legend_entries(grid, bg, rhi=None):
     return entries
 
 
-def work_objects(grid, bg, query, rhi=None):
+def work_objects(grid, bg, query, rhi=None, chi=None, neigh=N4):
     if rhi is None:
         rhi = len(grid) - 1
+    if chi is None:
+        chi = len(grid[0]) - 1
     rows = []
-    for obj in objects(grid, bg, 0, rhi, WORK_CLO, len(grid[0]) - 1):
+    for obj in objects(grid, bg, 0, rhi, WORK_CLO, chi, neigh=neigh):
         if obj["color"] == query:
             cells = obj["cells"]
             rows.append({"cells": cells, "canon": canon(cells), "bbox": bbox(cells), "centroid": centroid(cells)})
@@ -145,6 +165,22 @@ def solve_by_bbox(inp, bg, query):
         by_box.setdefault(row["bbox"], row["color"])
     work = work_objects(inp, bg, query)
     return apply_recolor(inp, work, lambda row: by_box.get(row["bbox"]))
+
+
+def solve_by_shape_d4(inp, bg, query):
+    legend = legend_entries(inp, bg)
+    by_d4 = {}
+    for row in legend:
+        by_d4.setdefault(canon_d4(row["cells"]), row["color"])
+    work = work_objects(inp, bg, query)
+    return apply_recolor(inp, work, lambda row: by_d4.get(canon_d4(row["cells"])))
+
+
+def solve_by_shape_8conn(inp, bg, query):
+    legend = legend_entries(inp, bg, neigh=N8)
+    by_shape = {row["canon"]: row["color"] for row in legend}
+    work = work_objects(inp, bg, query, neigh=N8)
+    return apply_recolor(inp, work, lambda row: by_shape.get(row["canon"]))
 
 
 def solve_by_size(inp, bg, query):
@@ -180,6 +216,30 @@ def solve_hardcoded_h(inp, bg, query):
     by_shape = {row["canon"]: row["color"] for row in legend}
     work = work_objects(inp, bg, query, rhi=rhi)
     return apply_recolor(inp, work, lambda row: by_shape.get(row["canon"]))
+
+
+def solve_hardcoded_w(inp, bg, query):
+    chi = min(HARDCODED_W - 1, len(inp[0]) - 1)
+    legend = legend_entries(inp, bg, chi=min(LEG_CHI, chi))
+    by_shape = {row["canon"]: row["color"] for row in legend}
+    work = work_objects(inp, bg, query, chi=chi)
+    return apply_recolor(inp, work, lambda row: by_shape.get(row["canon"]))
+
+
+def solve_unique_role_once(inp, bg, query):
+    legend = legend_entries(inp, bg)
+    by_shape = {row["canon"]: row["color"] for row in legend}
+    work = work_objects(inp, bg, query)
+    used = set()
+
+    def color_of(row):
+        color = by_shape.get(row["canon"])
+        if color is None or color in used:
+            return None
+        used.add(color)
+        return color
+
+    return apply_recolor(inp, work, color_of)
 
 
 def pair0_table_solver(task):
@@ -219,10 +279,14 @@ def main() -> None:
     solvers = {
         "by_shape_rule": solve_by_shape,
         "by_bbox": solve_by_bbox,
+        "by_shape_d4": solve_by_shape_d4,
+        "by_shape_8conn": solve_by_shape_8conn,
         "by_size": solve_by_size,
         "by_slot": solve_by_slot,
         "by_nearest": solve_by_nearest,
         "hardcoded_H": solve_hardcoded_h,
+        "hardcoded_W": solve_hardcoded_w,
+        "unique_role_once": solve_unique_role_once,
     }
     admitted = {name: 0 for name in solvers}
     admitted["pair0_table"] = 0
@@ -244,7 +308,7 @@ def main() -> None:
                 if admits_task(task, solver):
                     admitted[name] += 1
                     seed_counts[name] += 1
-                    if len(examples[name]) < 5:
+                    if name != "by_shape_rule" and len(examples[name]) < 5:
                         examples[name].append({"seed": seed, "task_index": task_index, "domain": task_domain(task)})
             table_solver = pair0_table_solver(task)
             if admits_task(task, table_solver):
@@ -280,6 +344,19 @@ def main() -> None:
         "seeds": seeds,
         "num_tasks_per_seed": num_tasks,
         "total_tasks": total_tasks,
+        "review_scope": {
+            "v1": "reproduces and extends named sibling checks; not a full blind sibling enumerator",
+            "open_ended_additions": [
+                "D4-canonical shape matching",
+                "8-connected object individuation",
+                "literal width bound",
+                "unique-role-once binding constraint",
+            ],
+            "v2_requirement": (
+                "If Claude provides v2, treat this reviewer as a starting floor and add any new "
+                "surfaces suggested by v2's generator, especially transfer and unmatched-object semantics."
+            ),
+        },
         "oracle_mismatches": oracle_mismatches,
         "admitted_counts": admitted,
         "admitted_rates": {name: admitted[name] / total_tasks for name in sorted(admitted)},
@@ -290,6 +367,7 @@ def main() -> None:
         "notes": [
             "This reviewer imports only generate_family and reimplements oracle/siblings independently.",
             "The artifact is method-track evidence only and never a live candidate.",
+            "A zero count for D4/8conn on v1 is not closure if the generator deliberately deferred those surfaces.",
         ],
     }
     OUT.parent.mkdir(exist_ok=True)
