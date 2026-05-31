@@ -336,6 +336,30 @@ def main() -> None:
             "distinguishing_grid": "vary grid height and place a work object in rows outside the literal H=13 bound",
             "fix": "vary H as well as W",
         })
+    if admitted["hardcoded_W"]:
+        findings.append({
+            "name": "hardcoded_W",
+            "axis": "domain/dimension",
+            "admitted_tasks": admitted["hardcoded_W"],
+            "distinguishing_grid": "place work objects in columns outside a literal W=15 bound",
+            "fix": "force work-area occupancy beyond the smallest width on >=2 train instances per task",
+        })
+    if admitted["by_shape_d4"]:
+        findings.append({
+            "name": "by_shape_d4",
+            "axis": "definition/correspondence",
+            "admitted_tasks": admitted["by_shape_d4"],
+            "distinguishing_grid": "legend/work shapes whose D4-canonical identity differs from exact canonical identity",
+            "fix": "force orientation-sensitive correspondence collisions on >=2 train instances per task",
+        })
+    if admitted["by_shape_8conn"]:
+        findings.append({
+            "name": "by_shape_8conn",
+            "axis": "definition/individuation",
+            "admitted_tasks": admitted["by_shape_8conn"],
+            "distinguishing_grid": "diagonally touching same-colour objects where 4-connectivity and 8-connectivity disagree",
+            "fix": "force diagonal-touch individuation cases on >=2 train instances per task",
+        })
 
     out = {
         "artifact": "template_match_role_recolor_v1_review",

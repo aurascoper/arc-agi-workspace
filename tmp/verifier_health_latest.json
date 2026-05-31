@@ -1,15 +1,15 @@
 {
   "artifact": "verifier_health_latest",
-  "generated_cdt": "2026-05-31 05:44:15 CDT",
+  "generated_cdt": "2026-05-31 05:48:25 CDT",
   "branch": "research/operator-promotion-audit-2026-05-30",
-  "head": "b3e1ff96",
+  "head": "4cf87ba6",
   "handoff_mirror": {
     "dir": "/tmp/arc_agi_handoff_sync",
     "available": true,
     "branch": "research/deep-research-handoff-2026-05-30",
     "expected_branch": "research/deep-research-handoff-2026-05-30",
-    "head": "3d18a31d",
-    "origin_head": "3d18a31d",
+    "head": "2e23fcdb",
+    "origin_head": "2e23fcdb",
     "head_matches_origin": true,
     "safe_status": []
   },
@@ -18,69 +18,69 @@
     "heartbeat_stale_seconds": 390,
     "latest": {
       "heartbeat": {
-        "hash": "b3e1ff96",
-        "subject": "chore(sync): heartbeat 05:43 CDT",
-        "commit_cdt": "2026-05-31 05:43:41 CDT",
-        "age_seconds_at_generation": 34
+        "hash": "a0b748f3",
+        "subject": "chore(sync): heartbeat 05:46 CDT",
+        "commit_cdt": "2026-05-31 05:46:55 CDT",
+        "age_seconds_at_generation": 90
       },
       "health": {
-        "hash": "f5cfdc13",
-        "subject": "chore(sync): health 05:41 CDT",
-        "commit_cdt": "2026-05-31 05:41:48 CDT",
-        "age_seconds_at_generation": 147
+        "hash": "d2530907",
+        "subject": "chore(sync): health 05:44 CDT",
+        "commit_cdt": "2026-05-31 05:44:15 CDT",
+        "age_seconds_at_generation": 250
       }
     }
   },
   "artifact_freshness": {
     "stale_threshold_seconds": 900,
-    "max_age_seconds_at_generation": 119,
+    "max_age_seconds_at_generation": 283,
     "missing": [],
     "stale": [],
     "artifacts": {
       "tmp/dsl_enumeration_latest.json": {
         "exists": true,
-        "mtime_cdt": "2026-05-31 05:42:17 CDT",
-        "age_seconds_at_generation": 117
+        "mtime_cdt": "2026-05-31 05:47:24 CDT",
+        "age_seconds_at_generation": 61
       },
       "tmp/codex_sia_all23_sentinel.json": {
         "exists": true,
         "mtime_cdt": "2026-05-31 05:43:41 CDT",
-        "age_seconds_at_generation": 33
+        "age_seconds_at_generation": 283
       },
       "tmp/sia_lite_latest.json": {
         "exists": true,
-        "mtime_cdt": "2026-05-31 05:42:18 CDT",
-        "age_seconds_at_generation": 117
+        "mtime_cdt": "2026-05-31 05:47:24 CDT",
+        "age_seconds_at_generation": 61
       },
       "tmp/sia_lite_residual_mining.json": {
         "exists": true,
-        "mtime_cdt": "2026-05-31 05:42:18 CDT",
-        "age_seconds_at_generation": 117
+        "mtime_cdt": "2026-05-31 05:47:24 CDT",
+        "age_seconds_at_generation": 60
       },
       "tmp/sia_search_policy_latest.json": {
         "exists": true,
-        "mtime_cdt": "2026-05-31 05:42:18 CDT",
-        "age_seconds_at_generation": 117
+        "mtime_cdt": "2026-05-31 05:47:24 CDT",
+        "age_seconds_at_generation": 60
       },
       "tmp/template_match_role_recolor_v1_review.json": {
         "exists": true,
-        "mtime_cdt": "2026-05-31 05:42:19 CDT",
-        "age_seconds_at_generation": 116
+        "mtime_cdt": "2026-05-31 05:47:26 CDT",
+        "age_seconds_at_generation": 59
       },
       "tmp/claude_sketch_enumeration.json": {
         "exists": true,
-        "mtime_cdt": "2026-05-31 05:42:19 CDT",
-        "age_seconds_at_generation": 115
+        "mtime_cdt": "2026-05-31 05:47:26 CDT",
+        "age_seconds_at_generation": 58
       },
       "tmp/legend_lattice_synthetic_latest.json": {
         "exists": true,
-        "mtime_cdt": "2026-05-31 05:42:15 CDT",
-        "age_seconds_at_generation": 119
+        "mtime_cdt": "2026-05-31 05:47:21 CDT",
+        "age_seconds_at_generation": 63
       },
       "tmp/verifier_refresh_latest.json": {
         "exists": true,
         "mtime_cdt": "2026-05-31 05:43:41 CDT",
-        "age_seconds_at_generation": 33
+        "age_seconds_at_generation": 283
       }
     }
   },
@@ -116,32 +116,14 @@
     "counts": {
       "verifier_loop": 1,
       "sia_lite_worker": 0,
-      "active_branch_push": 1,
-      "github_arc_agi_transfer": 1
+      "active_branch_push": 0,
+      "github_arc_agi_transfer": 0
     },
     "matching_processes": [
       {
-        "pid": "84849",
-        "ppid": "1",
-        "etime": "02:27",
-        "categories": [
-          "active_branch_push"
-        ],
-        "command": "git push origin HEAD:research/operator-promotion-audit-2026-05-30"
-      },
-      {
-        "pid": "84850",
-        "ppid": "84849",
-        "etime": "02:27",
-        "categories": [
-          "github_arc_agi_transfer"
-        ],
-        "command": "/opt/homebrew/bin/ssh git@github.com git-receive-pack 'aurascoper/arc-agi-workspace.git'"
-      },
-      {
         "pid": "84986",
         "ppid": "84985",
-        "etime": "02:20",
+        "etime": "06:30",
         "categories": [
           "verifier_loop"
         ],
@@ -152,7 +134,9 @@
   "tmux_sessions": [
     "arc2_codex_verifier: 1 windows (created Sun May 31 05:41:55 2026)"
   ],
-  "safe_status": [],
+  "safe_status": [
+    " M tmp/sia_search_policy_latest.json"
+  ],
   "integration_ready": [],
   "manual_review_candidates": [],
   "parked_candidates": [
@@ -211,7 +195,7 @@
       "tripwire": false,
       "updated_at": "2026-05-31T05:29:11-0500",
       "last_result_mtime_cdt": "2026-05-31 05:29:11 CDT",
-      "latest_result_age_seconds_at_generation": 903,
+      "latest_result_age_seconds_at_generation": 1153,
       "stale_threshold_seconds": 1800,
       "is_stale": false
     },
@@ -219,7 +203,7 @@
     "positive_reductions": 1
   },
   "sia_search_policy": {
-    "generated_cdt": "2026-05-31 05:42:18 CDT",
+    "generated_cdt": "2026-05-31 05:47:24 CDT",
     "recommendation": "idle_exhausted_sia_queue",
     "sia_worker_expected": false,
     "next_action": "Do not restart flat SIA-lite residual runs. Move upstream to typed DSL/enumerator/library-learning or Claude method-track family two.",
@@ -235,7 +219,7 @@
     "admissible_signal_targets": []
   },
   "template_match_role_recolor_review": {
-    "generated_cdt": "2026-05-31 05:42:19 CDT",
+    "generated_cdt": "2026-05-31 05:47:26 CDT",
     "verdict": "not_ledger_safe",
     "findings": [
       {
@@ -251,21 +235,45 @@
         "admitted_tasks": 240,
         "distinguishing_grid": "vary grid height and place a work object in rows outside the literal H=13 bound",
         "fix": "vary H as well as W"
+      },
+      {
+        "name": "hardcoded_W",
+        "axis": "domain/dimension",
+        "admitted_tasks": 6,
+        "distinguishing_grid": "place work objects in columns outside a literal W=15 bound",
+        "fix": "force work-area occupancy beyond the smallest width on >=2 train instances per task"
+      },
+      {
+        "name": "by_shape_d4",
+        "axis": "definition/correspondence",
+        "admitted_tasks": 3,
+        "distinguishing_grid": "legend/work shapes whose D4-canonical identity differs from exact canonical identity",
+        "fix": "force orientation-sensitive correspondence collisions on >=2 train instances per task"
+      },
+      {
+        "name": "by_shape_8conn",
+        "axis": "definition/individuation",
+        "admitted_tasks": 240,
+        "distinguishing_grid": "diagonally touching same-colour objects where 4-connectivity and 8-connectivity disagree",
+        "fix": "force diagonal-touch individuation cases on >=2 train instances per task"
       }
     ],
     "admitted_counts": {
       "by_shape_rule": 240,
       "by_bbox": 8,
+      "by_shape_d4": 3,
+      "by_shape_8conn": 240,
       "by_size": 0,
       "by_slot": 0,
       "by_nearest": 0,
       "hardcoded_H": 240,
+      "hardcoded_W": 6,
+      "unique_role_once": 0,
       "pair0_table": 0
     }
   },
   "status": "attention",
   "warnings": [
-    "active-branch push process visible at health generation",
-    "arc-agi GitHub transfer process visible at health generation"
+    "safe coordination paths have uncommitted changes"
   ]
 }

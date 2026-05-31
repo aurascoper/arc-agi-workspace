@@ -1,6 +1,6 @@
 {
   "artifact": "template_match_role_recolor_v1_review",
-  "generated_cdt": "2026-05-31 05:46:29 CDT",
+  "generated_cdt": "2026-05-31 05:47:26 CDT",
   "generator_path": "/Users/aurascoper/Downloads/template_match_role_recolor_v1.py",
   "seeds": [
     0,
@@ -3129,6 +3129,27 @@
       "admitted_tasks": 240,
       "distinguishing_grid": "vary grid height and place a work object in rows outside the literal H=13 bound",
       "fix": "vary H as well as W"
+    },
+    {
+      "name": "hardcoded_W",
+      "axis": "domain/dimension",
+      "admitted_tasks": 6,
+      "distinguishing_grid": "place work objects in columns outside a literal W=15 bound",
+      "fix": "force work-area occupancy beyond the smallest width on >=2 train instances per task"
+    },
+    {
+      "name": "by_shape_d4",
+      "axis": "definition/correspondence",
+      "admitted_tasks": 3,
+      "distinguishing_grid": "legend/work shapes whose D4-canonical identity differs from exact canonical identity",
+      "fix": "force orientation-sensitive correspondence collisions on >=2 train instances per task"
+    },
+    {
+      "name": "by_shape_8conn",
+      "axis": "definition/individuation",
+      "admitted_tasks": 240,
+      "distinguishing_grid": "diagonally touching same-colour objects where 4-connectivity and 8-connectivity disagree",
+      "fix": "force diagonal-touch individuation cases on >=2 train instances per task"
     }
   ],
   "verdict": "not_ledger_safe",
