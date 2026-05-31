@@ -153,6 +153,8 @@ def process_state() -> dict:
         if len(parts) < 4:
             continue
         pid, ppid, etime, command = parts
+        if command.startswith("tmux new-session"):
+            continue
         if "write_verifier_health.py" in command or "ps -axo" in command:
             continue
         categories = []

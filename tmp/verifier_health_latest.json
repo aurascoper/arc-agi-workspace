@@ -1,15 +1,15 @@
 {
   "artifact": "verifier_health_latest",
-  "generated_cdt": "2026-05-31 05:02:47 CDT",
+  "generated_cdt": "2026-05-31 05:04:54 CDT",
   "branch": "research/operator-promotion-audit-2026-05-30",
-  "head": "c715b059",
+  "head": "e39fec27",
   "handoff_mirror": {
     "dir": "/tmp/arc_agi_handoff_sync",
     "available": true,
     "branch": "research/deep-research-handoff-2026-05-30",
     "expected_branch": "research/deep-research-handoff-2026-05-30",
-    "head": "07d39890",
-    "origin_head": "07d39890",
+    "head": "3cb0946e",
+    "origin_head": "3cb0946e",
     "head_matches_origin": true,
     "safe_status": []
   },
@@ -18,59 +18,59 @@
     "heartbeat_stale_seconds": 390,
     "latest": {
       "health": {
-        "hash": "c715b059",
+        "hash": "e39fec27",
         "subject": "chore(sync): health 05:02 CDT",
-        "commit_cdt": "2026-05-31 05:02:45 CDT",
-        "age_seconds_at_generation": 2
+        "commit_cdt": "2026-05-31 05:02:47 CDT",
+        "age_seconds_at_generation": 127
       },
       "heartbeat": {
         "hash": "9ed90fdf",
         "subject": "chore(sync): heartbeat 05:02 CDT",
         "commit_cdt": "2026-05-31 05:02:40 CDT",
-        "age_seconds_at_generation": 7
+        "age_seconds_at_generation": 134
       }
     }
   },
   "artifact_freshness": {
     "stale_threshold_seconds": 900,
-    "max_age_seconds_at_generation": 74,
+    "max_age_seconds_at_generation": 201,
     "missing": [],
     "stale": [],
     "artifacts": {
       "tmp/dsl_enumeration_latest.json": {
         "exists": true,
         "mtime_cdt": "2026-05-31 05:01:35 CDT",
-        "age_seconds_at_generation": 71
+        "age_seconds_at_generation": 199
       },
       "tmp/codex_sia_all23_sentinel.json": {
         "exists": true,
         "mtime_cdt": "2026-05-31 05:02:40 CDT",
-        "age_seconds_at_generation": 7
+        "age_seconds_at_generation": 134
       },
       "tmp/sia_lite_latest.json": {
         "exists": true,
         "mtime_cdt": "2026-05-31 05:02:14 CDT",
-        "age_seconds_at_generation": 32
+        "age_seconds_at_generation": 159
       },
       "tmp/sia_lite_residual_mining.json": {
         "exists": true,
         "mtime_cdt": "2026-05-31 05:02:14 CDT",
-        "age_seconds_at_generation": 32
+        "age_seconds_at_generation": 159
       },
       "tmp/claude_sketch_enumeration.json": {
         "exists": true,
         "mtime_cdt": "2026-05-31 05:01:36 CDT",
-        "age_seconds_at_generation": 71
+        "age_seconds_at_generation": 198
       },
       "tmp/legend_lattice_synthetic_latest.json": {
         "exists": true,
         "mtime_cdt": "2026-05-31 05:01:33 CDT",
-        "age_seconds_at_generation": 74
+        "age_seconds_at_generation": 201
       },
       "tmp/verifier_refresh_latest.json": {
         "exists": true,
         "mtime_cdt": "2026-05-31 05:02:40 CDT",
-        "age_seconds_at_generation": 7
+        "age_seconds_at_generation": 134
       }
     }
   },
@@ -100,54 +100,30 @@
   "process_state": {
     "available": true,
     "counts": {
-      "verifier_loop": 1,
+      "verifier_loop": 0,
       "sia_lite_worker": 1,
-      "active_branch_push": 1,
-      "github_arc_agi_transfer": 1
+      "active_branch_push": 0,
+      "github_arc_agi_transfer": 0
     },
     "matching_processes": [
       {
-        "pid": "34104",
-        "ppid": "1",
-        "etime": "11:19",
+        "pid": "46240",
+        "ppid": "34104",
+        "etime": "00:55",
         "categories": [
           "sia_lite_worker"
         ],
-        "command": "tmux new-session -d -s arc2_sia_lite_88bcf3b4_002 cd /Users/aurascoper/Developer/arc_agi/workspace && python3 sia_arc_all23_task/sia_lite_harness.py --run-id sia_lite_reloaded_88bcf3b4_002 --model gpt-4.1-mini --temperature 0.8 --max-gen 8 --top-k 4 --target-task 88bcf3b4 --focus 'Target the tight residual on 88bcf3b4 using train-only evidence. Explore generalized marker-host, apex/direction, route/redraw, and object-role parameterization. Avoid coordinates, task IDs, public/private templates, and local patches; propose reusable abstractions only.' > tmp/sia_lite_reloaded_88bcf3b4_002.log 2>&1"
-      },
-      {
-        "pid": "44947",
-        "ppid": "34107",
-        "etime": "00:02",
-        "categories": [
-          "active_branch_push"
-        ],
-        "command": "git push origin HEAD:research/operator-promotion-audit-2026-05-30"
-      },
-      {
-        "pid": "44948",
-        "ppid": "44947",
-        "etime": "00:02",
-        "categories": [
-          "github_arc_agi_transfer"
-        ],
-        "command": "/opt/homebrew/bin/ssh git@github.com git-receive-pack 'aurascoper/arc-agi-workspace.git'"
-      },
-      {
-        "pid": "34107",
-        "ppid": "34104",
-        "etime": "11:19",
-        "categories": [
-          "verifier_loop"
-        ],
-        "command": "/opt/homebrew/Cellar/python@3.14/3.14.5/Frameworks/Python.framework/Versions/3.14/Resources/Python.app/Contents/MacOS/Python sia_arc_all23_task/codex_verifier_cycle.py --loop --interval 300 --push"
+        "command": "/opt/homebrew/Cellar/python@3.14/3.14.5/Frameworks/Python.framework/Versions/3.14/Resources/Python.app/Contents/MacOS/Python sia_arc_all23_task/sia_lite_harness.py --run-id sia_lite_reloaded_faa9f03d_002 --model gpt-4.1-mini --temperature 0.8 --max-gen 8 --top-k 4 --target-task faa9f03d --focus Target faa9f03d using train-only evidence. Explore generalized object-role selection, keep/remove/redraw, marker-host grouping, cleanup, and shape-preserving object reconstruction. Avoid coordinates, task IDs, public/private templates, and local patches; propose reusable abstractions only."
       }
     ]
   },
   "tmux_sessions": [
-    "arc2_codex_verifier: 1 windows (created Sun May 31 04:51:28 2026)"
+    "arc2_sia_lite_faa9f03d_002: 1 windows (created Sun May 31 05:03:59 2026)"
   ],
-  "safe_status": [],
+  "safe_status": [
+    " M ARC2_AGENT_COORDINATION_STATUS.md",
+    " M sia_arc_all23_task/write_verifier_health.py"
+  ],
   "integration_ready": [],
   "manual_review_candidates": [],
   "parked_candidates": [
@@ -206,7 +182,7 @@
       "tripwire": false,
       "updated_at": "2026-05-31T05:01:54-0500",
       "last_result_mtime_cdt": "2026-05-31 05:01:54 CDT",
-      "latest_result_age_seconds_at_generation": 52,
+      "latest_result_age_seconds_at_generation": 180,
       "stale_threshold_seconds": 1800,
       "is_stale": false
     },
@@ -215,7 +191,7 @@
   },
   "status": "attention",
   "warnings": [
-    "active-branch push process visible at health generation",
-    "arc-agi GitHub transfer process visible at health generation"
+    "arc2_codex_verifier tmux session not visible",
+    "safe coordination paths have uncommitted changes"
   ]
 }

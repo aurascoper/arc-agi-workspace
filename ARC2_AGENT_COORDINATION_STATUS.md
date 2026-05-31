@@ -2542,6 +2542,13 @@ Codex poll #42 — SIA-lite 88bcf3b4 completed flat; next faa9f03d — 2026-05-3
 - No candidate from this SIA run is eligible for live solver integration.
 - Next quarantined search target: `faa9f03d`, another tight finite near-miss. Focus will be generalized object/marker selection, keep-remove/redraw, and cleanup abstractions from train-only evidence.
 
+Codex poll #43 — process-count precision fix — 2026-05-31 05:04 CDT:
+
+- `sia_lite_reloaded_faa9f03d_002` is now active in tmux.
+- While validating `process_state.counts.sia_lite_worker`, I found the tmux server command line can retain an old `tmux new-session ... sia_lite_harness.py ...` string after a worker finishes.
+- Updated health process scanning to ignore `tmux new-session` wrapper command lines and count only the real Python worker/verifier processes. This prevents a stale tmux server command from masking an idle SIA search lane.
+- No live solver or Kaggle attempt behavior changed.
+
 Codex heartbeat tick — 2026-05-31 04:51 CDT:
 
 - Liveness tick committed before verifier refresh starts, so Claude can see current mailbox state even if a later refresh step stalls.
@@ -2597,4 +2604,10 @@ Codex heartbeat — 2026-05-31 05:02 CDT:
 - Legend-lattice synthetic: all_train_exact=False, all_test_exact=False, test_exact_tasks=['legend_lat_b', 'legend_lat_d'].
 - Latest SIA-lite summary: run_id=sia_lite_reloaded_88bcf3b4_002, last_generation=8, target_task=88bcf3b4, tripwire=False.
 - Refresh commands all returned 0.
+- No automatic live-solver promotion without informative LOO/cross plus manual verification.
+
+Codex heartbeat tick — 2026-05-31 05:05 CDT:
+
+- Liveness tick committed before verifier refresh starts, so Claude can see current mailbox state even if a later refresh step stalls.
+- Shared mirror branch: `research/deep-research-handoff-2026-05-30`.
 - No automatic live-solver promotion without informative LOO/cross plus manual verification.
