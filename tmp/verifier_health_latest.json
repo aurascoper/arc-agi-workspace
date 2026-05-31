@@ -1,63 +1,63 @@
 {
   "artifact": "verifier_health_latest",
-  "generated_cdt": "2026-05-31 04:08:06 CDT",
+  "generated_cdt": "2026-05-31 04:13:10 CDT",
   "branch": "research/operator-promotion-audit-2026-05-30",
-  "head": "b54b4d95",
+  "head": "94ce750a",
   "handoff_mirror": {
     "dir": "/tmp/arc_agi_handoff_sync",
     "available": true,
     "branch": "research/deep-research-handoff-2026-05-30",
     "expected_branch": "research/deep-research-handoff-2026-05-30",
-    "head": "8830f613",
-    "origin_head": "8830f613",
+    "head": "28710ea8",
+    "origin_head": "28710ea8",
     "head_matches_origin": true,
     "safe_status": []
   },
   "artifact_freshness": {
     "stale_threshold_seconds": 900,
-    "max_age_seconds_at_generation": 61,
+    "max_age_seconds_at_generation": 63,
     "missing": [],
     "stale": [],
     "artifacts": {
       "tmp/dsl_enumeration_latest.json": {
         "exists": true,
-        "mtime_cdt": "2026-05-31 04:07:07 CDT",
-        "age_seconds_at_generation": 59
+        "mtime_cdt": "2026-05-31 04:12:12 CDT",
+        "age_seconds_at_generation": 58
       },
       "tmp/codex_sia_all23_sentinel.json": {
         "exists": true,
-        "mtime_cdt": "2026-05-31 04:08:01 CDT",
+        "mtime_cdt": "2026-05-31 04:13:05 CDT",
         "age_seconds_at_generation": 5
       },
       "tmp/sia_lite_latest.json": {
         "exists": true,
-        "mtime_cdt": "2026-05-31 04:07:07 CDT",
-        "age_seconds_at_generation": 59
+        "mtime_cdt": "2026-05-31 04:12:12 CDT",
+        "age_seconds_at_generation": 58
       },
       "tmp/sia_lite_residual_mining.json": {
         "exists": true,
-        "mtime_cdt": "2026-05-31 04:07:07 CDT",
-        "age_seconds_at_generation": 59
+        "mtime_cdt": "2026-05-31 04:12:12 CDT",
+        "age_seconds_at_generation": 58
       },
       "tmp/claude_sketch_enumeration.json": {
         "exists": true,
-        "mtime_cdt": "2026-05-31 04:07:08 CDT",
-        "age_seconds_at_generation": 58
+        "mtime_cdt": "2026-05-31 04:12:12 CDT",
+        "age_seconds_at_generation": 57
       },
       "tmp/legend_lattice_synthetic_latest.json": {
         "exists": true,
-        "mtime_cdt": "2026-05-31 04:07:05 CDT",
-        "age_seconds_at_generation": 61
+        "mtime_cdt": "2026-05-31 04:12:07 CDT",
+        "age_seconds_at_generation": 63
       },
       "tmp/verifier_refresh_latest.json": {
         "exists": true,
-        "mtime_cdt": "2026-05-31 04:08:01 CDT",
+        "mtime_cdt": "2026-05-31 04:13:05 CDT",
         "age_seconds_at_generation": 5
       }
     }
   },
   "last_refresh": {
-    "generated_cdt": "2026-05-31 04:08 CDT",
+    "generated_cdt": "2026-05-31 04:13 CDT",
     "failures": [],
     "returncodes": {
       "compile": 0,
