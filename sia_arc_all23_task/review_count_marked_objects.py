@@ -293,8 +293,10 @@ def main() -> None:
 
     admitted = Counter()
     fragile = Counter()
-    literal_dim_admitted = 0
-    literal_dim_fragile = 0
+    literal_dim_admitted_cases = 0
+    literal_dim_fragile_cases = 0
+    literal_dim_admitted_tasks = set()
+    literal_dim_fragile_tasks = set()
     examples = {}
     fragile_examples = {}
     literal_examples = {"admitted": [], "fragile": []}
@@ -341,11 +343,13 @@ def main() -> None:
                     lambda inp, h=h, w=w: len(components(inp, inp[0][0], 2, h - 1, 1, w - 1, N4)),
                 )
                 if diff == 0:
-                    literal_dim_admitted += 1
+                    literal_dim_admitted_cases += 1
+                    literal_dim_admitted_tasks.add((seed, task_index))
                     if len(literal_examples["admitted"]) < 5:
                         literal_examples["admitted"].append({"seed": seed, "task_index": task_index, "box": [h, w], "vals": vals, "Ns": ns, "domain": task_domain(task)})
                 elif diff < 2:
-                    literal_dim_fragile += 1
+                    literal_dim_fragile_cases += 1
+                    literal_dim_fragile_tasks.add((seed, task_index))
                     if len(literal_examples["fragile"]) < 5:
                         literal_examples["fragile"].append({"seed": seed, "task_index": task_index, "box": [h, w], "diffs": diff, "vals": vals, "Ns": ns, "domain": task_domain(task)})
 
@@ -372,18 +376,20 @@ def main() -> None:
                 "admitted_tasks": count,
                 "fix": "force this sibling to disagree on >=2 train pairs/task or document why one-pair rejection is sufficient",
             })
-    if literal_dim_admitted:
+    if literal_dim_admitted_cases:
         blocking.append({
             "name": "literal_dim_admitted",
             "kind": "domain/dimension",
-            "admitted_tasks": literal_dim_admitted,
+            "admitted_tasks": len(literal_dim_admitted_tasks),
+            "admitted_cases": literal_dim_admitted_cases,
             "fix": "ensure every literal interior box smaller than max train dimensions undercounts on train",
         })
-    if literal_dim_fragile:
+    if literal_dim_fragile_cases:
         blocking.append({
             "name": "literal_dim_fragile",
             "kind": "domain/dimension",
-            "admitted_tasks": literal_dim_fragile,
+            "admitted_tasks": len(literal_dim_fragile_tasks),
+            "admitted_cases": literal_dim_fragile_cases,
             "fix": "force every smaller literal interior box to disagree on >=2 train pairs/task",
         })
 
@@ -411,8 +417,10 @@ def main() -> None:
         "output_count_mismatches": output_count_mismatches,
         "admitted_counts": dict(sorted(admitted.items())),
         "fragile_lt2_counts": dict(sorted(fragile.items())),
-        "literal_dim_admitted": literal_dim_admitted,
-        "literal_dim_fragile": literal_dim_fragile,
+        "literal_dim_admitted_cases": literal_dim_admitted_cases,
+        "literal_dim_fragile_cases": literal_dim_fragile_cases,
+        "literal_dim_admitted_tasks": len(literal_dim_admitted_tasks),
+        "literal_dim_fragile_tasks": len(literal_dim_fragile_tasks),
         "blocking_findings": blocking,
         "scope_survivors": scope_survivors,
         "weak_tail": weak_tail,
