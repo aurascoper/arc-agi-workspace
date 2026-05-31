@@ -1,20 +1,20 @@
 {
   "artifact": "verifier_health_latest",
-  "generated_cdt": "2026-05-31 03:56:46 CDT",
+  "generated_cdt": "2026-05-31 03:59:29 CDT",
   "branch": "research/operator-promotion-audit-2026-05-30",
-  "head": "2ff7e6a5",
+  "head": "558b2fb4",
   "handoff_mirror": {
     "dir": "/tmp/arc_agi_handoff_sync",
     "available": true,
     "branch": "research/deep-research-handoff-2026-05-30",
     "expected_branch": "research/deep-research-handoff-2026-05-30",
-    "head": "b802e973",
-    "origin_head": "b802e973",
+    "head": "68e22fda",
+    "origin_head": "68e22fda",
     "head_matches_origin": true,
     "safe_status": []
   },
   "tmux_sessions": [
-    "arc2_codex_verifier: 1 windows (created Sun May 31 03:55:49 2026)"
+    "arc2_codex_verifier: 1 windows (created Sun May 31 03:58:29 2026)"
   ],
   "safe_status": [],
   "integration_ready": [],
