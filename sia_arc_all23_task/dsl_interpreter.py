@@ -639,6 +639,42 @@ def underfill_rect_grid(g: Grid, background: int, r0: int, c0: int, r1: int, c1:
                 g[rr][cc] = draw
 
 
+def repeated_anchor_values(values: list[int]) -> list[int]:
+    counts = Counter(values)
+    repeated = sorted(v for v, n in counts.items() if n > 1)
+    return repeated if len(repeated) > 1 else sorted(counts)
+
+
+def nearest_anchor(value: int, anchors: list[int]) -> int:
+    if not anchors:
+        return value
+    return min(anchors, key=lambda anchor: (abs(anchor - value), anchor))
+
+
+def bbox_parts(box: tuple[int, int, int, int]) -> tuple[int, int, int, int]:
+    return box
+
+
+def bbox_height(box: tuple[int, int, int, int]) -> int:
+    r0, _c0, r1, _c1 = bbox_parts(box)
+    return r1 - r0 + 1
+
+
+def bbox_width(box: tuple[int, int, int, int]) -> int:
+    _r0, c0, _r1, c1 = bbox_parts(box)
+    return c1 - c0 + 1
+
+
+def bbox_bottom(box: tuple[int, int, int, int]) -> int:
+    _r0, _c0, r1, _c1 = bbox_parts(box)
+    return r1
+
+
+def bbox_right(box: tuple[int, int, int, int]) -> int:
+    _r0, _c0, _r1, c1 = bbox_parts(box)
+    return c1
+
+
 def slot_columns_from_band(grid: Grid, row_start: int, background: int) -> list[int]:
     if row_start + 2 >= len(grid):
         return []
@@ -758,22 +794,34 @@ def op_legend_component_underfill(grid: Any, args: dict[str, Any]) -> Grid:
     matched = [item for item in body if item["key"] in legend_keys]
     if not matched:
         return g
-    same_row = len({item["bbox"][0] for item in matched}) == 1
-    same_col = len({item["bbox"][1] for item in matched}) == 1
+    extent = max(
+        max(bbox_height(item["bbox"]), bbox_width(item["bbox"]))
+        for item in legend + body
+    )
+    row_anchors = repeated_anchor_values([item["bbox"][0] for item in body])
+    col_anchors = repeated_anchor_values([item["bbox"][1] for item in body])
+    rendered = []
+    for item in matched:
+        r0, c0, _r1, _c1 = item["bbox"]
+        ar = nearest_anchor(r0, row_anchors)
+        ac = nearest_anchor(c0, col_anchors)
+        rendered.append({**item, "render_bbox": (ar, ac, ar + extent - 1, ac + extent - 1)})
+    same_row = len({item["render_bbox"][0] for item in rendered}) == 1
+    same_col = len({item["render_bbox"][1] for item in rendered}) == 1
     aligned = same_row or same_col
     if aligned:
-        r0 = min(item["bbox"][0] for item in matched) - 1
-        c0 = min(item["bbox"][1] for item in matched) - 1
-        r1 = max(item["bbox"][2] for item in matched) + 1
-        c1 = max(item["bbox"][3] for item in matched) + 1
+        r0 = min(item["render_bbox"][0] for item in rendered) - 1
+        c0 = min(item["render_bbox"][1] for item in rendered) - 1
+        r1 = max(bbox_bottom(item["render_bbox"]) for item in rendered) + 1
+        c1 = max(bbox_right(item["render_bbox"]) for item in rendered) + 1
         underfill_rect_grid(g, background, r0, c0, r1, c1, color)
         if legend:
             lr0 = min(item["bbox"][0] for item in legend) - 1
-            lr1 = max(item["bbox"][2] for item in legend) + 1
+            lr1 = max(bbox_bottom(item["bbox"]) for item in legend) + 1
             underfill_rect_grid(g, background, lr0, cmin, lr1, cmax, color)
     else:
-        for item in matched:
-            r0, c0, r1, c1 = item["bbox"]
+        for item in rendered:
+            r0, c0, r1, c1 = item["render_bbox"]
             underfill_rect_grid(g, background, r0 - 1, c0 - 1, r1 + 1, c1 + 1, color)
     if alt_color is not None and footer_height:
         footer = color if aligned else alt_color

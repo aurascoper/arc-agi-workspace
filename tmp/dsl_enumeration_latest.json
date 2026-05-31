@@ -4514,6 +4514,71 @@
             "synthetic_d4_fail",
             "synthetic_padding_fail"
           ]
+        },
+        {
+          "name": "legend_component_underfill|legend_component_underfill(bg_draw_color,legend_footer_alt_color,legend_footer_height)",
+          "shape_exact": true,
+          "train_diff": 0,
+          "per_pair_diff": [
+            0,
+            0,
+            0,
+            0,
+            0
+          ],
+          "pred_shapes": [
+            [
+              30,
+              22
+            ],
+            [
+              30,
+              22
+            ],
+            [
+              30,
+              22
+            ],
+            [
+              30,
+              22
+            ],
+            [
+              30,
+              22
+            ]
+          ],
+          "error": null,
+          "program_name": "legend_component_underfill",
+          "signature": "legend_component_underfill|legend_component_underfill(bg_draw_color,legend_footer_alt_color,legend_footer_height)",
+          "generality": {
+            "magic_int_constants": {},
+            "blockers": []
+          },
+          "loo": {
+            "passes": true,
+            "informative": false,
+            "admission_type": "train_exact_fixed_loo_vacuous"
+          },
+          "synthetic_d4_exact": {
+            "hflip": true,
+            "vflip": false,
+            "rot90": false,
+            "rot180": false,
+            "rot270": false,
+            "anti_diag": false
+          },
+          "synthetic_padding_exact": {
+            "pad_1": true,
+            "pad_asym": true,
+            "pad_topless": true
+          },
+          "cross_task_count": 1,
+          "admission_ready": false,
+          "promotion_blockers": [
+            "no_informative_loo_or_cross",
+            "synthetic_d4_fail"
+          ]
         }
       ],
       "top": [
@@ -4595,12 +4660,12 @@
         {
           "name": "legend_component_underfill|legend_component_underfill(bg_draw_color,legend_footer_alt_color,legend_footer_height)",
           "shape_exact": true,
-          "train_diff": 5,
+          "train_diff": 0,
           "per_pair_diff": [
             0,
             0,
             0,
-            5,
+            0,
             0
           ],
           "pred_shapes": [
@@ -4629,15 +4694,33 @@
           "program_name": "legend_component_underfill",
           "signature": "legend_component_underfill|legend_component_underfill(bg_draw_color,legend_footer_alt_color,legend_footer_height)",
           "generality": {
-            "magic_int_constants": {
-              "legend_component_underfill": [
-                3
-              ]
-            },
-            "blockers": [
-              "magic_int_constants"
-            ]
-          }
+            "magic_int_constants": {},
+            "blockers": []
+          },
+          "loo": {
+            "passes": true,
+            "informative": false,
+            "admission_type": "train_exact_fixed_loo_vacuous"
+          },
+          "synthetic_d4_exact": {
+            "hflip": true,
+            "vflip": false,
+            "rot90": false,
+            "rot180": false,
+            "rot270": false,
+            "anti_diag": false
+          },
+          "synthetic_padding_exact": {
+            "pad_1": true,
+            "pad_asym": true,
+            "pad_topless": true
+          },
+          "cross_task_count": 1,
+          "admission_ready": false,
+          "promotion_blockers": [
+            "no_informative_loo_or_cross",
+            "synthetic_d4_fail"
+          ]
         },
         {
           "name": "enum_bar_route:bg_draw|bar_bracket_route(bg_draw_color)",
