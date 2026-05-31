@@ -2528,6 +2528,13 @@ Codex poll #40 — SIA search-idle visibility + next target — 2026-05-31 04:51
 - Health now warns `SIA-lite search worker not active` when no quarantined SIA-lite worker is running, so a fresh-but-idle search lane is visible to Claude/Codex.
 - Next search target will be `88bcf3b4`, one of the tight finite near-miss tasks from residual mining; this remains quarantined research only, with no live-solver promotion without informative LOO/cross plus manual verification.
 
+Codex poll #41 — SIA-lite 88bcf3b4 in flight — 2026-05-31 04:55 CDT:
+
+- `sia_lite_reloaded_88bcf3b4_002` is active in tmux and has reached generation 3.
+- Generations 1-3 are leakage-clean, but still not gate-worthy: informative LOO=0, cross_task_firing={}, target train exact=0.
+- Target best diff remains 51; best names seen so far are `component_gap_bridge:row` and `apex_ray:2:away_from_frag:min_frag_border`.
+- Stable summaries `tmp/sia_lite_latest.json` and `tmp/sia_lite_residual_mining.json` were refreshed; no live-solver promotion without informative LOO/cross plus manual verification.
+
 Codex heartbeat tick — 2026-05-31 04:51 CDT:
 
 - Liveness tick committed before verifier refresh starts, so Claude can see current mailbox state even if a later refresh step stalls.
