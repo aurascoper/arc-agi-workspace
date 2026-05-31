@@ -1,22 +1,22 @@
 {
   "artifact": "synthetic_family_ledger_latest",
-  "generated_cdt": "2026-05-31 06:26:41 CDT",
+  "generated_cdt": "2026-05-31 06:31:40 CDT",
   "entries": [
     {
       "family": "template_match_role_recolor",
       "status": "not_ledger_safe",
       "live_solver_effect": "none",
       "latest_generator": {
-        "name": "template_match_role_recolor_v2.py",
-        "path": "/Users/aurascoper/Downloads/template_match_role_recolor_v2.py",
-        "version": 2,
-        "size_bytes": 25593,
-        "sha256": "a85f1e375c694e33288fbfb4b0f5695092589ae59df535a19483f7cbca0f863d",
-        "mtime_cdt": "2026-05-31 06:05:51 CDT"
+        "name": "template_match_role_recolor_v3.py",
+        "path": "/Users/aurascoper/Downloads/template_match_role_recolor_v3.py",
+        "version": 3,
+        "size_bytes": 28460,
+        "sha256": "f2b074e6204c92484a977540db704e53ed73b249ef6900647a93e5082976f45f",
+        "mtime_cdt": "2026-05-31 06:27:41 CDT"
       },
       "review": {
         "artifact": "tmp/template_match_role_recolor_latest_review.json",
-        "generated_cdt": "2026-05-31 06:26:41 CDT",
+        "generated_cdt": "2026-05-31 06:31:40 CDT",
         "verdict": "not_ledger_safe",
         "oracle_mismatches": 0,
         "admitted_counts": {
@@ -24,13 +24,13 @@
           "by_bbox": 0,
           "by_width": 0,
           "by_height": 0,
-          "by_shape_d4": 100,
+          "by_shape_d4": 0,
           "by_shape_8conn": 240,
           "by_size": 0,
           "by_slot": 0,
           "by_nearest": 0,
           "hardcoded_H": 0,
-          "hardcoded_W": 4,
+          "hardcoded_W": 5,
           "unique_role_once": 0,
           "pair0_table": 0
         },
@@ -50,12 +50,12 @@
       "review_alignment": {
         "latest_template_exists": true,
         "review_exists": true,
-        "latest_name": "template_match_role_recolor_v2.py",
-        "latest_version": 2,
-        "latest_sha256": "a85f1e375c694e33288fbfb4b0f5695092589ae59df535a19483f7cbca0f863d",
-        "reviewed_name": "template_match_role_recolor_v2.py",
-        "reviewed_version": 2,
-        "reviewed_sha256": "a85f1e375c694e33288fbfb4b0f5695092589ae59df535a19483f7cbca0f863d",
+        "latest_name": "template_match_role_recolor_v3.py",
+        "latest_version": 3,
+        "latest_sha256": "f2b074e6204c92484a977540db704e53ed73b249ef6900647a93e5082976f45f",
+        "reviewed_name": "template_match_role_recolor_v3.py",
+        "reviewed_version": 3,
+        "reviewed_sha256": "f2b074e6204c92484a977540db704e53ed73b249ef6900647a93e5082976f45f",
         "latest_is_reviewed": true,
         "action": "latest template-match generator is reviewed"
       },
@@ -63,13 +63,13 @@
         {
           "name": "hardcoded_W",
           "axis": "domain/dimension",
-          "admitted_tasks": 4,
+          "admitted_tasks": 5,
           "fix": "force work-area occupancy beyond the smallest width on >=2 train instances per task"
         },
         {
           "name": "literal_col_bound_any",
           "axis": "domain/dimension",
-          "admitted_tasks": 89,
+          "admitted_tasks": 112,
           "fix": "force extremal work-area occupancy on >=2 train instances/task for both row and column axes"
         },
         {
@@ -81,30 +81,17 @@
         {
           "name": "blind_by_row_profile",
           "axis": "definition/correspondence",
-          "admitted_tasks": 21,
+          "admitted_tasks": 240,
           "fix": "add >=2 train collisions for this feature key or document it as an explicit deferred tail"
         },
         {
           "name": "blind_by_col_profile",
           "axis": "definition/correspondence",
-          "admitted_tasks": 14,
-          "fix": "add >=2 train collisions for this feature key or document it as an explicit deferred tail"
-        },
-        {
-          "name": "blind_by_sorted_profiles",
-          "axis": "definition/correspondence",
-          "admitted_tasks": 100,
+          "admitted_tasks": 2,
           "fix": "add >=2 train collisions for this feature key or document it as an explicit deferred tail"
         }
       ],
       "deferred_survivors": [
-        {
-          "name": "by_shape_d4",
-          "axis": "definition/correspondence",
-          "admitted_tasks": 100,
-          "declared_scope": "D4-canonical shape matching is documented as deferred in the generator spec.",
-          "future_fix": "force orientation-sensitive correspondence collisions on >=2 train instances per task"
-        },
         {
           "name": "by_shape_8conn",
           "axis": "definition/individuation",
@@ -113,7 +100,7 @@
           "future_fix": "force diagonal-touch individuation cases on >=2 train instances per task"
         }
       ],
-      "next_required_action": "Fix blocking synthetic-review findings: hardcoded_W (force work-area occupancy beyond the smallest width on >=2 train instances per task), literal_col_bound_any (force extremal work-area occupancy on >=2 train instances/task for both row and column axes), literal_row_bound_any (force extremal work-area occupancy on >=2 train instances/task for both row and column axes), blind_by_row_profile (add >=2 train collisions for this feature key or document it as an explicit deferred tail), blind_by_col_profile (add >=2 train collisions for this feature key or document it as an explicit deferred tail), blind_by_sorted_profiles (add >=2 train collisions for this feature key or document it as an explicit deferred tail)",
+      "next_required_action": "Fix blocking synthetic-review findings: hardcoded_W (force work-area occupancy beyond the smallest width on >=2 train instances per task), literal_col_bound_any (force extremal work-area occupancy on >=2 train instances/task for both row and column axes), literal_row_bound_any (force extremal work-area occupancy on >=2 train instances/task for both row and column axes), blind_by_row_profile (add >=2 train collisions for this feature key or document it as an explicit deferred tail), blind_by_col_profile (add >=2 train collisions for this feature key or document it as an explicit deferred tail)",
       "notes": [
         "Method-track only; derived from 7b0280bc-class ideas and not live Kaggle evidence.",
         "A pass here would still require separate live candidate gates before solver integration."

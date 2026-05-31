@@ -102,31 +102,67 @@ def template_match_entry(watch: dict, review: dict) -> dict:
     }
 
 
-def count_marked_entry(watch: dict) -> dict:
+def count_marked_entry(watch: dict, review: dict) -> dict:
     latest = latest_download(watch, "count_marked_objects")
-    status = "external_method_shipped_unverified_by_codex" if latest else "pending_generator"
+    align = watch.get("count_marked_review_alignment", {}) or {}
+    findings = review.get("blocking_findings", []) or []
+    if not latest:
+        status = "pending_generator"
+    elif not align.get("latest_is_reviewed"):
+        status = "needs_review"
+    elif review.get("verdict") == "passes_review":
+        status = "ledger_candidate_method_only"
+    elif review.get("verdict") == "passes_review_with_scope":
+        status = "ledger_candidate_with_scope_method_only"
+    else:
+        status = "not_ledger_safe"
+    blockers = [
+        {
+            "name": row.get("name"),
+            "kind": row.get("kind"),
+            "admitted_tasks": row.get("admitted_tasks"),
+            "admitted_cases": row.get("admitted_cases"),
+            "fix": row.get("fix"),
+        }
+        for row in findings
+    ]
+    if blockers:
+        next_action = "Fix blocking count-family review findings: " + ", ".join(
+            f"{row['name']} ({row.get('fix')})" for row in blockers
+        )
+    elif status == "needs_review":
+        next_action = "Run review_count_marked_objects.py before using count-family evidence."
+    elif status.startswith("ledger_candidate"):
+        next_action = "Eligible for method/generalization-ledger discussion only; not live Kaggle evidence."
+    else:
+        next_action = "Wait for a new count-marked generator or method-track instruction."
     return {
         "family": "count_marked_objects",
         "status": status,
         "live_solver_effect": "none",
         "latest_generator": latest,
         "review": {
-            "artifact": None,
-            "verdict": "reported_shipped_by_claude_v5" if latest else None,
+            "artifact": "tmp/count_marked_objects_latest_review.json" if review else None,
+            "generated_cdt": review.get("generated_cdt"),
+            "verdict": review.get("verdict"),
+            "oracle_mismatches": review.get("oracle_mismatches"),
+            "output_count_mismatches": review.get("output_count_mismatches"),
+            "admitted_counts": review.get("admitted_counts", {}),
+            "fragile_lt2_counts": review.get("fragile_lt2_counts", {}),
         },
-        "blockers": [],
+        "review_alignment": align,
+        "blockers": blockers,
+        "scope_survivors": review.get("scope_survivors", []) or [],
+        "weak_tail": review.get("weak_tail", []) or [],
         "scope_limits_reported": [
             "region-grow/category-c: objects-in-margin not certified",
             "N>7 tail not certified",
             "object-size>6 tail not certified",
         ] if latest else [],
-        "next_required_action": (
-            "No live action. If this family becomes admission-critical, add a Codex cold-review artifact "
-            "similar to template_match_role_recolor."
-        ),
+        "next_required_action": next_action,
         "notes": [
-            "Mailbox reports v5 shipped to the scoped generalization ledger.",
-            "Codex has fingerprinted the generator but has not added an independent count-family reviewer.",
+            "Method-track only; provenance reported empty by Claude's generator.",
+            "A pass here would still require separate live candidate gates before solver integration.",
         ],
     }
 
@@ -159,11 +195,12 @@ def main() -> None:
     now = datetime.now(ZoneInfo("America/Chicago"))
     watch = load_json("tmp/claude_artifact_watch_latest.json")
     review = load_json("tmp/template_match_role_recolor_latest_review.json")
+    count_review = load_json("tmp/count_marked_objects_latest_review.json")
     sentinel = load_json("tmp/codex_sia_all23_sentinel.json")
     sia_policy = load_json("tmp/sia_search_policy_latest.json")
     entries = [
         template_match_entry(watch, review),
-        count_marked_entry(watch),
+        count_marked_entry(watch, count_review),
         live_solver_entry(sentinel, sia_policy),
     ]
     out = {

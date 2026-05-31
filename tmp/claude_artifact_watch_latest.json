@@ -1,17 +1,17 @@
 {
   "artifact": "claude_artifact_watch_latest",
-  "generated_cdt": "2026-05-31 06:26:41 CDT",
+  "generated_cdt": "2026-05-31 06:31:40 CDT",
   "downloads": {
     "template_match_role_recolor": {
       "pattern": "/Users/aurascoper/Downloads/template_match_role_recolor_v*.py",
-      "count": 2,
+      "count": 3,
       "latest": {
-        "name": "template_match_role_recolor_v2.py",
-        "path": "/Users/aurascoper/Downloads/template_match_role_recolor_v2.py",
-        "version": 2,
-        "size_bytes": 25593,
-        "sha256": "a85f1e375c694e33288fbfb4b0f5695092589ae59df535a19483f7cbca0f863d",
-        "mtime_cdt": "2026-05-31 06:05:51 CDT"
+        "name": "template_match_role_recolor_v3.py",
+        "path": "/Users/aurascoper/Downloads/template_match_role_recolor_v3.py",
+        "version": 3,
+        "size_bytes": 28460,
+        "sha256": "f2b074e6204c92484a977540db704e53ed73b249ef6900647a93e5082976f45f",
+        "mtime_cdt": "2026-05-31 06:27:41 CDT"
       },
       "files": [
         {
@@ -29,6 +29,14 @@
           "size_bytes": 25593,
           "sha256": "a85f1e375c694e33288fbfb4b0f5695092589ae59df535a19483f7cbca0f863d",
           "mtime_cdt": "2026-05-31 06:05:51 CDT"
+        },
+        {
+          "name": "template_match_role_recolor_v3.py",
+          "path": "/Users/aurascoper/Downloads/template_match_role_recolor_v3.py",
+          "version": 3,
+          "size_bytes": 28460,
+          "sha256": "f2b074e6204c92484a977540db704e53ed73b249ef6900647a93e5082976f45f",
+          "mtime_cdt": "2026-05-31 06:27:41 CDT"
         }
       ]
     },
@@ -106,24 +114,24 @@
       "path": "tmp/claude_sketch_enumeration.json",
       "exists": true,
       "size_bytes": 75780,
-      "mtime_cdt": "2026-05-31 06:21:48 CDT"
+      "mtime_cdt": "2026-05-31 06:26:41 CDT"
     },
     {
       "path": "tmp/template_match_role_recolor_latest_review.json",
       "exists": true,
-      "size_bytes": 114942,
-      "mtime_cdt": "2026-05-31 06:26:41 CDT"
+      "size_bytes": 73726,
+      "mtime_cdt": "2026-05-31 06:31:40 CDT"
     }
   ],
   "template_match_review_alignment": {
     "latest_template_exists": true,
     "review_exists": true,
-    "latest_name": "template_match_role_recolor_v2.py",
-    "latest_version": 2,
-    "latest_sha256": "a85f1e375c694e33288fbfb4b0f5695092589ae59df535a19483f7cbca0f863d",
-    "reviewed_name": "template_match_role_recolor_v2.py",
-    "reviewed_version": 2,
-    "reviewed_sha256": "a85f1e375c694e33288fbfb4b0f5695092589ae59df535a19483f7cbca0f863d",
+    "latest_name": "template_match_role_recolor_v3.py",
+    "latest_version": 3,
+    "latest_sha256": "f2b074e6204c92484a977540db704e53ed73b249ef6900647a93e5082976f45f",
+    "reviewed_name": "template_match_role_recolor_v3.py",
+    "reviewed_version": 3,
+    "reviewed_sha256": "f2b074e6204c92484a977540db704e53ed73b249ef6900647a93e5082976f45f",
     "latest_is_reviewed": true,
     "action": "latest template-match generator is reviewed"
   },

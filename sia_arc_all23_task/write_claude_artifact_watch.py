@@ -32,6 +32,7 @@ WORKSPACE_ARTIFACTS = [
     "tmp/claude_relational_synth_results.json",
     "tmp/claude_sketch_enumeration.json",
     "tmp/template_match_role_recolor_latest_review.json",
+    "tmp/count_marked_objects_latest_review.json",
 ]
 
 
@@ -91,7 +92,9 @@ def main() -> None:
         }
 
     review = load_json("tmp/template_match_role_recolor_latest_review.json")
+    count_review = load_json("tmp/count_marked_objects_latest_review.json")
     latest_template = downloads["template_match_role_recolor"]["latest"]
+    latest_count = downloads["count_marked_objects"]["latest"]
     review_alignment = {
         "latest_template_exists": latest_template is not None,
         "review_exists": bool(review),
@@ -115,15 +118,39 @@ def main() -> None:
     else:
         review_alignment["action"] = "no template-match generator visible"
 
+    count_alignment = {
+        "latest_count_exists": latest_count is not None,
+        "review_exists": bool(count_review),
+        "latest_name": latest_count.get("name") if latest_count else None,
+        "latest_version": latest_count.get("version") if latest_count else None,
+        "latest_sha256": latest_count.get("sha256") if latest_count else None,
+        "reviewed_name": count_review.get("generator_name"),
+        "reviewed_version": count_review.get("generator_version"),
+        "reviewed_sha256": count_review.get("generator_sha256"),
+    }
+    count_alignment["latest_is_reviewed"] = bool(
+        latest_count
+        and count_review
+        and latest_count.get("name") == count_review.get("generator_name")
+        and latest_count.get("sha256") == count_review.get("generator_sha256")
+    )
+    if latest_count and not count_alignment["latest_is_reviewed"]:
+        count_alignment["action"] = "run review_count_marked_objects.py before using count-family evidence"
+    elif latest_count:
+        count_alignment["action"] = "latest count-marked generator is reviewed"
+    else:
+        count_alignment["action"] = "no count-marked generator visible"
+
     out = {
         "artifact": "claude_artifact_watch_latest",
         "generated_cdt": now.strftime("%Y-%m-%d %H:%M:%S %Z"),
         "downloads": downloads,
         "workspace_artifacts": [workspace_artifact(rel) for rel in WORKSPACE_ARTIFACTS],
         "template_match_review_alignment": review_alignment,
+        "count_marked_review_alignment": count_alignment,
         "notes": [
             "This watcher fingerprints Claude drop files but does not import or execute them.",
-            "The template-match reviewer, not this watcher, performs the cold synthetic-family review.",
+            "The template/count reviewers, not this watcher, perform the cold synthetic-family reviews.",
         ],
     }
     OUT.parent.mkdir(exist_ok=True)
