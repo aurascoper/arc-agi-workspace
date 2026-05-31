@@ -1,0 +1,125 @@
+{
+  "distribution": {
+    "decomposition": 7,
+    "selector": 1,
+    "renderer": 14,
+    "parameter": 1
+  },
+  "rows": [
+    {
+      "task_id": "5dbc8537",
+      "bucket": "decomposition",
+      "locus": "decomposition (shape-change; needs output-shape op + content render)"
+    },
+    {
+      "task_id": "edb79dae",
+      "bucket": "decomposition",
+      "locus": "decomposition (shape-change; needs output-shape op + content render)"
+    },
+    {
+      "task_id": "dd6b8c4b",
+      "bucket": "selector",
+      "locus": "selector"
+    },
+    {
+      "task_id": "88bcf3b4",
+      "bucket": "renderer",
+      "locus": "renderer (additions are generated structure; no segment/copy/stamp render reproduces them)"
+    },
+    {
+      "task_id": "cb2d8a2c",
+      "bucket": "renderer",
+      "locus": "renderer (additions are generated structure; no segment/copy/stamp render reproduces them)"
+    },
+    {
+      "task_id": "142ca369",
+      "bucket": "renderer",
+      "locus": "renderer (additions are generated structure; no segment/copy/stamp render reproduces them)"
+    },
+    {
+      "task_id": "3dc255db",
+      "bucket": "parameter",
+      "locus": "parameter (segment-draw renderer expressible; endpoints/anchor unknown)"
+    },
+    {
+      "task_id": "195c6913",
+      "bucket": "renderer",
+      "locus": "renderer (mixed-op: additions + significant recolors; multi-structure extend/recolor)"
+    },
+    {
+      "task_id": "36a08778",
+      "bucket": "renderer",
+      "locus": "renderer (additions are generated structure; no segment/copy/stamp render reproduces them)"
+    },
+    {
+      "task_id": "4a21e3da",
+      "bucket": "renderer",
+      "locus": "renderer (additions are generated structure; no segment/copy/stamp render reproduces them)"
+    },
+    {
+      "task_id": "16b78196",
+      "bucket": "renderer",
+      "locus": "renderer (additions are generated structure; no segment/copy/stamp render reproduces them)"
+    },
+    {
+      "task_id": "446ef5d2",
+      "bucket": "renderer",
+      "locus": "renderer (additions are generated structure; no segment/copy/stamp render reproduces them)"
+    },
+    {
+      "task_id": "7b0280bc",
+      "bucket": "renderer",
+      "locus": "renderer (mixed-op: additions + significant recolors; multi-structure extend/recolor)"
+    },
+    {
+      "task_id": "abc82100",
+      "bucket": "renderer",
+      "locus": "renderer (additions are generated structure; no segment/copy/stamp render reproduces them)"
+    },
+    {
+      "task_id": "d8e07eb2",
+      "bucket": "renderer",
+      "locus": "renderer (additions are generated structure; no segment/copy/stamp render reproduces them)"
+    },
+    {
+      "task_id": "271d71e2",
+      "bucket": "renderer",
+      "locus": "renderer (additions are generated structure; no segment/copy/stamp render reproduces them)"
+    },
+    {
+      "task_id": "faa9f03d",
+      "bucket": "renderer",
+      "locus": "renderer (mixed-op: additions + significant recolors; multi-structure extend/recolor)"
+    },
+    {
+      "task_id": "35ab12c3",
+      "bucket": "renderer",
+      "locus": "renderer (additions are generated structure; no segment/copy/stamp render reproduces them)"
+    },
+    {
+      "task_id": "20a9e565",
+      "bucket": "decomposition",
+      "locus": "decomposition (shape-change; needs output-shape op + content render)"
+    },
+    {
+      "task_id": "2d0172a1",
+      "bucket": "decomposition",
+      "locus": "decomposition (shape-change; needs output-shape op + content render)"
+    },
+    {
+      "task_id": "6ffbe589",
+      "bucket": "decomposition",
+      "locus": "decomposition (shape-change; needs output-shape op + content render)"
+    },
+    {
+      "task_id": "e87109e9",
+      "bucket": "decomposition",
+      "locus": "decomposition (shape-change; needs output-shape op + content render)"
+    },
+    {
+      "task_id": "89565ca0",
+      "bucket": "decomposition",
+      "locus": "decomposition (shape-change; needs output-shape op + content render)"
+    }
+  ]
+}

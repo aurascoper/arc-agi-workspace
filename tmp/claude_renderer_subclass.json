@@ -1,0 +1,151 @@
+{
+  "renderer_subclass": [
+    {
+      "task": "88bcf3b4",
+      "label": "line/ray routing (thin segments)",
+      "add": 24,
+      "recol": 0,
+      "erase": 27,
+      "multi_comps": 4,
+      "thin_frac": 1.0,
+      "extend_frac": 0.25
+    },
+    {
+      "task": "cb2d8a2c",
+      "label": "object extension (grow from existing)",
+      "add": 115,
+      "recol": 16,
+      "erase": 0,
+      "multi_comps": 4,
+      "thin_frac": 0.0,
+      "extend_frac": 1.0
+    },
+    {
+      "task": "142ca369",
+      "label": "scattered-cell fill/draw",
+      "add": 110,
+      "recol": 0,
+      "erase": 0,
+      "multi_comps": 0,
+      "thin_frac": 0.0,
+      "extend_frac": 0.0
+    },
+    {
+      "task": "195c6913",
+      "label": "extend_or_recolor (multi-op)",
+      "add": 90,
+      "recol": 105,
+      "erase": 16,
+      "multi_comps": 3,
+      "thin_frac": 0.33,
+      "extend_frac": 0.33
+    },
+    {
+      "task": "36a08778",
+      "label": "object extension (grow from existing)",
+      "add": 259,
+      "recol": 0,
+      "erase": 0,
+      "multi_comps": 6,
+      "thin_frac": 0.0,
+      "extend_frac": 1.0
+    },
+    {
+      "task": "4a21e3da",
+      "label": "irregular generated structure",
+      "add": 94,
+      "recol": 0,
+      "erase": 74,
+      "multi_comps": 13,
+      "thin_frac": 0.46,
+      "extend_frac": 0.31
+    },
+    {
+      "task": "16b78196",
+      "label": "irregular generated structure",
+      "add": 79,
+      "recol": 7,
+      "erase": 79,
+      "multi_comps": 3,
+      "thin_frac": 0.0,
+      "extend_frac": 0.0
+    },
+    {
+      "task": "446ef5d2",
+      "label": "object extension (grow from existing)",
+      "add": 73,
+      "recol": 9,
+      "erase": 79,
+      "multi_comps": 2,
+      "thin_frac": 0.0,
+      "extend_frac": 1.0
+    },
+    {
+      "task": "7b0280bc",
+      "label": "irregular generated structure",
+      "add": 0,
+      "recol": 71,
+      "erase": 0,
+      "multi_comps": 0,
+      "thin_frac": 0.0,
+      "extend_frac": 0.0
+    },
+    {
+      "task": "abc82100",
+      "label": "line/ray routing (thin segments)",
+      "add": 91,
+      "recol": 24,
+      "erase": 78,
+      "multi_comps": 1,
+      "thin_frac": 1.0,
+      "extend_frac": 0.0
+    },
+    {
+      "task": "d8e07eb2",
+      "label": "irregular generated structure",
+      "add": 740,
+      "recol": 0,
+      "erase": 0,
+      "multi_comps": 18,
+      "thin_frac": 0.0,
+      "extend_frac": 0.0
+    },
+    {
+      "task": "271d71e2",
+      "label": "irregular generated structure",
+      "add": 75,
+      "recol": 20,
+      "erase": 88,
+      "multi_comps": 7,
+      "thin_frac": 0.43,
+      "extend_frac": 0.43
+    },
+    {
+      "task": "faa9f03d",
+      "label": "extend_or_recolor (multi-op)",
+      "add": 25,
+      "recol": 17,
+      "erase": 8,
+      "multi_comps": 1,
+      "thin_frac": 1.0,
+      "extend_frac": 0.0
+    },
+    {
+      "task": "35ab12c3",
+      "label": "object extension (grow from existing)",
+      "add": 179,
+      "recol": 0,
+      "erase": 0,
+      "multi_comps": 9,
+      "thin_frac": 0.33,
+      "extend_frac": 0.78
+    }
+  ],
+  "by_label": {
+    "line/ray routing (thin segments)": 2,
+    "object extension (grow from existing)": 4,
+    "scattered-cell fill/draw": 1,
+    "extend_or_recolor (multi-op)": 2,
+    "irregular generated structure": 5
+  }
+}

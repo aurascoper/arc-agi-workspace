@@ -1,0 +1,403 @@
+{
+  "n_genuine": 23,
+  "flips_to_exact": [],
+  "n_flips": 0,
+  "promoted_train_exact_loo": {
+    "keep_remove_by_role": [],
+    "recolor_by_role": []
+  },
+  "rows": [
+    {
+      "task_id": "5dbc8537",
+      "mechanisms": {
+        "keep_remove_by_role": {
+          "promoted_feature": null,
+          "train_exact_loo": false,
+          "flip_to_exact": false
+        },
+        "recolor_by_role": {
+          "promoted_feature": null,
+          "train_exact_loo": false,
+          "flip_to_exact": false
+        }
+      },
+      "flip_to_exact": false,
+      "flip_via": null
+    },
+    {
+      "task_id": "edb79dae",
+      "mechanisms": {
+        "keep_remove_by_role": {
+          "promoted_feature": null,
+          "train_exact_loo": false,
+          "flip_to_exact": false
+        },
+        "recolor_by_role": {
+          "promoted_feature": null,
+          "train_exact_loo": false,
+          "flip_to_exact": false
+        }
+      },
+      "flip_to_exact": false,
+      "flip_via": null
+    },
+    {
+      "task_id": "dd6b8c4b",
+      "mechanisms": {
+        "keep_remove_by_role": {
+          "promoted_feature": null,
+          "train_exact_loo": false,
+          "flip_to_exact": false
+        },
+        "recolor_by_role": {
+          "promoted_feature": null,
+          "train_exact_loo": false,
+          "flip_to_exact": false
+        }
+      },
+      "flip_to_exact": false,
+      "flip_via": null
+    },
+    {
+      "task_id": "88bcf3b4",
+      "mechanisms": {
+        "keep_remove_by_role": {
+          "promoted_feature": null,
+          "train_exact_loo": false,
+          "flip_to_exact": false
+        },
+        "recolor_by_role": {
+          "promoted_feature": null,
+          "train_exact_loo": false,
+          "flip_to_exact": false
+        }
+      },
+      "flip_to_exact": false,
+      "flip_via": null
+    },
+    {
+      "task_id": "cb2d8a2c",
+      "mechanisms": {
+        "keep_remove_by_role": {
+          "promoted_feature": null,
+          "train_exact_loo": false,
+          "flip_to_exact": false
+        },
+        "recolor_by_role": {
+          "promoted_feature": null,
+          "train_exact_loo": false,
+          "flip_to_exact": false
+        }
+      },
+      "flip_to_exact": false,
+      "flip_via": null
+    },
+    {
+      "task_id": "142ca369",
+      "mechanisms": {
+        "keep_remove_by_role": {
+          "promoted_feature": null,
+          "train_exact_loo": false,
+          "flip_to_exact": false
+        },
+        "recolor_by_role": {
+          "promoted_feature": null,
+          "train_exact_loo": false,
+          "flip_to_exact": false
+        }
+      },
+      "flip_to_exact": false,
+      "flip_via": null
+    },
+    {
+      "task_id": "3dc255db",
+      "mechanisms": {
+        "keep_remove_by_role": {
+          "promoted_feature": null,
+          "train_exact_loo": false,
+          "flip_to_exact": false
+        },
+        "recolor_by_role": {
+          "promoted_feature": null,
+          "train_exact_loo": false,
+          "flip_to_exact": false
+        }
+      },
+      "flip_to_exact": false,
+      "flip_via": null
+    },
+    {
+      "task_id": "195c6913",
+      "mechanisms": {
+        "keep_remove_by_role": {
+          "promoted_feature": null,
+          "train_exact_loo": false,
+          "flip_to_exact": false
+        },
+        "recolor_by_role": {
+          "promoted_feature": null,
+          "train_exact_loo": false,
+          "flip_to_exact": false
+        }
+      },
+      "flip_to_exact": false,
+      "flip_via": null
+    },
+    {
+      "task_id": "36a08778",
+      "mechanisms": {
+        "keep_remove_by_role": {
+          "promoted_feature": null,
+          "train_exact_loo": false,
+          "flip_to_exact": false
+        },
+        "recolor_by_role": {
+          "promoted_feature": null,
+          "train_exact_loo": false,
+          "flip_to_exact": false
+        }
+      },
+      "flip_to_exact": false,
+      "flip_via": null
+    },
+    {
+      "task_id": "4a21e3da",
+      "mechanisms": {
+        "keep_remove_by_role": {
+          "promoted_feature": null,
+          "train_exact_loo": false,
+          "flip_to_exact": false
+        },
+        "recolor_by_role": {
+          "promoted_feature": null,
+          "train_exact_loo": false,
+          "flip_to_exact": false
+        }
+      },
+      "flip_to_exact": false,
+      "flip_via": null
+    },
+    {
+      "task_id": "16b78196",
+      "mechanisms": {
+        "keep_remove_by_role": {
+          "promoted_feature": null,
+          "train_exact_loo": false,
+          "flip_to_exact": false
+        },
+        "recolor_by_role": {
+          "promoted_feature": null,
+          "train_exact_loo": false,
+          "flip_to_exact": false
+        }
+      },
+      "flip_to_exact": false,
+      "flip_via": null
+    },
+    {
+      "task_id": "446ef5d2",
+      "mechanisms": {
+        "keep_remove_by_role": {
+          "promoted_feature": null,
+          "train_exact_loo": false,
+          "flip_to_exact": false
+        },
+        "recolor_by_role": {
+          "promoted_feature": null,
+          "train_exact_loo": false,
+          "flip_to_exact": false
+        }
+      },
+      "flip_to_exact": false,
+      "flip_via": null
+    },
+    {
+      "task_id": "7b0280bc",
+      "mechanisms": {
+        "keep_remove_by_role": {
+          "promoted_feature": null,
+          "train_exact_loo": false,
+          "flip_to_exact": false
+        },
+        "recolor_by_role": {
+          "promoted_feature": null,
+          "train_exact_loo": false,
+          "flip_to_exact": false
+        }
+      },
+      "flip_to_exact": false,
+      "flip_via": null
+    },
+    {
+      "task_id": "abc82100",
+      "mechanisms": {
+        "keep_remove_by_role": {
+          "promoted_feature": null,
+          "train_exact_loo": false,
+          "flip_to_exact": false
+        },
+        "recolor_by_role": {
+          "promoted_feature": null,
+          "train_exact_loo": false,
+          "flip_to_exact": false
+        }
+      },
+      "flip_to_exact": false,
+      "flip_via": null
+    },
+    {
+      "task_id": "d8e07eb2",
+      "mechanisms": {
+        "keep_remove_by_role": {
+          "promoted_feature": null,
+          "train_exact_loo": false,
+          "flip_to_exact": false
+        },
+        "recolor_by_role": {
+          "promoted_feature": null,
+          "train_exact_loo": false,
+          "flip_to_exact": false
+        }
+      },
+      "flip_to_exact": false,
+      "flip_via": null
+    },
+    {
+      "task_id": "271d71e2",
+      "mechanisms": {
+        "keep_remove_by_role": {
+          "promoted_feature": null,
+          "train_exact_loo": false,
+          "flip_to_exact": false
+        },
+        "recolor_by_role": {
+          "promoted_feature": null,
+          "train_exact_loo": false,
+          "flip_to_exact": false
+        }
+      },
+      "flip_to_exact": false,
+      "flip_via": null
+    },
+    {
+      "task_id": "faa9f03d",
+      "mechanisms": {
+        "keep_remove_by_role": {
+          "promoted_feature": null,
+          "train_exact_loo": false,
+          "flip_to_exact": false
+        },
+        "recolor_by_role": {
+          "promoted_feature": null,
+          "train_exact_loo": false,
+          "flip_to_exact": false
+        }
+      },
+      "flip_to_exact": false,
+      "flip_via": null
+    },
+    {
+      "task_id": "35ab12c3",
+      "mechanisms": {
+        "keep_remove_by_role": {
+          "promoted_feature": null,
+          "train_exact_loo": false,
+          "flip_to_exact": false
+        },
+        "recolor_by_role": {
+          "promoted_feature": null,
+          "train_exact_loo": false,
+          "flip_to_exact": false
+        }
+      },
+      "flip_to_exact": false,
+      "flip_via": null
+    },
+    {
+      "task_id": "20a9e565",
+      "mechanisms": {
+        "keep_remove_by_role": {
+          "promoted_feature": null,
+          "train_exact_loo": false,
+          "flip_to_exact": false
+        },
+        "recolor_by_role": {
+          "promoted_feature": null,
+          "train_exact_loo": false,
+          "flip_to_exact": false
+        }
+      },
+      "flip_to_exact": false,
+      "flip_via": null
+    },
+    {
+      "task_id": "2d0172a1",
+      "mechanisms": {
+        "keep_remove_by_role": {
+          "promoted_feature": null,
+          "train_exact_loo": false,
+          "flip_to_exact": false
+        },
+        "recolor_by_role": {
+          "promoted_feature": null,
+          "train_exact_loo": false,
+          "flip_to_exact": false
+        }
+      },
+      "flip_to_exact": false,
+      "flip_via": null
+    },
+    {
+      "task_id": "6ffbe589",
+      "mechanisms": {
+        "keep_remove_by_role": {
+          "promoted_feature": null,
+          "train_exact_loo": false,
+          "flip_to_exact": false
+        },
+        "recolor_by_role": {
+          "promoted_feature": null,
+          "train_exact_loo": false,
+          "flip_to_exact": false
+        }
+      },
+      "flip_to_exact": false,
+      "flip_via": null
+    },
+    {
+      "task_id": "e87109e9",
+      "mechanisms": {
+        "keep_remove_by_role": {
+          "promoted_feature": null,
+          "train_exact_loo": false,
+          "flip_to_exact": false
+        },
+        "recolor_by_role": {
+          "promoted_feature": null,
+          "train_exact_loo": false,
+          "flip_to_exact": false
+        }
+      },
+      "flip_to_exact": false,
+      "flip_via": null
+    },
+    {
+      "task_id": "89565ca0",
+      "mechanisms": {
+        "keep_remove_by_role": {
+          "promoted_feature": null,
+          "train_exact_loo": false,
+          "flip_to_exact": false
+        },
+        "recolor_by_role": {
+          "promoted_feature": null,
+          "train_exact_loo": false,
+          "flip_to_exact": false
+        }
+      },
+      "flip_to_exact": false,
+      "flip_via": null
+    }
+  ],
+  "wall_time_sec": 0.1
+}

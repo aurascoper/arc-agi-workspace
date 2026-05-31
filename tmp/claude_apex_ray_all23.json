@@ -1,0 +1,228 @@
+[
+  {
+    "task_id": "5dbc8537",
+    "train_exact": false,
+    "best_total_residual": null,
+    "best_params": null,
+    "flip": false
+  },
+  {
+    "task_id": "edb79dae",
+    "train_exact": false,
+    "best_total_residual": null,
+    "best_params": null,
+    "flip": false
+  },
+  {
+    "task_id": "dd6b8c4b",
+    "train_exact": false,
+    "best_total_residual": 33,
+    "best_params": [
+      2,
+      "any_single",
+      "min_frag_border"
+    ],
+    "flip": false
+  },
+  {
+    "task_id": "88bcf3b4",
+    "train_exact": false,
+    "best_total_residual": 51,
+    "best_params": [
+      2,
+      "away_from_frag",
+      "min_frag_border"
+    ],
+    "flip": false
+  },
+  {
+    "task_id": "cb2d8a2c",
+    "train_exact": false,
+    "best_total_residual": 131,
+    "best_params": [
+      2,
+      "any_single",
+      "min_frag_border"
+    ],
+    "flip": false
+  },
+  {
+    "task_id": "142ca369",
+    "train_exact": false,
+    "best_total_residual": 110,
+    "best_params": [
+      2,
+      "any_single",
+      "min_frag_border"
+    ],
+    "flip": false
+  },
+  {
+    "task_id": "3dc255db",
+    "train_exact": true,
+    "params": [
+      2,
+      "away_from_frag",
+      "min_frag_border"
+    ],
+    "loo": true,
+    "design_test": "0/1",
+    "flip": false
+  },
+  {
+    "task_id": "195c6913",
+    "train_exact": false,
+    "best_total_residual": 211,
+    "best_params": [
+      2,
+      "away_from_frag",
+      "min_frag_border"
+    ],
+    "flip": false
+  },
+  {
+    "task_id": "36a08778",
+    "train_exact": false,
+    "best_total_residual": 260,
+    "best_params": [
+      2,
+      "any_single",
+      "min_frag_border"
+    ],
+    "flip": false
+  },
+  {
+    "task_id": "4a21e3da",
+    "train_exact": false,
+    "best_total_residual": 168,
+    "best_params": [
+      2,
+      "away_from_frag",
+      "min_frag_border"
+    ],
+    "flip": false
+  },
+  {
+    "task_id": "16b78196",
+    "train_exact": false,
+    "best_total_residual": 163,
+    "best_params": [
+      2,
+      "away_from_frag",
+      "min_frag_border"
+    ],
+    "flip": false
+  },
+  {
+    "task_id": "446ef5d2",
+    "train_exact": false,
+    "best_total_residual": 157,
+    "best_params": [
+      2,
+      "away_from_frag",
+      "min_frag_border"
+    ],
+    "flip": false
+  },
+  {
+    "task_id": "7b0280bc",
+    "train_exact": false,
+    "best_total_residual": 92,
+    "best_params": [
+      2,
+      "away_from_frag",
+      "min_frag_border"
+    ],
+    "flip": false
+  },
+  {
+    "task_id": "abc82100",
+    "train_exact": false,
+    "best_total_residual": 175,
+    "best_params": [
+      2,
+      "away_from_frag",
+      "min_frag_border"
+    ],
+    "flip": false
+  },
+  {
+    "task_id": "d8e07eb2",
+    "train_exact": false,
+    "best_total_residual": 934,
+    "best_params": [
+      2,
+      "any_single",
+      "min_frag_border"
+    ],
+    "flip": false
+  },
+  {
+    "task_id": "271d71e2",
+    "train_exact": false,
+    "best_total_residual": 186,
+    "best_params": [
+      2,
+      "any_single",
+      "min_frag_border"
+    ],
+    "flip": false
+  },
+  {
+    "task_id": "faa9f03d",
+    "train_exact": false,
+    "best_total_residual": 50,
+    "best_params": [
+      2,
+      "any_single",
+      "min_frag_border"
+    ],
+    "flip": false
+  },
+  {
+    "task_id": "35ab12c3",
+    "train_exact": false,
+    "best_total_residual": 182,
+    "best_params": [
+      2,
+      "any_single",
+      "min_frag_border"
+    ],
+    "flip": false
+  },
+  {
+    "task_id": "20a9e565",
+    "train_exact": false,
+    "best_total_residual": null,
+    "best_params": null,
+    "flip": false
+  },
+  {
+    "task_id": "2d0172a1",
+    "train_exact": false,
+    "best_total_residual": null,
+    "best_params": null,
+    "flip": false
+  },
+  {
+    "task_id": "6ffbe589",
+    "train_exact": false,
+    "best_total_residual": null,
+    "best_params": null,
+    "flip": false
+  },
+  {
+    "task_id": "e87109e9",
+    "train_exact": false,
+    "best_total_residual": null,
+    "best_params": null,
+    "flip": false
+  },
+  {
+    "task_id": "89565ca0",
+    "train_exact": false,
+    "best_total_residual": null,
+    "best_params": null,
+    "flip": false
+  }
+]

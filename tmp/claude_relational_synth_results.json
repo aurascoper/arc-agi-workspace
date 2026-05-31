@@ -1,0 +1,652 @@
+{
+  "lane": "claude_relational_micro_synth",
+  "targets": [
+    "4a21e3da",
+    "3dc255db",
+    "dd6b8c4b",
+    "35ab12c3",
+    "142ca369",
+    "195c6913"
+  ],
+  "tasks": [
+    {
+      "task_id": "4a21e3da",
+      "n_train": 3,
+      "fill_panel_by_count": {
+        "family": "fill_panel_by_marker_count",
+        "decomposition_ok": false,
+        "render_oracle_exact": false,
+        "selector": null,
+        "selector_loo_stable": false,
+        "train_exact": false,
+        "decomposition_fail": "no_host_panel_in_some_pair"
+      },
+      "generative_structure": {
+        "classification": "additions_generated (draw/fill -> needs generative primitive; RENDER-limited)",
+        "per_pair": [
+          {
+            "shape_change": false,
+            "n_added": 35,
+            "n_erased": 26,
+            "n_recolor": 0,
+            "n_added_components": 7,
+            "n_multi_cell_added_components": 6,
+            "added_components_all_rigid_copies": false,
+            "frac_multicell_added_rigid": 0.0
+          },
+          {
+            "shape_change": false,
+            "n_added": 32,
+            "n_erased": 26,
+            "n_recolor": 0,
+            "n_added_components": 4,
+            "n_multi_cell_added_components": 4,
+            "added_components_all_rigid_copies": false,
+            "frac_multicell_added_rigid": 0.0
+          },
+          {
+            "shape_change": false,
+            "n_added": 27,
+            "n_erased": 22,
+            "n_recolor": 0,
+            "n_added_components": 3,
+            "n_multi_cell_added_components": 3,
+            "added_components_all_rigid_copies": false,
+            "frac_multicell_added_rigid": 0.0
+          }
+        ]
+      },
+      "oracle_segment_render": {
+        "applicable": true,
+        "frac_segments_per_pair": [
+          0.5,
+          0.5,
+          0.3333333333333333
+        ],
+        "all_segments": false
+      },
+      "oracle_motif_stamp": {
+        "single_recurring_motif": false,
+        "per_pair": [
+          {
+            "applicable": true,
+            "n_multi": 6,
+            "n_distinct_motifs": 6,
+            "dominant_motif_count": 1
+          },
+          {
+            "applicable": true,
+            "n_multi": 4,
+            "n_distinct_motifs": 3,
+            "dominant_motif_count": 2
+          },
+          {
+            "applicable": true,
+            "n_multi": 3,
+            "n_distinct_motifs": 3,
+            "dominant_motif_count": 1
+          }
+        ]
+      },
+      "flip_to_exact": false,
+      "failure_locus_4way": "renderer (additions are generated structure; no segment/copy/stamp render reproduces them)"
+    },
+    {
+      "task_id": "3dc255db",
+      "n_train": 3,
+      "fill_panel_by_count": {
+        "family": "fill_panel_by_marker_count",
+        "decomposition_ok": false,
+        "render_oracle_exact": false,
+        "selector": null,
+        "selector_loo_stable": false,
+        "train_exact": false,
+        "decomposition_fail": "no_host_panel_in_some_pair"
+      },
+      "generative_structure": {
+        "classification": "additions_generated (draw/fill -> needs generative primitive; RENDER-limited)",
+        "per_pair": [
+          {
+            "shape_change": false,
+            "n_added": 4,
+            "n_erased": 4,
+            "n_recolor": 0,
+            "n_added_components": 2,
+            "n_multi_cell_added_components": 2,
+            "added_components_all_rigid_copies": false,
+            "frac_multicell_added_rigid": 0.0
+          },
+          {
+            "shape_change": false,
+            "n_added": 4,
+            "n_erased": 4,
+            "n_recolor": 0,
+            "n_added_components": 2,
+            "n_multi_cell_added_components": 1,
+            "added_components_all_rigid_copies": false,
+            "frac_multicell_added_rigid": 0.0
+          },
+          {
+            "shape_change": false,
+            "n_added": 3,
+            "n_erased": 7,
+            "n_recolor": 0,
+            "n_added_components": 1,
+            "n_multi_cell_added_components": 1,
+            "added_components_all_rigid_copies": false,
+            "frac_multicell_added_rigid": 0.0
+          }
+        ]
+      },
+      "oracle_segment_render": {
+        "applicable": true,
+        "frac_segments_per_pair": [
+          1.0,
+          1.0,
+          1.0
+        ],
+        "all_segments": true
+      },
+      "oracle_motif_stamp": {
+        "single_recurring_motif": false,
+        "per_pair": [
+          {
+            "applicable": true,
+            "n_multi": 2,
+            "n_distinct_motifs": 2,
+            "dominant_motif_count": 1
+          },
+          {
+            "applicable": true,
+            "n_multi": 1,
+            "n_distinct_motifs": 1,
+            "dominant_motif_count": 1
+          },
+          {
+            "applicable": true,
+            "n_multi": 1,
+            "n_distinct_motifs": 1,
+            "dominant_motif_count": 1
+          }
+        ]
+      },
+      "flip_to_exact": false,
+      "failure_locus_4way": "parameter (segment-draw renderer expressible; endpoints/anchor unknown)"
+    },
+    {
+      "task_id": "dd6b8c4b",
+      "n_train": 3,
+      "fill_panel_by_count": {
+        "family": "fill_panel_by_marker_count",
+        "decomposition_ok": true,
+        "render_oracle_exact": true,
+        "selector": "no_separating_feature",
+        "selector_loo_stable": false,
+        "train_exact": false,
+        "marker_color": 9,
+        "oracle_consumed_counts": [
+          2,
+          9,
+          4
+        ],
+        "feature_separability": {
+          "comp_size": {
+            "separable": false,
+            "conflict_values": [
+              2,
+              1,
+              5
+            ],
+            "consumed_values": []
+          },
+          "degree": {
+            "separable": false,
+            "conflict_values": [
+              2,
+              1,
+              0
+            ],
+            "consumed_values": []
+          },
+          "is_endpoint": {
+            "separable": false,
+            "conflict_values": [
+              0,
+              1
+            ],
+            "consumed_values": []
+          },
+          "on_border": {
+            "separable": false,
+            "conflict_values": [
+              0,
+              1
+            ],
+            "consumed_values": []
+          },
+          "dist_panel": {
+            "separable": false,
+            "conflict_values": [
+              5,
+              6,
+              4,
+              3
+            ],
+            "consumed_values": [
+              2
+            ]
+          },
+          "dist_path": {
+            "separable": false,
+            "conflict_values": [
+              1,
+              2,
+              3
+            ],
+            "consumed_values": [
+              6,
+              7,
+              8
+            ]
+          },
+          "near_path_le1": {
+            "separable": false,
+            "conflict_values": [
+              1,
+              0
+            ],
+            "consumed_values": []
+          },
+          "attached_to_object": {
+            "separable": false,
+            "conflict_values": [
+              1,
+              0
+            ],
+            "consumed_values": []
+          },
+          "enclosed_by_path": {
+            "separable": false,
+            "conflict_values": [
+              0,
+              1
+            ],
+            "consumed_values": []
+          },
+          "clear_ray_to_panel": {
+            "separable": false,
+            "conflict_values": [
+              0
+            ],
+            "consumed_values": [
+              1
+            ]
+          },
+          "row_half": {
+            "separable": false,
+            "conflict_values": [
+              0,
+              1
+            ],
+            "consumed_values": []
+          },
+          "col_half": {
+            "separable": false,
+            "conflict_values": [
+              1,
+              0
+            ],
+            "consumed_values": []
+          },
+          "quadrant": {
+            "separable": false,
+            "conflict_values": [
+              [
+                0,
+                1
+              ],
+              [
+                0,
+                0
+              ],
+              [
+                1,
+                0
+              ]
+            ],
+            "consumed_values": [
+              [
+                1,
+                1
+              ]
+            ]
+          },
+          "_two_feature_search": "no_separating_pair"
+        },
+        "selector_vocabulary": [
+          "all_non_panel_markers",
+          "isolated_marker_cells",
+          "free_floating_markers",
+          "markers_touching_other_object",
+          "two_cell_marker_pairs"
+        ]
+      },
+      "generative_structure": {
+        "classification": "erase_or_recolor_only",
+        "per_pair": [
+          {
+            "shape_change": false,
+            "n_added": 0,
+            "n_erased": 2,
+            "n_recolor": 2,
+            "n_added_components": 0,
+            "n_multi_cell_added_components": 0,
+            "added_components_all_rigid_copies": false,
+            "frac_multicell_added_rigid": null
+          },
+          {
+            "shape_change": false,
+            "n_added": 0,
+            "n_erased": 9,
+            "n_recolor": 9,
+            "n_added_components": 0,
+            "n_multi_cell_added_components": 0,
+            "added_components_all_rigid_copies": false,
+            "frac_multicell_added_rigid": null
+          },
+          {
+            "shape_change": false,
+            "n_added": 0,
+            "n_erased": 4,
+            "n_recolor": 4,
+            "n_added_components": 0,
+            "n_multi_cell_added_components": 0,
+            "added_components_all_rigid_copies": false,
+            "frac_multicell_added_rigid": null
+          }
+        ]
+      },
+      "oracle_segment_render": {
+        "applicable": true,
+        "frac_segments_per_pair": [
+          null,
+          null,
+          null
+        ],
+        "all_segments": false
+      },
+      "oracle_motif_stamp": {
+        "single_recurring_motif": false,
+        "per_pair": [
+          {
+            "applicable": true,
+            "n_multi": 0,
+            "n_distinct_motifs": 0,
+            "dominant_motif_count": 0
+          },
+          {
+            "applicable": true,
+            "n_multi": 0,
+            "n_distinct_motifs": 0,
+            "dominant_motif_count": 0
+          },
+          {
+            "applicable": true,
+            "n_multi": 0,
+            "n_distinct_motifs": 0,
+            "dominant_motif_count": 0
+          }
+        ]
+      },
+      "flip_to_exact": false,
+      "failure_locus_4way": "selector"
+    },
+    {
+      "task_id": "35ab12c3",
+      "n_train": 3,
+      "fill_panel_by_count": {
+        "family": "fill_panel_by_marker_count",
+        "decomposition_ok": false,
+        "render_oracle_exact": false,
+        "selector": null,
+        "selector_loo_stable": false,
+        "train_exact": false,
+        "decomposition_fail": "no_host_panel_in_some_pair"
+      },
+      "generative_structure": {
+        "classification": "additions_generated (draw/fill -> needs generative primitive; RENDER-limited)",
+        "per_pair": [
+          {
+            "shape_change": false,
+            "n_added": 62,
+            "n_erased": 0,
+            "n_recolor": 0,
+            "n_added_components": 13,
+            "n_multi_cell_added_components": 4,
+            "added_components_all_rigid_copies": false,
+            "frac_multicell_added_rigid": 0.0
+          },
+          {
+            "shape_change": false,
+            "n_added": 24,
+            "n_erased": 0,
+            "n_recolor": 0,
+            "n_added_components": 10,
+            "n_multi_cell_added_components": 2,
+            "added_components_all_rigid_copies": false,
+            "frac_multicell_added_rigid": 0.0
+          },
+          {
+            "shape_change": false,
+            "n_added": 93,
+            "n_erased": 0,
+            "n_recolor": 0,
+            "n_added_components": 8,
+            "n_multi_cell_added_components": 3,
+            "added_components_all_rigid_copies": false,
+            "frac_multicell_added_rigid": 0.0
+          }
+        ]
+      },
+      "oracle_segment_render": {
+        "applicable": true,
+        "frac_segments_per_pair": [
+          0.7142857142857143,
+          0.3333333333333333,
+          0.0
+        ],
+        "all_segments": false
+      },
+      "oracle_motif_stamp": {
+        "single_recurring_motif": false,
+        "per_pair": [
+          {
+            "applicable": true,
+            "n_multi": 7,
+            "n_distinct_motifs": 5,
+            "dominant_motif_count": 2
+          },
+          {
+            "applicable": true,
+            "n_multi": 3,
+            "n_distinct_motifs": 3,
+            "dominant_motif_count": 1
+          },
+          {
+            "applicable": true,
+            "n_multi": 2,
+            "n_distinct_motifs": 2,
+            "dominant_motif_count": 1
+          }
+        ]
+      },
+      "flip_to_exact": false,
+      "failure_locus_4way": "renderer (additions are generated structure; no segment/copy/stamp render reproduces them)"
+    },
+    {
+      "task_id": "142ca369",
+      "n_train": 3,
+      "fill_panel_by_count": {
+        "family": "fill_panel_by_marker_count",
+        "decomposition_ok": false,
+        "render_oracle_exact": false,
+        "selector": null,
+        "selector_loo_stable": false,
+        "train_exact": false,
+        "decomposition_fail": "no_host_panel_in_some_pair"
+      },
+      "generative_structure": {
+        "classification": "additions_generated (draw/fill -> needs generative primitive; RENDER-limited)",
+        "per_pair": [
+          {
+            "shape_change": false,
+            "n_added": 56,
+            "n_erased": 0,
+            "n_recolor": 0,
+            "n_added_components": 56,
+            "n_multi_cell_added_components": 0,
+            "added_components_all_rigid_copies": false,
+            "frac_multicell_added_rigid": null
+          },
+          {
+            "shape_change": false,
+            "n_added": 28,
+            "n_erased": 0,
+            "n_recolor": 0,
+            "n_added_components": 28,
+            "n_multi_cell_added_components": 0,
+            "added_components_all_rigid_copies": false,
+            "frac_multicell_added_rigid": null
+          },
+          {
+            "shape_change": false,
+            "n_added": 26,
+            "n_erased": 0,
+            "n_recolor": 0,
+            "n_added_components": 26,
+            "n_multi_cell_added_components": 0,
+            "added_components_all_rigid_copies": false,
+            "frac_multicell_added_rigid": null
+          }
+        ]
+      },
+      "oracle_segment_render": {
+        "applicable": true,
+        "frac_segments_per_pair": [
+          0.0,
+          0.0,
+          0.0
+        ],
+        "all_segments": false
+      },
+      "oracle_motif_stamp": {
+        "single_recurring_motif": false,
+        "per_pair": [
+          {
+            "applicable": true,
+            "n_multi": 4,
+            "n_distinct_motifs": 4,
+            "dominant_motif_count": 1
+          },
+          {
+            "applicable": true,
+            "n_multi": 2,
+            "n_distinct_motifs": 2,
+            "dominant_motif_count": 1
+          },
+          {
+            "applicable": true,
+            "n_multi": 1,
+            "n_distinct_motifs": 1,
+            "dominant_motif_count": 1
+          }
+        ]
+      },
+      "flip_to_exact": false,
+      "failure_locus_4way": "renderer (additions are generated structure; no segment/copy/stamp render reproduces them)"
+    },
+    {
+      "task_id": "195c6913",
+      "n_train": 3,
+      "fill_panel_by_count": {
+        "family": "fill_panel_by_marker_count",
+        "decomposition_ok": true,
+        "render_oracle_exact": false,
+        "selector": null,
+        "selector_loo_stable": false,
+        "train_exact": false,
+        "render_oracle_fail": "no_marker_color_made_oracle_render_exact"
+      },
+      "generative_structure": {
+        "classification": "additions_generated (draw/fill -> needs generative primitive; RENDER-limited)",
+        "per_pair": [
+          {
+            "shape_change": false,
+            "n_added": 33,
+            "n_erased": 0,
+            "n_recolor": 20,
+            "n_added_components": 1,
+            "n_multi_cell_added_components": 1,
+            "added_components_all_rigid_copies": false,
+            "frac_multicell_added_rigid": 0.0
+          },
+          {
+            "shape_change": false,
+            "n_added": 49,
+            "n_erased": 0,
+            "n_recolor": 16,
+            "n_added_components": 2,
+            "n_multi_cell_added_components": 2,
+            "added_components_all_rigid_copies": false,
+            "frac_multicell_added_rigid": 0.0
+          },
+          {
+            "shape_change": false,
+            "n_added": 8,
+            "n_erased": 16,
+            "n_recolor": 69,
+            "n_added_components": 8,
+            "n_multi_cell_added_components": 0,
+            "added_components_all_rigid_copies": false,
+            "frac_multicell_added_rigid": null
+          }
+        ]
+      },
+      "oracle_segment_render": {
+        "applicable": true,
+        "frac_segments_per_pair": [
+          0.0,
+          0.5,
+          null
+        ],
+        "all_segments": false
+      },
+      "oracle_motif_stamp": {
+        "single_recurring_motif": false,
+        "per_pair": [
+          {
+            "applicable": true,
+            "n_multi": 1,
+            "n_distinct_motifs": 1,
+            "dominant_motif_count": 1
+          },
+          {
+            "applicable": true,
+            "n_multi": 2,
+            "n_distinct_motifs": 2,
+            "dominant_motif_count": 1
+          },
+          {
+            "applicable": true,
+            "n_multi": 0,
+            "n_distinct_motifs": 0,
+            "dominant_motif_count": 0
+          }
+        ]
+      },
+      "flip_to_exact": false,
+      "failure_locus_4way": "renderer (mixed-op: additions + significant recolors; multi-structure extend/recolor)"
+    }
+  ],
+  "flips": []
+}

@@ -1,0 +1,119 @@
+{
+  "task_id": "3dc255db",
+  "probe": "host_apex_router",
+  "train_exact_candidates": [
+    {
+      "predicate": [
+        "adj_cell_count",
+        "<=",
+        3
+      ],
+      "side_mode": "farthest_lex",
+      "train_diffs": [
+        0,
+        0,
+        0
+      ]
+    },
+    {
+      "predicate": [
+        "adj_cell_count",
+        "<=",
+        3
+      ],
+      "side_mode": "top_left",
+      "train_diffs": [
+        0,
+        0,
+        0
+      ]
+    }
+  ],
+  "loo": [
+    {
+      "heldout_index": 0,
+      "passing_candidates": [
+        {
+          "predicate": [
+            "adj_cell_count",
+            "<=",
+            3
+          ],
+          "side_mode": "farthest_lex"
+        },
+        {
+          "predicate": [
+            "adj_cell_count",
+            "<=",
+            3
+          ],
+          "side_mode": "top_left"
+        }
+      ],
+      "passed": true
+    },
+    {
+      "heldout_index": 1,
+      "passing_candidates": [],
+      "passed": false
+    },
+    {
+      "heldout_index": 2,
+      "passing_candidates": [
+        {
+          "predicate": [
+            "adj_cell_count",
+            "<=",
+            3
+          ],
+          "side_mode": "farthest_lex"
+        },
+        {
+          "predicate": [
+            "adj_cell_count",
+            "<=",
+            3
+          ],
+          "side_mode": "top_left"
+        }
+      ],
+      "passed": true
+    }
+  ],
+  "loo_passed": false,
+  "test_readout": [
+    {
+      "predicate": [
+        "adj_cell_count",
+        "<=",
+        3
+      ],
+      "side_mode": "farthest_lex",
+      "test_diffs": [
+        14
+      ],
+      "test_marker_colors": [
+        [
+          4
+        ]
+      ]
+    },
+    {
+      "predicate": [
+        "adj_cell_count",
+        "<=",
+        3
+      ],
+      "side_mode": "top_left",
+      "test_diffs": [
+        14
+      ],
+      "test_marker_colors": [
+        [
+          4
+        ]
+      ]
+    }
+  ],
+  "promotion_status": "rejected: train-exact candidates fail leave-one-train-out"
+}

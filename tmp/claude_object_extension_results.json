@@ -1,0 +1,162 @@
+{
+  "primitive": "object_extension_line_growth",
+  "n": 23,
+  "flips": [],
+  "train_exact_not_flipped": [],
+  "rows": [
+    {
+      "task_id": "5dbc8537",
+      "same_shape": false,
+      "flip": false,
+      "variant": null
+    },
+    {
+      "task_id": "edb79dae",
+      "same_shape": false,
+      "flip": false,
+      "variant": null
+    },
+    {
+      "task_id": "dd6b8c4b",
+      "same_shape": true,
+      "train_exact": false,
+      "variant": null,
+      "flip": false
+    },
+    {
+      "task_id": "88bcf3b4",
+      "same_shape": true,
+      "train_exact": false,
+      "variant": null,
+      "flip": false
+    },
+    {
+      "task_id": "cb2d8a2c",
+      "same_shape": true,
+      "train_exact": false,
+      "variant": null,
+      "flip": false
+    },
+    {
+      "task_id": "142ca369",
+      "same_shape": true,
+      "train_exact": false,
+      "variant": null,
+      "flip": false
+    },
+    {
+      "task_id": "3dc255db",
+      "same_shape": true,
+      "train_exact": false,
+      "variant": null,
+      "flip": false
+    },
+    {
+      "task_id": "195c6913",
+      "same_shape": true,
+      "train_exact": false,
+      "variant": null,
+      "flip": false
+    },
+    {
+      "task_id": "36a08778",
+      "same_shape": true,
+      "train_exact": false,
+      "variant": null,
+      "flip": false
+    },
+    {
+      "task_id": "4a21e3da",
+      "same_shape": true,
+      "train_exact": false,
+      "variant": null,
+      "flip": false
+    },
+    {
+      "task_id": "16b78196",
+      "same_shape": true,
+      "train_exact": false,
+      "variant": null,
+      "flip": false
+    },
+    {
+      "task_id": "446ef5d2",
+      "same_shape": true,
+      "train_exact": false,
+      "variant": null,
+      "flip": false
+    },
+    {
+      "task_id": "7b0280bc",
+      "same_shape": true,
+      "train_exact": false,
+      "variant": null,
+      "flip": false
+    },
+    {
+      "task_id": "abc82100",
+      "same_shape": true,
+      "train_exact": false,
+      "variant": null,
+      "flip": false
+    },
+    {
+      "task_id": "d8e07eb2",
+      "same_shape": true,
+      "train_exact": false,
+      "variant": null,
+      "flip": false
+    },
+    {
+      "task_id": "271d71e2",
+      "same_shape": true,
+      "train_exact": false,
+      "variant": null,
+      "flip": false
+    },
+    {
+      "task_id": "faa9f03d",
+      "same_shape": true,
+      "train_exact": false,
+      "variant": null,
+      "flip": false
+    },
+    {
+      "task_id": "35ab12c3",
+      "same_shape": true,
+      "train_exact": false,
+      "variant": null,
+      "flip": false
+    },
+    {
+      "task_id": "20a9e565",
+      "same_shape": false,
+      "flip": false,
+      "variant": null
+    },
+    {
+      "task_id": "2d0172a1",
+      "same_shape": false,
+      "flip": false,
+      "variant": null
+    },
+    {
+      "task_id": "6ffbe589",
+      "same_shape": false,
+      "flip": false,
+      "variant": null
+    },
+    {
+      "task_id": "e87109e9",
+      "same_shape": false,
+      "flip": false,
+      "variant": null
+    },
+    {
+      "task_id": "89565ca0",
+      "same_shape": false,
+      "flip": false,
+      "variant": null
+    }
+  ]
+}

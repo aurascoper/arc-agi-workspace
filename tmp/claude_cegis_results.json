@@ -1,0 +1,1034 @@
+{
+  "by_family": {
+    "ttt_sparse_patch_repair": {
+      "n_design_tasks": 4,
+      "flips_to_exact": 0,
+      "shape_pred_correct": 4,
+      "closes_ge2_design": false,
+      "tasks": [
+        {
+          "task_id": "dd6b8c4b",
+          "n_train": 3,
+          "n_test": 2,
+          "same_shape": true,
+          "baseline_best_train_residual": 15,
+          "n_candidates": 95,
+          "miss_class": "shape_correct_small",
+          "shape_predicted_correct": true,
+          "flip_to_exact": false,
+          "flip_mechanism": null,
+          "mechanisms": {
+            "pixel_local": {
+              "promoted": false,
+              "variant": null,
+              "flip_to_exact": false,
+              "test_exact_pairs": null,
+              "trace": [
+                {
+                  "variant": "R1",
+                  "status": "inconsistent"
+                },
+                {
+                  "variant": "R1+ringcounts",
+                  "status": "inconsistent"
+                },
+                {
+                  "variant": "R2",
+                  "train_exact": true,
+                  "train_residual": 0,
+                  "loo": false
+                },
+                {
+                  "variant": "R2+ringcounts",
+                  "train_exact": true,
+                  "train_residual": 0,
+                  "loo": false
+                },
+                {
+                  "variant": "R3",
+                  "train_exact": true,
+                  "train_residual": 0,
+                  "loo": false
+                }
+              ]
+            },
+            "relational": {
+              "promoted": false,
+              "variant": null,
+              "flip_to_exact": false,
+              "test_exact_pairs": null,
+              "trace": [
+                {
+                  "variant": "rel_color_fg",
+                  "status": "inconsistent"
+                },
+                {
+                  "variant": "rel_n4",
+                  "status": "inconsistent"
+                },
+                {
+                  "variant": "rel_rank",
+                  "status": "inconsistent"
+                },
+                {
+                  "variant": "rel_bbox",
+                  "status": "inconsistent"
+                },
+                {
+                  "variant": "rel_full",
+                  "status": "inconsistent"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "task_id": "88bcf3b4",
+          "n_train": 5,
+          "n_test": 2,
+          "same_shape": true,
+          "baseline_best_train_residual": 32,
+          "n_candidates": 95,
+          "miss_class": "shape_correct_small",
+          "shape_predicted_correct": true,
+          "flip_to_exact": false,
+          "flip_mechanism": null,
+          "mechanisms": {
+            "pixel_local": {
+              "promoted": false,
+              "variant": null,
+              "flip_to_exact": false,
+              "test_exact_pairs": null,
+              "trace": [
+                {
+                  "variant": "R1",
+                  "status": "inconsistent"
+                },
+                {
+                  "variant": "R1+ringcounts",
+                  "status": "inconsistent"
+                },
+                {
+                  "variant": "R2",
+                  "status": "inconsistent"
+                },
+                {
+                  "variant": "R2+ringcounts",
+                  "status": "inconsistent"
+                },
+                {
+                  "variant": "R3",
+                  "train_exact": true,
+                  "train_residual": 0,
+                  "loo": false
+                }
+              ]
+            },
+            "relational": {
+              "promoted": false,
+              "variant": null,
+              "flip_to_exact": false,
+              "test_exact_pairs": null,
+              "trace": [
+                {
+                  "variant": "rel_color_fg",
+                  "status": "inconsistent"
+                },
+                {
+                  "variant": "rel_n4",
+                  "status": "inconsistent"
+                },
+                {
+                  "variant": "rel_rank",
+                  "status": "inconsistent"
+                },
+                {
+                  "variant": "rel_bbox",
+                  "status": "inconsistent"
+                },
+                {
+                  "variant": "rel_full",
+                  "status": "inconsistent"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "task_id": "2b83f449",
+          "n_train": 2,
+          "n_test": 1,
+          "same_shape": true,
+          "baseline_best_train_residual": 0,
+          "n_candidates": 96,
+          "miss_class": "shape_correct_small",
+          "shape_predicted_correct": true,
+          "flip_to_exact": false,
+          "flip_mechanism": null,
+          "mechanisms": {
+            "pixel_local": {
+              "promoted": false,
+              "variant": null,
+              "flip_to_exact": false,
+              "test_exact_pairs": null,
+              "trace": [
+                {
+                  "variant": "R1",
+                  "status": "inconsistent"
+                },
+                {
+                  "variant": "R1+ringcounts",
+                  "status": "inconsistent"
+                },
+                {
+                  "variant": "R2",
+                  "status": "inconsistent"
+                },
+                {
+                  "variant": "R2+ringcounts",
+                  "status": "inconsistent"
+                },
+                {
+                  "variant": "R3",
+                  "train_exact": true,
+                  "train_residual": 0,
+                  "loo": false
+                }
+              ]
+            },
+            "relational": {
+              "promoted": false,
+              "variant": null,
+              "flip_to_exact": false,
+              "test_exact_pairs": null,
+              "trace": [
+                {
+                  "variant": "rel_color_fg",
+                  "status": "inconsistent"
+                },
+                {
+                  "variant": "rel_n4",
+                  "status": "inconsistent"
+                },
+                {
+                  "variant": "rel_rank",
+                  "status": "inconsistent"
+                },
+                {
+                  "variant": "rel_bbox",
+                  "status": "inconsistent"
+                },
+                {
+                  "variant": "rel_full",
+                  "status": "inconsistent"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "task_id": "8f3a5a89",
+          "n_train": 3,
+          "n_test": 1,
+          "same_shape": true,
+          "baseline_best_train_residual": 0,
+          "n_candidates": 103,
+          "miss_class": "shape_correct_small",
+          "shape_predicted_correct": true,
+          "flip_to_exact": false,
+          "flip_mechanism": null,
+          "mechanisms": {
+            "pixel_local": {
+              "promoted": false,
+              "variant": null,
+              "flip_to_exact": false,
+              "test_exact_pairs": null,
+              "trace": [
+                {
+                  "variant": "R1",
+                  "status": "inconsistent"
+                },
+                {
+                  "variant": "R1+ringcounts",
+                  "status": "inconsistent"
+                },
+                {
+                  "variant": "R2",
+                  "status": "inconsistent"
+                },
+                {
+                  "variant": "R2+ringcounts",
+                  "status": "inconsistent"
+                },
+                {
+                  "variant": "R3",
+                  "status": "inconsistent"
+                }
+              ]
+            },
+            "relational": {
+              "promoted": false,
+              "variant": null,
+              "flip_to_exact": false,
+              "test_exact_pairs": null,
+              "trace": [
+                {
+                  "variant": "rel_color_fg",
+                  "status": "inconsistent"
+                },
+                {
+                  "variant": "rel_n4",
+                  "status": "inconsistent"
+                },
+                {
+                  "variant": "rel_rank",
+                  "status": "inconsistent"
+                },
+                {
+                  "variant": "rel_bbox",
+                  "status": "inconsistent"
+                },
+                {
+                  "variant": "rel_full",
+                  "status": "inconsistent"
+                }
+              ]
+            }
+          }
+        }
+      ]
+    },
+    "sparse_line_endpoint_bridge": {
+      "n_design_tasks": 2,
+      "flips_to_exact": 0,
+      "shape_pred_correct": 2,
+      "closes_ge2_design": false,
+      "tasks": [
+        {
+          "task_id": "4a21e3da",
+          "n_train": 3,
+          "n_test": 1,
+          "same_shape": true,
+          "baseline_best_train_residual": 105,
+          "n_candidates": 95,
+          "miss_class": "shape_correct_medium",
+          "shape_predicted_correct": true,
+          "flip_to_exact": false,
+          "flip_mechanism": null,
+          "mechanisms": {
+            "pixel_local": {
+              "promoted": false,
+              "variant": null,
+              "flip_to_exact": false,
+              "test_exact_pairs": null,
+              "trace": [
+                {
+                  "variant": "R1",
+                  "status": "inconsistent"
+                },
+                {
+                  "variant": "R1+ringcounts",
+                  "status": "inconsistent"
+                },
+                {
+                  "variant": "R2",
+                  "status": "inconsistent"
+                },
+                {
+                  "variant": "R2+ringcounts",
+                  "status": "inconsistent"
+                },
+                {
+                  "variant": "R3",
+                  "status": "inconsistent"
+                }
+              ]
+            },
+            "relational": {
+              "promoted": false,
+              "variant": null,
+              "flip_to_exact": false,
+              "test_exact_pairs": null,
+              "trace": [
+                {
+                  "variant": "rel_color_fg",
+                  "status": "inconsistent"
+                },
+                {
+                  "variant": "rel_n4",
+                  "status": "inconsistent"
+                },
+                {
+                  "variant": "rel_rank",
+                  "status": "inconsistent"
+                },
+                {
+                  "variant": "rel_bbox",
+                  "status": "inconsistent"
+                },
+                {
+                  "variant": "rel_full",
+                  "status": "inconsistent"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "task_id": "35ab12c3",
+          "n_train": 3,
+          "n_test": 1,
+          "same_shape": true,
+          "baseline_best_train_residual": 95,
+          "n_candidates": 94,
+          "miss_class": "shape_correct_medium",
+          "shape_predicted_correct": true,
+          "flip_to_exact": false,
+          "flip_mechanism": null,
+          "mechanisms": {
+            "pixel_local": {
+              "promoted": false,
+              "variant": null,
+              "flip_to_exact": false,
+              "test_exact_pairs": null,
+              "trace": [
+                {
+                  "variant": "R1",
+                  "status": "inconsistent"
+                },
+                {
+                  "variant": "R1+ringcounts",
+                  "status": "inconsistent"
+                },
+                {
+                  "variant": "R2",
+                  "status": "inconsistent"
+                },
+                {
+                  "variant": "R2+ringcounts",
+                  "status": "inconsistent"
+                },
+                {
+                  "variant": "R3",
+                  "status": "inconsistent"
+                }
+              ]
+            },
+            "relational": {
+              "promoted": false,
+              "variant": null,
+              "flip_to_exact": false,
+              "test_exact_pairs": null,
+              "trace": [
+                {
+                  "variant": "rel_color_fg",
+                  "status": "inconsistent"
+                },
+                {
+                  "variant": "rel_n4",
+                  "status": "inconsistent"
+                },
+                {
+                  "variant": "rel_rank",
+                  "status": "inconsistent"
+                },
+                {
+                  "variant": "rel_bbox",
+                  "status": "inconsistent"
+                },
+                {
+                  "variant": "rel_full",
+                  "status": "inconsistent"
+                }
+              ]
+            }
+          }
+        }
+      ]
+    },
+    "crop_largest_object_with_border_cleanup": {
+      "n_design_tasks": 8,
+      "flips_to_exact": 0,
+      "shape_pred_correct": 7,
+      "closes_ge2_design": false,
+      "tasks": [
+        {
+          "task_id": "edb79dae",
+          "n_train": 2,
+          "n_test": 1,
+          "same_shape": false,
+          "baseline_best_train_residual": 146,
+          "n_candidates": 94,
+          "miss_class": "wrong_shape",
+          "shape_predicted_correct": false,
+          "flip_to_exact": false,
+          "flip_mechanism": null,
+          "mechanisms": {
+            "pixel_local": {
+              "promoted": false,
+              "variant": null,
+              "flip_to_exact": false,
+              "trace": [
+                {
+                  "skipped": "shape_change"
+                }
+              ]
+            },
+            "relational": {
+              "promoted": false,
+              "variant": null,
+              "flip_to_exact": false,
+              "trace": [
+                {
+                  "skipped": "shape_change"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "task_id": "142ca369",
+          "n_train": 3,
+          "n_test": 2,
+          "same_shape": true,
+          "baseline_best_train_residual": 110,
+          "n_candidates": 95,
+          "miss_class": "shape_correct_small",
+          "shape_predicted_correct": true,
+          "flip_to_exact": false,
+          "flip_mechanism": null,
+          "mechanisms": {
+            "pixel_local": {
+              "promoted": false,
+              "variant": null,
+              "flip_to_exact": false,
+              "test_exact_pairs": null,
+              "trace": [
+                {
+                  "variant": "R1",
+                  "status": "inconsistent"
+                },
+                {
+                  "variant": "R1+ringcounts",
+                  "status": "inconsistent"
+                },
+                {
+                  "variant": "R2",
+                  "status": "inconsistent"
+                },
+                {
+                  "variant": "R2+ringcounts",
+                  "status": "inconsistent"
+                },
+                {
+                  "variant": "R3",
+                  "status": "inconsistent"
+                }
+              ]
+            },
+            "relational": {
+              "promoted": false,
+              "variant": null,
+              "flip_to_exact": false,
+              "test_exact_pairs": null,
+              "trace": [
+                {
+                  "variant": "rel_color_fg",
+                  "status": "inconsistent"
+                },
+                {
+                  "variant": "rel_n4",
+                  "status": "inconsistent"
+                },
+                {
+                  "variant": "rel_rank",
+                  "status": "inconsistent"
+                },
+                {
+                  "variant": "rel_bbox",
+                  "status": "inconsistent"
+                },
+                {
+                  "variant": "rel_full",
+                  "status": "inconsistent"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "task_id": "36a08778",
+          "n_train": 6,
+          "n_test": 2,
+          "same_shape": true,
+          "baseline_best_train_residual": 259,
+          "n_candidates": 95,
+          "miss_class": "shape_correct_medium",
+          "shape_predicted_correct": true,
+          "flip_to_exact": false,
+          "flip_mechanism": null,
+          "mechanisms": {
+            "pixel_local": {
+              "promoted": false,
+              "variant": null,
+              "flip_to_exact": false,
+              "test_exact_pairs": null,
+              "trace": [
+                {
+                  "variant": "R1",
+                  "status": "inconsistent"
+                },
+                {
+                  "variant": "R1+ringcounts",
+                  "status": "inconsistent"
+                },
+                {
+                  "variant": "R2",
+                  "status": "inconsistent"
+                },
+                {
+                  "variant": "R2+ringcounts",
+                  "status": "inconsistent"
+                },
+                {
+                  "variant": "R3",
+                  "status": "inconsistent"
+                }
+              ]
+            },
+            "relational": {
+              "promoted": false,
+              "variant": null,
+              "flip_to_exact": false,
+              "test_exact_pairs": null,
+              "trace": [
+                {
+                  "variant": "rel_color_fg",
+                  "status": "inconsistent"
+                },
+                {
+                  "variant": "rel_n4",
+                  "status": "inconsistent"
+                },
+                {
+                  "variant": "rel_rank",
+                  "status": "inconsistent"
+                },
+                {
+                  "variant": "rel_bbox",
+                  "status": "inconsistent"
+                },
+                {
+                  "variant": "rel_full",
+                  "status": "inconsistent"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "task_id": "16b78196",
+          "n_train": 2,
+          "n_test": 1,
+          "same_shape": true,
+          "baseline_best_train_residual": 86,
+          "n_candidates": 94,
+          "miss_class": "shape_correct_small",
+          "shape_predicted_correct": true,
+          "flip_to_exact": false,
+          "flip_mechanism": null,
+          "mechanisms": {
+            "pixel_local": {
+              "promoted": false,
+              "variant": null,
+              "flip_to_exact": false,
+              "test_exact_pairs": null,
+              "trace": [
+                {
+                  "variant": "R1",
+                  "status": "inconsistent"
+                },
+                {
+                  "variant": "R1+ringcounts",
+                  "status": "inconsistent"
+                },
+                {
+                  "variant": "R2",
+                  "status": "inconsistent"
+                },
+                {
+                  "variant": "R2+ringcounts",
+                  "status": "inconsistent"
+                },
+                {
+                  "variant": "R3",
+                  "status": "inconsistent"
+                }
+              ]
+            },
+            "relational": {
+              "promoted": false,
+              "variant": null,
+              "flip_to_exact": false,
+              "test_exact_pairs": null,
+              "trace": [
+                {
+                  "variant": "rel_color_fg",
+                  "status": "inconsistent"
+                },
+                {
+                  "variant": "rel_n4",
+                  "status": "inconsistent"
+                },
+                {
+                  "variant": "rel_rank",
+                  "status": "inconsistent"
+                },
+                {
+                  "variant": "rel_bbox",
+                  "status": "inconsistent"
+                },
+                {
+                  "variant": "rel_full",
+                  "status": "inconsistent"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "task_id": "446ef5d2",
+          "n_train": 2,
+          "n_test": 2,
+          "same_shape": true,
+          "baseline_best_train_residual": 96,
+          "n_candidates": 95,
+          "miss_class": "shape_correct_medium",
+          "shape_predicted_correct": true,
+          "flip_to_exact": false,
+          "flip_mechanism": null,
+          "mechanisms": {
+            "pixel_local": {
+              "promoted": false,
+              "variant": null,
+              "flip_to_exact": false,
+              "test_exact_pairs": null,
+              "trace": [
+                {
+                  "variant": "R1",
+                  "status": "inconsistent"
+                },
+                {
+                  "variant": "R1+ringcounts",
+                  "status": "inconsistent"
+                },
+                {
+                  "variant": "R2",
+                  "status": "inconsistent"
+                },
+                {
+                  "variant": "R2+ringcounts",
+                  "status": "inconsistent"
+                },
+                {
+                  "variant": "R3",
+                  "status": "inconsistent"
+                }
+              ]
+            },
+            "relational": {
+              "promoted": false,
+              "variant": null,
+              "flip_to_exact": false,
+              "test_exact_pairs": null,
+              "trace": [
+                {
+                  "variant": "rel_color_fg",
+                  "status": "inconsistent"
+                },
+                {
+                  "variant": "rel_n4",
+                  "status": "inconsistent"
+                },
+                {
+                  "variant": "rel_rank",
+                  "status": "inconsistent"
+                },
+                {
+                  "variant": "rel_bbox",
+                  "status": "inconsistent"
+                },
+                {
+                  "variant": "rel_full",
+                  "status": "inconsistent"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "task_id": "db695cfb",
+          "n_train": 5,
+          "n_test": 1,
+          "same_shape": true,
+          "baseline_best_train_residual": 0,
+          "n_candidates": 103,
+          "miss_class": "shape_correct_small",
+          "shape_predicted_correct": true,
+          "flip_to_exact": false,
+          "flip_mechanism": null,
+          "mechanisms": {
+            "pixel_local": {
+              "promoted": false,
+              "variant": null,
+              "flip_to_exact": false,
+              "test_exact_pairs": null,
+              "trace": [
+                {
+                  "variant": "R1",
+                  "status": "inconsistent"
+                },
+                {
+                  "variant": "R1+ringcounts",
+                  "status": "inconsistent"
+                },
+                {
+                  "variant": "R2",
+                  "status": "inconsistent"
+                },
+                {
+                  "variant": "R2+ringcounts",
+                  "status": "inconsistent"
+                },
+                {
+                  "variant": "R3",
+                  "status": "inconsistent"
+                }
+              ]
+            },
+            "relational": {
+              "promoted": false,
+              "variant": null,
+              "flip_to_exact": false,
+              "test_exact_pairs": null,
+              "trace": [
+                {
+                  "variant": "rel_color_fg",
+                  "status": "inconsistent"
+                },
+                {
+                  "variant": "rel_n4",
+                  "status": "inconsistent"
+                },
+                {
+                  "variant": "rel_rank",
+                  "status": "inconsistent"
+                },
+                {
+                  "variant": "rel_bbox",
+                  "status": "inconsistent"
+                },
+                {
+                  "variant": "rel_full",
+                  "status": "inconsistent"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "task_id": "64efde09",
+          "n_train": 2,
+          "n_test": 1,
+          "same_shape": true,
+          "baseline_best_train_residual": 0,
+          "n_candidates": 98,
+          "miss_class": "shape_correct_small",
+          "shape_predicted_correct": true,
+          "flip_to_exact": false,
+          "flip_mechanism": null,
+          "mechanisms": {
+            "pixel_local": {
+              "promoted": false,
+              "variant": null,
+              "flip_to_exact": false,
+              "test_exact_pairs": null,
+              "trace": [
+                {
+                  "variant": "R1",
+                  "status": "inconsistent"
+                },
+                {
+                  "variant": "R1+ringcounts",
+                  "status": "inconsistent"
+                },
+                {
+                  "variant": "R2",
+                  "status": "inconsistent"
+                },
+                {
+                  "variant": "R2+ringcounts",
+                  "status": "inconsistent"
+                },
+                {
+                  "variant": "R3",
+                  "status": "inconsistent"
+                }
+              ]
+            },
+            "relational": {
+              "promoted": false,
+              "variant": null,
+              "flip_to_exact": false,
+              "test_exact_pairs": null,
+              "trace": [
+                {
+                  "variant": "rel_color_fg",
+                  "status": "inconsistent"
+                },
+                {
+                  "variant": "rel_n4",
+                  "status": "inconsistent"
+                },
+                {
+                  "variant": "rel_rank",
+                  "status": "inconsistent"
+                },
+                {
+                  "variant": "rel_bbox",
+                  "status": "inconsistent"
+                },
+                {
+                  "variant": "rel_full",
+                  "status": "inconsistent"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "task_id": "271d71e2",
+          "n_train": 3,
+          "n_test": 1,
+          "same_shape": true,
+          "baseline_best_train_residual": 150,
+          "n_candidates": 95,
+          "miss_class": "finite_far",
+          "shape_predicted_correct": true,
+          "flip_to_exact": false,
+          "flip_mechanism": null,
+          "mechanisms": {
+            "pixel_local": {
+              "promoted": false,
+              "variant": null,
+              "flip_to_exact": false,
+              "test_exact_pairs": null,
+              "trace": [
+                {
+                  "variant": "R1",
+                  "status": "inconsistent"
+                },
+                {
+                  "variant": "R1+ringcounts",
+                  "status": "inconsistent"
+                },
+                {
+                  "variant": "R2",
+                  "status": "inconsistent"
+                },
+                {
+                  "variant": "R2+ringcounts",
+                  "status": "inconsistent"
+                },
+                {
+                  "variant": "R3",
+                  "train_exact": true,
+                  "train_residual": 0,
+                  "loo": false
+                }
+              ]
+            },
+            "relational": {
+              "promoted": false,
+              "variant": null,
+              "flip_to_exact": false,
+              "test_exact_pairs": null,
+              "trace": [
+                {
+                  "variant": "rel_color_fg",
+                  "status": "inconsistent"
+                },
+                {
+                  "variant": "rel_n4",
+                  "status": "inconsistent"
+                },
+                {
+                  "variant": "rel_rank",
+                  "status": "inconsistent"
+                },
+                {
+                  "variant": "rel_bbox",
+                  "status": "inconsistent"
+                },
+                {
+                  "variant": "rel_full",
+                  "status": "inconsistent"
+                }
+              ]
+            }
+          }
+        }
+      ]
+    },
+    "output_shape_count_or_table_serialization": {
+      "n_design_tasks": 1,
+      "flips_to_exact": 0,
+      "shape_pred_correct": 0,
+      "closes_ge2_design": false,
+      "tasks": [
+        {
+          "task_id": "5dbc8537",
+          "n_train": 2,
+          "n_test": 2,
+          "same_shape": false,
+          "baseline_best_train_residual": 16,
+          "n_candidates": 94,
+          "miss_class": "wrong_shape",
+          "shape_predicted_correct": false,
+          "flip_to_exact": false,
+          "flip_mechanism": null,
+          "mechanisms": {
+            "pixel_local": {
+              "promoted": false,
+              "variant": null,
+              "flip_to_exact": false,
+              "trace": [
+                {
+                  "skipped": "shape_change"
+                }
+              ]
+            },
+            "relational": {
+              "promoted": false,
+              "variant": null,
+              "flip_to_exact": false,
+              "trace": [
+                {
+                  "skipped": "shape_change"
+                }
+              ]
+            }
+          }
+        }
+      ]
+    }
+  },
+  "by_class": {
+    "shape_correct_small": 8,
+    "shape_correct_medium": 4,
+    "wrong_shape": 2,
+    "finite_far": 1
+  },
+  "flips_by_class": {},
+  "wall_time_sec": 7.9
+}

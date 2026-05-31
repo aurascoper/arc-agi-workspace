@@ -1,0 +1,14 @@
+[
+  {
+    "task_id": "3dc255db",
+    "train_exact": true,
+    "params": [
+      2,
+      "away_from_frag",
+      "min_frag_border"
+    ],
+    "loo": true,
+    "design_test": "0/1",
+    "flip": false
+  }
+]

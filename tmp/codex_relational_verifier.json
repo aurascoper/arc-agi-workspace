@@ -1,0 +1,2928 @@
+{
+  "lane": "codex_relational_sentinel",
+  "claude_flips": [],
+  "verified_flips": [],
+  "integration_ready": false,
+  "static_leakage_scan": {
+    "actionable_forbidden_hits": {
+      "arc_agi_2_data/test": [],
+      "arc_agi_2_data/training": [],
+      "run_pseudo_private_eval": [],
+      "pp_cal": [],
+      "pp_design": [],
+      "public_signature": [],
+      "templates =": [],
+      "solve_": []
+    },
+    "prose_only_guardrail_mentions": {
+      "public templates": [
+        12
+      ],
+      "frozen calibration": [
+        12
+      ]
+    },
+    "task_id_string_constants": [
+      "4a21e3da",
+      "3dc255db",
+      "dd6b8c4b",
+      "35ab12c3",
+      "142ca369",
+      "195c6913"
+    ],
+    "target_ids_are_design_lane_only": true,
+    "string_constant_count": 270,
+    "leakage_detected": false
+  },
+  "claude_failure_loci": {
+    "4a21e3da": "renderer (additions are generated structure; no segment/copy/stamp render reproduces them)",
+    "3dc255db": "parameter (segment-draw renderer expressible; endpoints/anchor unknown)",
+    "dd6b8c4b": "selector",
+    "35ab12c3": "renderer (additions are generated structure; no segment/copy/stamp render reproduces them)",
+    "142ca369": "renderer (additions are generated structure; no segment/copy/stamp render reproduces them)",
+    "195c6913": "renderer (mixed-op: additions + significant recolors; multi-structure extend/recolor)"
+  },
+  "tasks": [
+    {
+      "task_id": "4a21e3da",
+      "train_pairs": 3,
+      "oracle_panel_fill": {
+        "available": false,
+        "reason": "missing_panel"
+      },
+      "component_graph_selector_ablation": {
+        "available": false,
+        "reason": "missing_panel"
+      },
+      "segment_endpoint_oracle_ablation": [
+        {
+          "available": true,
+          "segments": [
+            {
+              "color": 2,
+              "size": 3,
+              "orientation": "horizontal",
+              "is_straight_line": true,
+              "same_color_removed_count": 0,
+              "min_same_color_removed_dist": null,
+              "aligned_same_color_removed": 0,
+              "same_color_endpoint_neighbors": 0,
+              "non_bg_endpoint_neighbors": 13
+            },
+            {
+              "color": 2,
+              "size": 6,
+              "orientation": "vertical",
+              "is_straight_line": true,
+              "same_color_removed_count": 0,
+              "min_same_color_removed_dist": null,
+              "aligned_same_color_removed": 0,
+              "same_color_endpoint_neighbors": 1,
+              "non_bg_endpoint_neighbors": 5
+            },
+            {
+              "color": 2,
+              "size": 6,
+              "orientation": "horizontal",
+              "is_straight_line": true,
+              "same_color_removed_count": 0,
+              "min_same_color_removed_dist": null,
+              "aligned_same_color_removed": 0,
+              "same_color_endpoint_neighbors": 1,
+              "non_bg_endpoint_neighbors": 5
+            },
+            {
+              "color": 7,
+              "size": 6,
+              "orientation": "other",
+              "is_straight_line": false,
+              "same_color_removed_count": 26,
+              "min_same_color_removed_dist": 4,
+              "aligned_same_color_removed": 0,
+              "same_color_endpoint_neighbors": 0,
+              "non_bg_endpoint_neighbors": 0
+            },
+            {
+              "color": 7,
+              "size": 9,
+              "orientation": "other",
+              "is_straight_line": false,
+              "same_color_removed_count": 26,
+              "min_same_color_removed_dist": 5,
+              "aligned_same_color_removed": 0,
+              "same_color_endpoint_neighbors": 0,
+              "non_bg_endpoint_neighbors": 0
+            },
+            {
+              "color": 7,
+              "size": 4,
+              "orientation": "other",
+              "is_straight_line": false,
+              "same_color_removed_count": 26,
+              "min_same_color_removed_dist": 10,
+              "aligned_same_color_removed": 0,
+              "same_color_endpoint_neighbors": 0,
+              "non_bg_endpoint_neighbors": 0
+            }
+          ],
+          "all_multicell_additions_are_segments": false,
+          "all_segments_have_same_color_removed": false,
+          "all_segments_have_aligned_removed": false
+        },
+        {
+          "available": true,
+          "segments": [
+            {
+              "color": 2,
+              "size": 3,
+              "orientation": "vertical",
+              "is_straight_line": true,
+              "same_color_removed_count": 0,
+              "min_same_color_removed_dist": null,
+              "aligned_same_color_removed": 0,
+              "same_color_endpoint_neighbors": 0,
+              "non_bg_endpoint_neighbors": 9
+            },
+            {
+              "color": 2,
+              "size": 3,
+              "orientation": "vertical",
+              "is_straight_line": true,
+              "same_color_removed_count": 0,
+              "min_same_color_removed_dist": null,
+              "aligned_same_color_removed": 0,
+              "same_color_endpoint_neighbors": 1,
+              "non_bg_endpoint_neighbors": 3
+            },
+            {
+              "color": 7,
+              "size": 12,
+              "orientation": "other",
+              "is_straight_line": false,
+              "same_color_removed_count": 26,
+              "min_same_color_removed_dist": 4,
+              "aligned_same_color_removed": 0,
+              "same_color_endpoint_neighbors": 0,
+              "non_bg_endpoint_neighbors": 0
+            },
+            {
+              "color": 7,
+              "size": 14,
+              "orientation": "other",
+              "is_straight_line": false,
+              "same_color_removed_count": 26,
+              "min_same_color_removed_dist": 4,
+              "aligned_same_color_removed": 0,
+              "same_color_endpoint_neighbors": 0,
+              "non_bg_endpoint_neighbors": 0
+            }
+          ],
+          "all_multicell_additions_are_segments": false,
+          "all_segments_have_same_color_removed": false,
+          "all_segments_have_aligned_removed": false
+        },
+        {
+          "available": true,
+          "segments": [
+            {
+              "color": 2,
+              "size": 5,
+              "orientation": "vertical",
+              "is_straight_line": true,
+              "same_color_removed_count": 0,
+              "min_same_color_removed_dist": null,
+              "aligned_same_color_removed": 0,
+              "same_color_endpoint_neighbors": 1,
+              "non_bg_endpoint_neighbors": 3
+            },
+            {
+              "color": 7,
+              "size": 9,
+              "orientation": "other",
+              "is_straight_line": false,
+              "same_color_removed_count": 22,
+              "min_same_color_removed_dist": 7,
+              "aligned_same_color_removed": 0,
+              "same_color_endpoint_neighbors": 0,
+              "non_bg_endpoint_neighbors": 0
+            },
+            {
+              "color": 7,
+              "size": 13,
+              "orientation": "other",
+              "is_straight_line": false,
+              "same_color_removed_count": 22,
+              "min_same_color_removed_dist": 5,
+              "aligned_same_color_removed": 0,
+              "same_color_endpoint_neighbors": 0,
+              "non_bg_endpoint_neighbors": 0
+            }
+          ],
+          "all_multicell_additions_are_segments": false,
+          "all_segments_have_same_color_removed": false,
+          "all_segments_have_aligned_removed": false
+        }
+      ],
+      "host_apex_parameter_ablation": [
+        {
+          "available": false,
+          "segments": [],
+          "all_segments_have_sparse_side_match": false,
+          "all_segments_have_unique_candidate": false
+        },
+        {
+          "available": false,
+          "segments": [],
+          "all_segments_have_sparse_side_match": false,
+          "all_segments_have_unique_candidate": false
+        },
+        {
+          "available": false,
+          "segments": [],
+          "all_segments_have_sparse_side_match": false,
+          "all_segments_have_unique_candidate": false
+        }
+      ],
+      "pair_oracle_diagnostics": [
+        {
+          "shape_change": false,
+          "n_added": 35,
+          "n_erased": 26,
+          "n_recolored": 0,
+          "added_components": 7,
+          "line_added_components": 4,
+          "multi_added_components": 6,
+          "multi_line_added_components": 3,
+          "rigid_copy_added_components": 0,
+          "endpoint_supported_added_components": 4,
+          "added_component_samples": [
+            {
+              "size": 6,
+              "colors": [
+                7
+              ],
+              "is_straight_line": false,
+              "is_rigid_input_copy": false,
+              "same_color_endpoint_neighbors": 0,
+              "non_bg_endpoint_neighbors": 0
+            },
+            {
+              "size": 3,
+              "colors": [
+                2
+              ],
+              "is_straight_line": true,
+              "is_rigid_input_copy": false,
+              "same_color_endpoint_neighbors": 0,
+              "non_bg_endpoint_neighbors": 13
+            },
+            {
+              "size": 6,
+              "colors": [
+                2
+              ],
+              "is_straight_line": true,
+              "is_rigid_input_copy": false,
+              "same_color_endpoint_neighbors": 1,
+              "non_bg_endpoint_neighbors": 5
+            },
+            {
+              "size": 9,
+              "colors": [
+                7
+              ],
+              "is_straight_line": false,
+              "is_rigid_input_copy": false,
+              "same_color_endpoint_neighbors": 0,
+              "non_bg_endpoint_neighbors": 0
+            },
+            {
+              "size": 6,
+              "colors": [
+                2
+              ],
+              "is_straight_line": true,
+              "is_rigid_input_copy": false,
+              "same_color_endpoint_neighbors": 1,
+              "non_bg_endpoint_neighbors": 5
+            },
+            {
+              "size": 4,
+              "colors": [
+                7
+              ],
+              "is_straight_line": false,
+              "is_rigid_input_copy": false,
+              "same_color_endpoint_neighbors": 0,
+              "non_bg_endpoint_neighbors": 0
+            },
+            {
+              "size": 1,
+              "colors": [
+                7
+              ],
+              "is_straight_line": true,
+              "is_rigid_input_copy": false,
+              "same_color_endpoint_neighbors": 2,
+              "non_bg_endpoint_neighbors": 2
+            }
+          ],
+          "recolor_pairs": []
+        },
+        {
+          "shape_change": false,
+          "n_added": 32,
+          "n_erased": 26,
+          "n_recolored": 0,
+          "added_components": 4,
+          "line_added_components": 2,
+          "multi_added_components": 4,
+          "multi_line_added_components": 2,
+          "rigid_copy_added_components": 0,
+          "endpoint_supported_added_components": 2,
+          "added_component_samples": [
+            {
+              "size": 14,
+              "colors": [
+                7
+              ],
+              "is_straight_line": false,
+              "is_rigid_input_copy": false,
+              "same_color_endpoint_neighbors": 0,
+              "non_bg_endpoint_neighbors": 0
+            },
+            {
+              "size": 12,
+              "colors": [
+                7
+              ],
+              "is_straight_line": false,
+              "is_rigid_input_copy": false,
+              "same_color_endpoint_neighbors": 0,
+              "non_bg_endpoint_neighbors": 0
+            },
+            {
+              "size": 3,
+              "colors": [
+                2
+              ],
+              "is_straight_line": true,
+              "is_rigid_input_copy": false,
+              "same_color_endpoint_neighbors": 0,
+              "non_bg_endpoint_neighbors": 9
+            },
+            {
+              "size": 3,
+              "colors": [
+                2
+              ],
+              "is_straight_line": true,
+              "is_rigid_input_copy": false,
+              "same_color_endpoint_neighbors": 1,
+              "non_bg_endpoint_neighbors": 3
+            }
+          ],
+          "recolor_pairs": []
+        },
+        {
+          "shape_change": false,
+          "n_added": 27,
+          "n_erased": 22,
+          "n_recolored": 0,
+          "added_components": 3,
+          "line_added_components": 1,
+          "multi_added_components": 3,
+          "multi_line_added_components": 1,
+          "rigid_copy_added_components": 0,
+          "endpoint_supported_added_components": 1,
+          "added_component_samples": [
+            {
+              "size": 9,
+              "colors": [
+                7
+              ],
+              "is_straight_line": false,
+              "is_rigid_input_copy": false,
+              "same_color_endpoint_neighbors": 0,
+              "non_bg_endpoint_neighbors": 0
+            },
+            {
+              "size": 13,
+              "colors": [
+                7
+              ],
+              "is_straight_line": false,
+              "is_rigid_input_copy": false,
+              "same_color_endpoint_neighbors": 0,
+              "non_bg_endpoint_neighbors": 0
+            },
+            {
+              "size": 5,
+              "colors": [
+                2
+              ],
+              "is_straight_line": true,
+              "is_rigid_input_copy": false,
+              "same_color_endpoint_neighbors": 1,
+              "non_bg_endpoint_neighbors": 3
+            }
+          ],
+          "recolor_pairs": []
+        }
+      ],
+      "codex_failure_class": "renderer_or_decomposition_for_generated_structure"
+    },
+    {
+      "task_id": "3dc255db",
+      "train_pairs": 3,
+      "oracle_panel_fill": {
+        "available": false,
+        "reason": "missing_panel"
+      },
+      "component_graph_selector_ablation": {
+        "available": false,
+        "reason": "missing_panel"
+      },
+      "segment_endpoint_oracle_ablation": [
+        {
+          "available": true,
+          "segments": [
+            {
+              "color": 6,
+              "size": 2,
+              "orientation": "horizontal",
+              "is_straight_line": true,
+              "same_color_removed_count": 2,
+              "min_same_color_removed_dist": 5,
+              "aligned_same_color_removed": 1,
+              "same_color_endpoint_neighbors": 0,
+              "non_bg_endpoint_neighbors": 1
+            },
+            {
+              "color": 7,
+              "size": 2,
+              "orientation": "horizontal",
+              "is_straight_line": true,
+              "same_color_removed_count": 2,
+              "min_same_color_removed_dist": 6,
+              "aligned_same_color_removed": 0,
+              "same_color_endpoint_neighbors": 0,
+              "non_bg_endpoint_neighbors": 1
+            }
+          ],
+          "all_multicell_additions_are_segments": true,
+          "all_segments_have_same_color_removed": true,
+          "all_segments_have_aligned_removed": false
+        },
+        {
+          "available": true,
+          "segments": [
+            {
+              "color": 9,
+              "size": 3,
+              "orientation": "vertical",
+              "is_straight_line": true,
+              "same_color_removed_count": 4,
+              "min_same_color_removed_dist": 3,
+              "aligned_same_color_removed": 2,
+              "same_color_endpoint_neighbors": 0,
+              "non_bg_endpoint_neighbors": 1
+            }
+          ],
+          "all_multicell_additions_are_segments": true,
+          "all_segments_have_same_color_removed": true,
+          "all_segments_have_aligned_removed": true
+        },
+        {
+          "available": true,
+          "segments": [
+            {
+              "color": 7,
+              "size": 3,
+              "orientation": "vertical",
+              "is_straight_line": true,
+              "same_color_removed_count": 7,
+              "min_same_color_removed_dist": 5,
+              "aligned_same_color_removed": 2,
+              "same_color_endpoint_neighbors": 0,
+              "non_bg_endpoint_neighbors": 1
+            }
+          ],
+          "all_multicell_additions_are_segments": true,
+          "all_segments_have_same_color_removed": true,
+          "all_segments_have_aligned_removed": true
+        }
+      ],
+      "host_apex_parameter_ablation": [
+        {
+          "available": true,
+          "segments": [
+            {
+              "marker": 6,
+              "candidate_hosts": [
+                {
+                  "host_color": 4,
+                  "host_bbox": [
+                    1,
+                    2,
+                    4,
+                    6
+                  ],
+                  "host_sparse_sides": [
+                    "right"
+                  ],
+                  "segment_sides": [
+                    "right"
+                  ],
+                  "sparse_side_match": true,
+                  "orientation": "horizontal",
+                  "segment_size": 2
+                }
+              ],
+              "any_sparse_side_match": true,
+              "candidate_count": 1
+            },
+            {
+              "marker": 7,
+              "candidate_hosts": [
+                {
+                  "host_color": 3,
+                  "host_bbox": [
+                    7,
+                    3,
+                    11,
+                    9
+                  ],
+                  "host_sparse_sides": [
+                    "left",
+                    "right"
+                  ],
+                  "segment_sides": [
+                    "left"
+                  ],
+                  "sparse_side_match": true,
+                  "orientation": "horizontal",
+                  "segment_size": 2
+                }
+              ],
+              "any_sparse_side_match": true,
+              "candidate_count": 1
+            }
+          ],
+          "all_segments_have_sparse_side_match": true,
+          "all_segments_have_unique_candidate": true
+        },
+        {
+          "available": true,
+          "segments": [
+            {
+              "marker": 9,
+              "candidate_hosts": [
+                {
+                  "host_color": 3,
+                  "host_bbox": [
+                    3,
+                    0,
+                    8,
+                    4
+                  ],
+                  "host_sparse_sides": [
+                    "above",
+                    "below",
+                    "left"
+                  ],
+                  "segment_sides": [
+                    "above"
+                  ],
+                  "sparse_side_match": true,
+                  "orientation": "vertical",
+                  "segment_size": 3
+                },
+                {
+                  "host_color": 6,
+                  "host_bbox": [
+                    3,
+                    6,
+                    5,
+                    8
+                  ],
+                  "host_sparse_sides": [
+                    "above"
+                  ],
+                  "segment_sides": [
+                    "above",
+                    "left"
+                  ],
+                  "sparse_side_match": true,
+                  "orientation": "vertical",
+                  "segment_size": 3
+                }
+              ],
+              "any_sparse_side_match": true,
+              "candidate_count": 2
+            }
+          ],
+          "all_segments_have_sparse_side_match": true,
+          "all_segments_have_unique_candidate": false
+        },
+        {
+          "available": true,
+          "segments": [
+            {
+              "marker": 7,
+              "candidate_hosts": [
+                {
+                  "host_color": 6,
+                  "host_bbox": [
+                    3,
+                    2,
+                    10,
+                    8
+                  ],
+                  "host_sparse_sides": [
+                    "above"
+                  ],
+                  "segment_sides": [
+                    "above"
+                  ],
+                  "sparse_side_match": true,
+                  "orientation": "vertical",
+                  "segment_size": 3
+                }
+              ],
+              "any_sparse_side_match": true,
+              "candidate_count": 1
+            }
+          ],
+          "all_segments_have_sparse_side_match": true,
+          "all_segments_have_unique_candidate": true
+        }
+      ],
+      "pair_oracle_diagnostics": [
+        {
+          "shape_change": false,
+          "n_added": 4,
+          "n_erased": 4,
+          "n_recolored": 0,
+          "added_components": 2,
+          "line_added_components": 2,
+          "multi_added_components": 2,
+          "multi_line_added_components": 2,
+          "rigid_copy_added_components": 0,
+          "endpoint_supported_added_components": 2,
+          "added_component_samples": [
+            {
+              "size": 2,
+              "colors": [
+                6
+              ],
+              "is_straight_line": true,
+              "is_rigid_input_copy": false,
+              "same_color_endpoint_neighbors": 0,
+              "non_bg_endpoint_neighbors": 1
+            },
+            {
+              "size": 2,
+              "colors": [
+                7
+              ],
+              "is_straight_line": true,
+              "is_rigid_input_copy": false,
+              "same_color_endpoint_neighbors": 0,
+              "non_bg_endpoint_neighbors": 1
+            }
+          ],
+          "recolor_pairs": []
+        },
+        {
+          "shape_change": false,
+          "n_added": 4,
+          "n_erased": 4,
+          "n_recolored": 0,
+          "added_components": 2,
+          "line_added_components": 2,
+          "multi_added_components": 1,
+          "multi_line_added_components": 1,
+          "rigid_copy_added_components": 1,
+          "endpoint_supported_added_components": 2,
+          "added_component_samples": [
+            {
+              "size": 3,
+              "colors": [
+                9
+              ],
+              "is_straight_line": true,
+              "is_rigid_input_copy": false,
+              "same_color_endpoint_neighbors": 0,
+              "non_bg_endpoint_neighbors": 1
+            },
+            {
+              "size": 1,
+              "colors": [
+                9
+              ],
+              "is_straight_line": true,
+              "is_rigid_input_copy": true,
+              "same_color_endpoint_neighbors": 0,
+              "non_bg_endpoint_neighbors": 2
+            }
+          ],
+          "recolor_pairs": []
+        },
+        {
+          "shape_change": false,
+          "n_added": 3,
+          "n_erased": 7,
+          "n_recolored": 0,
+          "added_components": 1,
+          "line_added_components": 1,
+          "multi_added_components": 1,
+          "multi_line_added_components": 1,
+          "rigid_copy_added_components": 0,
+          "endpoint_supported_added_components": 1,
+          "added_component_samples": [
+            {
+              "size": 3,
+              "colors": [
+                7
+              ],
+              "is_straight_line": true,
+              "is_rigid_input_copy": false,
+              "same_color_endpoint_neighbors": 0,
+              "non_bg_endpoint_neighbors": 1
+            }
+          ],
+          "recolor_pairs": []
+        }
+      ],
+      "codex_failure_class": "path_endpoint_or_parameter"
+    },
+    {
+      "task_id": "dd6b8c4b",
+      "train_pairs": 3,
+      "oracle_panel_fill": {
+        "available": true,
+        "oracle_exact_all_pairs": true,
+        "marker_colors": [
+          9,
+          9,
+          9
+        ],
+        "per_pair": [
+          [
+            {
+              "marker": 9,
+              "consumed_count": 2
+            }
+          ],
+          [
+            {
+              "marker": 9,
+              "consumed_count": 9
+            }
+          ],
+          [
+            {
+              "marker": 9,
+              "consumed_count": 4
+            }
+          ]
+        ]
+      },
+      "component_graph_selector_ablation": {
+        "available": true,
+        "marker": 9,
+        "label_counts": {
+          "none": 5,
+          "all": 12,
+          "partial": 1
+        },
+        "has_partial_components": true,
+        "separability": {
+          "size": {
+            "separable": false,
+            "conflict_values": [
+              2,
+              1
+            ],
+            "all_values": [],
+            "partial_values": [
+              5
+            ]
+          },
+          "bbox_h": {
+            "separable": false,
+            "conflict_values": [
+              2,
+              1
+            ],
+            "all_values": [],
+            "partial_values": []
+          },
+          "bbox_w": {
+            "separable": false,
+            "conflict_values": [
+              2,
+              1
+            ],
+            "all_values": [],
+            "partial_values": [
+              3
+            ]
+          },
+          "touches_border": {
+            "separable": false,
+            "conflict_values": [
+              0,
+              1
+            ],
+            "all_values": [],
+            "partial_values": []
+          },
+          "min_dist_panel": {
+            "separable": false,
+            "conflict_values": [
+              4,
+              3,
+              6
+            ],
+            "all_values": [
+              5,
+              2
+            ],
+            "partial_values": []
+          },
+          "min_dist_path": {
+            "separable": false,
+            "conflict_values": [
+              1,
+              2
+            ],
+            "all_values": [
+              3,
+              8,
+              6,
+              7
+            ],
+            "partial_values": []
+          },
+          "near_path_le1": {
+            "separable": false,
+            "conflict_values": [
+              1,
+              0
+            ],
+            "all_values": [],
+            "partial_values": []
+          },
+          "path_neighbor": {
+            "separable": false,
+            "conflict_values": [
+              1,
+              0
+            ],
+            "all_values": [],
+            "partial_values": []
+          },
+          "vertical_side": {
+            "separable": false,
+            "conflict_values": [
+              "above",
+              "mid",
+              "below"
+            ],
+            "all_values": [],
+            "partial_values": []
+          },
+          "horizontal_side": {
+            "separable": false,
+            "conflict_values": [
+              "right",
+              "left"
+            ],
+            "all_values": [
+              "mid"
+            ],
+            "partial_values": []
+          },
+          "side": {
+            "separable": false,
+            "conflict_values": [
+              [
+                "above",
+                "right"
+              ],
+              [
+                "above",
+                "left"
+              ],
+              [
+                "mid",
+                "right"
+              ],
+              [
+                "below",
+                "left"
+              ]
+            ],
+            "all_values": [
+              [
+                "below",
+                "right"
+              ],
+              [
+                "mid",
+                "left"
+              ],
+              [
+                "below",
+                "mid"
+              ]
+            ],
+            "partial_values": []
+          },
+          "clear_ray_to_panel": {
+            "separable": false,
+            "conflict_values": [
+              0
+            ],
+            "all_values": [
+              1
+            ],
+            "partial_values": []
+          }
+        },
+        "per_pair": [
+          {
+            "pair_index": 0,
+            "components": [
+              {
+                "size": 4,
+                "consumed_count": 0,
+                "label": "none",
+                "features": {
+                  "size": 4,
+                  "bbox_h": 2,
+                  "bbox_w": 2,
+                  "touches_border": 0,
+                  "min_dist_panel": 4,
+                  "min_dist_path": 1,
+                  "near_path_le1": 1,
+                  "path_neighbor": 1,
+                  "vertical_side": "above",
+                  "horizontal_side": "right",
+                  "side": [
+                    "above",
+                    "right"
+                  ],
+                  "clear_ray_to_panel": 0
+                }
+              },
+              {
+                "size": 2,
+                "consumed_count": 0,
+                "label": "none",
+                "features": {
+                  "size": 2,
+                  "bbox_h": 1,
+                  "bbox_w": 2,
+                  "touches_border": 0,
+                  "min_dist_panel": 3,
+                  "min_dist_path": 1,
+                  "near_path_le1": 1,
+                  "path_neighbor": 1,
+                  "vertical_side": "above",
+                  "horizontal_side": "left",
+                  "side": [
+                    "above",
+                    "left"
+                  ],
+                  "clear_ray_to_panel": 0
+                }
+              },
+              {
+                "size": 1,
+                "consumed_count": 0,
+                "label": "none",
+                "features": {
+                  "size": 1,
+                  "bbox_h": 1,
+                  "bbox_w": 1,
+                  "touches_border": 0,
+                  "min_dist_panel": 3,
+                  "min_dist_path": 2,
+                  "near_path_le1": 0,
+                  "path_neighbor": 0,
+                  "vertical_side": "mid",
+                  "horizontal_side": "right",
+                  "side": [
+                    "mid",
+                    "right"
+                  ],
+                  "clear_ray_to_panel": 0
+                }
+              },
+              {
+                "size": 3,
+                "consumed_count": 0,
+                "label": "none",
+                "features": {
+                  "size": 3,
+                  "bbox_h": 2,
+                  "bbox_w": 2,
+                  "touches_border": 1,
+                  "min_dist_panel": 3,
+                  "min_dist_path": 2,
+                  "near_path_le1": 0,
+                  "path_neighbor": 0,
+                  "vertical_side": "below",
+                  "horizontal_side": "left",
+                  "side": [
+                    "below",
+                    "left"
+                  ],
+                  "clear_ray_to_panel": 0
+                }
+              },
+              {
+                "size": 2,
+                "consumed_count": 2,
+                "label": "all",
+                "features": {
+                  "size": 2,
+                  "bbox_h": 1,
+                  "bbox_w": 2,
+                  "touches_border": 0,
+                  "min_dist_panel": 3,
+                  "min_dist_path": 1,
+                  "near_path_le1": 1,
+                  "path_neighbor": 1,
+                  "vertical_side": "below",
+                  "horizontal_side": "right",
+                  "side": [
+                    "below",
+                    "right"
+                  ],
+                  "clear_ray_to_panel": 0
+                }
+              }
+            ]
+          },
+          {
+            "pair_index": 1,
+            "components": [
+              {
+                "size": 5,
+                "consumed_count": 1,
+                "label": "partial",
+                "features": {
+                  "size": 5,
+                  "bbox_h": 2,
+                  "bbox_w": 3,
+                  "touches_border": 1,
+                  "min_dist_panel": 3,
+                  "min_dist_path": 2,
+                  "near_path_le1": 0,
+                  "path_neighbor": 0,
+                  "vertical_side": "above",
+                  "horizontal_side": "right",
+                  "side": [
+                    "above",
+                    "right"
+                  ],
+                  "clear_ray_to_panel": 0
+                }
+              },
+              {
+                "size": 2,
+                "consumed_count": 0,
+                "label": "none",
+                "features": {
+                  "size": 2,
+                  "bbox_h": 2,
+                  "bbox_w": 1,
+                  "touches_border": 1,
+                  "min_dist_panel": 6,
+                  "min_dist_path": 1,
+                  "near_path_le1": 1,
+                  "path_neighbor": 1,
+                  "vertical_side": "above",
+                  "horizontal_side": "right",
+                  "side": [
+                    "above",
+                    "right"
+                  ],
+                  "clear_ray_to_panel": 0
+                }
+              },
+              {
+                "size": 1,
+                "consumed_count": 1,
+                "label": "all",
+                "features": {
+                  "size": 1,
+                  "bbox_h": 1,
+                  "bbox_w": 1,
+                  "touches_border": 1,
+                  "min_dist_panel": 5,
+                  "min_dist_path": 3,
+                  "near_path_le1": 0,
+                  "path_neighbor": 0,
+                  "vertical_side": "above",
+                  "horizontal_side": "left",
+                  "side": [
+                    "above",
+                    "left"
+                  ],
+                  "clear_ray_to_panel": 0
+                }
+              },
+              {
+                "size": 1,
+                "consumed_count": 1,
+                "label": "all",
+                "features": {
+                  "size": 1,
+                  "bbox_h": 1,
+                  "bbox_w": 1,
+                  "touches_border": 0,
+                  "min_dist_panel": 2,
+                  "min_dist_path": 1,
+                  "near_path_le1": 1,
+                  "path_neighbor": 1,
+                  "vertical_side": "mid",
+                  "horizontal_side": "right",
+                  "side": [
+                    "mid",
+                    "right"
+                  ],
+                  "clear_ray_to_panel": 0
+                }
+              },
+              {
+                "size": 1,
+                "consumed_count": 1,
+                "label": "all",
+                "features": {
+                  "size": 1,
+                  "bbox_h": 1,
+                  "bbox_w": 1,
+                  "touches_border": 0,
+                  "min_dist_panel": 2,
+                  "min_dist_path": 1,
+                  "near_path_le1": 1,
+                  "path_neighbor": 1,
+                  "vertical_side": "mid",
+                  "horizontal_side": "left",
+                  "side": [
+                    "mid",
+                    "left"
+                  ],
+                  "clear_ray_to_panel": 0
+                }
+              },
+              {
+                "size": 1,
+                "consumed_count": 1,
+                "label": "all",
+                "features": {
+                  "size": 1,
+                  "bbox_h": 1,
+                  "bbox_w": 1,
+                  "touches_border": 0,
+                  "min_dist_panel": 3,
+                  "min_dist_path": 2,
+                  "near_path_le1": 0,
+                  "path_neighbor": 0,
+                  "vertical_side": "mid",
+                  "horizontal_side": "right",
+                  "side": [
+                    "mid",
+                    "right"
+                  ],
+                  "clear_ray_to_panel": 0
+                }
+              },
+              {
+                "size": 1,
+                "consumed_count": 1,
+                "label": "all",
+                "features": {
+                  "size": 1,
+                  "bbox_h": 1,
+                  "bbox_w": 1,
+                  "touches_border": 0,
+                  "min_dist_panel": 5,
+                  "min_dist_path": 2,
+                  "near_path_le1": 0,
+                  "path_neighbor": 0,
+                  "vertical_side": "below",
+                  "horizontal_side": "left",
+                  "side": [
+                    "below",
+                    "left"
+                  ],
+                  "clear_ray_to_panel": 0
+                }
+              },
+              {
+                "size": 2,
+                "consumed_count": 2,
+                "label": "all",
+                "features": {
+                  "size": 2,
+                  "bbox_h": 2,
+                  "bbox_w": 1,
+                  "touches_border": 0,
+                  "min_dist_panel": 2,
+                  "min_dist_path": 2,
+                  "near_path_le1": 0,
+                  "path_neighbor": 0,
+                  "vertical_side": "below",
+                  "horizontal_side": "mid",
+                  "side": [
+                    "below",
+                    "mid"
+                  ],
+                  "clear_ray_to_panel": 1
+                }
+              },
+              {
+                "size": 1,
+                "consumed_count": 1,
+                "label": "all",
+                "features": {
+                  "size": 1,
+                  "bbox_h": 1,
+                  "bbox_w": 1,
+                  "touches_border": 0,
+                  "min_dist_panel": 5,
+                  "min_dist_path": 1,
+                  "near_path_le1": 1,
+                  "path_neighbor": 1,
+                  "vertical_side": "below",
+                  "horizontal_side": "left",
+                  "side": [
+                    "below",
+                    "left"
+                  ],
+                  "clear_ray_to_panel": 0
+                }
+              }
+            ]
+          },
+          {
+            "pair_index": 2,
+            "components": [
+              {
+                "size": 1,
+                "consumed_count": 1,
+                "label": "all",
+                "features": {
+                  "size": 1,
+                  "bbox_h": 1,
+                  "bbox_w": 1,
+                  "touches_border": 0,
+                  "min_dist_panel": 6,
+                  "min_dist_path": 8,
+                  "near_path_le1": 0,
+                  "path_neighbor": 0,
+                  "vertical_side": "above",
+                  "horizontal_side": "right",
+                  "side": [
+                    "above",
+                    "right"
+                  ],
+                  "clear_ray_to_panel": 0
+                }
+              },
+              {
+                "size": 1,
+                "consumed_count": 1,
+                "label": "all",
+                "features": {
+                  "size": 1,
+                  "bbox_h": 1,
+                  "bbox_w": 1,
+                  "touches_border": 0,
+                  "min_dist_panel": 4,
+                  "min_dist_path": 6,
+                  "near_path_le1": 0,
+                  "path_neighbor": 0,
+                  "vertical_side": "above",
+                  "horizontal_side": "left",
+                  "side": [
+                    "above",
+                    "left"
+                  ],
+                  "clear_ray_to_panel": 0
+                }
+              },
+              {
+                "size": 1,
+                "consumed_count": 1,
+                "label": "all",
+                "features": {
+                  "size": 1,
+                  "bbox_h": 1,
+                  "bbox_w": 1,
+                  "touches_border": 1,
+                  "min_dist_panel": 6,
+                  "min_dist_path": 8,
+                  "near_path_le1": 0,
+                  "path_neighbor": 0,
+                  "vertical_side": "above",
+                  "horizontal_side": "right",
+                  "side": [
+                    "above",
+                    "right"
+                  ],
+                  "clear_ray_to_panel": 0
+                }
+              },
+              {
+                "size": 1,
+                "consumed_count": 1,
+                "label": "all",
+                "features": {
+                  "size": 1,
+                  "bbox_h": 1,
+                  "bbox_w": 1,
+                  "touches_border": 0,
+                  "min_dist_panel": 5,
+                  "min_dist_path": 7,
+                  "near_path_le1": 0,
+                  "path_neighbor": 0,
+                  "vertical_side": "below",
+                  "horizontal_side": "right",
+                  "side": [
+                    "below",
+                    "right"
+                  ],
+                  "clear_ray_to_panel": 0
+                }
+              }
+            ]
+          }
+        ]
+      },
+      "segment_endpoint_oracle_ablation": [
+        {
+          "available": false,
+          "segments": [],
+          "all_multicell_additions_are_segments": false,
+          "all_segments_have_same_color_removed": false,
+          "all_segments_have_aligned_removed": false
+        },
+        {
+          "available": false,
+          "segments": [],
+          "all_multicell_additions_are_segments": false,
+          "all_segments_have_same_color_removed": false,
+          "all_segments_have_aligned_removed": false
+        },
+        {
+          "available": false,
+          "segments": [],
+          "all_multicell_additions_are_segments": false,
+          "all_segments_have_same_color_removed": false,
+          "all_segments_have_aligned_removed": false
+        }
+      ],
+      "host_apex_parameter_ablation": [
+        {
+          "available": false,
+          "segments": [],
+          "all_segments_have_sparse_side_match": false,
+          "all_segments_have_unique_candidate": false
+        },
+        {
+          "available": false,
+          "segments": [],
+          "all_segments_have_sparse_side_match": false,
+          "all_segments_have_unique_candidate": false
+        },
+        {
+          "available": false,
+          "segments": [],
+          "all_segments_have_sparse_side_match": false,
+          "all_segments_have_unique_candidate": false
+        }
+      ],
+      "pair_oracle_diagnostics": [
+        {
+          "shape_change": false,
+          "n_added": 0,
+          "n_erased": 2,
+          "n_recolored": 2,
+          "added_components": 0,
+          "line_added_components": 0,
+          "multi_added_components": 0,
+          "multi_line_added_components": 0,
+          "rigid_copy_added_components": 0,
+          "endpoint_supported_added_components": 0,
+          "added_component_samples": [],
+          "recolor_pairs": [
+            [
+              [
+                3,
+                9
+              ],
+              2
+            ]
+          ]
+        },
+        {
+          "shape_change": false,
+          "n_added": 0,
+          "n_erased": 9,
+          "n_recolored": 9,
+          "added_components": 0,
+          "line_added_components": 0,
+          "multi_added_components": 0,
+          "multi_line_added_components": 0,
+          "rigid_copy_added_components": 0,
+          "endpoint_supported_added_components": 0,
+          "added_component_samples": [],
+          "recolor_pairs": [
+            [
+              [
+                3,
+                9
+              ],
+              8
+            ],
+            [
+              [
+                2,
+                9
+              ],
+              1
+            ]
+          ]
+        },
+        {
+          "shape_change": false,
+          "n_added": 0,
+          "n_erased": 4,
+          "n_recolored": 4,
+          "added_components": 0,
+          "line_added_components": 0,
+          "multi_added_components": 0,
+          "multi_line_added_components": 0,
+          "rigid_copy_added_components": 0,
+          "endpoint_supported_added_components": 0,
+          "added_component_samples": [],
+          "recolor_pairs": [
+            [
+              [
+                3,
+                9
+              ],
+              4
+            ]
+          ]
+        }
+      ],
+      "codex_failure_class": "selector_oracle_panel_fill"
+    },
+    {
+      "task_id": "35ab12c3",
+      "train_pairs": 3,
+      "oracle_panel_fill": {
+        "available": false,
+        "reason": "missing_panel"
+      },
+      "component_graph_selector_ablation": {
+        "available": false,
+        "reason": "missing_panel"
+      },
+      "segment_endpoint_oracle_ablation": [
+        {
+          "available": true,
+          "segments": [
+            {
+              "color": 1,
+              "size": 8,
+              "orientation": "vertical",
+              "is_straight_line": true,
+              "same_color_removed_count": 0,
+              "min_same_color_removed_dist": null,
+              "aligned_same_color_removed": 0,
+              "same_color_endpoint_neighbors": 1,
+              "non_bg_endpoint_neighbors": 3
+            },
+            {
+              "color": 1,
+              "size": 6,
+              "orientation": "vertical",
+              "is_straight_line": true,
+              "same_color_removed_count": 0,
+              "min_same_color_removed_dist": null,
+              "aligned_same_color_removed": 0,
+              "same_color_endpoint_neighbors": 0,
+              "non_bg_endpoint_neighbors": 2
+            },
+            {
+              "color": 4,
+              "size": 6,
+              "orientation": "horizontal",
+              "is_straight_line": true,
+              "same_color_removed_count": 0,
+              "min_same_color_removed_dist": null,
+              "aligned_same_color_removed": 0,
+              "same_color_endpoint_neighbors": 2,
+              "non_bg_endpoint_neighbors": 2
+            },
+            {
+              "color": 8,
+              "size": 2,
+              "orientation": "horizontal",
+              "is_straight_line": true,
+              "same_color_removed_count": 0,
+              "min_same_color_removed_dist": null,
+              "aligned_same_color_removed": 0,
+              "same_color_endpoint_neighbors": 2,
+              "non_bg_endpoint_neighbors": 2
+            },
+            {
+              "color": 8,
+              "size": 7,
+              "orientation": "vertical",
+              "is_straight_line": true,
+              "same_color_removed_count": 0,
+              "min_same_color_removed_dist": null,
+              "aligned_same_color_removed": 0,
+              "same_color_endpoint_neighbors": 3,
+              "non_bg_endpoint_neighbors": 4
+            },
+            {
+              "color": 8,
+              "size": 5,
+              "orientation": "vertical",
+              "is_straight_line": true,
+              "same_color_removed_count": 0,
+              "min_same_color_removed_dist": null,
+              "aligned_same_color_removed": 0,
+              "same_color_endpoint_neighbors": 2,
+              "non_bg_endpoint_neighbors": 2
+            }
+          ],
+          "all_multicell_additions_are_segments": true,
+          "all_segments_have_same_color_removed": false,
+          "all_segments_have_aligned_removed": false
+        },
+        {
+          "available": true,
+          "segments": [
+            {
+              "color": 4,
+              "size": 7,
+              "orientation": "vertical",
+              "is_straight_line": true,
+              "same_color_removed_count": 0,
+              "min_same_color_removed_dist": null,
+              "aligned_same_color_removed": 0,
+              "same_color_endpoint_neighbors": 1,
+              "non_bg_endpoint_neighbors": 3
+            },
+            {
+              "color": 4,
+              "size": 2,
+              "orientation": "horizontal",
+              "is_straight_line": true,
+              "same_color_removed_count": 0,
+              "min_same_color_removed_dist": null,
+              "aligned_same_color_removed": 0,
+              "same_color_endpoint_neighbors": 1,
+              "non_bg_endpoint_neighbors": 4
+            },
+            {
+              "color": 6,
+              "size": 6,
+              "orientation": "vertical",
+              "is_straight_line": true,
+              "same_color_removed_count": 0,
+              "min_same_color_removed_dist": null,
+              "aligned_same_color_removed": 0,
+              "same_color_endpoint_neighbors": 2,
+              "non_bg_endpoint_neighbors": 2
+            }
+          ],
+          "all_multicell_additions_are_segments": true,
+          "all_segments_have_same_color_removed": false,
+          "all_segments_have_aligned_removed": false
+        },
+        {
+          "available": true,
+          "segments": [
+            {
+              "color": 1,
+              "size": 10,
+              "orientation": "horizontal",
+              "is_straight_line": true,
+              "same_color_removed_count": 0,
+              "min_same_color_removed_dist": null,
+              "aligned_same_color_removed": 0,
+              "same_color_endpoint_neighbors": 2,
+              "non_bg_endpoint_neighbors": 2
+            },
+            {
+              "color": 1,
+              "size": 9,
+              "orientation": "vertical",
+              "is_straight_line": true,
+              "same_color_removed_count": 0,
+              "min_same_color_removed_dist": null,
+              "aligned_same_color_removed": 0,
+              "same_color_endpoint_neighbors": 2,
+              "non_bg_endpoint_neighbors": 2
+            },
+            {
+              "color": 1,
+              "size": 9,
+              "orientation": "vertical",
+              "is_straight_line": true,
+              "same_color_removed_count": 0,
+              "min_same_color_removed_dist": null,
+              "aligned_same_color_removed": 0,
+              "same_color_endpoint_neighbors": 2,
+              "non_bg_endpoint_neighbors": 2
+            },
+            {
+              "color": 1,
+              "size": 10,
+              "orientation": "horizontal",
+              "is_straight_line": true,
+              "same_color_removed_count": 0,
+              "min_same_color_removed_dist": null,
+              "aligned_same_color_removed": 0,
+              "same_color_endpoint_neighbors": 2,
+              "non_bg_endpoint_neighbors": 2
+            },
+            {
+              "color": 7,
+              "size": 5,
+              "orientation": "vertical",
+              "is_straight_line": true,
+              "same_color_removed_count": 0,
+              "min_same_color_removed_dist": null,
+              "aligned_same_color_removed": 0,
+              "same_color_endpoint_neighbors": 2,
+              "non_bg_endpoint_neighbors": 2
+            },
+            {
+              "color": 7,
+              "size": 5,
+              "orientation": "horizontal",
+              "is_straight_line": true,
+              "same_color_removed_count": 0,
+              "min_same_color_removed_dist": null,
+              "aligned_same_color_removed": 0,
+              "same_color_endpoint_neighbors": 2,
+              "non_bg_endpoint_neighbors": 2
+            },
+            {
+              "color": 8,
+              "size": 18,
+              "orientation": "other",
+              "is_straight_line": false,
+              "same_color_removed_count": 0,
+              "min_same_color_removed_dist": null,
+              "aligned_same_color_removed": 0,
+              "same_color_endpoint_neighbors": 0,
+              "non_bg_endpoint_neighbors": 2
+            },
+            {
+              "color": 8,
+              "size": 10,
+              "orientation": "vertical",
+              "is_straight_line": true,
+              "same_color_removed_count": 0,
+              "min_same_color_removed_dist": null,
+              "aligned_same_color_removed": 0,
+              "same_color_endpoint_neighbors": 1,
+              "non_bg_endpoint_neighbors": 3
+            },
+            {
+              "color": 8,
+              "size": 11,
+              "orientation": "horizontal",
+              "is_straight_line": true,
+              "same_color_removed_count": 0,
+              "min_same_color_removed_dist": null,
+              "aligned_same_color_removed": 0,
+              "same_color_endpoint_neighbors": 1,
+              "non_bg_endpoint_neighbors": 3
+            }
+          ],
+          "all_multicell_additions_are_segments": false,
+          "all_segments_have_same_color_removed": false,
+          "all_segments_have_aligned_removed": false
+        }
+      ],
+      "host_apex_parameter_ablation": [
+        {
+          "available": false,
+          "segments": [],
+          "all_segments_have_sparse_side_match": false,
+          "all_segments_have_unique_candidate": false
+        },
+        {
+          "available": false,
+          "segments": [],
+          "all_segments_have_sparse_side_match": false,
+          "all_segments_have_unique_candidate": false
+        },
+        {
+          "available": false,
+          "segments": [],
+          "all_segments_have_sparse_side_match": false,
+          "all_segments_have_unique_candidate": false
+        }
+      ],
+      "pair_oracle_diagnostics": [
+        {
+          "shape_change": false,
+          "n_added": 62,
+          "n_erased": 0,
+          "n_recolored": 0,
+          "added_components": 13,
+          "line_added_components": 10,
+          "multi_added_components": 4,
+          "multi_line_added_components": 1,
+          "rigid_copy_added_components": 9,
+          "endpoint_supported_added_components": 13,
+          "added_component_samples": [
+            {
+              "size": 11,
+              "colors": [
+                6,
+                7
+              ],
+              "is_straight_line": false,
+              "is_rigid_input_copy": false,
+              "same_color_endpoint_neighbors": 0,
+              "non_bg_endpoint_neighbors": 2
+            },
+            {
+              "size": 30,
+              "colors": [
+                1,
+                8
+              ],
+              "is_straight_line": false,
+              "is_rigid_input_copy": false,
+              "same_color_endpoint_neighbors": 2,
+              "non_bg_endpoint_neighbors": 2
+            },
+            {
+              "size": 1,
+              "colors": [
+                3
+              ],
+              "is_straight_line": true,
+              "is_rigid_input_copy": true,
+              "same_color_endpoint_neighbors": 2,
+              "non_bg_endpoint_neighbors": 2
+            },
+            {
+              "size": 1,
+              "colors": [
+                3
+              ],
+              "is_straight_line": true,
+              "is_rigid_input_copy": true,
+              "same_color_endpoint_neighbors": 2,
+              "non_bg_endpoint_neighbors": 2
+            },
+            {
+              "size": 6,
+              "colors": [
+                6,
+                7
+              ],
+              "is_straight_line": false,
+              "is_rigid_input_copy": false,
+              "same_color_endpoint_neighbors": 1,
+              "non_bg_endpoint_neighbors": 3
+            },
+            {
+              "size": 6,
+              "colors": [
+                4
+              ],
+              "is_straight_line": true,
+              "is_rigid_input_copy": false,
+              "same_color_endpoint_neighbors": 2,
+              "non_bg_endpoint_neighbors": 2
+            },
+            {
+              "size": 1,
+              "colors": [
+                3
+              ],
+              "is_straight_line": true,
+              "is_rigid_input_copy": true,
+              "same_color_endpoint_neighbors": 2,
+              "non_bg_endpoint_neighbors": 2
+            },
+            {
+              "size": 1,
+              "colors": [
+                3
+              ],
+              "is_straight_line": true,
+              "is_rigid_input_copy": true,
+              "same_color_endpoint_neighbors": 2,
+              "non_bg_endpoint_neighbors": 2
+            }
+          ],
+          "recolor_pairs": []
+        },
+        {
+          "shape_change": false,
+          "n_added": 24,
+          "n_erased": 0,
+          "n_recolored": 0,
+          "added_components": 10,
+          "line_added_components": 8,
+          "multi_added_components": 2,
+          "multi_line_added_components": 0,
+          "rigid_copy_added_components": 8,
+          "endpoint_supported_added_components": 9,
+          "added_component_samples": [
+            {
+              "size": 13,
+              "colors": [
+                4,
+                6
+              ],
+              "is_straight_line": false,
+              "is_rigid_input_copy": false,
+              "same_color_endpoint_neighbors": 1,
+              "non_bg_endpoint_neighbors": 3
+            },
+            {
+              "size": 1,
+              "colors": [
+                1
+              ],
+              "is_straight_line": true,
+              "is_rigid_input_copy": true,
+              "same_color_endpoint_neighbors": 0,
+              "non_bg_endpoint_neighbors": 2
+            },
+            {
+              "size": 3,
+              "colors": [
+                4,
+                6
+              ],
+              "is_straight_line": false,
+              "is_rigid_input_copy": false,
+              "same_color_endpoint_neighbors": 1,
+              "non_bg_endpoint_neighbors": 4
+            },
+            {
+              "size": 1,
+              "colors": [
+                8
+              ],
+              "is_straight_line": true,
+              "is_rigid_input_copy": true,
+              "same_color_endpoint_neighbors": 4,
+              "non_bg_endpoint_neighbors": 4
+            },
+            {
+              "size": 1,
+              "colors": [
+                6
+              ],
+              "is_straight_line": true,
+              "is_rigid_input_copy": true,
+              "same_color_endpoint_neighbors": 2,
+              "non_bg_endpoint_neighbors": 2
+            },
+            {
+              "size": 1,
+              "colors": [
+                8
+              ],
+              "is_straight_line": true,
+              "is_rigid_input_copy": true,
+              "same_color_endpoint_neighbors": 2,
+              "non_bg_endpoint_neighbors": 2
+            },
+            {
+              "size": 1,
+              "colors": [
+                6
+              ],
+              "is_straight_line": true,
+              "is_rigid_input_copy": true,
+              "same_color_endpoint_neighbors": 2,
+              "non_bg_endpoint_neighbors": 2
+            },
+            {
+              "size": 1,
+              "colors": [
+                1
+              ],
+              "is_straight_line": true,
+              "is_rigid_input_copy": true,
+              "same_color_endpoint_neighbors": 0,
+              "non_bg_endpoint_neighbors": 0
+            }
+          ],
+          "recolor_pairs": []
+        },
+        {
+          "shape_change": false,
+          "n_added": 93,
+          "n_erased": 0,
+          "n_recolored": 0,
+          "added_components": 8,
+          "line_added_components": 7,
+          "multi_added_components": 3,
+          "multi_line_added_components": 2,
+          "rigid_copy_added_components": 5,
+          "endpoint_supported_added_components": 7,
+          "added_component_samples": [
+            {
+              "size": 78,
+              "colors": [
+                1,
+                7,
+                8
+              ],
+              "is_straight_line": false,
+              "is_rigid_input_copy": false,
+              "same_color_endpoint_neighbors": 2,
+              "non_bg_endpoint_neighbors": 3
+            },
+            {
+              "size": 5,
+              "colors": [
+                7
+              ],
+              "is_straight_line": true,
+              "is_rigid_input_copy": false,
+              "same_color_endpoint_neighbors": 2,
+              "non_bg_endpoint_neighbors": 2
+            },
+            {
+              "size": 5,
+              "colors": [
+                7
+              ],
+              "is_straight_line": true,
+              "is_rigid_input_copy": false,
+              "same_color_endpoint_neighbors": 2,
+              "non_bg_endpoint_neighbors": 2
+            },
+            {
+              "size": 1,
+              "colors": [
+                2
+              ],
+              "is_straight_line": true,
+              "is_rigid_input_copy": true,
+              "same_color_endpoint_neighbors": 4,
+              "non_bg_endpoint_neighbors": 4
+            },
+            {
+              "size": 1,
+              "colors": [
+                7
+              ],
+              "is_straight_line": true,
+              "is_rigid_input_copy": true,
+              "same_color_endpoint_neighbors": 0,
+              "non_bg_endpoint_neighbors": 0
+            },
+            {
+              "size": 1,
+              "colors": [
+                7
+              ],
+              "is_straight_line": true,
+              "is_rigid_input_copy": true,
+              "same_color_endpoint_neighbors": 2,
+              "non_bg_endpoint_neighbors": 4
+            },
+            {
+              "size": 1,
+              "colors": [
+                7
+              ],
+              "is_straight_line": true,
+              "is_rigid_input_copy": true,
+              "same_color_endpoint_neighbors": 2,
+              "non_bg_endpoint_neighbors": 2
+            },
+            {
+              "size": 1,
+              "colors": [
+                7
+              ],
+              "is_straight_line": true,
+              "is_rigid_input_copy": true,
+              "same_color_endpoint_neighbors": 0,
+              "non_bg_endpoint_neighbors": 2
+            }
+          ],
+          "recolor_pairs": []
+        }
+      ],
+      "codex_failure_class": "renderer_or_decomposition_for_generated_structure",
+      "codex_failure_class_note": "downgraded from loose rigid-copy heuristic because Claude's strict segment/copy/stamp oracle did not reproduce the outputs"
+    },
+    {
+      "task_id": "142ca369",
+      "train_pairs": 3,
+      "oracle_panel_fill": {
+        "available": false,
+        "reason": "missing_panel"
+      },
+      "component_graph_selector_ablation": {
+        "available": false,
+        "reason": "missing_panel"
+      },
+      "segment_endpoint_oracle_ablation": [
+        {
+          "available": false,
+          "segments": [],
+          "all_multicell_additions_are_segments": false,
+          "all_segments_have_same_color_removed": false,
+          "all_segments_have_aligned_removed": false
+        },
+        {
+          "available": false,
+          "segments": [],
+          "all_multicell_additions_are_segments": false,
+          "all_segments_have_same_color_removed": false,
+          "all_segments_have_aligned_removed": false
+        },
+        {
+          "available": false,
+          "segments": [],
+          "all_multicell_additions_are_segments": false,
+          "all_segments_have_same_color_removed": false,
+          "all_segments_have_aligned_removed": false
+        }
+      ],
+      "host_apex_parameter_ablation": [
+        {
+          "available": false,
+          "segments": [],
+          "all_segments_have_sparse_side_match": false,
+          "all_segments_have_unique_candidate": false
+        },
+        {
+          "available": false,
+          "segments": [],
+          "all_segments_have_sparse_side_match": false,
+          "all_segments_have_unique_candidate": false
+        },
+        {
+          "available": false,
+          "segments": [],
+          "all_segments_have_sparse_side_match": false,
+          "all_segments_have_unique_candidate": false
+        }
+      ],
+      "pair_oracle_diagnostics": [
+        {
+          "shape_change": false,
+          "n_added": 56,
+          "n_erased": 0,
+          "n_recolored": 0,
+          "added_components": 56,
+          "line_added_components": 56,
+          "multi_added_components": 0,
+          "multi_line_added_components": 0,
+          "rigid_copy_added_components": 56,
+          "endpoint_supported_added_components": 8,
+          "added_component_samples": [
+            {
+              "size": 1,
+              "colors": [
+                5
+              ],
+              "is_straight_line": true,
+              "is_rigid_input_copy": true,
+              "same_color_endpoint_neighbors": 0,
+              "non_bg_endpoint_neighbors": 0
+            },
+            {
+              "size": 1,
+              "colors": [
+                3
+              ],
+              "is_straight_line": true,
+              "is_rigid_input_copy": true,
+              "same_color_endpoint_neighbors": 0,
+              "non_bg_endpoint_neighbors": 0
+            },
+            {
+              "size": 1,
+              "colors": [
+                3
+              ],
+              "is_straight_line": true,
+              "is_rigid_input_copy": true,
+              "same_color_endpoint_neighbors": 2,
+              "non_bg_endpoint_neighbors": 2
+            },
+            {
+              "size": 1,
+              "colors": [
+                2
+              ],
+              "is_straight_line": true,
+              "is_rigid_input_copy": true,
+              "same_color_endpoint_neighbors": 0,
+              "non_bg_endpoint_neighbors": 0
+            },
+            {
+              "size": 1,
+              "colors": [
+                2
+              ],
+              "is_straight_line": true,
+              "is_rigid_input_copy": true,
+              "same_color_endpoint_neighbors": 0,
+              "non_bg_endpoint_neighbors": 0
+            },
+            {
+              "size": 1,
+              "colors": [
+                3
+              ],
+              "is_straight_line": true,
+              "is_rigid_input_copy": true,
+              "same_color_endpoint_neighbors": 0,
+              "non_bg_endpoint_neighbors": 0
+            },
+            {
+              "size": 1,
+              "colors": [
+                5
+              ],
+              "is_straight_line": true,
+              "is_rigid_input_copy": true,
+              "same_color_endpoint_neighbors": 2,
+              "non_bg_endpoint_neighbors": 2
+            },
+            {
+              "size": 1,
+              "colors": [
+                2
+              ],
+              "is_straight_line": true,
+              "is_rigid_input_copy": true,
+              "same_color_endpoint_neighbors": 0,
+              "non_bg_endpoint_neighbors": 0
+            }
+          ],
+          "recolor_pairs": []
+        },
+        {
+          "shape_change": false,
+          "n_added": 28,
+          "n_erased": 0,
+          "n_recolored": 0,
+          "added_components": 28,
+          "line_added_components": 28,
+          "multi_added_components": 0,
+          "multi_line_added_components": 0,
+          "rigid_copy_added_components": 0,
+          "endpoint_supported_added_components": 8,
+          "added_component_samples": [
+            {
+              "size": 1,
+              "colors": [
+                6
+              ],
+              "is_straight_line": true,
+              "is_rigid_input_copy": false,
+              "same_color_endpoint_neighbors": 0,
+              "non_bg_endpoint_neighbors": 0
+            },
+            {
+              "size": 1,
+              "colors": [
+                4
+              ],
+              "is_straight_line": true,
+              "is_rigid_input_copy": false,
+              "same_color_endpoint_neighbors": 0,
+              "non_bg_endpoint_neighbors": 0
+            },
+            {
+              "size": 1,
+              "colors": [
+                5
+              ],
+              "is_straight_line": true,
+              "is_rigid_input_copy": false,
+              "same_color_endpoint_neighbors": 0,
+              "non_bg_endpoint_neighbors": 0
+            },
+            {
+              "size": 1,
+              "colors": [
+                4
+              ],
+              "is_straight_line": true,
+              "is_rigid_input_copy": false,
+              "same_color_endpoint_neighbors": 0,
+              "non_bg_endpoint_neighbors": 0
+            },
+            {
+              "size": 1,
+              "colors": [
+                5
+              ],
+              "is_straight_line": true,
+              "is_rigid_input_copy": false,
+              "same_color_endpoint_neighbors": 6,
+              "non_bg_endpoint_neighbors": 6
+            },
+            {
+              "size": 1,
+              "colors": [
+                6
+              ],
+              "is_straight_line": true,
+              "is_rigid_input_copy": false,
+              "same_color_endpoint_neighbors": 0,
+              "non_bg_endpoint_neighbors": 0
+            },
+            {
+              "size": 1,
+              "colors": [
+                4
+              ],
+              "is_straight_line": true,
+              "is_rigid_input_copy": false,
+              "same_color_endpoint_neighbors": 0,
+              "non_bg_endpoint_neighbors": 0
+            },
+            {
+              "size": 1,
+              "colors": [
+                5
+              ],
+              "is_straight_line": true,
+              "is_rigid_input_copy": false,
+              "same_color_endpoint_neighbors": 6,
+              "non_bg_endpoint_neighbors": 6
+            }
+          ],
+          "recolor_pairs": []
+        },
+        {
+          "shape_change": false,
+          "n_added": 26,
+          "n_erased": 0,
+          "n_recolored": 0,
+          "added_components": 26,
+          "line_added_components": 26,
+          "multi_added_components": 0,
+          "multi_line_added_components": 0,
+          "rigid_copy_added_components": 0,
+          "endpoint_supported_added_components": 5,
+          "added_component_samples": [
+            {
+              "size": 1,
+              "colors": [
+                7
+              ],
+              "is_straight_line": true,
+              "is_rigid_input_copy": false,
+              "same_color_endpoint_neighbors": 0,
+              "non_bg_endpoint_neighbors": 0
+            },
+            {
+              "size": 1,
+              "colors": [
+                2
+              ],
+              "is_straight_line": true,
+              "is_rigid_input_copy": false,
+              "same_color_endpoint_neighbors": 0,
+              "non_bg_endpoint_neighbors": 0
+            },
+            {
+              "size": 1,
+              "colors": [
+                2
+              ],
+              "is_straight_line": true,
+              "is_rigid_input_copy": false,
+              "same_color_endpoint_neighbors": 0,
+              "non_bg_endpoint_neighbors": 0
+            },
+            {
+              "size": 1,
+              "colors": [
+                5
+              ],
+              "is_straight_line": true,
+              "is_rigid_input_copy": false,
+              "same_color_endpoint_neighbors": 0,
+              "non_bg_endpoint_neighbors": 0
+            },
+            {
+              "size": 1,
+              "colors": [
+                2
+              ],
+              "is_straight_line": true,
+              "is_rigid_input_copy": false,
+              "same_color_endpoint_neighbors": 0,
+              "non_bg_endpoint_neighbors": 0
+            },
+            {
+              "size": 1,
+              "colors": [
+                2
+              ],
+              "is_straight_line": true,
+              "is_rigid_input_copy": false,
+              "same_color_endpoint_neighbors": 0,
+              "non_bg_endpoint_neighbors": 0
+            },
+            {
+              "size": 1,
+              "colors": [
+                4
+              ],
+              "is_straight_line": true,
+              "is_rigid_input_copy": false,
+              "same_color_endpoint_neighbors": 2,
+              "non_bg_endpoint_neighbors": 2
+            },
+            {
+              "size": 1,
+              "colors": [
+                2
+              ],
+              "is_straight_line": true,
+              "is_rigid_input_copy": false,
+              "same_color_endpoint_neighbors": 6,
+              "non_bg_endpoint_neighbors": 6
+            }
+          ],
+          "recolor_pairs": []
+        }
+      ],
+      "codex_failure_class": "renderer_or_decomposition_for_generated_structure"
+    },
+    {
+      "task_id": "195c6913",
+      "train_pairs": 3,
+      "oracle_panel_fill": {
+        "available": true,
+        "oracle_exact_all_pairs": false,
+        "marker_colors": [],
+        "per_pair": [
+          [],
+          [],
+          []
+        ]
+      },
+      "component_graph_selector_ablation": {
+        "available": true,
+        "marker": 4,
+        "label_counts": {
+          "none": 2
+        },
+        "has_partial_components": false,
+        "separability": {
+          "size": {
+            "separable": true,
+            "conflict_values": [],
+            "all_values": [],
+            "partial_values": []
+          },
+          "bbox_h": {
+            "separable": true,
+            "conflict_values": [],
+            "all_values": [],
+            "partial_values": []
+          },
+          "bbox_w": {
+            "separable": true,
+            "conflict_values": [],
+            "all_values": [],
+            "partial_values": []
+          },
+          "touches_border": {
+            "separable": true,
+            "conflict_values": [],
+            "all_values": [],
+            "partial_values": []
+          },
+          "min_dist_panel": {
+            "separable": true,
+            "conflict_values": [],
+            "all_values": [],
+            "partial_values": []
+          },
+          "min_dist_path": {
+            "separable": true,
+            "conflict_values": [],
+            "all_values": [],
+            "partial_values": []
+          },
+          "near_path_le1": {
+            "separable": true,
+            "conflict_values": [],
+            "all_values": [],
+            "partial_values": []
+          },
+          "path_neighbor": {
+            "separable": true,
+            "conflict_values": [],
+            "all_values": [],
+            "partial_values": []
+          },
+          "vertical_side": {
+            "separable": true,
+            "conflict_values": [],
+            "all_values": [],
+            "partial_values": []
+          },
+          "horizontal_side": {
+            "separable": true,
+            "conflict_values": [],
+            "all_values": [],
+            "partial_values": []
+          },
+          "side": {
+            "separable": true,
+            "conflict_values": [],
+            "all_values": [],
+            "partial_values": []
+          },
+          "clear_ray_to_panel": {
+            "separable": true,
+            "conflict_values": [],
+            "all_values": [],
+            "partial_values": []
+          }
+        },
+        "per_pair": [
+          {
+            "pair_index": 0,
+            "components": []
+          },
+          {
+            "pair_index": 1,
+            "components": [
+              {
+                "size": 1,
+                "consumed_count": 0,
+                "label": "none",
+                "features": {
+                  "size": 1,
+                  "bbox_h": 1,
+                  "bbox_w": 1,
+                  "touches_border": 1,
+                  "min_dist_panel": 3,
+                  "min_dist_path": 15,
+                  "near_path_le1": 0,
+                  "path_neighbor": 0,
+                  "vertical_side": "below",
+                  "horizontal_side": "mid",
+                  "side": [
+                    "below",
+                    "mid"
+                  ],
+                  "clear_ray_to_panel": 1
+                }
+              },
+              {
+                "size": 1,
+                "consumed_count": 0,
+                "label": "none",
+                "features": {
+                  "size": 1,
+                  "bbox_h": 1,
+                  "bbox_w": 1,
+                  "touches_border": 1,
+                  "min_dist_panel": 13,
+                  "min_dist_path": 25,
+                  "near_path_le1": 0,
+                  "path_neighbor": 0,
+                  "vertical_side": "below",
+                  "horizontal_side": "mid",
+                  "side": [
+                    "below",
+                    "mid"
+                  ],
+                  "clear_ray_to_panel": 0
+                }
+              }
+            ]
+          },
+          {
+            "pair_index": 2,
+            "components": []
+          }
+        ]
+      },
+      "segment_endpoint_oracle_ablation": [
+        {
+          "available": true,
+          "segments": [
+            {
+              "color": 2,
+              "size": 2,
+              "orientation": "vertical",
+              "is_straight_line": true,
+              "same_color_removed_count": 0,
+              "min_same_color_removed_dist": null,
+              "aligned_same_color_removed": 0,
+              "same_color_endpoint_neighbors": 0,
+              "non_bg_endpoint_neighbors": 1
+            },
+            {
+              "color": 2,
+              "size": 2,
+              "orientation": "horizontal",
+              "is_straight_line": true,
+              "same_color_removed_count": 0,
+              "min_same_color_removed_dist": null,
+              "aligned_same_color_removed": 0,
+              "same_color_endpoint_neighbors": 0,
+              "non_bg_endpoint_neighbors": 0
+            },
+            {
+              "color": 2,
+              "size": 2,
+              "orientation": "horizontal",
+              "is_straight_line": true,
+              "same_color_removed_count": 0,
+              "min_same_color_removed_dist": null,
+              "aligned_same_color_removed": 0,
+              "same_color_endpoint_neighbors": 0,
+              "non_bg_endpoint_neighbors": 0
+            },
+            {
+              "color": 2,
+              "size": 2,
+              "orientation": "vertical",
+              "is_straight_line": true,
+              "same_color_removed_count": 0,
+              "min_same_color_removed_dist": null,
+              "aligned_same_color_removed": 0,
+              "same_color_endpoint_neighbors": 0,
+              "non_bg_endpoint_neighbors": 3
+            },
+            {
+              "color": 2,
+              "size": 2,
+              "orientation": "horizontal",
+              "is_straight_line": true,
+              "same_color_removed_count": 0,
+              "min_same_color_removed_dist": null,
+              "aligned_same_color_removed": 0,
+              "same_color_endpoint_neighbors": 0,
+              "non_bg_endpoint_neighbors": 1
+            },
+            {
+              "color": 2,
+              "size": 2,
+              "orientation": "vertical",
+              "is_straight_line": true,
+              "same_color_removed_count": 0,
+              "min_same_color_removed_dist": null,
+              "aligned_same_color_removed": 0,
+              "same_color_endpoint_neighbors": 0,
+              "non_bg_endpoint_neighbors": 0
+            },
+            {
+              "color": 2,
+              "size": 2,
+              "orientation": "horizontal",
+              "is_straight_line": true,
+              "same_color_removed_count": 0,
+              "min_same_color_removed_dist": null,
+              "aligned_same_color_removed": 0,
+              "same_color_endpoint_neighbors": 0,
+              "non_bg_endpoint_neighbors": 4
+            },
+            {
+              "color": 2,
+              "size": 2,
+              "orientation": "horizontal",
+              "is_straight_line": true,
+              "same_color_removed_count": 0,
+              "min_same_color_removed_dist": null,
+              "aligned_same_color_removed": 0,
+              "same_color_endpoint_neighbors": 0,
+              "non_bg_endpoint_neighbors": 3
+            },
+            {
+              "color": 2,
+              "size": 2,
+              "orientation": "vertical",
+              "is_straight_line": true,
+              "same_color_removed_count": 0,
+              "min_same_color_removed_dist": null,
+              "aligned_same_color_removed": 0,
+              "same_color_endpoint_neighbors": 0,
+              "non_bg_endpoint_neighbors": 5
+            },
+            {
+              "color": 2,
+              "size": 2,
+              "orientation": "vertical",
+              "is_straight_line": true,
+              "same_color_removed_count": 0,
+              "min_same_color_removed_dist": null,
+              "aligned_same_color_removed": 0,
+              "same_color_endpoint_neighbors": 0,
+              "non_bg_endpoint_neighbors": 0
+            }
+          ],
+          "all_multicell_additions_are_segments": true,
+          "all_segments_have_same_color_removed": false,
+          "all_segments_have_aligned_removed": false
+        },
+        {
+          "available": false,
+          "segments": [],
+          "all_multicell_additions_are_segments": false,
+          "all_segments_have_same_color_removed": false,
+          "all_segments_have_aligned_removed": false
+        },
+        {
+          "available": false,
+          "segments": [],
+          "all_multicell_additions_are_segments": false,
+          "all_segments_have_same_color_removed": false,
+          "all_segments_have_aligned_removed": false
+        }
+      ],
+      "host_apex_parameter_ablation": [
+        {
+          "available": false,
+          "segments": [],
+          "all_segments_have_sparse_side_match": false,
+          "all_segments_have_unique_candidate": false
+        },
+        {
+          "available": false,
+          "segments": [],
+          "all_segments_have_sparse_side_match": false,
+          "all_segments_have_unique_candidate": false
+        },
+        {
+          "available": false,
+          "segments": [],
+          "all_segments_have_sparse_side_match": false,
+          "all_segments_have_unique_candidate": false
+        }
+      ],
+      "pair_oracle_diagnostics": [
+        {
+          "shape_change": false,
+          "n_added": 33,
+          "n_erased": 0,
+          "n_recolored": 20,
+          "added_components": 1,
+          "line_added_components": 0,
+          "multi_added_components": 1,
+          "multi_line_added_components": 0,
+          "rigid_copy_added_components": 0,
+          "endpoint_supported_added_components": 1,
+          "added_component_samples": [
+            {
+              "size": 33,
+              "colors": [
+                2,
+                8
+              ],
+              "is_straight_line": false,
+              "is_rigid_input_copy": false,
+              "same_color_endpoint_neighbors": 0,
+              "non_bg_endpoint_neighbors": 7
+            }
+          ],
+          "recolor_pairs": [
+            [
+              [
+                2,
+                3
+              ],
+              8
+            ],
+            [
+              [
+                3,
+                4
+              ],
+              4
+            ],
+            [
+              [
+                4,
+                3
+              ],
+              4
+            ],
+            [
+              [
+                8,
+                3
+              ],
+              4
+            ]
+          ]
+        },
+        {
+          "shape_change": false,
+          "n_added": 49,
+          "n_erased": 0,
+          "n_recolored": 16,
+          "added_components": 2,
+          "line_added_components": 1,
+          "multi_added_components": 2,
+          "multi_line_added_components": 1,
+          "rigid_copy_added_components": 0,
+          "endpoint_supported_added_components": 2,
+          "added_component_samples": [
+            {
+              "size": 16,
+              "colors": [
+                1,
+                4
+              ],
+              "is_straight_line": true,
+              "is_rigid_input_copy": false,
+              "same_color_endpoint_neighbors": 1,
+              "non_bg_endpoint_neighbors": 5
+            },
+            {
+              "size": 33,
+              "colors": [
+                1,
+                4
+              ],
+              "is_straight_line": false,
+              "is_rigid_input_copy": false,
+              "same_color_endpoint_neighbors": 0,
+              "non_bg_endpoint_neighbors": 2
+            }
+          ],
+          "recolor_pairs": [
+            [
+              [
+                1,
+                2
+              ],
+              4
+            ],
+            [
+              [
+                2,
+                9
+              ],
+              4
+            ],
+            [
+              [
+                4,
+                2
+              ],
+              4
+            ],
+            [
+              [
+                9,
+                2
+              ],
+              4
+            ]
+          ]
+        },
+        {
+          "shape_change": false,
+          "n_added": 8,
+          "n_erased": 16,
+          "n_recolored": 69,
+          "added_components": 8,
+          "line_added_components": 8,
+          "multi_added_components": 0,
+          "multi_line_added_components": 0,
+          "rigid_copy_added_components": 0,
+          "endpoint_supported_added_components": 8,
+          "added_component_samples": [
+            {
+              "size": 1,
+              "colors": [
+                8
+              ],
+              "is_straight_line": true,
+              "is_rigid_input_copy": false,
+              "same_color_endpoint_neighbors": 0,
+              "non_bg_endpoint_neighbors": 12
+            },
+            {
+              "size": 1,
+              "colors": [
+                8
+              ],
+              "is_straight_line": true,
+              "is_rigid_input_copy": false,
+              "same_color_endpoint_neighbors": 0,
+              "non_bg_endpoint_neighbors": 8
+            },
+            {
+              "size": 1,
+              "colors": [
+                8
+              ],
+              "is_straight_line": true,
+              "is_rigid_input_copy": false,
+              "same_color_endpoint_neighbors": 0,
+              "non_bg_endpoint_neighbors": 8
+            },
+            {
+              "size": 1,
+              "colors": [
+                8
+              ],
+              "is_straight_line": true,
+              "is_rigid_input_copy": false,
+              "same_color_endpoint_neighbors": 0,
+              "non_bg_endpoint_neighbors": 6
+            },
+            {
+              "size": 1,
+              "colors": [
+                8
+              ],
+              "is_straight_line": true,
+              "is_rigid_input_copy": false,
+              "same_color_endpoint_neighbors": 0,
+              "non_bg_endpoint_neighbors": 6
+            },
+            {
+              "size": 1,
+              "colors": [
+                8
+              ],
+              "is_straight_line": true,
+              "is_rigid_input_copy": false,
+              "same_color_endpoint_neighbors": 0,
+              "non_bg_endpoint_neighbors": 6
+            },
+            {
+              "size": 1,
+              "colors": [
+                8
+              ],
+              "is_straight_line": true,
+              "is_rigid_input_copy": false,
+              "same_color_endpoint_neighbors": 0,
+              "non_bg_endpoint_neighbors": 8
+            },
+            {
+              "size": 1,
+              "colors": [
+                8
+              ],
+              "is_straight_line": true,
+              "is_rigid_input_copy": false,
+              "same_color_endpoint_neighbors": 2,
+              "non_bg_endpoint_neighbors": 10
+            }
+          ],
+          "recolor_pairs": [
+            [
+              [
+                4,
+                2
+              ],
+              46
+            ],
+            [
+              [
+                4,
+                3
+              ],
+              23
+            ]
+          ]
+        }
+      ],
+      "codex_failure_class": "renderer_or_decomposition_for_generated_structure"
+    }
+  ]
+}
