@@ -10,6 +10,8 @@ from __future__ import annotations
 
 import argparse
 import json
+import os
+import signal
 import subprocess
 import time
 from datetime import datetime
@@ -160,13 +162,30 @@ def mirror_push() -> None:
 
 def push_active_branch() -> None:
     branch = run(["git", "branch", "--show-current"], check=False).stdout.strip()
-    if branch:
+    if not branch:
+        return
+    proc = subprocess.Popen(
+        ["git", "push", "origin", f"HEAD:{branch}"],
+        cwd=WORKSPACE,
+        text=True,
+        stdout=subprocess.PIPE,
+        stderr=subprocess.PIPE,
+        start_new_session=True,
+    )
+    try:
+        proc.communicate(timeout=45)
+    except subprocess.TimeoutExpired:
+        # The full research branch can be much heavier than the slim handoff
+        # branch; kill the whole process group so orphan SSH pushes do not
+        # accumulate and stall the heartbeat cadence.
         try:
-            run(["git", "push", "origin", f"HEAD:{branch}"], timeout=45, check=False)
-        except subprocess.TimeoutExpired:
-            # The full research branch can be much heavier than the slim handoff
-            # branch; never let a slow push stall the heartbeat cadence.
-            pass
+            os.killpg(proc.pid, signal.SIGTERM)
+            proc.communicate(timeout=5)
+        except Exception:
+            try:
+                os.killpg(proc.pid, signal.SIGKILL)
+            except Exception:
+                pass
 
 
 def cycle(push: bool, commit: bool) -> None:
