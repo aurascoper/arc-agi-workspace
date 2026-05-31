@@ -1,15 +1,15 @@
 {
   "artifact": "verifier_health_latest",
-  "generated_cdt": "2026-05-31 04:52:49 CDT",
+  "generated_cdt": "2026-05-31 04:57:44 CDT",
   "branch": "research/operator-promotion-audit-2026-05-30",
-  "head": "fcfbad8b",
+  "head": "85f85b02",
   "handoff_mirror": {
     "dir": "/tmp/arc_agi_handoff_sync",
     "available": true,
     "branch": "research/deep-research-handoff-2026-05-30",
     "expected_branch": "research/deep-research-handoff-2026-05-30",
-    "head": "2a197c4d",
-    "origin_head": "2a197c4d",
+    "head": "173f3521",
+    "origin_head": "173f3521",
     "head_matches_origin": true,
     "safe_status": []
   },
@@ -18,64 +18,64 @@
     "heartbeat_stale_seconds": 390,
     "latest": {
       "heartbeat": {
-        "hash": "fcfbad8b",
-        "subject": "chore(sync): heartbeat 04:52 CDT",
-        "commit_cdt": "2026-05-31 04:52:44 CDT",
+        "hash": "85f85b02",
+        "subject": "chore(sync): heartbeat 04:57 CDT",
+        "commit_cdt": "2026-05-31 04:57:39 CDT",
         "age_seconds_at_generation": 5
       },
       "health": {
-        "hash": "eddda3b0",
-        "subject": "chore(sync): health 04:47 CDT",
-        "commit_cdt": "2026-05-31 04:47:36 CDT",
-        "age_seconds_at_generation": 313
+        "hash": "aa95d314",
+        "subject": "chore(sync): health 04:52 CDT",
+        "commit_cdt": "2026-05-31 04:52:50 CDT",
+        "age_seconds_at_generation": 294
       }
     }
   },
   "artifact_freshness": {
     "stale_threshold_seconds": 900,
-    "max_age_seconds_at_generation": 76,
+    "max_age_seconds_at_generation": 71,
     "missing": [],
     "stale": [],
     "artifacts": {
       "tmp/dsl_enumeration_latest.json": {
         "exists": true,
-        "mtime_cdt": "2026-05-31 04:51:36 CDT",
-        "age_seconds_at_generation": 73
+        "mtime_cdt": "2026-05-31 04:56:35 CDT",
+        "age_seconds_at_generation": 69
       },
       "tmp/codex_sia_all23_sentinel.json": {
         "exists": true,
-        "mtime_cdt": "2026-05-31 04:52:44 CDT",
+        "mtime_cdt": "2026-05-31 04:57:39 CDT",
         "age_seconds_at_generation": 5
       },
       "tmp/sia_lite_latest.json": {
         "exists": true,
-        "mtime_cdt": "2026-05-31 04:51:36 CDT",
-        "age_seconds_at_generation": 73
+        "mtime_cdt": "2026-05-31 04:56:35 CDT",
+        "age_seconds_at_generation": 69
       },
       "tmp/sia_lite_residual_mining.json": {
         "exists": true,
-        "mtime_cdt": "2026-05-31 04:51:36 CDT",
-        "age_seconds_at_generation": 73
+        "mtime_cdt": "2026-05-31 04:56:35 CDT",
+        "age_seconds_at_generation": 68
       },
       "tmp/claude_sketch_enumeration.json": {
         "exists": true,
-        "mtime_cdt": "2026-05-31 04:51:37 CDT",
-        "age_seconds_at_generation": 72
+        "mtime_cdt": "2026-05-31 04:56:36 CDT",
+        "age_seconds_at_generation": 68
       },
       "tmp/legend_lattice_synthetic_latest.json": {
         "exists": true,
-        "mtime_cdt": "2026-05-31 04:51:33 CDT",
-        "age_seconds_at_generation": 76
+        "mtime_cdt": "2026-05-31 04:56:33 CDT",
+        "age_seconds_at_generation": 71
       },
       "tmp/verifier_refresh_latest.json": {
         "exists": true,
-        "mtime_cdt": "2026-05-31 04:52:44 CDT",
+        "mtime_cdt": "2026-05-31 04:57:39 CDT",
         "age_seconds_at_generation": 5
       }
     }
   },
   "last_refresh": {
-    "generated_cdt": "2026-05-31 04:52 CDT",
+    "generated_cdt": "2026-05-31 04:57 CDT",
     "failures": [],
     "timed_out": [],
     "returncodes": {
@@ -88,13 +88,13 @@
       "sentinel": 0
     },
     "durations_seconds": {
-      "compile": 0.112,
-      "legend_synth": 0.186,
-      "dsl_enum": 2.794,
-      "sia_latest": 0.092,
-      "sia_mine": 0.072,
-      "sketch_enum": 0.471,
-      "sentinel": 67.535
+      "compile": 0.122,
+      "legend_synth": 0.18,
+      "dsl_enum": 2.048,
+      "sia_latest": 0.084,
+      "sia_mine": 0.077,
+      "sketch_enum": 0.469,
+      "sentinel": 63.416
     }
   },
   "process_state": {
@@ -109,7 +109,7 @@
       {
         "pid": "34104",
         "ppid": "1",
-        "etime": "01:21",
+        "etime": "06:16",
         "categories": [
           "sia_lite_worker"
         ],
@@ -118,7 +118,7 @@
       {
         "pid": "34105",
         "ppid": "34104",
-        "etime": "01:21",
+        "etime": "06:16",
         "categories": [
           "sia_lite_worker"
         ],
@@ -127,7 +127,7 @@
       {
         "pid": "34107",
         "ppid": "34104",
-        "etime": "01:21",
+        "etime": "06:16",
         "categories": [
           "verifier_loop"
         ],
@@ -171,34 +171,34 @@
   "sia_lite": {
     "n_runs": 20,
     "latest_run": {
-      "run_id": "sia_lite_reloaded_cb2d8a2c_002",
-      "target_task": "cb2d8a2c",
-      "last_generation": 8,
+      "run_id": "sia_lite_reloaded_88bcf3b4_002",
+      "target_task": "88bcf3b4",
+      "last_generation": 4,
       "tripwire": false,
       "best_generation": {
-        "generation": "gen_8",
+        "generation": "gen_3",
         "status": "success",
         "fitness": 0.1,
         "leaks": 0,
         "loo_tasks": 0,
         "cross": {},
         "train_exact": 2,
-        "shape_exact": 425,
+        "shape_exact": 439,
         "target_train_exact": 0,
         "target_informative_loo": false,
-        "target_shape_exact": 25,
-        "target_best_diff": 131,
-        "target_best_name": "apex_ray:2:any_single:min_frag_border"
+        "target_shape_exact": 28,
+        "target_best_diff": 51,
+        "target_best_name": "apex_ray:2:away_from_frag:min_frag_border"
       }
     },
     "latest_run_state": {
-      "run_id": "sia_lite_reloaded_cb2d8a2c_002",
-      "target_task": "cb2d8a2c",
-      "last_generation": 8,
+      "run_id": "sia_lite_reloaded_88bcf3b4_002",
+      "target_task": "88bcf3b4",
+      "last_generation": 4,
       "tripwire": false,
-      "updated_at": "2026-05-31T04:44:26-0500",
-      "last_result_mtime_cdt": "2026-05-31 04:44:26 CDT",
-      "latest_result_age_seconds_at_generation": 502,
+      "updated_at": "2026-05-31T04:56:17-0500",
+      "last_result_mtime_cdt": "2026-05-31 04:56:17 CDT",
+      "latest_result_age_seconds_at_generation": 87,
       "stale_threshold_seconds": 1800,
       "is_stale": false
     },
