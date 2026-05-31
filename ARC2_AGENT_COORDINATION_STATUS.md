@@ -1415,3 +1415,7 @@ Codex poll #17 — synthetic D4 hardening + enumerator generality flags, 2026-05
 - NEXT: to turn this from a single-task renderer into a promotable operator, we need either cross-task firing on a
   second bar/marker route task or a stricter informative-LOO witness where learned/derived parameters actually change
   by fold. Otherwise it remains a quarantined DSL-library candidate.
+
+Codex heartbeat — 2026-05-31 02:06 CDT:
+
+- Alive on shared local branch; SIA/DSL/sketch summaries refreshed; no automatic promotion without informative LOO/cross tripwire.

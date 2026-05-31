@@ -122,3 +122,20 @@ enumeration wins (unmeasured). So:
 A DSL program train-exact + fold-varying-LOO (or cross>=2) on a renderer-14 -> HALT for joint verification -> port the
 compiled transform behind a disabled flag -> frozen + 120/120 public guard -> enable iff green. Claude never touches
 the live solver.
+
+## 10. OP-GENERALITY CRITERION (added after the cb2d8a2c tripwire, 2026-05-31)
+Observed failure mode: a complex op (`bar_marker_bracket_route`) hand-shaped to one task's geometry was TRAIN-EXACT on
+cb2d8a2c but vacuous-LOO, cross=1, and structurally wrong on hidden (64-cell miss). This is the §5b leak-surface risk
+realized in the OP layer — a disguised per-task solver. The gate (fold-varying-LOO OR cross>=2) rejected it, but the
+DSL must not accumulate such ops. Criteria for an op to enter the PROMOTABLE search:
+- NO MAGIC CONSTANTS: every integer/coordinate an op uses at runtime must be either a structural constant of the
+  primitive (e.g. the 4 orthogonal directions) or a §5c learned/derived value — NOT a tuned offset like `min(3, ...)`.
+  `enumerate_dsl.py` should statically flag ops whose source contains unexplained int literals and EXCLUDE them from
+  the promotable frontier (they may stay as ablation/baseline only).
+- GENERALITY GATE: an op contributes to promotion evidence only if a program using it is train-exact AND
+  (fold-varying-LOO OR cross>=2). Train-exact-on-exactly-one-task via a task-shaped op counts as ZERO promotion
+  evidence (same status as `train_exact_fixed_loo_vacuous`).
+- PREFERENCE: decompose task-shaped renderers into GENERAL composable primitives (route, turn, project-to-rail,
+  derived-margin) so the SEARCH—not the op author—discovers the task-specific composition. If no magic-constant-free
+  composition is train-exact on a task, that task is representation-limited under the current op-set (park it; grow the
+  primitive set deliberately, re-running the gate).
