@@ -1,0 +1,2985 @@
+{
+  "lane": "typed_sketch_enumerator",
+  "n_tasks": 23,
+  "template_coverage": {
+    "object_summary": 6,
+    "marker_host_action": 12,
+    "panel_compose": 14,
+    "frame_crop": 8,
+    "global_region_recolor": 9,
+    "route_connect": 16,
+    "select_transform_place": 15,
+    "recolor_by_relation": 16,
+    "draw_from_background": 10,
+    "bracket_route_recolor": 7
+  },
+  "results": [
+    {
+      "task_id": "5dbc8537",
+      "shape": "shrink",
+      "n_sketches": 4,
+      "sketches": [
+        {
+          "template": "object_summary",
+          "view": "color",
+          "prior": 1.062,
+          "steps": [
+            "select(objs:ObjSet by Role)",
+            "order(key)",
+            "map(obj->cell|glyph)",
+            "render(new_canvas)"
+          ],
+          "holes": {
+            "sel": {
+              "type": "Role",
+              "n_candidates": 7
+            },
+            "order": {
+              "type": "Key",
+              "n_candidates": 4
+            },
+            "cell_color": {
+              "type": "ColorRule",
+              "n_candidates": 3
+            },
+            "canvas_dims": {
+              "type": "CanvasSpec",
+              "n_candidates": 4
+            }
+          }
+        },
+        {
+          "template": "marker_host_action",
+          "view": "color",
+          "prior": 0.8,
+          "steps": [
+            "select(marker:ObjSet)",
+            "bind(host:Obj via host_marker)",
+            "derive(anchor:Point|Route from host)",
+            "action(a:Action on anchor)",
+            "compose(overlay)"
+          ],
+          "holes": {
+            "marker_role": {
+              "type": "Role",
+              "n_candidates": 7
+            },
+            "host_relation": {
+              "type": "Relation",
+              "n_candidates": 2
+            },
+            "anchor": {
+              "type": "Point|Route",
+              "n_candidates": 4
+            },
+            "a": {
+              "type": "Action",
+              "n_candidates": 5
+            }
+          }
+        },
+        {
+          "template": "panel_compose",
+          "view": "color",
+          "prior": 0.5,
+          "steps": [
+            "partition(panels)",
+            "select|solve(panel:Region per-panel op)",
+            "compose(layout)"
+          ],
+          "holes": {
+            "panel_role": {
+              "type": "Role",
+              "n_candidates": 4
+            },
+            "per_panel": {
+              "type": "Action",
+              "n_candidates": 4
+            },
+            "layout": {
+              "type": "Layout",
+              "n_candidates": 4
+            }
+          }
+        },
+        {
+          "template": "frame_crop",
+          "view": "color",
+          "prior": 0.45,
+          "steps": [
+            "select(frame:Obj by Role)",
+            "crop(interior:Region)",
+            "optional(recolor/fill)"
+          ],
+          "holes": {
+            "frame_role": {
+              "type": "Role",
+              "n_candidates": 3
+            },
+            "post": {
+              "type": "Action",
+              "n_candidates": 4
+            }
+          }
+        }
+      ]
+    },
+    {
+      "task_id": "edb79dae",
+      "shape": "shrink",
+      "n_sketches": 4,
+      "sketches": [
+        {
+          "template": "object_summary",
+          "view": "color",
+          "prior": 0.913,
+          "steps": [
+            "select(objs:ObjSet by Role)",
+            "order(key)",
+            "map(obj->cell|glyph)",
+            "render(new_canvas)"
+          ],
+          "holes": {
+            "sel": {
+              "type": "Role",
+              "n_candidates": 7
+            },
+            "order": {
+              "type": "Key",
+              "n_candidates": 4
+            },
+            "cell_color": {
+              "type": "ColorRule",
+              "n_candidates": 3
+            },
+            "canvas_dims": {
+              "type": "CanvasSpec",
+              "n_candidates": 4
+            }
+          }
+        },
+        {
+          "template": "marker_host_action",
+          "view": "color",
+          "prior": 0.9,
+          "steps": [
+            "select(marker:ObjSet)",
+            "bind(host:Obj via host_marker)",
+            "derive(anchor:Point|Route from host)",
+            "action(a:Action on anchor)",
+            "compose(overlay)"
+          ],
+          "holes": {
+            "marker_role": {
+              "type": "Role",
+              "n_candidates": 7
+            },
+            "host_relation": {
+              "type": "Relation",
+              "n_candidates": 2
+            },
+            "anchor": {
+              "type": "Point|Route",
+              "n_candidates": 4
+            },
+            "a": {
+              "type": "Action",
+              "n_candidates": 5
+            }
+          }
+        },
+        {
+          "template": "panel_compose",
+          "view": "color",
+          "prior": 0.5,
+          "steps": [
+            "partition(panels)",
+            "select|solve(panel:Region per-panel op)",
+            "compose(layout)"
+          ],
+          "holes": {
+            "panel_role": {
+              "type": "Role",
+              "n_candidates": 4
+            },
+            "per_panel": {
+              "type": "Action",
+              "n_candidates": 4
+            },
+            "layout": {
+              "type": "Layout",
+              "n_candidates": 4
+            }
+          }
+        },
+        {
+          "template": "frame_crop",
+          "view": "color",
+          "prior": 0.45,
+          "steps": [
+            "select(frame:Obj by Role)",
+            "crop(interior:Region)",
+            "optional(recolor/fill)"
+          ],
+          "holes": {
+            "frame_role": {
+              "type": "Role",
+              "n_candidates": 3
+            },
+            "post": {
+              "type": "Action",
+              "n_candidates": 4
+            }
+          }
+        }
+      ]
+    },
+    {
+      "task_id": "dd6b8c4b",
+      "shape": "same",
+      "n_sketches": 6,
+      "sketches": [
+        {
+          "template": "marker_host_action",
+          "view": "color",
+          "prior": 0.9,
+          "steps": [
+            "select(marker:ObjSet)",
+            "bind(host:Obj via host_marker)",
+            "derive(anchor:Point|Route from host)",
+            "action(a:Action on anchor)",
+            "compose(overlay)"
+          ],
+          "holes": {
+            "marker_role": {
+              "type": "Role",
+              "n_candidates": 7
+            },
+            "host_relation": {
+              "type": "Relation",
+              "n_candidates": 2
+            },
+            "anchor": {
+              "type": "Point|Route",
+              "n_candidates": 4
+            },
+            "a": {
+              "type": "Action",
+              "n_candidates": 5
+            }
+          }
+        },
+        {
+          "template": "global_region_recolor",
+          "view": "color",
+          "prior": 0.62,
+          "steps": [
+            "infer(global trigger)",
+            "select(regions by template/relation)",
+            "apply(role recolor/flood)"
+          ],
+          "holes": {
+            "trigger": {
+              "type": "Predicate",
+              "n_candidates": 4
+            },
+            "region_role": {
+              "type": "Role",
+              "n_candidates": 4
+            },
+            "color_rule": {
+              "type": "ColorRule",
+              "n_candidates": 3
+            }
+          }
+        },
+        {
+          "template": "route_connect",
+          "view": "color",
+          "prior": 0.5,
+          "steps": [
+            "select(endpoints:ObjSet)",
+            "pair(by:Relation)",
+            "route(style:Action)",
+            "draw(overlay)"
+          ],
+          "holes": {
+            "endpoint_role": {
+              "type": "Role",
+              "n_candidates": 3
+            },
+            "pairing": {
+              "type": "Relation",
+              "n_candidates": 4
+            },
+            "style": {
+              "type": "Action",
+              "n_candidates": 3
+            }
+          }
+        },
+        {
+          "template": "select_transform_place",
+          "view": "color",
+          "prior": 0.45,
+          "steps": [
+            "select(obj:Obj by Role)",
+            "normalize",
+            "transform(D4|scale)",
+            "place(anchor:Point)",
+            "stamp(overlay)"
+          ],
+          "holes": {
+            "sel": {
+              "type": "Role",
+              "n_candidates": 7
+            },
+            "xform": {
+              "type": "Transform",
+              "n_candidates": 5
+            },
+            "place_anchor": {
+              "type": "Point",
+              "n_candidates": 4
+            }
+          }
+        },
+        {
+          "template": "frame_crop",
+          "view": "color",
+          "prior": 0.45,
+          "steps": [
+            "select(frame:Obj by Role)",
+            "crop(interior:Region)",
+            "optional(recolor/fill)"
+          ],
+          "holes": {
+            "frame_role": {
+              "type": "Role",
+              "n_candidates": 3
+            },
+            "post": {
+              "type": "Action",
+              "n_candidates": 4
+            }
+          }
+        },
+        {
+          "template": "recolor_by_relation",
+          "view": "color",
+          "prior": 0.35,
+          "steps": [
+            "group(objs by Relation)",
+            "assign(color per group via Rule)",
+            "repaint(overlay)"
+          ],
+          "holes": {
+            "group_by": {
+              "type": "Relation",
+              "n_candidates": 4
+            },
+            "color_rule": {
+              "type": "ColorRule",
+              "n_candidates": 4
+            }
+          }
+        }
+      ]
+    },
+    {
+      "task_id": "88bcf3b4",
+      "shape": "same",
+      "n_sketches": 4,
+      "sketches": [
+        {
+          "template": "draw_from_background",
+          "view": "color",
+          "prior": 0.68,
+          "steps": [
+            "select(seed/template objs)",
+            "derive(offsets/routes)",
+            "draw(coloured overlay into bg)"
+          ],
+          "holes": {
+            "seed_role": {
+              "type": "Role",
+              "n_candidates": 4
+            },
+            "draw_rule": {
+              "type": "Action",
+              "n_candidates": 4
+            },
+            "color_rule": {
+              "type": "ColorRule",
+              "n_candidates": 3
+            }
+          }
+        },
+        {
+          "template": "route_connect",
+          "view": "color",
+          "prior": 0.5,
+          "steps": [
+            "select(endpoints:ObjSet)",
+            "pair(by:Relation)",
+            "route(style:Action)",
+            "draw(overlay)"
+          ],
+          "holes": {
+            "endpoint_role": {
+              "type": "Role",
+              "n_candidates": 3
+            },
+            "pairing": {
+              "type": "Relation",
+              "n_candidates": 4
+            },
+            "style": {
+              "type": "Action",
+              "n_candidates": 3
+            }
+          }
+        },
+        {
+          "template": "select_transform_place",
+          "view": "color",
+          "prior": 0.45,
+          "steps": [
+            "select(obj:Obj by Role)",
+            "normalize",
+            "transform(D4|scale)",
+            "place(anchor:Point)",
+            "stamp(overlay)"
+          ],
+          "holes": {
+            "sel": {
+              "type": "Role",
+              "n_candidates": 7
+            },
+            "xform": {
+              "type": "Transform",
+              "n_candidates": 5
+            },
+            "place_anchor": {
+              "type": "Point",
+              "n_candidates": 4
+            }
+          }
+        },
+        {
+          "template": "recolor_by_relation",
+          "view": "color",
+          "prior": 0.35,
+          "steps": [
+            "group(objs by Relation)",
+            "assign(color per group via Rule)",
+            "repaint(overlay)"
+          ],
+          "holes": {
+            "group_by": {
+              "type": "Relation",
+              "n_candidates": 4
+            },
+            "color_rule": {
+              "type": "ColorRule",
+              "n_candidates": 4
+            }
+          }
+        }
+      ]
+    },
+    {
+      "task_id": "cb2d8a2c",
+      "shape": "same",
+      "n_sketches": 7,
+      "sketches": [
+        {
+          "template": "bracket_route_recolor",
+          "view": "color",
+          "prior": 0.76,
+          "steps": [
+            "select(host line/bar objects)",
+            "assign(marker/source by relation)",
+            "recolor(host markers)",
+            "draw(bracket/orth route overlay)",
+            "compose"
+          ],
+          "holes": {
+            "host_role": {
+              "type": "Role",
+              "n_candidates": 4
+            },
+            "marker_role": {
+              "type": "Role",
+              "n_candidates": 3
+            },
+            "route_style": {
+              "type": "Action",
+              "n_candidates": 3
+            },
+            "recolor_rule": {
+              "type": "ColorRule",
+              "n_candidates": 2
+            }
+          }
+        },
+        {
+          "template": "draw_from_background",
+          "view": "color",
+          "prior": 0.68,
+          "steps": [
+            "select(seed/template objs)",
+            "derive(offsets/routes)",
+            "draw(coloured overlay into bg)"
+          ],
+          "holes": {
+            "seed_role": {
+              "type": "Role",
+              "n_candidates": 4
+            },
+            "draw_rule": {
+              "type": "Action",
+              "n_candidates": 4
+            },
+            "color_rule": {
+              "type": "ColorRule",
+              "n_candidates": 3
+            }
+          }
+        },
+        {
+          "template": "global_region_recolor",
+          "view": "color",
+          "prior": 0.62,
+          "steps": [
+            "infer(global trigger)",
+            "select(regions by template/relation)",
+            "apply(role recolor/flood)"
+          ],
+          "holes": {
+            "trigger": {
+              "type": "Predicate",
+              "n_candidates": 4
+            },
+            "region_role": {
+              "type": "Role",
+              "n_candidates": 4
+            },
+            "color_rule": {
+              "type": "ColorRule",
+              "n_candidates": 3
+            }
+          }
+        },
+        {
+          "template": "panel_compose",
+          "view": "color",
+          "prior": 0.5,
+          "steps": [
+            "partition(panels)",
+            "select|solve(panel:Region per-panel op)",
+            "compose(layout)"
+          ],
+          "holes": {
+            "panel_role": {
+              "type": "Role",
+              "n_candidates": 4
+            },
+            "per_panel": {
+              "type": "Action",
+              "n_candidates": 4
+            },
+            "layout": {
+              "type": "Layout",
+              "n_candidates": 4
+            }
+          }
+        },
+        {
+          "template": "select_transform_place",
+          "view": "color",
+          "prior": 0.45,
+          "steps": [
+            "select(obj:Obj by Role)",
+            "normalize",
+            "transform(D4|scale)",
+            "place(anchor:Point)",
+            "stamp(overlay)"
+          ],
+          "holes": {
+            "sel": {
+              "type": "Role",
+              "n_candidates": 7
+            },
+            "xform": {
+              "type": "Transform",
+              "n_candidates": 5
+            },
+            "place_anchor": {
+              "type": "Point",
+              "n_candidates": 4
+            }
+          }
+        },
+        {
+          "template": "route_connect",
+          "view": "color",
+          "prior": 0.4,
+          "steps": [
+            "select(endpoints:ObjSet)",
+            "pair(by:Relation)",
+            "route(style:Action)",
+            "draw(overlay)"
+          ],
+          "holes": {
+            "endpoint_role": {
+              "type": "Role",
+              "n_candidates": 3
+            },
+            "pairing": {
+              "type": "Relation",
+              "n_candidates": 4
+            },
+            "style": {
+              "type": "Action",
+              "n_candidates": 3
+            }
+          }
+        },
+        {
+          "template": "recolor_by_relation",
+          "view": "color",
+          "prior": 0.35,
+          "steps": [
+            "group(objs by Relation)",
+            "assign(color per group via Rule)",
+            "repaint(overlay)"
+          ],
+          "holes": {
+            "group_by": {
+              "type": "Relation",
+              "n_candidates": 4
+            },
+            "color_rule": {
+              "type": "ColorRule",
+              "n_candidates": 4
+            }
+          }
+        }
+      ]
+    },
+    {
+      "task_id": "142ca369",
+      "shape": "same",
+      "n_sketches": 6,
+      "sketches": [
+        {
+          "template": "draw_from_background",
+          "view": "color",
+          "prior": 0.68,
+          "steps": [
+            "select(seed/template objs)",
+            "derive(offsets/routes)",
+            "draw(coloured overlay into bg)"
+          ],
+          "holes": {
+            "seed_role": {
+              "type": "Role",
+              "n_candidates": 4
+            },
+            "draw_rule": {
+              "type": "Action",
+              "n_candidates": 4
+            },
+            "color_rule": {
+              "type": "ColorRule",
+              "n_candidates": 3
+            }
+          }
+        },
+        {
+          "template": "global_region_recolor",
+          "view": "color",
+          "prior": 0.62,
+          "steps": [
+            "infer(global trigger)",
+            "select(regions by template/relation)",
+            "apply(role recolor/flood)"
+          ],
+          "holes": {
+            "trigger": {
+              "type": "Predicate",
+              "n_candidates": 4
+            },
+            "region_role": {
+              "type": "Role",
+              "n_candidates": 4
+            },
+            "color_rule": {
+              "type": "ColorRule",
+              "n_candidates": 3
+            }
+          }
+        },
+        {
+          "template": "route_connect",
+          "view": "color",
+          "prior": 0.5,
+          "steps": [
+            "select(endpoints:ObjSet)",
+            "pair(by:Relation)",
+            "route(style:Action)",
+            "draw(overlay)"
+          ],
+          "holes": {
+            "endpoint_role": {
+              "type": "Role",
+              "n_candidates": 3
+            },
+            "pairing": {
+              "type": "Relation",
+              "n_candidates": 4
+            },
+            "style": {
+              "type": "Action",
+              "n_candidates": 3
+            }
+          }
+        },
+        {
+          "template": "panel_compose",
+          "view": "color",
+          "prior": 0.5,
+          "steps": [
+            "partition(panels)",
+            "select|solve(panel:Region per-panel op)",
+            "compose(layout)"
+          ],
+          "holes": {
+            "panel_role": {
+              "type": "Role",
+              "n_candidates": 4
+            },
+            "per_panel": {
+              "type": "Action",
+              "n_candidates": 4
+            },
+            "layout": {
+              "type": "Layout",
+              "n_candidates": 4
+            }
+          }
+        },
+        {
+          "template": "select_transform_place",
+          "view": "color",
+          "prior": 0.45,
+          "steps": [
+            "select(obj:Obj by Role)",
+            "normalize",
+            "transform(D4|scale)",
+            "place(anchor:Point)",
+            "stamp(overlay)"
+          ],
+          "holes": {
+            "sel": {
+              "type": "Role",
+              "n_candidates": 7
+            },
+            "xform": {
+              "type": "Transform",
+              "n_candidates": 5
+            },
+            "place_anchor": {
+              "type": "Point",
+              "n_candidates": 4
+            }
+          }
+        },
+        {
+          "template": "recolor_by_relation",
+          "view": "color",
+          "prior": 0.35,
+          "steps": [
+            "group(objs by Relation)",
+            "assign(color per group via Rule)",
+            "repaint(overlay)"
+          ],
+          "holes": {
+            "group_by": {
+              "type": "Relation",
+              "n_candidates": 4
+            },
+            "color_rule": {
+              "type": "ColorRule",
+              "n_candidates": 4
+            }
+          }
+        }
+      ]
+    },
+    {
+      "task_id": "3dc255db",
+      "shape": "same",
+      "n_sketches": 6,
+      "sketches": [
+        {
+          "template": "marker_host_action",
+          "view": "color",
+          "prior": 0.8,
+          "steps": [
+            "select(marker:ObjSet)",
+            "bind(host:Obj via host_marker)",
+            "derive(anchor:Point|Route from host)",
+            "action(a:Action on anchor)",
+            "compose(overlay)"
+          ],
+          "holes": {
+            "marker_role": {
+              "type": "Role",
+              "n_candidates": 7
+            },
+            "host_relation": {
+              "type": "Relation",
+              "n_candidates": 2
+            },
+            "anchor": {
+              "type": "Point|Route",
+              "n_candidates": 4
+            },
+            "a": {
+              "type": "Action",
+              "n_candidates": 5
+            }
+          }
+        },
+        {
+          "template": "draw_from_background",
+          "view": "color",
+          "prior": 0.68,
+          "steps": [
+            "select(seed/template objs)",
+            "derive(offsets/routes)",
+            "draw(coloured overlay into bg)"
+          ],
+          "holes": {
+            "seed_role": {
+              "type": "Role",
+              "n_candidates": 4
+            },
+            "draw_rule": {
+              "type": "Action",
+              "n_candidates": 4
+            },
+            "color_rule": {
+              "type": "ColorRule",
+              "n_candidates": 3
+            }
+          }
+        },
+        {
+          "template": "global_region_recolor",
+          "view": "color",
+          "prior": 0.62,
+          "steps": [
+            "infer(global trigger)",
+            "select(regions by template/relation)",
+            "apply(role recolor/flood)"
+          ],
+          "holes": {
+            "trigger": {
+              "type": "Predicate",
+              "n_candidates": 4
+            },
+            "region_role": {
+              "type": "Role",
+              "n_candidates": 4
+            },
+            "color_rule": {
+              "type": "ColorRule",
+              "n_candidates": 3
+            }
+          }
+        },
+        {
+          "template": "route_connect",
+          "view": "color",
+          "prior": 0.5,
+          "steps": [
+            "select(endpoints:ObjSet)",
+            "pair(by:Relation)",
+            "route(style:Action)",
+            "draw(overlay)"
+          ],
+          "holes": {
+            "endpoint_role": {
+              "type": "Role",
+              "n_candidates": 3
+            },
+            "pairing": {
+              "type": "Relation",
+              "n_candidates": 4
+            },
+            "style": {
+              "type": "Action",
+              "n_candidates": 3
+            }
+          }
+        },
+        {
+          "template": "select_transform_place",
+          "view": "color",
+          "prior": 0.45,
+          "steps": [
+            "select(obj:Obj by Role)",
+            "normalize",
+            "transform(D4|scale)",
+            "place(anchor:Point)",
+            "stamp(overlay)"
+          ],
+          "holes": {
+            "sel": {
+              "type": "Role",
+              "n_candidates": 7
+            },
+            "xform": {
+              "type": "Transform",
+              "n_candidates": 5
+            },
+            "place_anchor": {
+              "type": "Point",
+              "n_candidates": 4
+            }
+          }
+        },
+        {
+          "template": "recolor_by_relation",
+          "view": "color",
+          "prior": 0.35,
+          "steps": [
+            "group(objs by Relation)",
+            "assign(color per group via Rule)",
+            "repaint(overlay)"
+          ],
+          "holes": {
+            "group_by": {
+              "type": "Relation",
+              "n_candidates": 4
+            },
+            "color_rule": {
+              "type": "ColorRule",
+              "n_candidates": 4
+            }
+          }
+        }
+      ]
+    },
+    {
+      "task_id": "195c6913",
+      "shape": "same",
+      "n_sketches": 6,
+      "sketches": [
+        {
+          "template": "bracket_route_recolor",
+          "view": "color",
+          "prior": 0.92,
+          "steps": [
+            "select(host line/bar objects)",
+            "assign(marker/source by relation)",
+            "recolor(host markers)",
+            "draw(bracket/orth route overlay)",
+            "compose"
+          ],
+          "holes": {
+            "host_role": {
+              "type": "Role",
+              "n_candidates": 4
+            },
+            "marker_role": {
+              "type": "Role",
+              "n_candidates": 3
+            },
+            "route_style": {
+              "type": "Action",
+              "n_candidates": 3
+            },
+            "recolor_rule": {
+              "type": "ColorRule",
+              "n_candidates": 2
+            }
+          }
+        },
+        {
+          "template": "marker_host_action",
+          "view": "color",
+          "prior": 0.9,
+          "steps": [
+            "select(marker:ObjSet)",
+            "bind(host:Obj via host_marker)",
+            "derive(anchor:Point|Route from host)",
+            "action(a:Action on anchor)",
+            "compose(overlay)"
+          ],
+          "holes": {
+            "marker_role": {
+              "type": "Role",
+              "n_candidates": 7
+            },
+            "host_relation": {
+              "type": "Relation",
+              "n_candidates": 2
+            },
+            "anchor": {
+              "type": "Point|Route",
+              "n_candidates": 4
+            },
+            "a": {
+              "type": "Action",
+              "n_candidates": 5
+            }
+          }
+        },
+        {
+          "template": "route_connect",
+          "view": "color",
+          "prior": 0.5,
+          "steps": [
+            "select(endpoints:ObjSet)",
+            "pair(by:Relation)",
+            "route(style:Action)",
+            "draw(overlay)"
+          ],
+          "holes": {
+            "endpoint_role": {
+              "type": "Role",
+              "n_candidates": 3
+            },
+            "pairing": {
+              "type": "Relation",
+              "n_candidates": 4
+            },
+            "style": {
+              "type": "Action",
+              "n_candidates": 3
+            }
+          }
+        },
+        {
+          "template": "select_transform_place",
+          "view": "color",
+          "prior": 0.45,
+          "steps": [
+            "select(obj:Obj by Role)",
+            "normalize",
+            "transform(D4|scale)",
+            "place(anchor:Point)",
+            "stamp(overlay)"
+          ],
+          "holes": {
+            "sel": {
+              "type": "Role",
+              "n_candidates": 7
+            },
+            "xform": {
+              "type": "Transform",
+              "n_candidates": 5
+            },
+            "place_anchor": {
+              "type": "Point",
+              "n_candidates": 4
+            }
+          }
+        },
+        {
+          "template": "frame_crop",
+          "view": "color",
+          "prior": 0.45,
+          "steps": [
+            "select(frame:Obj by Role)",
+            "crop(interior:Region)",
+            "optional(recolor/fill)"
+          ],
+          "holes": {
+            "frame_role": {
+              "type": "Role",
+              "n_candidates": 3
+            },
+            "post": {
+              "type": "Action",
+              "n_candidates": 4
+            }
+          }
+        },
+        {
+          "template": "recolor_by_relation",
+          "view": "color",
+          "prior": 0.35,
+          "steps": [
+            "group(objs by Relation)",
+            "assign(color per group via Rule)",
+            "repaint(overlay)"
+          ],
+          "holes": {
+            "group_by": {
+              "type": "Relation",
+              "n_candidates": 4
+            },
+            "color_rule": {
+              "type": "ColorRule",
+              "n_candidates": 4
+            }
+          }
+        }
+      ]
+    },
+    {
+      "task_id": "36a08778",
+      "shape": "same",
+      "n_sketches": 6,
+      "sketches": [
+        {
+          "template": "draw_from_background",
+          "view": "color",
+          "prior": 0.68,
+          "steps": [
+            "select(seed/template objs)",
+            "derive(offsets/routes)",
+            "draw(coloured overlay into bg)"
+          ],
+          "holes": {
+            "seed_role": {
+              "type": "Role",
+              "n_candidates": 4
+            },
+            "draw_rule": {
+              "type": "Action",
+              "n_candidates": 4
+            },
+            "color_rule": {
+              "type": "ColorRule",
+              "n_candidates": 3
+            }
+          }
+        },
+        {
+          "template": "global_region_recolor",
+          "view": "color",
+          "prior": 0.62,
+          "steps": [
+            "infer(global trigger)",
+            "select(regions by template/relation)",
+            "apply(role recolor/flood)"
+          ],
+          "holes": {
+            "trigger": {
+              "type": "Predicate",
+              "n_candidates": 4
+            },
+            "region_role": {
+              "type": "Role",
+              "n_candidates": 4
+            },
+            "color_rule": {
+              "type": "ColorRule",
+              "n_candidates": 3
+            }
+          }
+        },
+        {
+          "template": "route_connect",
+          "view": "color",
+          "prior": 0.5,
+          "steps": [
+            "select(endpoints:ObjSet)",
+            "pair(by:Relation)",
+            "route(style:Action)",
+            "draw(overlay)"
+          ],
+          "holes": {
+            "endpoint_role": {
+              "type": "Role",
+              "n_candidates": 3
+            },
+            "pairing": {
+              "type": "Relation",
+              "n_candidates": 4
+            },
+            "style": {
+              "type": "Action",
+              "n_candidates": 3
+            }
+          }
+        },
+        {
+          "template": "panel_compose",
+          "view": "color",
+          "prior": 0.5,
+          "steps": [
+            "partition(panels)",
+            "select|solve(panel:Region per-panel op)",
+            "compose(layout)"
+          ],
+          "holes": {
+            "panel_role": {
+              "type": "Role",
+              "n_candidates": 4
+            },
+            "per_panel": {
+              "type": "Action",
+              "n_candidates": 4
+            },
+            "layout": {
+              "type": "Layout",
+              "n_candidates": 4
+            }
+          }
+        },
+        {
+          "template": "select_transform_place",
+          "view": "color",
+          "prior": 0.45,
+          "steps": [
+            "select(obj:Obj by Role)",
+            "normalize",
+            "transform(D4|scale)",
+            "place(anchor:Point)",
+            "stamp(overlay)"
+          ],
+          "holes": {
+            "sel": {
+              "type": "Role",
+              "n_candidates": 7
+            },
+            "xform": {
+              "type": "Transform",
+              "n_candidates": 5
+            },
+            "place_anchor": {
+              "type": "Point",
+              "n_candidates": 4
+            }
+          }
+        },
+        {
+          "template": "recolor_by_relation",
+          "view": "color",
+          "prior": 0.35,
+          "steps": [
+            "group(objs by Relation)",
+            "assign(color per group via Rule)",
+            "repaint(overlay)"
+          ],
+          "holes": {
+            "group_by": {
+              "type": "Relation",
+              "n_candidates": 4
+            },
+            "color_rule": {
+              "type": "ColorRule",
+              "n_candidates": 4
+            }
+          }
+        }
+      ]
+    },
+    {
+      "task_id": "4a21e3da",
+      "shape": "same",
+      "n_sketches": 5,
+      "sketches": [
+        {
+          "template": "draw_from_background",
+          "view": "color",
+          "prior": 0.68,
+          "steps": [
+            "select(seed/template objs)",
+            "derive(offsets/routes)",
+            "draw(coloured overlay into bg)"
+          ],
+          "holes": {
+            "seed_role": {
+              "type": "Role",
+              "n_candidates": 4
+            },
+            "draw_rule": {
+              "type": "Action",
+              "n_candidates": 4
+            },
+            "color_rule": {
+              "type": "ColorRule",
+              "n_candidates": 3
+            }
+          }
+        },
+        {
+          "template": "global_region_recolor",
+          "view": "color",
+          "prior": 0.62,
+          "steps": [
+            "infer(global trigger)",
+            "select(regions by template/relation)",
+            "apply(role recolor/flood)"
+          ],
+          "holes": {
+            "trigger": {
+              "type": "Predicate",
+              "n_candidates": 4
+            },
+            "region_role": {
+              "type": "Role",
+              "n_candidates": 4
+            },
+            "color_rule": {
+              "type": "ColorRule",
+              "n_candidates": 3
+            }
+          }
+        },
+        {
+          "template": "route_connect",
+          "view": "color",
+          "prior": 0.5,
+          "steps": [
+            "select(endpoints:ObjSet)",
+            "pair(by:Relation)",
+            "route(style:Action)",
+            "draw(overlay)"
+          ],
+          "holes": {
+            "endpoint_role": {
+              "type": "Role",
+              "n_candidates": 3
+            },
+            "pairing": {
+              "type": "Relation",
+              "n_candidates": 4
+            },
+            "style": {
+              "type": "Action",
+              "n_candidates": 3
+            }
+          }
+        },
+        {
+          "template": "panel_compose",
+          "view": "color",
+          "prior": 0.5,
+          "steps": [
+            "partition(panels)",
+            "select|solve(panel:Region per-panel op)",
+            "compose(layout)"
+          ],
+          "holes": {
+            "panel_role": {
+              "type": "Role",
+              "n_candidates": 4
+            },
+            "per_panel": {
+              "type": "Action",
+              "n_candidates": 4
+            },
+            "layout": {
+              "type": "Layout",
+              "n_candidates": 4
+            }
+          }
+        },
+        {
+          "template": "recolor_by_relation",
+          "view": "color",
+          "prior": 0.35,
+          "steps": [
+            "group(objs by Relation)",
+            "assign(color per group via Rule)",
+            "repaint(overlay)"
+          ],
+          "holes": {
+            "group_by": {
+              "type": "Relation",
+              "n_candidates": 4
+            },
+            "color_rule": {
+              "type": "ColorRule",
+              "n_candidates": 4
+            }
+          }
+        }
+      ]
+    },
+    {
+      "task_id": "16b78196",
+      "shape": "same",
+      "n_sketches": 6,
+      "sketches": [
+        {
+          "template": "bracket_route_recolor",
+          "view": "color",
+          "prior": 0.92,
+          "steps": [
+            "select(host line/bar objects)",
+            "assign(marker/source by relation)",
+            "recolor(host markers)",
+            "draw(bracket/orth route overlay)",
+            "compose"
+          ],
+          "holes": {
+            "host_role": {
+              "type": "Role",
+              "n_candidates": 4
+            },
+            "marker_role": {
+              "type": "Role",
+              "n_candidates": 3
+            },
+            "route_style": {
+              "type": "Action",
+              "n_candidates": 3
+            },
+            "recolor_rule": {
+              "type": "ColorRule",
+              "n_candidates": 2
+            }
+          }
+        },
+        {
+          "template": "draw_from_background",
+          "view": "color",
+          "prior": 0.68,
+          "steps": [
+            "select(seed/template objs)",
+            "derive(offsets/routes)",
+            "draw(coloured overlay into bg)"
+          ],
+          "holes": {
+            "seed_role": {
+              "type": "Role",
+              "n_candidates": 4
+            },
+            "draw_rule": {
+              "type": "Action",
+              "n_candidates": 4
+            },
+            "color_rule": {
+              "type": "ColorRule",
+              "n_candidates": 3
+            }
+          }
+        },
+        {
+          "template": "route_connect",
+          "view": "color",
+          "prior": 0.5,
+          "steps": [
+            "select(endpoints:ObjSet)",
+            "pair(by:Relation)",
+            "route(style:Action)",
+            "draw(overlay)"
+          ],
+          "holes": {
+            "endpoint_role": {
+              "type": "Role",
+              "n_candidates": 3
+            },
+            "pairing": {
+              "type": "Relation",
+              "n_candidates": 4
+            },
+            "style": {
+              "type": "Action",
+              "n_candidates": 3
+            }
+          }
+        },
+        {
+          "template": "panel_compose",
+          "view": "color",
+          "prior": 0.5,
+          "steps": [
+            "partition(panels)",
+            "select|solve(panel:Region per-panel op)",
+            "compose(layout)"
+          ],
+          "holes": {
+            "panel_role": {
+              "type": "Role",
+              "n_candidates": 4
+            },
+            "per_panel": {
+              "type": "Action",
+              "n_candidates": 4
+            },
+            "layout": {
+              "type": "Layout",
+              "n_candidates": 4
+            }
+          }
+        },
+        {
+          "template": "select_transform_place",
+          "view": "color",
+          "prior": 0.45,
+          "steps": [
+            "select(obj:Obj by Role)",
+            "normalize",
+            "transform(D4|scale)",
+            "place(anchor:Point)",
+            "stamp(overlay)"
+          ],
+          "holes": {
+            "sel": {
+              "type": "Role",
+              "n_candidates": 7
+            },
+            "xform": {
+              "type": "Transform",
+              "n_candidates": 5
+            },
+            "place_anchor": {
+              "type": "Point",
+              "n_candidates": 4
+            }
+          }
+        },
+        {
+          "template": "recolor_by_relation",
+          "view": "color",
+          "prior": 0.35,
+          "steps": [
+            "group(objs by Relation)",
+            "assign(color per group via Rule)",
+            "repaint(overlay)"
+          ],
+          "holes": {
+            "group_by": {
+              "type": "Relation",
+              "n_candidates": 4
+            },
+            "color_rule": {
+              "type": "ColorRule",
+              "n_candidates": 4
+            }
+          }
+        }
+      ]
+    },
+    {
+      "task_id": "446ef5d2",
+      "shape": "same",
+      "n_sketches": 8,
+      "sketches": [
+        {
+          "template": "bracket_route_recolor",
+          "view": "color",
+          "prior": 0.92,
+          "steps": [
+            "select(host line/bar objects)",
+            "assign(marker/source by relation)",
+            "recolor(host markers)",
+            "draw(bracket/orth route overlay)",
+            "compose"
+          ],
+          "holes": {
+            "host_role": {
+              "type": "Role",
+              "n_candidates": 4
+            },
+            "marker_role": {
+              "type": "Role",
+              "n_candidates": 3
+            },
+            "route_style": {
+              "type": "Action",
+              "n_candidates": 3
+            },
+            "recolor_rule": {
+              "type": "ColorRule",
+              "n_candidates": 2
+            }
+          }
+        },
+        {
+          "template": "marker_host_action",
+          "view": "color",
+          "prior": 0.9,
+          "steps": [
+            "select(marker:ObjSet)",
+            "bind(host:Obj via host_marker)",
+            "derive(anchor:Point|Route from host)",
+            "action(a:Action on anchor)",
+            "compose(overlay)"
+          ],
+          "holes": {
+            "marker_role": {
+              "type": "Role",
+              "n_candidates": 7
+            },
+            "host_relation": {
+              "type": "Relation",
+              "n_candidates": 2
+            },
+            "anchor": {
+              "type": "Point|Route",
+              "n_candidates": 4
+            },
+            "a": {
+              "type": "Action",
+              "n_candidates": 5
+            }
+          }
+        },
+        {
+          "template": "draw_from_background",
+          "view": "color",
+          "prior": 0.68,
+          "steps": [
+            "select(seed/template objs)",
+            "derive(offsets/routes)",
+            "draw(coloured overlay into bg)"
+          ],
+          "holes": {
+            "seed_role": {
+              "type": "Role",
+              "n_candidates": 4
+            },
+            "draw_rule": {
+              "type": "Action",
+              "n_candidates": 4
+            },
+            "color_rule": {
+              "type": "ColorRule",
+              "n_candidates": 3
+            }
+          }
+        },
+        {
+          "template": "route_connect",
+          "view": "color",
+          "prior": 0.5,
+          "steps": [
+            "select(endpoints:ObjSet)",
+            "pair(by:Relation)",
+            "route(style:Action)",
+            "draw(overlay)"
+          ],
+          "holes": {
+            "endpoint_role": {
+              "type": "Role",
+              "n_candidates": 3
+            },
+            "pairing": {
+              "type": "Relation",
+              "n_candidates": 4
+            },
+            "style": {
+              "type": "Action",
+              "n_candidates": 3
+            }
+          }
+        },
+        {
+          "template": "panel_compose",
+          "view": "color",
+          "prior": 0.5,
+          "steps": [
+            "partition(panels)",
+            "select|solve(panel:Region per-panel op)",
+            "compose(layout)"
+          ],
+          "holes": {
+            "panel_role": {
+              "type": "Role",
+              "n_candidates": 4
+            },
+            "per_panel": {
+              "type": "Action",
+              "n_candidates": 4
+            },
+            "layout": {
+              "type": "Layout",
+              "n_candidates": 4
+            }
+          }
+        },
+        {
+          "template": "select_transform_place",
+          "view": "color",
+          "prior": 0.45,
+          "steps": [
+            "select(obj:Obj by Role)",
+            "normalize",
+            "transform(D4|scale)",
+            "place(anchor:Point)",
+            "stamp(overlay)"
+          ],
+          "holes": {
+            "sel": {
+              "type": "Role",
+              "n_candidates": 7
+            },
+            "xform": {
+              "type": "Transform",
+              "n_candidates": 5
+            },
+            "place_anchor": {
+              "type": "Point",
+              "n_candidates": 4
+            }
+          }
+        },
+        {
+          "template": "frame_crop",
+          "view": "color",
+          "prior": 0.45,
+          "steps": [
+            "select(frame:Obj by Role)",
+            "crop(interior:Region)",
+            "optional(recolor/fill)"
+          ],
+          "holes": {
+            "frame_role": {
+              "type": "Role",
+              "n_candidates": 3
+            },
+            "post": {
+              "type": "Action",
+              "n_candidates": 4
+            }
+          }
+        },
+        {
+          "template": "recolor_by_relation",
+          "view": "color",
+          "prior": 0.35,
+          "steps": [
+            "group(objs by Relation)",
+            "assign(color per group via Rule)",
+            "repaint(overlay)"
+          ],
+          "holes": {
+            "group_by": {
+              "type": "Relation",
+              "n_candidates": 4
+            },
+            "color_rule": {
+              "type": "ColorRule",
+              "n_candidates": 4
+            }
+          }
+        }
+      ]
+    },
+    {
+      "task_id": "7b0280bc",
+      "shape": "same",
+      "n_sketches": 5,
+      "sketches": [
+        {
+          "template": "global_region_recolor",
+          "view": "color",
+          "prior": 0.62,
+          "steps": [
+            "infer(global trigger)",
+            "select(regions by template/relation)",
+            "apply(role recolor/flood)"
+          ],
+          "holes": {
+            "trigger": {
+              "type": "Predicate",
+              "n_candidates": 4
+            },
+            "region_role": {
+              "type": "Role",
+              "n_candidates": 4
+            },
+            "color_rule": {
+              "type": "ColorRule",
+              "n_candidates": 3
+            }
+          }
+        },
+        {
+          "template": "route_connect",
+          "view": "color",
+          "prior": 0.5,
+          "steps": [
+            "select(endpoints:ObjSet)",
+            "pair(by:Relation)",
+            "route(style:Action)",
+            "draw(overlay)"
+          ],
+          "holes": {
+            "endpoint_role": {
+              "type": "Role",
+              "n_candidates": 3
+            },
+            "pairing": {
+              "type": "Relation",
+              "n_candidates": 4
+            },
+            "style": {
+              "type": "Action",
+              "n_candidates": 3
+            }
+          }
+        },
+        {
+          "template": "select_transform_place",
+          "view": "color",
+          "prior": 0.45,
+          "steps": [
+            "select(obj:Obj by Role)",
+            "normalize",
+            "transform(D4|scale)",
+            "place(anchor:Point)",
+            "stamp(overlay)"
+          ],
+          "holes": {
+            "sel": {
+              "type": "Role",
+              "n_candidates": 7
+            },
+            "xform": {
+              "type": "Transform",
+              "n_candidates": 5
+            },
+            "place_anchor": {
+              "type": "Point",
+              "n_candidates": 4
+            }
+          }
+        },
+        {
+          "template": "frame_crop",
+          "view": "color",
+          "prior": 0.45,
+          "steps": [
+            "select(frame:Obj by Role)",
+            "crop(interior:Region)",
+            "optional(recolor/fill)"
+          ],
+          "holes": {
+            "frame_role": {
+              "type": "Role",
+              "n_candidates": 3
+            },
+            "post": {
+              "type": "Action",
+              "n_candidates": 4
+            }
+          }
+        },
+        {
+          "template": "recolor_by_relation",
+          "view": "color",
+          "prior": 0.35,
+          "steps": [
+            "group(objs by Relation)",
+            "assign(color per group via Rule)",
+            "repaint(overlay)"
+          ],
+          "holes": {
+            "group_by": {
+              "type": "Relation",
+              "n_candidates": 4
+            },
+            "color_rule": {
+              "type": "ColorRule",
+              "n_candidates": 4
+            }
+          }
+        }
+      ]
+    },
+    {
+      "task_id": "abc82100",
+      "shape": "same",
+      "n_sketches": 4,
+      "sketches": [
+        {
+          "template": "bracket_route_recolor",
+          "view": "color",
+          "prior": 0.92,
+          "steps": [
+            "select(host line/bar objects)",
+            "assign(marker/source by relation)",
+            "recolor(host markers)",
+            "draw(bracket/orth route overlay)",
+            "compose"
+          ],
+          "holes": {
+            "host_role": {
+              "type": "Role",
+              "n_candidates": 4
+            },
+            "marker_role": {
+              "type": "Role",
+              "n_candidates": 3
+            },
+            "route_style": {
+              "type": "Action",
+              "n_candidates": 3
+            },
+            "recolor_rule": {
+              "type": "ColorRule",
+              "n_candidates": 2
+            }
+          }
+        },
+        {
+          "template": "route_connect",
+          "view": "color",
+          "prior": 0.5,
+          "steps": [
+            "select(endpoints:ObjSet)",
+            "pair(by:Relation)",
+            "route(style:Action)",
+            "draw(overlay)"
+          ],
+          "holes": {
+            "endpoint_role": {
+              "type": "Role",
+              "n_candidates": 3
+            },
+            "pairing": {
+              "type": "Relation",
+              "n_candidates": 4
+            },
+            "style": {
+              "type": "Action",
+              "n_candidates": 3
+            }
+          }
+        },
+        {
+          "template": "select_transform_place",
+          "view": "color",
+          "prior": 0.45,
+          "steps": [
+            "select(obj:Obj by Role)",
+            "normalize",
+            "transform(D4|scale)",
+            "place(anchor:Point)",
+            "stamp(overlay)"
+          ],
+          "holes": {
+            "sel": {
+              "type": "Role",
+              "n_candidates": 7
+            },
+            "xform": {
+              "type": "Transform",
+              "n_candidates": 5
+            },
+            "place_anchor": {
+              "type": "Point",
+              "n_candidates": 4
+            }
+          }
+        },
+        {
+          "template": "recolor_by_relation",
+          "view": "color",
+          "prior": 0.35,
+          "steps": [
+            "group(objs by Relation)",
+            "assign(color per group via Rule)",
+            "repaint(overlay)"
+          ],
+          "holes": {
+            "group_by": {
+              "type": "Relation",
+              "n_candidates": 4
+            },
+            "color_rule": {
+              "type": "ColorRule",
+              "n_candidates": 4
+            }
+          }
+        }
+      ]
+    },
+    {
+      "task_id": "d8e07eb2",
+      "shape": "same",
+      "n_sketches": 8,
+      "sketches": [
+        {
+          "template": "marker_host_action",
+          "view": "color",
+          "prior": 0.9,
+          "steps": [
+            "select(marker:ObjSet)",
+            "bind(host:Obj via host_marker)",
+            "derive(anchor:Point|Route from host)",
+            "action(a:Action on anchor)",
+            "compose(overlay)"
+          ],
+          "holes": {
+            "marker_role": {
+              "type": "Role",
+              "n_candidates": 7
+            },
+            "host_relation": {
+              "type": "Relation",
+              "n_candidates": 2
+            },
+            "anchor": {
+              "type": "Point|Route",
+              "n_candidates": 4
+            },
+            "a": {
+              "type": "Action",
+              "n_candidates": 5
+            }
+          }
+        },
+        {
+          "template": "draw_from_background",
+          "view": "color",
+          "prior": 0.68,
+          "steps": [
+            "select(seed/template objs)",
+            "derive(offsets/routes)",
+            "draw(coloured overlay into bg)"
+          ],
+          "holes": {
+            "seed_role": {
+              "type": "Role",
+              "n_candidates": 4
+            },
+            "draw_rule": {
+              "type": "Action",
+              "n_candidates": 4
+            },
+            "color_rule": {
+              "type": "ColorRule",
+              "n_candidates": 3
+            }
+          }
+        },
+        {
+          "template": "global_region_recolor",
+          "view": "color",
+          "prior": 0.62,
+          "steps": [
+            "infer(global trigger)",
+            "select(regions by template/relation)",
+            "apply(role recolor/flood)"
+          ],
+          "holes": {
+            "trigger": {
+              "type": "Predicate",
+              "n_candidates": 4
+            },
+            "region_role": {
+              "type": "Role",
+              "n_candidates": 4
+            },
+            "color_rule": {
+              "type": "ColorRule",
+              "n_candidates": 3
+            }
+          }
+        },
+        {
+          "template": "route_connect",
+          "view": "color",
+          "prior": 0.5,
+          "steps": [
+            "select(endpoints:ObjSet)",
+            "pair(by:Relation)",
+            "route(style:Action)",
+            "draw(overlay)"
+          ],
+          "holes": {
+            "endpoint_role": {
+              "type": "Role",
+              "n_candidates": 3
+            },
+            "pairing": {
+              "type": "Relation",
+              "n_candidates": 4
+            },
+            "style": {
+              "type": "Action",
+              "n_candidates": 3
+            }
+          }
+        },
+        {
+          "template": "panel_compose",
+          "view": "color",
+          "prior": 0.5,
+          "steps": [
+            "partition(panels)",
+            "select|solve(panel:Region per-panel op)",
+            "compose(layout)"
+          ],
+          "holes": {
+            "panel_role": {
+              "type": "Role",
+              "n_candidates": 4
+            },
+            "per_panel": {
+              "type": "Action",
+              "n_candidates": 4
+            },
+            "layout": {
+              "type": "Layout",
+              "n_candidates": 4
+            }
+          }
+        },
+        {
+          "template": "select_transform_place",
+          "view": "color",
+          "prior": 0.45,
+          "steps": [
+            "select(obj:Obj by Role)",
+            "normalize",
+            "transform(D4|scale)",
+            "place(anchor:Point)",
+            "stamp(overlay)"
+          ],
+          "holes": {
+            "sel": {
+              "type": "Role",
+              "n_candidates": 7
+            },
+            "xform": {
+              "type": "Transform",
+              "n_candidates": 5
+            },
+            "place_anchor": {
+              "type": "Point",
+              "n_candidates": 4
+            }
+          }
+        },
+        {
+          "template": "frame_crop",
+          "view": "color",
+          "prior": 0.45,
+          "steps": [
+            "select(frame:Obj by Role)",
+            "crop(interior:Region)",
+            "optional(recolor/fill)"
+          ],
+          "holes": {
+            "frame_role": {
+              "type": "Role",
+              "n_candidates": 3
+            },
+            "post": {
+              "type": "Action",
+              "n_candidates": 4
+            }
+          }
+        },
+        {
+          "template": "recolor_by_relation",
+          "view": "color",
+          "prior": 0.35,
+          "steps": [
+            "group(objs by Relation)",
+            "assign(color per group via Rule)",
+            "repaint(overlay)"
+          ],
+          "holes": {
+            "group_by": {
+              "type": "Relation",
+              "n_candidates": 4
+            },
+            "color_rule": {
+              "type": "ColorRule",
+              "n_candidates": 4
+            }
+          }
+        }
+      ]
+    },
+    {
+      "task_id": "271d71e2",
+      "shape": "same",
+      "n_sketches": 7,
+      "sketches": [
+        {
+          "template": "bracket_route_recolor",
+          "view": "color",
+          "prior": 0.92,
+          "steps": [
+            "select(host line/bar objects)",
+            "assign(marker/source by relation)",
+            "recolor(host markers)",
+            "draw(bracket/orth route overlay)",
+            "compose"
+          ],
+          "holes": {
+            "host_role": {
+              "type": "Role",
+              "n_candidates": 4
+            },
+            "marker_role": {
+              "type": "Role",
+              "n_candidates": 3
+            },
+            "route_style": {
+              "type": "Action",
+              "n_candidates": 3
+            },
+            "recolor_rule": {
+              "type": "ColorRule",
+              "n_candidates": 2
+            }
+          }
+        },
+        {
+          "template": "marker_host_action",
+          "view": "color",
+          "prior": 0.9,
+          "steps": [
+            "select(marker:ObjSet)",
+            "bind(host:Obj via host_marker)",
+            "derive(anchor:Point|Route from host)",
+            "action(a:Action on anchor)",
+            "compose(overlay)"
+          ],
+          "holes": {
+            "marker_role": {
+              "type": "Role",
+              "n_candidates": 7
+            },
+            "host_relation": {
+              "type": "Relation",
+              "n_candidates": 2
+            },
+            "anchor": {
+              "type": "Point|Route",
+              "n_candidates": 4
+            },
+            "a": {
+              "type": "Action",
+              "n_candidates": 5
+            }
+          }
+        },
+        {
+          "template": "route_connect",
+          "view": "color",
+          "prior": 0.5,
+          "steps": [
+            "select(endpoints:ObjSet)",
+            "pair(by:Relation)",
+            "route(style:Action)",
+            "draw(overlay)"
+          ],
+          "holes": {
+            "endpoint_role": {
+              "type": "Role",
+              "n_candidates": 3
+            },
+            "pairing": {
+              "type": "Relation",
+              "n_candidates": 4
+            },
+            "style": {
+              "type": "Action",
+              "n_candidates": 3
+            }
+          }
+        },
+        {
+          "template": "panel_compose",
+          "view": "color",
+          "prior": 0.5,
+          "steps": [
+            "partition(panels)",
+            "select|solve(panel:Region per-panel op)",
+            "compose(layout)"
+          ],
+          "holes": {
+            "panel_role": {
+              "type": "Role",
+              "n_candidates": 4
+            },
+            "per_panel": {
+              "type": "Action",
+              "n_candidates": 4
+            },
+            "layout": {
+              "type": "Layout",
+              "n_candidates": 4
+            }
+          }
+        },
+        {
+          "template": "select_transform_place",
+          "view": "color",
+          "prior": 0.45,
+          "steps": [
+            "select(obj:Obj by Role)",
+            "normalize",
+            "transform(D4|scale)",
+            "place(anchor:Point)",
+            "stamp(overlay)"
+          ],
+          "holes": {
+            "sel": {
+              "type": "Role",
+              "n_candidates": 7
+            },
+            "xform": {
+              "type": "Transform",
+              "n_candidates": 5
+            },
+            "place_anchor": {
+              "type": "Point",
+              "n_candidates": 4
+            }
+          }
+        },
+        {
+          "template": "frame_crop",
+          "view": "color",
+          "prior": 0.45,
+          "steps": [
+            "select(frame:Obj by Role)",
+            "crop(interior:Region)",
+            "optional(recolor/fill)"
+          ],
+          "holes": {
+            "frame_role": {
+              "type": "Role",
+              "n_candidates": 3
+            },
+            "post": {
+              "type": "Action",
+              "n_candidates": 4
+            }
+          }
+        },
+        {
+          "template": "recolor_by_relation",
+          "view": "color",
+          "prior": 0.35,
+          "steps": [
+            "group(objs by Relation)",
+            "assign(color per group via Rule)",
+            "repaint(overlay)"
+          ],
+          "holes": {
+            "group_by": {
+              "type": "Relation",
+              "n_candidates": 4
+            },
+            "color_rule": {
+              "type": "ColorRule",
+              "n_candidates": 4
+            }
+          }
+        }
+      ]
+    },
+    {
+      "task_id": "faa9f03d",
+      "shape": "same",
+      "n_sketches": 4,
+      "sketches": [
+        {
+          "template": "bracket_route_recolor",
+          "view": "color",
+          "prior": 0.92,
+          "steps": [
+            "select(host line/bar objects)",
+            "assign(marker/source by relation)",
+            "recolor(host markers)",
+            "draw(bracket/orth route overlay)",
+            "compose"
+          ],
+          "holes": {
+            "host_role": {
+              "type": "Role",
+              "n_candidates": 4
+            },
+            "marker_role": {
+              "type": "Role",
+              "n_candidates": 3
+            },
+            "route_style": {
+              "type": "Action",
+              "n_candidates": 3
+            },
+            "recolor_rule": {
+              "type": "ColorRule",
+              "n_candidates": 2
+            }
+          }
+        },
+        {
+          "template": "route_connect",
+          "view": "color",
+          "prior": 0.5,
+          "steps": [
+            "select(endpoints:ObjSet)",
+            "pair(by:Relation)",
+            "route(style:Action)",
+            "draw(overlay)"
+          ],
+          "holes": {
+            "endpoint_role": {
+              "type": "Role",
+              "n_candidates": 3
+            },
+            "pairing": {
+              "type": "Relation",
+              "n_candidates": 4
+            },
+            "style": {
+              "type": "Action",
+              "n_candidates": 3
+            }
+          }
+        },
+        {
+          "template": "select_transform_place",
+          "view": "color",
+          "prior": 0.45,
+          "steps": [
+            "select(obj:Obj by Role)",
+            "normalize",
+            "transform(D4|scale)",
+            "place(anchor:Point)",
+            "stamp(overlay)"
+          ],
+          "holes": {
+            "sel": {
+              "type": "Role",
+              "n_candidates": 7
+            },
+            "xform": {
+              "type": "Transform",
+              "n_candidates": 5
+            },
+            "place_anchor": {
+              "type": "Point",
+              "n_candidates": 4
+            }
+          }
+        },
+        {
+          "template": "recolor_by_relation",
+          "view": "color",
+          "prior": 0.35,
+          "steps": [
+            "group(objs by Relation)",
+            "assign(color per group via Rule)",
+            "repaint(overlay)"
+          ],
+          "holes": {
+            "group_by": {
+              "type": "Relation",
+              "n_candidates": 4
+            },
+            "color_rule": {
+              "type": "ColorRule",
+              "n_candidates": 4
+            }
+          }
+        }
+      ]
+    },
+    {
+      "task_id": "35ab12c3",
+      "shape": "same",
+      "n_sketches": 6,
+      "sketches": [
+        {
+          "template": "draw_from_background",
+          "view": "color",
+          "prior": 0.68,
+          "steps": [
+            "select(seed/template objs)",
+            "derive(offsets/routes)",
+            "draw(coloured overlay into bg)"
+          ],
+          "holes": {
+            "seed_role": {
+              "type": "Role",
+              "n_candidates": 4
+            },
+            "draw_rule": {
+              "type": "Action",
+              "n_candidates": 4
+            },
+            "color_rule": {
+              "type": "ColorRule",
+              "n_candidates": 3
+            }
+          }
+        },
+        {
+          "template": "global_region_recolor",
+          "view": "color",
+          "prior": 0.62,
+          "steps": [
+            "infer(global trigger)",
+            "select(regions by template/relation)",
+            "apply(role recolor/flood)"
+          ],
+          "holes": {
+            "trigger": {
+              "type": "Predicate",
+              "n_candidates": 4
+            },
+            "region_role": {
+              "type": "Role",
+              "n_candidates": 4
+            },
+            "color_rule": {
+              "type": "ColorRule",
+              "n_candidates": 3
+            }
+          }
+        },
+        {
+          "template": "panel_compose",
+          "view": "color",
+          "prior": 0.5,
+          "steps": [
+            "partition(panels)",
+            "select|solve(panel:Region per-panel op)",
+            "compose(layout)"
+          ],
+          "holes": {
+            "panel_role": {
+              "type": "Role",
+              "n_candidates": 4
+            },
+            "per_panel": {
+              "type": "Action",
+              "n_candidates": 4
+            },
+            "layout": {
+              "type": "Layout",
+              "n_candidates": 4
+            }
+          }
+        },
+        {
+          "template": "select_transform_place",
+          "view": "color",
+          "prior": 0.45,
+          "steps": [
+            "select(obj:Obj by Role)",
+            "normalize",
+            "transform(D4|scale)",
+            "place(anchor:Point)",
+            "stamp(overlay)"
+          ],
+          "holes": {
+            "sel": {
+              "type": "Role",
+              "n_candidates": 7
+            },
+            "xform": {
+              "type": "Transform",
+              "n_candidates": 5
+            },
+            "place_anchor": {
+              "type": "Point",
+              "n_candidates": 4
+            }
+          }
+        },
+        {
+          "template": "route_connect",
+          "view": "color",
+          "prior": 0.4,
+          "steps": [
+            "select(endpoints:ObjSet)",
+            "pair(by:Relation)",
+            "route(style:Action)",
+            "draw(overlay)"
+          ],
+          "holes": {
+            "endpoint_role": {
+              "type": "Role",
+              "n_candidates": 3
+            },
+            "pairing": {
+              "type": "Relation",
+              "n_candidates": 4
+            },
+            "style": {
+              "type": "Action",
+              "n_candidates": 3
+            }
+          }
+        },
+        {
+          "template": "recolor_by_relation",
+          "view": "color",
+          "prior": 0.35,
+          "steps": [
+            "group(objs by Relation)",
+            "assign(color per group via Rule)",
+            "repaint(overlay)"
+          ],
+          "holes": {
+            "group_by": {
+              "type": "Relation",
+              "n_candidates": 4
+            },
+            "color_rule": {
+              "type": "ColorRule",
+              "n_candidates": 4
+            }
+          }
+        }
+      ]
+    },
+    {
+      "task_id": "20a9e565",
+      "shape": "shrink",
+      "n_sketches": 2,
+      "sketches": [
+        {
+          "template": "object_summary",
+          "view": "color",
+          "prior": 0.783,
+          "steps": [
+            "select(objs:ObjSet by Role)",
+            "order(key)",
+            "map(obj->cell|glyph)",
+            "render(new_canvas)"
+          ],
+          "holes": {
+            "sel": {
+              "type": "Role",
+              "n_candidates": 7
+            },
+            "order": {
+              "type": "Key",
+              "n_candidates": 4
+            },
+            "cell_color": {
+              "type": "ColorRule",
+              "n_candidates": 3
+            },
+            "canvas_dims": {
+              "type": "CanvasSpec",
+              "n_candidates": 4
+            }
+          }
+        },
+        {
+          "template": "panel_compose",
+          "view": "color",
+          "prior": 0.5,
+          "steps": [
+            "partition(panels)",
+            "select|solve(panel:Region per-panel op)",
+            "compose(layout)"
+          ],
+          "holes": {
+            "panel_role": {
+              "type": "Role",
+              "n_candidates": 4
+            },
+            "per_panel": {
+              "type": "Action",
+              "n_candidates": 4
+            },
+            "layout": {
+              "type": "Layout",
+              "n_candidates": 4
+            }
+          }
+        }
+      ]
+    },
+    {
+      "task_id": "2d0172a1",
+      "shape": "shrink",
+      "n_sketches": 1,
+      "sketches": [
+        {
+          "template": "marker_host_action",
+          "view": "color",
+          "prior": 0.9,
+          "steps": [
+            "select(marker:ObjSet)",
+            "bind(host:Obj via host_marker)",
+            "derive(anchor:Point|Route from host)",
+            "action(a:Action on anchor)",
+            "compose(overlay)"
+          ],
+          "holes": {
+            "marker_role": {
+              "type": "Role",
+              "n_candidates": 7
+            },
+            "host_relation": {
+              "type": "Relation",
+              "n_candidates": 2
+            },
+            "anchor": {
+              "type": "Point|Route",
+              "n_candidates": 4
+            },
+            "a": {
+              "type": "Action",
+              "n_candidates": 5
+            }
+          }
+        }
+      ]
+    },
+    {
+      "task_id": "6ffbe589",
+      "shape": "shrink",
+      "n_sketches": 3,
+      "sketches": [
+        {
+          "template": "marker_host_action",
+          "view": "color",
+          "prior": 0.9,
+          "steps": [
+            "select(marker:ObjSet)",
+            "bind(host:Obj via host_marker)",
+            "derive(anchor:Point|Route from host)",
+            "action(a:Action on anchor)",
+            "compose(overlay)"
+          ],
+          "holes": {
+            "marker_role": {
+              "type": "Role",
+              "n_candidates": 7
+            },
+            "host_relation": {
+              "type": "Relation",
+              "n_candidates": 2
+            },
+            "anchor": {
+              "type": "Point|Route",
+              "n_candidates": 4
+            },
+            "a": {
+              "type": "Action",
+              "n_candidates": 5
+            }
+          }
+        },
+        {
+          "template": "object_summary",
+          "view": "color",
+          "prior": 0.872,
+          "steps": [
+            "select(objs:ObjSet by Role)",
+            "order(key)",
+            "map(obj->cell|glyph)",
+            "render(new_canvas)"
+          ],
+          "holes": {
+            "sel": {
+              "type": "Role",
+              "n_candidates": 7
+            },
+            "order": {
+              "type": "Key",
+              "n_candidates": 4
+            },
+            "cell_color": {
+              "type": "ColorRule",
+              "n_candidates": 3
+            },
+            "canvas_dims": {
+              "type": "CanvasSpec",
+              "n_candidates": 4
+            }
+          }
+        },
+        {
+          "template": "panel_compose",
+          "view": "color",
+          "prior": 0.5,
+          "steps": [
+            "partition(panels)",
+            "select|solve(panel:Region per-panel op)",
+            "compose(layout)"
+          ],
+          "holes": {
+            "panel_role": {
+              "type": "Role",
+              "n_candidates": 4
+            },
+            "per_panel": {
+              "type": "Action",
+              "n_candidates": 4
+            },
+            "layout": {
+              "type": "Layout",
+              "n_candidates": 4
+            }
+          }
+        }
+      ]
+    },
+    {
+      "task_id": "e87109e9",
+      "shape": "constant",
+      "n_sketches": 3,
+      "sketches": [
+        {
+          "template": "marker_host_action",
+          "view": "color",
+          "prior": 0.9,
+          "steps": [
+            "select(marker:ObjSet)",
+            "bind(host:Obj via host_marker)",
+            "derive(anchor:Point|Route from host)",
+            "action(a:Action on anchor)",
+            "compose(overlay)"
+          ],
+          "holes": {
+            "marker_role": {
+              "type": "Role",
+              "n_candidates": 7
+            },
+            "host_relation": {
+              "type": "Relation",
+              "n_candidates": 2
+            },
+            "anchor": {
+              "type": "Point|Route",
+              "n_candidates": 4
+            },
+            "a": {
+              "type": "Action",
+              "n_candidates": 5
+            }
+          }
+        },
+        {
+          "template": "object_summary",
+          "view": "color",
+          "prior": 0.728,
+          "steps": [
+            "select(objs:ObjSet by Role)",
+            "order(key)",
+            "map(obj->cell|glyph)",
+            "render(new_canvas)"
+          ],
+          "holes": {
+            "sel": {
+              "type": "Role",
+              "n_candidates": 7
+            },
+            "order": {
+              "type": "Key",
+              "n_candidates": 4
+            },
+            "cell_color": {
+              "type": "ColorRule",
+              "n_candidates": 3
+            },
+            "canvas_dims": {
+              "type": "CanvasSpec",
+              "n_candidates": 4
+            }
+          }
+        },
+        {
+          "template": "panel_compose",
+          "view": "color",
+          "prior": 0.5,
+          "steps": [
+            "partition(panels)",
+            "select|solve(panel:Region per-panel op)",
+            "compose(layout)"
+          ],
+          "holes": {
+            "panel_role": {
+              "type": "Role",
+              "n_candidates": 4
+            },
+            "per_panel": {
+              "type": "Action",
+              "n_candidates": 4
+            },
+            "layout": {
+              "type": "Layout",
+              "n_candidates": 4
+            }
+          }
+        }
+      ]
+    },
+    {
+      "task_id": "89565ca0",
+      "shape": "shrink",
+      "n_sketches": 2,
+      "sketches": [
+        {
+          "template": "object_summary",
+          "view": "color",
+          "prior": 1.289,
+          "steps": [
+            "select(objs:ObjSet by Role)",
+            "order(key)",
+            "map(obj->cell|glyph)",
+            "render(new_canvas)"
+          ],
+          "holes": {
+            "sel": {
+              "type": "Role",
+              "n_candidates": 7
+            },
+            "order": {
+              "type": "Key",
+              "n_candidates": 4
+            },
+            "cell_color": {
+              "type": "ColorRule",
+              "n_candidates": 3
+            },
+            "canvas_dims": {
+              "type": "CanvasSpec",
+              "n_candidates": 4
+            }
+          }
+        },
+        {
+          "template": "marker_host_action",
+          "view": "color",
+          "prior": 0.9,
+          "steps": [
+            "select(marker:ObjSet)",
+            "bind(host:Obj via host_marker)",
+            "derive(anchor:Point|Route from host)",
+            "action(a:Action on anchor)",
+            "compose(overlay)"
+          ],
+          "holes": {
+            "marker_role": {
+              "type": "Role",
+              "n_candidates": 7
+            },
+            "host_relation": {
+              "type": "Relation",
+              "n_candidates": 2
+            },
+            "anchor": {
+              "type": "Point|Route",
+              "n_candidates": 4
+            },
+            "a": {
+              "type": "Action",
+              "n_candidates": 5
+            }
+          }
+        }
+      ]
+    }
+  ]
+}

@@ -96,6 +96,44 @@ def task_features(train):
     }
 
 
+def diff_features(train):
+    """Train-output diff signals for ranking sketches; still train-only and never test-facing."""
+    transitions = Counter()
+    same_shape = True
+    bg_to_nonbg = 0
+    nonbg_to_nonbg = 0
+    nonbg_to_bg = 0
+    total = 0
+    for p in train:
+        gi, go = OG.norm(p["input"]), OG.norm(p["output"])
+        if OG.dims(gi) != OG.dims(go):
+            same_shape = False
+            continue
+        bg = OG.background(gi)
+        for r in range(len(gi)):
+            for c in range(len(gi[0])):
+                a, b = gi[r][c], go[r][c]
+                if a == b:
+                    continue
+                transitions[f"{a}->{b}"] += 1
+                total += 1
+                if a == bg and b != bg:
+                    bg_to_nonbg += 1
+                elif a != bg and b == bg:
+                    nonbg_to_bg += 1
+                else:
+                    nonbg_to_nonbg += 1
+    return {
+        "same_shape": same_shape,
+        "transitions": transitions,
+        "n_transition_types": len(transitions),
+        "total_changed": total,
+        "bg_to_nonbg": bg_to_nonbg,
+        "nonbg_to_nonbg": nonbg_to_nonbg,
+        "nonbg_to_bg": nonbg_to_bg,
+    }
+
+
 # ----------------------------------------------------------------- templates (precondition -> sketches)
 def t_marker_host_action(f):
     if not f["has_host_marker"]:
@@ -174,12 +212,60 @@ def t_recolor_by_relation(f):
                    prior=0.35)]
 
 
-TEMPLATES = [t_marker_host_action, t_route_connect, t_select_transform_place,
+def t_bracket_route_recolor(f):
+    d = f.get("diff", {})
+    if f["shape"]["shape_relation"] != "same":
+        return []
+    if not d.get("same_shape") or not d.get("bg_to_nonbg") or not d.get("nonbg_to_nonbg"):
+        return []
+    return [Sketch("bracket_route_recolor",
+                   ["select(host line/bar objects)", "assign(marker/source by relation)",
+                    "recolor(host markers)", "draw(bracket/orth route overlay)", "compose"],
+                   [Hole("host_role", "Role", ["line_bar", "alternating_bar", "largest_run", "by_marker"]),
+                    Hole("marker_role", "Role", ["unique_color", "singleton", "source_marker"]),
+                    Hole("route_style", "Action", ["bracket", "orth_path", "ray_then_span"]),
+                    Hole("recolor_rule", "ColorRule", ["source_to_route", "marker_to_host_color"])],
+                   prior=0.72 + 0.02 * min(10, d.get("n_transition_types", 0)))]
+
+
+def t_background_draw(f):
+    d = f.get("diff", {})
+    if f["shape"]["shape_relation"] != "same" or not d.get("same_shape"):
+        return []
+    if d.get("bg_to_nonbg", 0) <= 0 or d.get("nonbg_to_nonbg", 0) > max(2, d.get("bg_to_nonbg", 0) // 5):
+        return []
+    return [Sketch("draw_from_background",
+                   ["select(seed/template objs)", "derive(offsets/routes)", "draw(coloured overlay into bg)"],
+                   [Hole("seed_role", "Role", ["unique_color", "line_tip", "template_obj", "by_marker"]),
+                    Hole("draw_rule", "Action", ["ray", "diagonal", "orth_path", "motif_copy"]),
+                    Hole("color_rule", "ColorRule", ["seed_color", "role_color", "train_transition"])],
+                   prior=0.68)]
+
+
+def t_global_region_recolor(f):
+    d = f.get("diff", {})
+    if f["shape"]["shape_relation"] != "same" or not d.get("same_shape"):
+        return []
+    if d.get("n_transition_types", 0) > 8 or d.get("total_changed", 0) < 10:
+        return []
+    if d.get("bg_to_nonbg", 0) + d.get("nonbg_to_nonbg", 0) <= 0:
+        return []
+    return [Sketch("global_region_recolor",
+                   ["infer(global trigger)", "select(regions by template/relation)", "apply(role recolor/flood)"],
+                   [Hole("trigger", "Predicate", ["count", "marker_presence", "panel_index", "symmetry"]),
+                    Hole("region_role", "Role", ["band", "frame_region", "template_match", "connected_component"]),
+                    Hole("color_rule", "ColorRule", ["transition_map", "role_color", "majority_neighbor"])],
+                   prior=0.62)]
+
+
+TEMPLATES = [t_bracket_route_recolor, t_background_draw, t_global_region_recolor,
+             t_marker_host_action, t_route_connect, t_select_transform_place,
              t_panel_compose, t_object_summary, t_frame_crop, t_recolor_by_relation]
 
 
 def enumerate_sketches(train, top=None):
     f = task_features(train)
+    f["diff"] = diff_features(train)
     sketches = []
     for tmpl in TEMPLATES:
         sketches.extend(tmpl(f))

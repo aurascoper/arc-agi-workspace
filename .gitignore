@@ -23,3 +23,4 @@ runs/
 tmp/*
 !tmp/sia_lite_latest.json
 !tmp/sia_lite_residual_mining.json
+!tmp/claude_sketch_enumeration.json
