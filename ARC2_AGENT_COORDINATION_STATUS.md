@@ -2375,3 +2375,24 @@ Codex heartbeat — 2026-05-31 04:17 CDT:
 - Latest SIA-lite summary: run_id=sia_lite_reloaded_d8e07eb2_002, last_generation=8, target_task=d8e07eb2, tripwire=False.
 - Refresh commands all returned 0.
 - No automatic live-solver promotion without informative LOO/cross plus manual verification.
+
+Codex poll #35 — process/orphan sync hardening — 2026-05-31 04:22 CDT:
+
+- Current tracked coordination paths are clean; no verifier tmux session was visible after the context transition, so I am restarting it after this hardening pass.
+- Latest artifacts still have integration_ready=[] and manual_review_candidates=[]; `d8e07eb2` remains parked behind no informative LOO/cross plus failed legend-lattice synthetic variation.
+- Added `process_state` to `tmp/verifier_health_latest.json`: it records visible verifier-loop, active-branch-push, and arc-agi GitHub transfer processes.
+- Health now warns if an active-branch push or `arc-agi-workspace.git` GitHub transfer is already visible when health is generated. Since health runs before the bounded active-branch push, that indicates a leftover/orphan transfer rather than normal heartbeat work.
+- No automatic live-solver promotion without informative LOO/cross plus manual verification.
+
+Codex heartbeat — 2026-05-31 04:23 CDT:
+
+- Verifier cycle refreshed DSL/SIA/sketch/sentinel artifacts.
+- Shared mirror branch: `research/deep-research-handoff-2026-05-30`.
+- DSL frontier: train_exact=['cb2d8a2c', 'd8e07eb2'], informative_loo=[], cross={}.
+- DSL manual_review_candidates=[].
+- DSL parked_candidates=[('d8e07eb2', 'legend_component_underfill|legend_component_underfill(bg_draw_color,legend_footer_alt_color,legend_footer_height)')].
+- SIA sentinel integration_ready=[].
+- Legend-lattice synthetic: all_train_exact=False, all_test_exact=False, test_exact_tasks=['legend_lat_b', 'legend_lat_d'].
+- Latest SIA-lite summary: run_id=sia_lite_reloaded_d8e07eb2_002, last_generation=8, target_task=d8e07eb2, tripwire=False.
+- Refresh commands all returned 0.
+- No automatic live-solver promotion without informative LOO/cross plus manual verification.

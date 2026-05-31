@@ -29,6 +29,15 @@ FRESHNESS_PATHS = [
     "tmp/legend_lattice_synthetic_latest.json",
     "tmp/verifier_refresh_latest.json",
 ]
+PROCESS_COMMAND_PATTERNS = {
+    "verifier_loop": ["codex_verifier_cycle.py"],
+    "active_branch_push": ["git push origin HEAD:research/operator-promotion"],
+    "github_arc_agi_transfer": [
+        "git-receive-pack 'aurascoper/arc-agi-workspace.git'",
+        "git-upload-pack 'aurascoper/arc-agi-workspace.git'",
+        "arc-agi-workspace.git",
+    ],
+}
 SAFE_STATUS_PATHS = [
     ".gitignore",
     "ARC2_AGENT_COORDINATION_STATUS.md",
@@ -92,6 +101,37 @@ def mirror_state() -> dict:
     }
 
 
+def process_state() -> dict:
+    proc = run(["ps", "-axo", "pid,ppid,etime,command"], cwd=WORKSPACE)
+    rows = []
+    counts = {key: 0 for key in PROCESS_COMMAND_PATTERNS}
+    if proc.returncode != 0:
+        return {"available": False, "error": proc.stderr.strip()[-500:]}
+    for raw in proc.stdout.splitlines()[1:]:
+        parts = raw.strip().split(None, 3)
+        if len(parts) < 4:
+            continue
+        pid, ppid, etime, command = parts
+        if "write_verifier_health.py" in command or "ps -axo" in command:
+            continue
+        categories = []
+        for category, patterns in PROCESS_COMMAND_PATTERNS.items():
+            if any(pattern in command for pattern in patterns):
+                categories.append(category)
+        if not categories:
+            continue
+        for category in categories:
+            counts[category] += 1
+        rows.append({
+            "pid": pid,
+            "ppid": ppid,
+            "etime": etime,
+            "categories": categories,
+            "command": command,
+        })
+    return {"available": True, "counts": counts, "matching_processes": rows}
+
+
 def artifact_freshness(generated_dt: datetime) -> dict:
     artifacts = {}
     missing = []
@@ -134,6 +174,7 @@ def main() -> None:
     status = git_lines(["status", "--short", "--", *SAFE_STATUS_PATHS])
     sessions = tmux_sessions()
     mirror = mirror_state()
+    processes = process_state()
     integration_ready = sentinel.get("integration_ready", [])
     manual_review = sentinel.get("manual_review_candidates", dsl.get("manual_review_candidates", [])) or []
     parked = sentinel.get("parked_candidates", dsl.get("parked_candidates", [])) or []
@@ -163,6 +204,10 @@ def main() -> None:
         warnings.append("refresh command failure")
     if refresh.get("timed_out"):
         warnings.append("refresh command timeout")
+    if processes.get("counts", {}).get("active_branch_push"):
+        warnings.append("active-branch push process visible at health generation")
+    if processes.get("counts", {}).get("github_arc_agi_transfer"):
+        warnings.append("arc-agi GitHub transfer process visible at health generation")
     if freshness["missing"]:
         warnings.append("refreshed artifact missing")
     if freshness["stale"]:
@@ -189,6 +234,7 @@ def main() -> None:
             "returncodes": refresh.get("returncodes", {}),
             "durations_seconds": refresh.get("durations_seconds", {}),
         },
+        "process_state": processes,
         "tmux_sessions": sessions,
         "safe_status": status,
         "integration_ready": integration_ready,
