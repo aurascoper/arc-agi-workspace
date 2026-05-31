@@ -27,6 +27,39 @@ def dims(g: Any) -> tuple[int, int]:
     return (len(g), len(g[0]) if g else 0)
 
 
+def d4_apply(grid: Any, label: str) -> Grid:
+    g = norm(grid)
+    if label == "identity":
+        return [row[:] for row in g]
+    if label == "hflip":
+        return [list(reversed(row)) for row in g]
+    if label == "vflip":
+        return list(reversed([row[:] for row in g]))
+    if label == "rot90":
+        return [list(row) for row in zip(*g[::-1])]
+    if label == "rot180":
+        return d4_apply(d4_apply(g, "rot90"), "rot90")
+    if label == "rot270":
+        return d4_apply(d4_apply(g, "rot180"), "rot90")
+    if label == "diag":
+        return [list(row) for row in zip(*g)]
+    if label == "anti_diag":
+        return d4_apply(d4_apply(g, "rot90"), "hflip")
+    raise ValueError(f"unknown d4 label: {label}")
+
+
+D4_INVERSE = {
+    "identity": "identity",
+    "hflip": "hflip",
+    "vflip": "vflip",
+    "rot90": "rot270",
+    "rot180": "rot180",
+    "rot270": "rot90",
+    "diag": "diag",
+    "anti_diag": "anti_diag",
+}
+
+
 def bg(g: Any) -> int:
     g = norm(g)
     return Counter(v for row in g for v in row).most_common(1)[0][0]
@@ -182,6 +215,11 @@ def learn_legend_footer_alt_color(train: list[dict[str, Any]]) -> int | None:
         gi, go = norm(p["input"]), norm(p["output"])
         if dims(gi) != dims(go):
             return None
+        oriented = best_legend_orientation(gi)
+        if oriented is None:
+            continue
+        label, gi = oriented
+        go = d4_apply(go, label)
         background = bg(gi)
         seps = full_separator_rows(gi, background)
         if len(seps) < 2:
@@ -200,6 +238,11 @@ def learn_legend_footer_height(train: list[dict[str, Any]]) -> int | None:
         gi, go = norm(p["input"]), norm(p["output"])
         if dims(gi) != dims(go):
             return None
+        oriented = best_legend_orientation(gi)
+        if oriented is None:
+            return None
+        label, gi = oriented
+        go = d4_apply(go, label)
         background = bg(gi)
         seps = full_separator_rows(gi, background)
         if len(seps) < 2:
@@ -626,6 +669,37 @@ def glyph_components_in_rows(grid: Grid, row_start: int, row_end: int, backgroun
     return out
 
 
+def legend_orientation_score(grid: Grid) -> int:
+    background = bg(grid)
+    seps = full_separator_rows(grid, background)
+    if len(seps) < 2:
+        return 0
+    first, second = seps[0], seps[1]
+    legend = glyph_components_in_rows(grid, 0, first - 1, background)
+    body = glyph_components_in_rows(grid, first + 1, second - 1, background)
+    if not legend or not body:
+        return 0
+    legend_keys = {item["key"] for item in legend}
+    matched = sum(1 for item in body if item["key"] in legend_keys)
+    return matched * len(body) + len(legend)
+
+
+def best_legend_orientation(grid: Any) -> tuple[str, Grid] | None:
+    best: tuple[int, str, Grid] | None = None
+    for label in D4_INVERSE:
+        oriented = d4_apply(grid, label)
+        score = legend_orientation_score(oriented)
+        if score <= 0:
+            continue
+        item = (score, label, oriented)
+        if best is None or item[0] > best[0]:
+            best = item
+    if best is None:
+        return None
+    _score, label, oriented = best
+    return label, oriented
+
+
 def underfill_rect_grid(g: Grid, background: int, r0: int, c0: int, r1: int, c1: int, draw: int) -> None:
     h = len(g)
     w = len(g[0]) if g else 0
@@ -774,8 +848,7 @@ def op_legend_slot_frames(grid: Any, args: dict[str, Any]) -> Grid:
     return g
 
 
-def op_legend_component_underfill(grid: Any, args: dict[str, Any]) -> Grid:
-    """Magic-light glyph matcher based on connected components and separators."""
+def legend_component_underfill_horizontal(grid: Any, args: dict[str, Any]) -> Grid:
     g = norm(grid)
     background = bg(g)
     color = int(args["color"])
@@ -830,6 +903,17 @@ def op_legend_component_underfill(grid: Any, args: dict[str, Any]) -> Grid:
                 if g[rr][cc] == background:
                     g[rr][cc] = footer
     return g
+
+
+def op_legend_component_underfill(grid: Any, args: dict[str, Any]) -> Grid:
+    """Magic-light glyph matcher based on connected components and separators."""
+    g = norm(grid)
+    oriented = best_legend_orientation(g)
+    if oriented is None:
+        return g
+    label, canonical = oriented
+    out = legend_component_underfill_horizontal(canonical, args)
+    return d4_apply(out, D4_INVERSE[label])
 
 
 def op_route_singletons(grid: Any, args: dict[str, Any]) -> Grid:
