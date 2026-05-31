@@ -304,6 +304,168 @@ def f_route_connect(train):
     return [("route_connect:same_color_rowcol", t)]
 
 
+def f_component_gap_bridge(train):
+    """Renderer seed: bridge aligned same-colour components across background gaps."""
+    out = []
+
+    def make(mode):
+        def t(grid):
+            g = [row[:] for row in _norm(grid)]
+            H, W = _dims(g)
+            bg = _bg(g)
+            objs_by_color = {}
+            for o in _components(g):
+                objs_by_color.setdefault(o["color"], []).append(o)
+
+            def clear_row(r, c0, c1):
+                return all(g[r][c] == bg for c in range(c0, c1 + 1))
+
+            def clear_col(c, r0, r1):
+                return all(g[r][c] == bg for r in range(r0, r1 + 1))
+
+            for col, objs in objs_by_color.items():
+                for i in range(len(objs)):
+                    r0a, c0a, r1a, c1a = objs[i]["bbox"]
+                    for j in range(i + 1, len(objs)):
+                        r0b, c0b, r1b, c1b = objs[j]["bbox"]
+                        row_overlap = max(r0a, r0b) <= min(r1a, r1b)
+                        col_overlap = max(c0a, c0b) <= min(c1a, c1b)
+                        if mode in ("rowcol", "row") and row_overlap and c1a < c0b - 1:
+                            r = (max(r0a, r0b) + min(r1a, r1b)) // 2
+                            if clear_row(r, c1a + 1, c0b - 1):
+                                for c in range(c1a + 1, c0b):
+                                    g[r][c] = col
+                        if mode in ("rowcol", "row") and row_overlap and c1b < c0a - 1:
+                            r = (max(r0a, r0b) + min(r1a, r1b)) // 2
+                            if clear_row(r, c1b + 1, c0a - 1):
+                                for c in range(c1b + 1, c0a):
+                                    g[r][c] = col
+                        if mode in ("rowcol", "col") and col_overlap and r1a < r0b - 1:
+                            c = (max(c0a, c0b) + min(c1a, c1b)) // 2
+                            if clear_col(c, r1a + 1, r0b - 1):
+                                for r in range(r1a + 1, r0b):
+                                    g[r][c] = col
+                        if mode in ("rowcol", "col") and col_overlap and r1b < r0a - 1:
+                            c = (max(c0a, c0b) + min(c1a, c1b)) // 2
+                            if clear_col(c, r1b + 1, r0a - 1):
+                                for r in range(r1b + 1, r0a):
+                                    g[r][c] = col
+            return g
+        return t
+
+    for mode in ("rowcol", "row", "col"):
+        out.append((f"component_gap_bridge:{mode}", make(mode)))
+    return out
+
+
+def f_symmetry_complete(train):
+    """Renderer seed: complete missing background cells from simple grid symmetries."""
+    out = []
+
+    def make(mode):
+        def counterpart(r, c, H, W):
+            if mode == "mirror_h":
+                return r, W - 1 - c
+            if mode == "mirror_v":
+                return H - 1 - r, c
+            return H - 1 - r, W - 1 - c
+
+        def t(grid):
+            src = _norm(grid)
+            H, W = _dims(src)
+            bg = _bg(src)
+            g = [row[:] for row in src]
+            for r in range(H):
+                for c in range(W):
+                    rr, cc = counterpart(r, c, H, W)
+                    if g[r][c] == bg and src[rr][cc] != bg:
+                        g[r][c] = src[rr][cc]
+            return g
+        return t
+
+    for mode in ("mirror_h", "mirror_v", "rot180"):
+        out.append((f"symmetry_complete:{mode}", make(mode)))
+    return out
+
+
+def f_enclosed_region_fill(train):
+    """Renderer seed: fill enclosed background regions from their boundary colour."""
+    out = []
+
+    def make(strategy):
+        def t(grid):
+            g = [row[:] for row in _norm(grid)]
+            H, W = _dims(g)
+            bg = _bg(g)
+            seen = [[False] * W for _ in range(H)]
+            for sr in range(H):
+                for sc in range(W):
+                    if seen[sr][sc] or g[sr][sc] != bg:
+                        continue
+                    stack = [(sr, sc)]
+                    seen[sr][sc] = True
+                    region = []
+                    boundary = []
+                    touches_edge = False
+                    while stack:
+                        r, c = stack.pop()
+                        region.append((r, c))
+                        if r in (0, H - 1) or c in (0, W - 1):
+                            touches_edge = True
+                        for dr, dc in N4:
+                            nr, nc = r + dr, c + dc
+                            if not (0 <= nr < H and 0 <= nc < W):
+                                continue
+                            if g[nr][nc] == bg and not seen[nr][nc]:
+                                seen[nr][nc] = True
+                                stack.append((nr, nc))
+                            elif g[nr][nc] != bg:
+                                boundary.append(g[nr][nc])
+                    if touches_edge or not boundary:
+                        continue
+                    counts = Counter(boundary)
+                    if strategy == "unique" and len(counts) != 1:
+                        continue
+                    fill = counts.most_common(1)[0][0]
+                    for r, c in region:
+                        g[r][c] = fill
+            return g
+        return t
+
+    for strategy in ("unique", "majority"):
+        out.append((f"enclosed_region_fill:{strategy}", make(strategy)))
+    return out
+
+
+def f_singleton_rays(train):
+    """Renderer seed: draw rays from singleton markers through background cells."""
+    out = []
+    dirs = {"up": (-1, 0), "down": (1, 0), "left": (0, -1), "right": (0, 1)}
+
+    def make(direction):
+        def t(grid):
+            g = [row[:] for row in _norm(grid)]
+            H, W = _dims(g)
+            bg = _bg(g)
+            comps = _components(g)
+            singles = [o for o in comps if o["size"] == 1]
+            use_dirs = dirs.items() if direction == "all" else [(direction, dirs[direction])]
+            for o in singles:
+                (r, c) = o["cells"][0]
+                for _, (dr, dc) in use_dirs:
+                    rr, cc = r + dr, c + dc
+                    while 0 <= rr < H and 0 <= cc < W and g[rr][cc] == bg:
+                        g[rr][cc] = o["color"]
+                        rr += dr
+                        cc += dc
+            return g
+        return t
+
+    for direction in ("up", "down", "left", "right", "all"):
+        out.append((f"singleton_rays:{direction}", make(direction)))
+    return out
+
+
 def f_d4(train):
     forms = {"rot90": lambda g: [list(r) for r in zip(*g[::-1])],
              "rot180": lambda g: [row[::-1] for row in g[::-1]],
@@ -357,7 +519,8 @@ def f_recolor_by_size_rank(train):
 
 
 FAMILIES = [f_object_summary, f_nonbg_bbox_crop, f_object_crop, f_frame_interior, f_panel_select, f_downscale,
-            f_apex_ray, f_route_connect, f_d4, f_recolor_by_size_rank]
+            f_apex_ray, f_route_connect, f_component_gap_bridge, f_symmetry_complete, f_enclosed_region_fill,
+            f_singleton_rays, f_d4, f_recolor_by_size_rank]
 
 
 def propose(train):

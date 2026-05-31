@@ -740,3 +740,24 @@ Codex SIA run-discovery hardening, 2026-05-31 00:10 CDT:
   - `python3 arc2_sia_shape_sentinel.py`
 - Current status unchanged: all-23 sentinel has only the two `3dc255db` apex-ray train-exact/vacuous candidates,
   `loo_tasks=0`, `cross=0`, `integration_ready=[]`; shape sentinel has `train_exact=0`, `integration_ready=[]`.
+
+Codex SIA renderer-seed expansion, 2026-05-31 00:13 CDT:
+
+- Implemented prompt #3 as quarantined SIA seed material only, not a live solver change.
+- Added renderer-oriented seed families to `sia_arc_shape_task/strong_seed_agent.py` and the SIA-compatible
+  `sia_arc_all23_task/reference/reference_target_agent.py`:
+  - `component_gap_bridge:{rowcol,row,col}`
+  - `symmetry_complete:{mirror_h,mirror_v,rot180}`
+  - `enclosed_region_fill:{unique,majority}`
+  - `singleton_rays:{up,down,left,right,all}`
+- Verified commands:
+  - `python3 -m py_compile sia_arc_shape_task/strong_seed_agent.py sia_arc_all23_task/reference/reference_target_agent.py sia_arc_all23_task/reference_agent.py arc2_sia_all23_sentinel.py arc2_sia_shape_sentinel.py`
+  - `python3 arc2_sia_all23_sentinel.py`
+  - `python3 arc2_sia_shape_sentinel.py`
+  - SIA-compatible smoke by copying `reference_target_agent.py` to `/tmp/sia_all23_gen_smoke2/target_agent.py`,
+    running its CLI with `--dataset_dir`/`--working_dir`, then `python3 sia_arc_all23_task/evaluate.py --gen-dir /tmp/sia_all23_gen_smoke2`
+- Result: candidate surface grew (`shape_exact_total` 231 -> 439 on all-23), leakage remains clean, but no admission
+  evidence changed: `train_exact_total=2` only on `3dc255db` apex-ray, both vacuous; `loo_tasks=0`, `cross=0`,
+  `integration_ready=[]`.
+- Interesting non-promotion gradient: `dd6b8c4b` best shape-compatible train diff is now `30` via
+  `enclosed_region_fill:unique`, but it is still not train-exact and dd6b8c4b remains parked as representation-limited.
