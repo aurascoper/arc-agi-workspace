@@ -1,15 +1,15 @@
 {
   "artifact": "verifier_health_latest",
-  "generated_cdt": "2026-05-31 06:11:08 CDT",
+  "generated_cdt": "2026-05-31 06:13:06 CDT",
   "branch": "research/operator-promotion-audit-2026-05-30",
-  "head": "ce23f10d",
+  "head": "623bbb21",
   "handoff_mirror": {
     "dir": "/tmp/arc_agi_handoff_sync",
     "available": true,
     "branch": "research/deep-research-handoff-2026-05-30",
     "expected_branch": "research/deep-research-handoff-2026-05-30",
-    "head": "f5cd41bf",
-    "origin_head": "f5cd41bf",
+    "head": "1393f5c4",
+    "origin_head": "1393f5c4",
     "head_matches_origin": true,
     "safe_status": []
   },
@@ -18,84 +18,84 @@
     "heartbeat_stale_seconds": 390,
     "latest": {
       "heartbeat": {
-        "hash": "ce23f10d",
-        "subject": "chore(sync): heartbeat 06:09 CDT",
-        "commit_cdt": "2026-05-31 06:09:59 CDT",
-        "age_seconds_at_generation": 69
+        "hash": "623bbb21",
+        "subject": "chore(sync): heartbeat 06:13 CDT",
+        "commit_cdt": "2026-05-31 06:13:01 CDT",
+        "age_seconds_at_generation": 5
       },
       "health": {
         "hash": "d5819f0b",
         "subject": "chore(sync): health 06:06 CDT",
         "commit_cdt": "2026-05-31 06:06:45 CDT",
-        "age_seconds_at_generation": 263
+        "age_seconds_at_generation": 381
       }
     }
   },
   "artifact_freshness": {
     "stale_threshold_seconds": 900,
-    "max_age_seconds_at_generation": 270,
+    "max_age_seconds_at_generation": 90,
     "missing": [],
     "stale": [],
     "artifacts": {
       "tmp/dsl_enumeration_latest.json": {
         "exists": true,
-        "mtime_cdt": "2026-05-31 06:10:07 CDT",
-        "age_seconds_at_generation": 60
+        "mtime_cdt": "2026-05-31 06:11:38 CDT",
+        "age_seconds_at_generation": 88
       },
       "tmp/codex_sia_all23_sentinel.json": {
         "exists": true,
-        "mtime_cdt": "2026-05-31 06:06:38 CDT",
-        "age_seconds_at_generation": 270
+        "mtime_cdt": "2026-05-31 06:13:01 CDT",
+        "age_seconds_at_generation": 5
       },
       "tmp/sia_lite_latest.json": {
         "exists": true,
-        "mtime_cdt": "2026-05-31 06:10:07 CDT",
-        "age_seconds_at_generation": 60
+        "mtime_cdt": "2026-05-31 06:11:38 CDT",
+        "age_seconds_at_generation": 87
       },
       "tmp/sia_lite_residual_mining.json": {
         "exists": true,
-        "mtime_cdt": "2026-05-31 06:10:08 CDT",
-        "age_seconds_at_generation": 60
+        "mtime_cdt": "2026-05-31 06:11:38 CDT",
+        "age_seconds_at_generation": 87
       },
       "tmp/sia_search_policy_latest.json": {
         "exists": true,
-        "mtime_cdt": "2026-05-31 06:10:08 CDT",
-        "age_seconds_at_generation": 60
+        "mtime_cdt": "2026-05-31 06:11:38 CDT",
+        "age_seconds_at_generation": 87
       },
       "tmp/claude_artifact_watch_latest.json": {
         "exists": true,
-        "mtime_cdt": "2026-05-31 06:11:08 CDT",
-        "age_seconds_at_generation": 0
+        "mtime_cdt": "2026-05-31 06:11:40 CDT",
+        "age_seconds_at_generation": 86
       },
       "tmp/synthetic_family_ledger_latest.json": {
         "exists": true,
-        "mtime_cdt": "2026-05-31 06:11:08 CDT",
-        "age_seconds_at_generation": 0
+        "mtime_cdt": "2026-05-31 06:11:40 CDT",
+        "age_seconds_at_generation": 86
       },
       "tmp/template_match_role_recolor_latest_review.json": {
         "exists": true,
-        "mtime_cdt": "2026-05-31 06:11:08 CDT",
-        "age_seconds_at_generation": 0
+        "mtime_cdt": "2026-05-31 06:11:40 CDT",
+        "age_seconds_at_generation": 86
       },
       "tmp/claude_sketch_enumeration.json": {
         "exists": true,
-        "mtime_cdt": "2026-05-31 06:10:10 CDT",
-        "age_seconds_at_generation": 58
+        "mtime_cdt": "2026-05-31 06:11:40 CDT",
+        "age_seconds_at_generation": 85
       },
       "tmp/legend_lattice_synthetic_latest.json": {
         "exists": true,
-        "mtime_cdt": "2026-05-31 06:10:05 CDT",
-        "age_seconds_at_generation": 63
+        "mtime_cdt": "2026-05-31 06:11:36 CDT",
+        "age_seconds_at_generation": 90
       },
       "tmp/verifier_refresh_latest.json": {
         "exists": true,
-        "mtime_cdt": "2026-05-31 06:06:38 CDT",
-        "age_seconds_at_generation": 270
+        "mtime_cdt": "2026-05-31 06:13:01 CDT",
+        "age_seconds_at_generation": 5
       }
     }
   },
   "last_refresh": {
-    "generated_cdt": "2026-05-31 06:06 CDT",
+    "generated_cdt": "2026-05-31 06:13 CDT",
     "failures": [],
     "timed_out": [],
     "returncodes": {
@@ -107,20 +107,22 @@
       "sia_policy": 0,
       "template_match_review": 0,
       "claude_watch": 0,
+      "synthetic_ledger": 0,
       "sketch_enum": 0,
       "sentinel": 0
     },
     "durations_seconds": {
-      "compile": 0.125,
-      "legend_synth": 0.166,
-      "dsl_enum": 2.025,
-      "sia_latest": 0.091,
+      "compile": 0.118,
+      "legend_synth": 0.17,
+      "dsl_enum": 2.03,
+      "sia_latest": 0.072,
       "sia_mine": 0.076,
-      "sia_policy": 0.053,
-      "template_match_review": 1.293,
-      "claude_watch": 0.055,
-      "sketch_enum": 0.451,
-      "sentinel": 89.423
+      "sia_policy": 0.054,
+      "template_match_review": 1.557,
+      "claude_watch": 0.058,
+      "synthetic_ledger": 0.052,
+      "sketch_enum": 0.45,
+      "sentinel": 80.187
     }
   },
   "process_state": {
@@ -133,9 +135,9 @@
     },
     "matching_processes": [
       {
-        "pid": "4126",
-        "ppid": "4125",
-        "etime": "11:09",
+        "pid": "15614",
+        "ppid": "15613",
+        "etime": "01:36",
         "categories": [
           "verifier_loop"
         ],
@@ -144,15 +146,9 @@
     ]
   },
   "tmux_sessions": [
-    "arc2_codex_verifier: 1 windows (created Sun May 31 05:59:59 2026)"
+    "arc2_codex_verifier: 1 windows (created Sun May 31 06:11:30 2026)"
   ],
-  "safe_status": [
-    " M ARC2_AGENT_COORDINATION_STATUS.md",
-    " M tmp/claude_artifact_watch_latest.json",
-    " M tmp/sia_search_policy_latest.json",
-    " M tmp/template_match_role_recolor_latest_review.json",
-    "?? tmp/synthetic_family_ledger_latest.json"
-  ],
+  "safe_status": [],
   "integration_ready": [],
   "manual_review_candidates": [],
   "parked_candidates": [
@@ -211,7 +207,7 @@
       "tripwire": false,
       "updated_at": "2026-05-31T05:29:11-0500",
       "last_result_mtime_cdt": "2026-05-31 05:29:11 CDT",
-      "latest_result_age_seconds_at_generation": 2517,
+      "latest_result_age_seconds_at_generation": 2634,
       "stale_threshold_seconds": 1800,
       "is_stale": true
     },
@@ -219,7 +215,7 @@
     "positive_reductions": 1
   },
   "sia_search_policy": {
-    "generated_cdt": "2026-05-31 06:10:08 CDT",
+    "generated_cdt": "2026-05-31 06:11:38 CDT",
     "recommendation": "idle_exhausted_sia_queue",
     "sia_worker_expected": false,
     "next_action": "Do not restart flat SIA-lite residual runs. Move upstream to typed DSL/enumerator/library-learning or Claude method-track family two.",
@@ -235,7 +231,7 @@
     "admissible_signal_targets": []
   },
   "template_match_role_recolor_review": {
-    "generated_cdt": "2026-05-31 06:11:08 CDT",
+    "generated_cdt": "2026-05-31 06:11:40 CDT",
     "generator_name": "template_match_role_recolor_v2.py",
     "generator_version": 2,
     "verdict": "not_ledger_safe",
@@ -263,7 +259,7 @@
     }
   },
   "claude_artifact_watch": {
-    "generated_cdt": "2026-05-31 06:11:08 CDT",
+    "generated_cdt": "2026-05-31 06:11:40 CDT",
     "template_match_review_alignment": {
       "latest_template_exists": true,
       "review_exists": true,
@@ -282,7 +278,7 @@
     }
   },
   "synthetic_family_ledger": {
-    "generated_cdt": "2026-05-31 06:11:08 CDT",
+    "generated_cdt": "2026-05-31 06:11:40 CDT",
     "summary": {
       "live_integration_ready": false,
       "template_latest_reviewed": true,
@@ -291,8 +287,6 @@
       "sia_recommendation": "idle_exhausted_sia_queue"
     }
   },
-  "status": "attention",
-  "warnings": [
-    "safe coordination paths have uncommitted changes"
-  ]
+  "status": "ok",
+  "warnings": []
 }
