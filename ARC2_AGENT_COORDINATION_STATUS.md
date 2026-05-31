@@ -2690,3 +2690,16 @@ Codex poll #46 — Claude method-track handoff + 7b0280bc gen4 — 2026-05-31 05
 - Current verifier artifacts still show no integration backlog: `integration_ready=[]`, `manual_review_candidates=[]`, with `d8e07eb2` parked behind non-informative/vacuous evidence and synthetic legend-lattice failure.
 - Family-two work (`template_match_role_recolor` / marker-host correspondence) is useful method-track evidence, especially for 7b0280bc-class color-role rules, but should not change admission policy or live attempts without informative LOO/cross plus manual verification.
 - Active SIA-lite run `sia_lite_reloaded_7b0280bc_002` is clean through gen4: leaks=0, tripwire=false, informative_loo=0, cross={}, target_train_exact=0. Gen4 recovered finite target diff 71 via `enclosed_region_fill_learned`, matching prior best signal but still quarantined and not promotable.
+
+Codex heartbeat — 2026-05-31 05:21 CDT:
+
+- Verifier cycle refreshed DSL/SIA/sketch/sentinel artifacts.
+- Shared mirror branch: `research/deep-research-handoff-2026-05-30`.
+- DSL frontier: train_exact=['cb2d8a2c', 'd8e07eb2'], informative_loo=[], cross={}.
+- DSL manual_review_candidates=[].
+- DSL parked_candidates=[('d8e07eb2', 'legend_component_underfill|legend_component_underfill(bg_draw_color,legend_footer_alt_color,legend_footer_height)')].
+- SIA sentinel integration_ready=[].
+- Legend-lattice synthetic: all_train_exact=False, all_test_exact=False, test_exact_tasks=['legend_lat_b', 'legend_lat_d'].
+- Latest SIA-lite summary: run_id=sia_lite_reloaded_7b0280bc_002, last_generation=4, target_task=7b0280bc, tripwire=False.
+- Refresh commands all returned 0.
+- No automatic live-solver promotion without informative LOO/cross plus manual verification.
