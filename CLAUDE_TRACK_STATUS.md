@@ -429,3 +429,15 @@ Analyzed output-dims = f(object-graph stats) to give SIA a shape-function gradie
 (A) complete: SIA seed = 9 families/~17 variants, baseline fitness 0, leakage CLEAN, shape-matching gradient on
 edb79dae (object_crop:largest) + 5dbc8537 (panel) + this shape-function intel for the other 5. Ready for SIA to
 run. (B) generalize-to-23 deferred until A yields a positive fitness signal or a clean falsification, per plan.
+
+## End-to-end sketch renderer (2026-05-30 ~23:50 CDT) — arc2_sketch_renderer.py
+Connects object_graph -> typed sketch enumerator (priors) -> EXECUTOR LIBRARY (shape_decomp families,
+apex-ray, route_connect, D4 select_transform, recolor_by_size_rank) -> uniform gate. Exposes propose(train)
+-> [(name,transform)] (same contract as the SIA agent = usable as a strong seed). Runs 23 misses in <1s.
+RESULT: 0 genuine flips. Only 3dc255db has a train-exact candidate (apex_ray, design-test 0/1).
+GATE-HARDENING FINDING (for the SIA evaluator): name-stable informative-LOO STILL passes vacuously for a
+PARAMETER-FREE transform that is train-exact on ALL pairs (same transform every fold -> trivially reproduces
+each held pair). So SIA's +1 informative-LOO credit is exploitable by a fixed train-exact rule (the
+LOO-vacuity, resurfacing). FIX: require the +1 to ALSO have cross-task-firing>=2 OR a transform that varies
+across folds (re-derive on each subset and check the produced transform isn't identical). The renderer's own
+flip-gate already requires the held-out design-test, so it scores 0 correctly.

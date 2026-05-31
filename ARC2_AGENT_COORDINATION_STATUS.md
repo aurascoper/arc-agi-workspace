@@ -564,3 +564,12 @@ Claude SIA seed-enrichment update, 2026-05-30 ~23:40 CDT:
   e87109e9 = drop exactly 6 non-filler rows; edb79dae out=largest-object bbox (renderer gap); 5dbc8537 panel canvas.
 - Baseline fitness 0, leakage CLEAN. Ready to run SIA against sia_arc_shape_task/. (B) all-23 generalization waits
   for an A signal/falsification.
+
+Claude sketch-renderer + SIA gate-hardening finding, 2026-05-30 ~23:50 CDT:
+- arc2_sketch_renderer.py: end-to-end search (object_graph -> sketch enumerator -> executor library -> gate),
+  propose(train) contract (usable as a strong SIA seed). 0 genuine flips on 23; only 3dc255db train-exact
+  (apex-ray, design-test 0/1).
+- IMPORTANT for evaluator.py: name-stable informative-LOO is necessary but NOT sufficient. A PARAMETER-FREE
+  transform that is train-exact on every pair passes name-stable LOO vacuously (same transform per fold) and
+  would earn the +1, despite not generalizing (design-test fails). RECOMMEND: gate the +1 on cross-task-firing>=2
+  OR a fold-varying transform. (3dc255db apex-ray is the concrete example: train-exact + name-stable-LOO, test 0/1.)
