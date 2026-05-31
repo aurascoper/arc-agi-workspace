@@ -20,6 +20,7 @@ import importlib.util
 import json
 import os
 import re
+import hashlib
 from collections import Counter
 from pathlib import Path
 from types import ModuleType
@@ -50,11 +51,30 @@ def version_key(path: Path) -> tuple[int, float, str]:
     return (version, mtime, path.name)
 
 
+def file_fingerprint(path: Path) -> dict:
+    data = path.read_bytes()
+    return {
+        "name": path.name,
+        "path": str(path),
+        "version": version_key(path)[0],
+        "size_bytes": len(data),
+        "sha256": hashlib.sha256(data).hexdigest(),
+        "mtime_cdt": datetime.fromtimestamp(path.stat().st_mtime, ZoneInfo("America/Chicago")).strftime("%Y-%m-%d %H:%M:%S %Z"),
+    }
+
+
 def default_generator_path() -> Path:
     candidates = sorted((Path.home() / "Downloads").glob(DEFAULT_GENERATOR_GLOB), key=version_key)
     if not candidates:
         return Path.home() / "Downloads" / "template_match_role_recolor_v1.py"
     return candidates[-1]
+
+
+def available_generators() -> list[dict]:
+    return [
+        file_fingerprint(path)
+        for path in sorted((Path.home() / "Downloads").glob(DEFAULT_GENERATOR_GLOB), key=version_key)
+    ]
 
 
 def load_generator(path: Path) -> ModuleType:
@@ -386,6 +406,8 @@ def main() -> None:
         "generator_path": str(generator_path),
         "generator_name": generator_path.name,
         "generator_version": version_key(generator_path)[0],
+        "generator_sha256": file_fingerprint(generator_path)["sha256"],
+        "available_generators": available_generators(),
         "seeds": seeds,
         "num_tasks_per_seed": num_tasks,
         "total_tasks": total_tasks,
