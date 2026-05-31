@@ -55,6 +55,29 @@ def template_match_entry(watch: dict, review: dict) -> dict:
         }
         for row in findings
     ]
+    deferred = [
+        {
+            "name": row.get("name"),
+            "axis": row.get("axis"),
+            "admitted_tasks": row.get("admitted_tasks"),
+            "declared_scope": row.get("declared_scope"),
+            "future_fix": row.get("fix"),
+        }
+        for row in (review.get("deferred_survivors", []) or [])
+    ]
+    if blockers:
+        next_action = "Fix blocking synthetic-review findings: " + ", ".join(
+            f"{row['name']} ({row.get('fix')})" for row in blockers
+        )
+    elif status == "needs_review":
+        next_action = "Run review_template_match_role_recolor.py before using template-match evidence."
+    elif status == "ledger_candidate_method_only":
+        next_action = (
+            "Eligible for method/generalization-ledger discussion only; still not live Kaggle evidence. "
+            "Document deferred surfaces before any scoped ledger entry."
+        )
+    else:
+        next_action = "Wait for a new template-match generator or method-track instruction."
     return {
         "family": "template_match_role_recolor",
         "status": status,
@@ -70,11 +93,8 @@ def template_match_entry(watch: dict, review: dict) -> dict:
         },
         "review_alignment": align,
         "blockers": blockers,
-        "next_required_action": (
-            "Claude/Codex v2 generator must force bbox-collision, vary H, force small-width overflow, "
-            "force D4-sensitive matches, and force diagonal-touch individuation; reviewer should add new probes "
-            "for transfer/unmatched-object semantics if v2 introduces them."
-        ),
+        "deferred_survivors": deferred,
+        "next_required_action": next_action,
         "notes": [
             "Method-track only; derived from 7b0280bc-class ideas and not live Kaggle evidence.",
             "A pass here would still require separate live candidate gates before solver integration.",

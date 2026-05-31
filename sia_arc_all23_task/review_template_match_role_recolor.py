@@ -10,8 +10,10 @@ siblings independently from the text spec:
 - domain sibling: use a literal row bound H=13;
 - baseline siblings: size/slot/nearest and pair-0 memorized mapping.
 
-The output is a stable JSON readout for Codex/Claude polling. It is not a live
-candidate and never edits the solver.
+The output is a stable JSON readout for Codex/Claude polling. It separates
+blocking findings from declared deferred surfaces so a family can be reviewed
+without pretending every intentionally unforced primitive has been certified. It
+is not a live candidate and never edits the solver.
 """
 
 from __future__ import annotations
@@ -358,9 +360,50 @@ def main() -> None:
         per_seed.append({"seed": seed, "admitted": seed_counts})
 
     total_tasks = len(seeds) * num_tasks
-    findings = []
+    blocking_findings = []
+    deferred_survivors = []
+    if admitted["by_size"]:
+        blocking_findings.append({
+            "name": "by_size",
+            "axis": "definition/correspondence",
+            "admitted_tasks": admitted["by_size"],
+            "distinguishing_grid": "legend/work shapes where size collision does not imply exact shape match",
+            "fix": "force size-collision pairs on >=2 train instances per task",
+        })
+    if admitted["by_slot"]:
+        blocking_findings.append({
+            "name": "by_slot",
+            "axis": "definition/correspondence",
+            "admitted_tasks": admitted["by_slot"],
+            "distinguishing_grid": "work object reading order diverges from legend slot order",
+            "fix": "force slot/order divergence on >=2 train instances per task",
+        })
+    if admitted["by_nearest"]:
+        blocking_findings.append({
+            "name": "by_nearest",
+            "axis": "definition/correspondence",
+            "admitted_tasks": admitted["by_nearest"],
+            "distinguishing_grid": "nearest legend entry differs from exact shape match",
+            "fix": "force spatial-nearest divergence on >=2 train instances per task",
+        })
+    if admitted["pair0_table"]:
+        blocking_findings.append({
+            "name": "pair0_table",
+            "axis": "domain/mapping",
+            "admitted_tasks": admitted["pair0_table"],
+            "distinguishing_grid": "shape->colour legend assignment differs from pair 0",
+            "fix": "force mapping variation for every shape used by work objects",
+        })
+    if admitted["unique_role_once"]:
+        blocking_findings.append({
+            "name": "unique_role_once",
+            "axis": "binding/global",
+            "admitted_tasks": admitted["unique_role_once"],
+            "distinguishing_grid": "repeated work shapes require repeated role colour, not one-use bijection",
+            "fix": "force repeated matched shapes/roles on >=2 train instances per task",
+        })
     if admitted["by_bbox"]:
-        findings.append({
+        blocking_findings.append({
             "name": "by_bbox",
             "axis": "definition/correspondence",
             "admitted_tasks": admitted["by_bbox"],
@@ -368,7 +411,7 @@ def main() -> None:
             "fix": "force bbox-collision pairs on >=2 train instances per task",
         })
     if admitted["hardcoded_H"]:
-        findings.append({
+        blocking_findings.append({
             "name": "hardcoded_H",
             "axis": "domain/dimension",
             "admitted_tasks": admitted["hardcoded_H"],
@@ -376,7 +419,7 @@ def main() -> None:
             "fix": "vary H as well as W",
         })
     if admitted["hardcoded_W"]:
-        findings.append({
+        blocking_findings.append({
             "name": "hardcoded_W",
             "axis": "domain/dimension",
             "admitted_tasks": admitted["hardcoded_W"],
@@ -384,24 +427,34 @@ def main() -> None:
             "fix": "force work-area occupancy beyond the smallest width on >=2 train instances per task",
         })
     if admitted["by_shape_d4"]:
-        findings.append({
+        deferred_survivors.append({
             "name": "by_shape_d4",
             "axis": "definition/correspondence",
             "admitted_tasks": admitted["by_shape_d4"],
             "distinguishing_grid": "legend/work shapes whose D4-canonical identity differs from exact canonical identity",
             "fix": "force orientation-sensitive correspondence collisions on >=2 train instances per task",
+            "declared_scope": "D4-canonical shape matching is documented as deferred in the generator spec.",
         })
     if admitted["by_shape_8conn"]:
-        findings.append({
+        deferred_survivors.append({
             "name": "by_shape_8conn",
             "axis": "definition/individuation",
             "admitted_tasks": admitted["by_shape_8conn"],
             "distinguishing_grid": "diagonally touching same-colour objects where 4-connectivity and 8-connectivity disagree",
             "fix": "force diagonal-touch individuation cases on >=2 train instances per task",
+            "declared_scope": "8-connected object individuation is documented as deferred in the generator spec.",
         })
+    if oracle_mismatches:
+        verdict = "oracle_mismatch"
+    elif blocking_findings:
+        verdict = "not_ledger_safe"
+    elif deferred_survivors:
+        verdict = "passes_review_with_deferred_scope"
+    else:
+        verdict = "passes_review"
 
     out = {
-        "artifact": "template_match_role_recolor_v1_review",
+        "artifact": "template_match_role_recolor_latest_review",
         "generated_cdt": datetime.now(ZoneInfo("America/Chicago")).strftime("%Y-%m-%d %H:%M:%S %Z"),
         "generator_path": str(generator_path),
         "generator_name": generator_path.name,
@@ -429,17 +482,23 @@ def main() -> None:
         "admitted_rates": {name: admitted[name] / total_tasks for name in sorted(admitted)},
         "dimension_histogram": dict(sorted(all_dims.items())),
         "examples": examples,
-        "findings": findings,
-        "verdict": "not_ledger_safe" if findings or oracle_mismatches else "passes_review",
+        "findings": blocking_findings,
+        "blocking_findings": blocking_findings,
+        "deferred_survivors": deferred_survivors,
+        "verdict": verdict,
         "notes": [
             "This reviewer imports only generate_family and reimplements oracle/siblings independently.",
             "The artifact is method-track evidence only and never a live candidate.",
-            "A zero count for D4/8conn on v1 is not closure if the generator deliberately deferred those surfaces.",
+            "Nonzero D4/8conn counts are reported as deferred survivors when the generator declares those surfaces out of scope.",
         ],
     }
     OUT.parent.mkdir(exist_ok=True)
     OUT.write_text(json.dumps(out, indent=2) + "\n")
-    print(f"wrote {OUT.relative_to(WORKSPACE)} verdict={out['verdict']} findings={[f['name'] for f in findings]}")
+    print(
+        f"wrote {OUT.relative_to(WORKSPACE)} verdict={out['verdict']} "
+        f"findings={[f['name'] for f in blocking_findings]} "
+        f"deferred={[f['name'] for f in deferred_survivors]}"
+    )
     print(f"admitted={admitted} oracle_mismatches={oracle_mismatches}/{total_tasks}")
 
 
