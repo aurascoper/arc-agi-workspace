@@ -62,16 +62,24 @@ def main() -> None:
             if not run_dir.is_dir():
                 continue
             gens = []
+            last_result_mtime = 0.0
             for result in sorted(run_dir.glob("gen_*/results.json")):
+                last_result_mtime = max(last_result_mtime, result.stat().st_mtime)
                 gens.append(_summarize_result(result))
             state_path = run_dir / "state.json"
             state = json.loads(state_path.read_text()) if state_path.exists() else {}
+            if state_path.exists():
+                last_result_mtime = max(last_result_mtime, state_path.stat().st_mtime)
             runs.append({
                 "run_id": run_dir.name,
                 "tripwire": bool(state.get("tripwire")),
                 "last_generation": state.get("last_generation"),
+                "target_task": state.get("target_task"),
+                "updated_at": state.get("updated_at"),
+                "last_result_mtime": last_result_mtime,
                 "generations": gens,
             })
+    runs.sort(key=lambda row: (row.get("last_result_mtime") or 0.0, row.get("run_id") or ""))
     OUT.parent.mkdir(exist_ok=True)
     OUT.write_text(json.dumps({"runs": runs[-20:]}, indent=2) + "\n")
 

@@ -88,7 +88,7 @@ def heartbeat_text(refresh_outputs: dict) -> str:
     latest_run = None
     runs = sia_latest.get("runs", [])
     if runs:
-        latest_run = runs[-1]
+        latest_run = max(runs, key=lambda row: (row.get("last_result_mtime") or 0.0, row.get("run_id") or ""))
     failed = [k for k, v in refresh_outputs.items() if v["returncode"] != 0]
     lines = [
         f"\nCodex heartbeat — {ts}:\n",
@@ -101,6 +101,7 @@ def heartbeat_text(refresh_outputs: dict) -> str:
         lines.append(
             "- Latest SIA-lite summary: "
             f"run_id={latest_run.get('run_id')}, last_generation={latest_run.get('last_generation')}, "
+            f"target_task={latest_run.get('target_task')}, "
             f"tripwire={latest_run.get('tripwire')}."
         )
     if failed:
