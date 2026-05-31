@@ -19,6 +19,15 @@ WORKSPACE = TASK_DIR.parent
 OUT = WORKSPACE / "tmp" / "verifier_health_latest.json"
 MIRROR_DIR = Path("/tmp/arc_agi_handoff_sync")
 MIRROR_BRANCH = "research/deep-research-handoff-2026-05-30"
+FRESHNESS_STALE_SECONDS = 900
+FRESHNESS_PATHS = [
+    "tmp/dsl_enumeration_latest.json",
+    "tmp/codex_sia_all23_sentinel.json",
+    "tmp/sia_lite_latest.json",
+    "tmp/sia_lite_residual_mining.json",
+    "tmp/claude_sketch_enumeration.json",
+    "tmp/legend_lattice_synthetic_latest.json",
+]
 SAFE_STATUS_PATHS = [
     ".gitignore",
     "ARC2_AGENT_COORDINATION_STATUS.md",
@@ -81,12 +90,44 @@ def mirror_state() -> dict:
     }
 
 
+def artifact_freshness(generated_dt: datetime) -> dict:
+    artifacts = {}
+    missing = []
+    stale = []
+    max_age = 0
+    for rel in FRESHNESS_PATHS:
+        path = WORKSPACE / rel
+        if not path.exists():
+            artifacts[rel] = {"exists": False}
+            missing.append(rel)
+            continue
+        mtime = path.stat().st_mtime
+        age = max(0, int(generated_dt.timestamp() - mtime))
+        max_age = max(max_age, age)
+        if age > FRESHNESS_STALE_SECONDS:
+            stale.append(rel)
+        artifacts[rel] = {
+            "exists": True,
+            "mtime_cdt": datetime.fromtimestamp(mtime, ZoneInfo("America/Chicago")).strftime("%Y-%m-%d %H:%M:%S %Z"),
+            "age_seconds_at_generation": age,
+        }
+    return {
+        "stale_threshold_seconds": FRESHNESS_STALE_SECONDS,
+        "max_age_seconds_at_generation": max_age,
+        "missing": missing,
+        "stale": stale,
+        "artifacts": artifacts,
+    }
+
+
 def main() -> None:
+    generated_dt = datetime.now(ZoneInfo("America/Chicago"))
     dsl = load_json("tmp/dsl_enumeration_latest.json") or {}
     sentinel = load_json("tmp/codex_sia_all23_sentinel.json") or {}
     synth = load_json("tmp/legend_lattice_synthetic_latest.json") or {}
     sia_latest = load_json("tmp/sia_lite_latest.json") or {}
     residuals = load_json("tmp/sia_lite_residual_mining.json") or {}
+    freshness = artifact_freshness(generated_dt)
     status = git_lines(["status", "--short", "--", *SAFE_STATUS_PATHS])
     sessions = tmux_sessions()
     mirror = mirror_state()
@@ -115,6 +156,10 @@ def main() -> None:
         warnings.append("manual-review candidate present")
     if tripwire_runs:
         warnings.append("SIA-lite tripwire run present")
+    if freshness["missing"]:
+        warnings.append("refreshed artifact missing")
+    if freshness["stale"]:
+        warnings.append("refreshed artifact stale")
     if not mirror.get("available"):
         warnings.append("handoff mirror worktree not visible")
     elif mirror.get("branch") != MIRROR_BRANCH:
@@ -125,10 +170,11 @@ def main() -> None:
         warnings.append("handoff mirror head differs from local origin ref")
     out = {
         "artifact": "verifier_health_latest",
-        "generated_cdt": datetime.now(ZoneInfo("America/Chicago")).strftime("%Y-%m-%d %H:%M:%S %Z"),
+        "generated_cdt": generated_dt.strftime("%Y-%m-%d %H:%M:%S %Z"),
         "branch": (run(["git", "branch", "--show-current"]).stdout.strip() or None),
         "head": (run(["git", "rev-parse", "--short", "HEAD"]).stdout.strip() or None),
         "handoff_mirror": mirror,
+        "artifact_freshness": freshness,
         "tmux_sessions": sessions,
         "safe_status": status,
         "integration_ready": integration_ready,
