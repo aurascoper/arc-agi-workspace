@@ -1,8 +1,8 @@
 {
   "artifact": "verifier_health_latest",
-  "generated_cdt": "2026-05-31 03:39:02 CDT",
+  "generated_cdt": "2026-05-31 03:44:04 CDT",
   "branch": "research/operator-promotion-audit-2026-05-30",
-  "head": "8eb19c8e",
+  "head": "0084f418",
   "tmux_sessions": [
     "arc2_codex_verifier: 1 windows (created Sun May 31 03:38:07 2026)"
   ],

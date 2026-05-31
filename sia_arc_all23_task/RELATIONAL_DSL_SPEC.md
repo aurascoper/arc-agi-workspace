@@ -1,4 +1,18 @@
-# Relational DSL spec v0.3 — design-only (Claude-owned)
+# Relational DSL spec v0.4 — design-only (Claude-owned)
+
+## v0.4 changelog (2026-05-31)
+- HODEL PRIMITIVES RE-VERIFIED PRESENT: grepped the actual `../arc-dsl/dsl.py` we would import — `fill`, `underfill`,
+  `paint`, `recolor`, `connect`, `shoot`, `gravitate`, `box`, `backdrop`, `ofcolor`, `crop`, `shift`, `colorfilter`,
+  `objects` all have `def` matches. The 2nd survey's "could not find them" was a stale/partial view; the 1st survey was
+  right. They are RESTORED as verified FOR OUR REPO (lesson: grep the exact artifact you import, do not average surveys).
+- d8e07eb2 CANDIDATE RESOLUTION (do not repeat the error): `legend_component_underfill` was train-exact, magic-int-clean,
+  D4-clean, padding-clean, leakage-clean — and was CORRECTLY KEPT OFF BOTH LEDGERS. It is colour-general (colour-perm
+  20/20) but GEOMETRY-BESPOKE (independent synthetic generator: 1/5 train-exact on held-out variation) and
+  AUTHOR-CONTAMINATED (the author read the raw eval JSON incl. test outputs; cannot certify blinded). The LOO-vacuity
+  flag fired CORRECTLY, NOT as a false-negative. Lessons enacted below: §10 already had the generality criterion; §11
+  (NEW, PROPOSAL ONLY) adds the synthetic-family admission test that catches STRUCTURAL task-shaping the magic-int
+  scanner is blind to. The gate was NOT changed to admit a candidate; the protocol-change-coupled-to-admission was the
+  meta-overfit and is logged as a thing to never do.
 
 ## v0.3 changelog — RETRACTION + hardening
 v0.2 was contaminated by a fabricated "branch inventory + literature survey" that arrived as text. RETRACTED here:
@@ -139,3 +153,46 @@ DSL must not accumulate such ops. Criteria for an op to enter the PROMOTABLE sea
   derived-margin) so the SEARCH—not the op author—discovers the task-specific composition. If no magic-constant-free
   composition is train-exact on a task, that task is representation-limited under the current op-set (park it; grow the
   primitive set deliberately, re-running the gate).
+
+## 11. PROPOSAL ONLY (NOT ENACTED) — synthetic-family admission test for STRUCTURAL programs
+Motivation: the d8e07eb2 resolution proved the magic-int scanner is BLIND to task-shaping that lives in STRUCTURE (a
+bespoke `infer_lattice -> frame_matched_slots -> if collinear: flood` pipeline is as overfit as a magic constant). The
+LOO-vacuity flag caught it, but the clean confirmation came from an INDEPENDENTLY-AUTHORED synthetic generator. This
+section records the discipline; it is a PROPOSAL — do NOT change the live admission gate to enact it without a separate,
+cold, whole-task-set decision (coupling a protocol change to a pending candidate is the meta-overfit we logged).
+
+PROPOSED RULE: a program earns generalization-ledger evidence only if it passes a synthetic family authored
+INDEPENDENTLY of the solver, from an ABSTRACT relational spec that never saw the eval grids, whose own sanity baseline
+passes by construction. Two ledgers, hard wall: eval-score (per-task correctness) vs generalization (gated). A program
+can be on neither.
+
+CONTAMINATION recurses: "authored from the concept not the grid" is NOT clean if the concept is the author's compression
+of a characterized eval task. So every family carries a DERIVED-FROM set (which eval grids seeded it); it validates
+generality only against eval tasks NOT in that set. Concept-first families (empty derived-from, e.g. count_marked_objects)
+are clean evidence for everything; eval-resembling families are the WEAKEST evidence.
+
+CHEATS LIVE ON SURFACES (input / rule / output / oracle; harness closed by exact-match-LOIO strictness). A family is
+"complete enough" defined ADVERSARIALLY: name the degenerate solver a sloppy version passes, and RUN it to confirm it
+scores at chance. For the first family `count_marked_objects` (N = count of MARKED-colour objects, TALLY render, N=0 =>
+identity) the named cheats are: constant-N; sibling-derived (incl. cell-count/k -> requires VARIED object sizes);
+count-bypass-OUTPUT (structural execution emits N as a side effect -> defeated by a tally whose extent is object-
+decoupled; THEOREM: a placement forces N iff its N-bearing dimension terminates at a COUNT not an OBJECT — relational
+placement and count-isolation are mutually exclusive); count-bypass-INPUT (any input feature with extent==N -> defeated
+by no-input-N-proxy, which INTERACTS with varied-sizes so distractor padding must decorrelate total-cells from N);
+target-selector ambiguity (defeated by MARKING the target colour, isolating counting from selection); oracle-
+contamination (expected output carries a value from generator state -> defeated by ORACLE INDEPENDENCE: regenerate
+expected from input by an independent relation impl, certified not assumed).
+
+FRAME (a family missing any component is a demo, not an admission test): empty/declared derived-from; the named
+degenerate solvers each RUN TO CHANCE; a sanity solver passing by construction; oracle independence; mixed positive +
+dual-purpose near-miss negatives (precondition absent but a sibling would wrongly fire); precommitted EXACT-on-all-
+including-negatives, leave-one-instance-out (NOT >=k/N — partial credit hides the wrong fact and invites picking k after
+seeing scores); per-fold-after-LOIO sibling disagreement (every sibling misses on >=2 instances so one can be held out).
+LEDGER WORDING: a family records "rejects {constant, sibling-derived, count-bypass-out/in, target-selector, oracle-contam}",
+NEVER "proves generality" — evidence AGAINST named failure modes, not FOR a universal.
+
+REVIEW INDEPENDENCE: the family AUTHOR provides only the generator + abstract spec; an INDEPENDENT verifier writes its
+own oracle + sanity + degenerate solvers + LOIO harness, blind to the author's judging code. A verifier-authored
+degenerate solver that SURVIVES = a surface the author's framing missed (the highest-value outcome, structurally
+impossible for the author's own harness to produce). STOP RULE: cheats occupy surfaces; stop when all surfaces have
+named defeats; "I cannot name the SURFACE a new cheat occupies" is the falsifiable tell of decorating vs defending.
