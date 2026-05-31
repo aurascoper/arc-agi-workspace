@@ -171,3 +171,17 @@ and by Claude's blind hand-authored batch: 0/23 train-exact). The leverage is CO
 - Rationale: an LLM that SEES the input→output diff can infer the specific operation (route, stamp, fill, scale,
   serialize) for that task; a blind mutator samples the family space with near-zero hit density on a pre-filtered
   residual. Condition the generation on the evidence.
+
+## GLOBAL-RULE CAVEAT (empirical, from 3 cracked-open renderer-14 tasks)
+
+Claude probed `7b0280bc`, `d8e07eb2`, `88bcf3b4` read-only and found their discriminators are NOT per-object/
+per-band intrinsic features — they are GLOBAL/RELATIONAL:
+- `7b0280bc` (recolor): highlight-vs-keep is independent of object size/shape/D4/uniqueness -> positional /
+  template-relational.
+- `d8e07eb2` (band-flood bg->3): the SAME band position floods in some train pairs and not others -> the trigger is
+  a PER-PAIR/global condition, not a band feature.
+- `88bcf3b4` (move): object relocates toward a same-column anchor along a rail -> relational, not local.
+So when conditioning on a task, INSTRUCT the mutator: the rule may be GLOBAL — infer the per-pair / per-region
+TRIGGER (a marker's presence, a count, a symmetry, a template object), not just a per-object predicate. And prefer
+a HILL-CLIMB: look at the current best family's per-cell residual vs the target and propose a change that REDUCES
+it, rather than a fresh one-shot family (the flat 51/50/71 diffs show one-shot sampling is not fitting at all).
