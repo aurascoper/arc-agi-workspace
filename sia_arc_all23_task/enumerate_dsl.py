@@ -18,6 +18,7 @@ from typing import Any
 HERE = Path(__file__).resolve().parent
 WORKSPACE = HERE.parent
 OUT = WORKSPACE / "tmp" / "dsl_enumeration_latest.json"
+LEGEND_SYNTH = WORKSPACE / "tmp" / "legend_lattice_synthetic_latest.json"
 
 import dsl_interpreter as DSL
 
@@ -242,6 +243,27 @@ def manual_review_ready(exact: dict[str, Any], blockers: list[str]) -> bool:
     return True
 
 
+def legend_synthetic_evidence(signature: str) -> dict[str, Any] | None:
+    if "legend_component_underfill|" not in signature:
+        return None
+    if not LEGEND_SYNTH.exists():
+        return None
+    try:
+        data = json.loads(LEGEND_SYNTH.read_text())
+    except Exception:
+        return None
+    passed = bool(data.get("all_train_exact") and data.get("all_test_exact"))
+    return {
+        "name": "legend_lattice_synthetic",
+        "passed": passed,
+        "tasks": data.get("tasks"),
+        "all_train_exact": data.get("all_train_exact"),
+        "all_test_exact": data.get("all_test_exact"),
+        "train_exact_tasks": data.get("train_exact_tasks", []),
+        "test_exact_tasks": data.get("test_exact_tasks", []),
+    }
+
+
 def score_task(task_id: str, task: dict[str, Any], evaluator: Any, programs: list[dict[str, Any]]) -> dict[str, Any]:
     train = task["train"]
     compiled = []
@@ -305,10 +327,15 @@ def main() -> None:
                 blockers.append("synthetic_d4_fail")
             if exact.get("synthetic_padding_exact") and not all(exact["synthetic_padding_exact"].values()):
                 blockers.append("synthetic_padding_fail")
+            structural = legend_synthetic_evidence(exact.get("signature", ""))
+            exact["structural_synthetic_evidence"] = structural
+            if structural is not None and not structural.get("passed"):
+                blockers.append("synthetic_legend_lattice_fail")
             exact["cross_task_count"] = cross_count
             exact["admission_ready"] = not blockers
             exact["promotion_blockers"] = blockers
             exact["manual_review_ready"] = manual_review_ready(exact, blockers)
+            exact["parked_candidate"] = bool(structural is not None and not structural.get("passed"))
             if exact["manual_review_ready"]:
                 exact["manual_review_reason"] = (
                     "train-exact, magic-clean, LOO-passing, synthetic-invariance-clean; "
@@ -316,6 +343,13 @@ def main() -> None:
                 )
             else:
                 exact["manual_review_reason"] = None
+            if exact["parked_candidate"]:
+                exact["parked_reason"] = (
+                    "train-exact but failed held-out synthetic legend/lattice variation; "
+                    "treat as geometry-bespoke and do not promote"
+                )
+            else:
+                exact["parked_reason"] = None
     manual_review = []
     for row in results:
         for exact in row["train_exact"]:
@@ -330,6 +364,17 @@ def main() -> None:
                     "cross_task_count": exact.get("cross_task_count"),
                     "manual_review_reason": exact.get("manual_review_reason"),
                 })
+    parked = []
+    for row in results:
+        for exact in row["train_exact"]:
+            if exact.get("parked_candidate"):
+                parked.append({
+                    "task_id": row["task_id"],
+                    "signature": exact.get("signature"),
+                    "promotion_blockers": exact.get("promotion_blockers", []),
+                    "parked_reason": exact.get("parked_reason"),
+                    "structural_synthetic_evidence": exact.get("structural_synthetic_evidence"),
+                })
     out = {
         "artifact": "dsl_enumeration_latest",
         "programs_enumerated": len(programs),
@@ -342,6 +387,7 @@ def main() -> None:
         ],
         "cross_task_firing": {k: v for k, v in cross.items() if len(v) >= 2},
         "manual_review_candidates": manual_review,
+        "parked_candidates": parked,
         "results": results,
     }
     OUT.write_text(json.dumps(out, indent=2))

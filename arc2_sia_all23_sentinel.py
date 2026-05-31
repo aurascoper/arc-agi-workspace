@@ -124,6 +124,27 @@ def dsl_manual_review_candidates() -> list[dict[str, Any]]:
     return out
 
 
+def dsl_parked_candidates() -> list[dict[str, Any]]:
+    if not DSL_FRONTIER_JSON.exists():
+        return []
+    try:
+        data = json.loads(DSL_FRONTIER_JSON.read_text())
+    except Exception:
+        return []
+    out = []
+    for row in data.get("parked_candidates", []) or []:
+        if not isinstance(row, dict):
+            continue
+        out.append({
+            "task_id": row.get("task_id"),
+            "signature": row.get("signature"),
+            "promotion_blockers": row.get("promotion_blockers", []),
+            "parked_reason": row.get("parked_reason"),
+            "structural_synthetic_evidence": row.get("structural_synthetic_evidence"),
+        })
+    return out
+
+
 def legend_synthetic_summary() -> dict[str, Any] | None:
     if not LEGEND_SYNTH_JSON.exists():
         return None
@@ -147,6 +168,7 @@ def main() -> None:
         report["integration_ready"] = integration_ready(report)
     ready = [r for r in reports if r.get("integration_ready")]
     manual_review = dsl_manual_review_candidates()
+    parked = dsl_parked_candidates()
     legend_synth = legend_synthetic_summary()
     out = {
         "lane": "sia_all23_sentinel",
@@ -155,6 +177,8 @@ def main() -> None:
         "integration_ready_bool": bool(ready),
         "manual_review_candidates": manual_review,
         "manual_review_bool": bool(manual_review),
+        "parked_candidates": parked,
+        "parked_bool": bool(parked),
         "legend_lattice_synthetic": legend_synth,
     }
     OUT_JSON.write_text(json.dumps(out, indent=2))
@@ -171,6 +195,7 @@ def main() -> None:
             print(f"    train_exact_name_tasks={report['top_train_exact_names']}")
     print(f"integration_ready={[r['agent'] for r in ready]}")
     print(f"manual_review_candidates={[(r.get('task_id'), r.get('signature')) for r in manual_review]}")
+    print(f"parked_candidates={[(r.get('task_id'), r.get('signature')) for r in parked]}")
     print(f"legend_lattice_synthetic={legend_synth}")
     print(f"wrote {OUT_JSON.relative_to(WORKSPACE)}")
 

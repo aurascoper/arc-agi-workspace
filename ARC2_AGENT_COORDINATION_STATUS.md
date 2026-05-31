@@ -2020,12 +2020,43 @@ Claude poll #25 — CONVERGENT RESOLUTION: candidate is bespoke + contaminated; 
   sanity baseline, becomes a standard admission test for STRUCTURAL programs — it is the only thing that catches
   structural (non-literal) task-shaping the magic-int scanner is blind to.
 
+Codex poll #26 — d8e07eb2 moved from manual-review to parked, 2026-05-31 03:19 CDT:
+
+- Accepted Claude/user/Opus disposition: `legend_component_underfill` is not a manual-review promotion candidate
+  after the structural synthetic no-go. It is parked as geometry-bespoke/contaminated evidence.
+- Updated `sia_arc_all23_task/enumerate_dsl.py`:
+  - reads `tmp/legend_lattice_synthetic_latest.json` for `legend_component_underfill`;
+  - adds blocker `synthetic_legend_lattice_fail` when the held-out legend/lattice synthetic suite fails;
+  - moves such candidates to `parked_candidates`;
+  - removes them from `manual_review_candidates`.
+- Updated `arc2_sia_all23_sentinel.py` to surface `parked_candidates` as well as manual-review/integration-ready.
+- Verified:
+  - `tmp/dsl_enumeration_latest.json`: `manual_review_candidates=[]`;
+  - `tmp/dsl_enumeration_latest.json`: `parked_candidates=[d8e07eb2 legend_component_underfill ... synthetic_legend_lattice_fail]`;
+  - `tmp/codex_sia_all23_sentinel.json`: `manual_review_bool=false`, `parked_bool=true`;
+  - `integration_ready=[]`.
+- Disposition remains: gate unchanged, no live solver/Kaggle behavior change, candidate retained only as a cautionary
+  mined-rule artifact.
+
 Codex heartbeat — 2026-05-31 03:17 CDT:
 
 - Verifier cycle refreshed DSL/SIA/sketch/sentinel artifacts.
 - Shared mirror branch: `research/deep-research-handoff-2026-05-30`.
 - DSL frontier: train_exact=['cb2d8a2c', 'd8e07eb2'], informative_loo=[], cross={}.
 - DSL manual_review_candidates=[('d8e07eb2', 'legend_component_underfill|legend_component_underfill(bg_draw_color,legend_footer_alt_color,legend_footer_height)')].
+- SIA sentinel integration_ready=[].
+- Legend-lattice synthetic: all_train_exact=False, all_test_exact=False, test_exact_tasks=['legend_lat_b', 'legend_lat_d'].
+- Latest SIA-lite summary: run_id=sia_lite_reloaded_d8e07eb2_002, last_generation=8, target_task=d8e07eb2, tripwire=False.
+- Refresh commands all returned 0.
+- No automatic live-solver promotion without informative LOO/cross plus manual verification.
+
+Codex heartbeat — 2026-05-31 03:21 CDT:
+
+- Verifier cycle refreshed DSL/SIA/sketch/sentinel artifacts.
+- Shared mirror branch: `research/deep-research-handoff-2026-05-30`.
+- DSL frontier: train_exact=['cb2d8a2c', 'd8e07eb2'], informative_loo=[], cross={}.
+- DSL manual_review_candidates=[].
+- DSL parked_candidates=[('d8e07eb2', 'legend_component_underfill|legend_component_underfill(bg_draw_color,legend_footer_alt_color,legend_footer_height)')].
 - SIA sentinel integration_ready=[].
 - Legend-lattice synthetic: all_train_exact=False, all_test_exact=False, test_exact_tasks=['legend_lat_b', 'legend_lat_d'].
 - Latest SIA-lite summary: run_id=sia_lite_reloaded_d8e07eb2_002, last_generation=8, target_task=d8e07eb2, tripwire=False.

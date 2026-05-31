@@ -54,8 +54,8 @@ def refresh() -> dict:
         "compile": ["python3", "-m", "py_compile", "sia_arc_all23_task/dsl_interpreter.py",
                     "sia_arc_all23_task/enumerate_dsl.py", "sia_arc_all23_task/sia_lite_harness.py",
                     "sia_arc_all23_task/legend_lattice_synthetic.py", "arc2_sia_all23_sentinel.py"],
-        "dsl_enum": ["python3", "sia_arc_all23_task/enumerate_dsl.py"],
         "legend_synth": ["python3", "sia_arc_all23_task/legend_lattice_synthetic.py"],
+        "dsl_enum": ["python3", "sia_arc_all23_task/enumerate_dsl.py"],
         "sia_latest": ["python3", "sia_arc_all23_task/write_sia_lite_latest.py"],
         "sia_mine": ["python3", "sia_arc_all23_task/mine_sia_residuals.py"],
         "sketch_enum": ["python3", "arc2_typed_sketch_enumerator.py"],
@@ -88,6 +88,7 @@ def heartbeat_text(refresh_outputs: dict) -> str:
     informative = dsl.get("informative_loo_tasks", [])
     cross = dsl.get("cross_task_firing", {})
     review = dsl.get("manual_review_candidates", [])
+    parked = dsl.get("parked_candidates", [])
     ready = sentinel.get("integration_ready", [])
     latest_run = None
     runs = sia_latest.get("runs", [])
@@ -100,6 +101,7 @@ def heartbeat_text(refresh_outputs: dict) -> str:
         f"- Shared mirror branch: `{MIRROR_BRANCH}`.",
         f"- DSL frontier: train_exact={exact}, informative_loo={informative}, cross={cross}.",
         f"- DSL manual_review_candidates={[(r.get('task_id'), r.get('signature')) for r in review]}.",
+        f"- DSL parked_candidates={[(r.get('task_id'), r.get('signature')) for r in parked]}.",
         f"- SIA sentinel integration_ready={ready}.",
     ]
     if legend_synth:

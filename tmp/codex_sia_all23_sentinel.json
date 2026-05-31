@@ -2425,17 +2425,34 @@
   ],
   "integration_ready": [],
   "integration_ready_bool": false,
-  "manual_review_candidates": [
+  "manual_review_candidates": [],
+  "manual_review_bool": false,
+  "parked_candidates": [
     {
       "task_id": "d8e07eb2",
       "signature": "legend_component_underfill|legend_component_underfill(bg_draw_color,legend_footer_alt_color,legend_footer_height)",
       "promotion_blockers": [
-        "no_informative_loo_or_cross"
+        "no_informative_loo_or_cross",
+        "synthetic_legend_lattice_fail"
       ],
-      "manual_review_reason": "train-exact, magic-clean, LOO-passing, synthetic-invariance-clean; blocked only by no informative LOO/cross evidence"
+      "parked_reason": "train-exact but failed held-out synthetic legend/lattice variation; treat as geometry-bespoke and do not promote",
+      "structural_synthetic_evidence": {
+        "name": "legend_lattice_synthetic",
+        "passed": false,
+        "tasks": 5,
+        "all_train_exact": false,
+        "all_test_exact": false,
+        "train_exact_tasks": [
+          "legend_lat_b"
+        ],
+        "test_exact_tasks": [
+          "legend_lat_b",
+          "legend_lat_d"
+        ]
+      }
     }
   ],
-  "manual_review_bool": true,
+  "parked_bool": true,
   "legend_lattice_synthetic": {
     "tasks": 5,
     "all_train_exact": false,

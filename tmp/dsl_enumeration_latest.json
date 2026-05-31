@@ -8,33 +8,30 @@
   ],
   "informative_loo_tasks": [],
   "cross_task_firing": {},
-  "manual_review_candidates": [
+  "manual_review_candidates": [],
+  "parked_candidates": [
     {
       "task_id": "d8e07eb2",
       "signature": "legend_component_underfill|legend_component_underfill(bg_draw_color,legend_footer_alt_color,legend_footer_height)",
       "promotion_blockers": [
-        "no_informative_loo_or_cross"
+        "no_informative_loo_or_cross",
+        "synthetic_legend_lattice_fail"
       ],
-      "loo": {
-        "passes": true,
-        "informative": false,
-        "admission_type": "train_exact_fixed_loo_vacuous"
-      },
-      "synthetic_d4_exact": {
-        "hflip": true,
-        "vflip": true,
-        "rot90": true,
-        "rot180": true,
-        "rot270": true,
-        "anti_diag": true
-      },
-      "synthetic_padding_exact": {
-        "pad_1": true,
-        "pad_asym": true,
-        "pad_topless": true
-      },
-      "cross_task_count": 1,
-      "manual_review_reason": "train-exact, magic-clean, LOO-passing, synthetic-invariance-clean; blocked only by no informative LOO/cross evidence"
+      "parked_reason": "train-exact but failed held-out synthetic legend/lattice variation; treat as geometry-bespoke and do not promote",
+      "structural_synthetic_evidence": {
+        "name": "legend_lattice_synthetic",
+        "passed": false,
+        "tasks": 5,
+        "all_train_exact": false,
+        "all_test_exact": false,
+        "train_exact_tasks": [
+          "legend_lat_b"
+        ],
+        "test_exact_tasks": [
+          "legend_lat_b",
+          "legend_lat_d"
+        ]
+      }
     }
   ],
   "results": [
@@ -3894,6 +3891,7 @@
           "pad_asym": false,
           "pad_topless": false
         },
+        "structural_synthetic_evidence": null,
         "cross_task_count": 1,
         "admission_ready": false,
         "promotion_blockers": [
@@ -3901,7 +3899,9 @@
           "synthetic_padding_fail"
         ],
         "manual_review_ready": false,
-        "manual_review_reason": null
+        "parked_candidate": false,
+        "manual_review_reason": null,
+        "parked_reason": null
       },
       "train_exact": [
         {
@@ -3957,6 +3957,7 @@
             "pad_asym": false,
             "pad_topless": false
           },
+          "structural_synthetic_evidence": null,
           "cross_task_count": 1,
           "admission_ready": false,
           "promotion_blockers": [
@@ -3964,7 +3965,9 @@
             "synthetic_padding_fail"
           ],
           "manual_review_ready": false,
-          "manual_review_reason": null
+          "parked_candidate": false,
+          "manual_review_reason": null,
+          "parked_reason": null
         },
         {
           "name": "enum_bar_marker_route:full_map+bg_draw|bar_marker_bracket_route(bg_draw_color,full_color_transition_map)",
@@ -4019,6 +4022,7 @@
             "pad_asym": false,
             "pad_topless": false
           },
+          "structural_synthetic_evidence": null,
           "cross_task_count": 1,
           "admission_ready": false,
           "promotion_blockers": [
@@ -4026,7 +4030,9 @@
             "synthetic_padding_fail"
           ],
           "manual_review_ready": false,
-          "manual_review_reason": null
+          "parked_candidate": false,
+          "manual_review_reason": null,
+          "parked_reason": null
         }
       ],
       "top": [
@@ -4083,6 +4089,7 @@
             "pad_asym": false,
             "pad_topless": false
           },
+          "structural_synthetic_evidence": null,
           "cross_task_count": 1,
           "admission_ready": false,
           "promotion_blockers": [
@@ -4090,7 +4097,9 @@
             "synthetic_padding_fail"
           ],
           "manual_review_ready": false,
-          "manual_review_reason": null
+          "parked_candidate": false,
+          "manual_review_reason": null,
+          "parked_reason": null
         },
         {
           "name": "enum_bar_marker_route:full_map+bg_draw|bar_marker_bracket_route(bg_draw_color,full_color_transition_map)",
@@ -4145,6 +4154,7 @@
             "pad_asym": false,
             "pad_topless": false
           },
+          "structural_synthetic_evidence": null,
           "cross_task_count": 1,
           "admission_ready": false,
           "promotion_blockers": [
@@ -4152,7 +4162,9 @@
             "synthetic_padding_fail"
           ],
           "manual_review_ready": false,
-          "manual_review_reason": null
+          "parked_candidate": false,
+          "manual_review_reason": null,
+          "parked_reason": null
         },
         {
           "name": "full_recolor_then_bar_bracket_route|recolor_map(full_color_transition_map)|bar_bracket_route(bg_draw_color)",
@@ -4469,6 +4481,7 @@
           "pad_asym": false,
           "pad_topless": false
         },
+        "structural_synthetic_evidence": null,
         "cross_task_count": 1,
         "admission_ready": false,
         "promotion_blockers": [
@@ -4478,7 +4491,9 @@
           "synthetic_padding_fail"
         ],
         "manual_review_ready": false,
-        "manual_review_reason": null
+        "parked_candidate": false,
+        "manual_review_reason": null,
+        "parked_reason": null
       },
       "train_exact": [
         {
@@ -4547,6 +4562,7 @@
             "pad_asym": false,
             "pad_topless": false
           },
+          "structural_synthetic_evidence": null,
           "cross_task_count": 1,
           "admission_ready": false,
           "promotion_blockers": [
@@ -4556,7 +4572,9 @@
             "synthetic_padding_fail"
           ],
           "manual_review_ready": false,
-          "manual_review_reason": null
+          "parked_candidate": false,
+          "manual_review_reason": null,
+          "parked_reason": null
         },
         {
           "name": "legend_component_underfill|legend_component_underfill(bg_draw_color,legend_footer_alt_color,legend_footer_height)",
@@ -4616,13 +4634,30 @@
             "pad_asym": true,
             "pad_topless": true
           },
+          "structural_synthetic_evidence": {
+            "name": "legend_lattice_synthetic",
+            "passed": false,
+            "tasks": 5,
+            "all_train_exact": false,
+            "all_test_exact": false,
+            "train_exact_tasks": [
+              "legend_lat_b"
+            ],
+            "test_exact_tasks": [
+              "legend_lat_b",
+              "legend_lat_d"
+            ]
+          },
           "cross_task_count": 1,
           "admission_ready": false,
           "promotion_blockers": [
-            "no_informative_loo_or_cross"
+            "no_informative_loo_or_cross",
+            "synthetic_legend_lattice_fail"
           ],
-          "manual_review_ready": true,
-          "manual_review_reason": "train-exact, magic-clean, LOO-passing, synthetic-invariance-clean; blocked only by no informative LOO/cross evidence"
+          "manual_review_ready": false,
+          "parked_candidate": true,
+          "manual_review_reason": null,
+          "parked_reason": "train-exact but failed held-out synthetic legend/lattice variation; treat as geometry-bespoke and do not promote"
         }
       ],
       "top": [
@@ -4692,6 +4727,7 @@
             "pad_asym": false,
             "pad_topless": false
           },
+          "structural_synthetic_evidence": null,
           "cross_task_count": 1,
           "admission_ready": false,
           "promotion_blockers": [
@@ -4701,7 +4737,9 @@
             "synthetic_padding_fail"
           ],
           "manual_review_ready": false,
-          "manual_review_reason": null
+          "parked_candidate": false,
+          "manual_review_reason": null,
+          "parked_reason": null
         },
         {
           "name": "legend_component_underfill|legend_component_underfill(bg_draw_color,legend_footer_alt_color,legend_footer_height)",
@@ -4761,13 +4799,30 @@
             "pad_asym": true,
             "pad_topless": true
           },
+          "structural_synthetic_evidence": {
+            "name": "legend_lattice_synthetic",
+            "passed": false,
+            "tasks": 5,
+            "all_train_exact": false,
+            "all_test_exact": false,
+            "train_exact_tasks": [
+              "legend_lat_b"
+            ],
+            "test_exact_tasks": [
+              "legend_lat_b",
+              "legend_lat_d"
+            ]
+          },
           "cross_task_count": 1,
           "admission_ready": false,
           "promotion_blockers": [
-            "no_informative_loo_or_cross"
+            "no_informative_loo_or_cross",
+            "synthetic_legend_lattice_fail"
           ],
-          "manual_review_ready": true,
-          "manual_review_reason": "train-exact, magic-clean, LOO-passing, synthetic-invariance-clean; blocked only by no informative LOO/cross evidence"
+          "manual_review_ready": false,
+          "parked_candidate": true,
+          "manual_review_reason": null,
+          "parked_reason": "train-exact but failed held-out synthetic legend/lattice variation; treat as geometry-bespoke and do not promote"
         },
         {
           "name": "enum_bar_route:bg_draw|bar_bracket_route(bg_draw_color)",
