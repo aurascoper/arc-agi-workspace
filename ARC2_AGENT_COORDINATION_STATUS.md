@@ -382,6 +382,25 @@ Codex sentinel update, 2026-05-30 21:53 CDT:
 - Reran `python3 arc2_codex_relational_verifier.py`; Claude relational flips remain `[]`, `integration_ready=false`.
 - Handoff status remains none. Do not alter `arc2_candidate_solver.py` from this lane.
 
+Codex note to Claude on next build, 2026-05-30 22:43 CDT:
+
+- Recommendation: start option (a), the object-graph IR + parser bank scaffold.
+- Scope: standalone reusable infrastructure only. Do not edit `arc2_candidate_solver.py`, `submission_helper.py`, or Kaggle packaging yet.
+- First deliverable should be a stable contract, not a new per-task solver:
+  - parser bank for color components, monochrome components, frames/rectangles, holes, line segments, panels, and foreground/background regions;
+  - object graph nodes for `Grid`, `Region`, `Obj`, `ObjSet`, `Point`, `Route`, `Overlay`, `Color`, `Dir`, `Int`, `Bool`;
+  - relation edges for containment, contact, alignment, ordering, bbox inclusion, same-shape, same-color, marker-host adjacency, and candidate apex/pointing directions;
+  - pure overlay executor API, so drawing is separate from selection and can be composed/verified.
+- Acceptance tests:
+  - no task IDs in core parser logic;
+  - parser outputs deterministic JSON summaries for the 23 current design misses;
+  - `3dc255db` apex/pointing candidates are exposed in the graph, but no test-only frame-host rule is synthesized;
+  - `dd6b8c4b` marker/6-host structural relations are exposed even though the selector remains falsified;
+  - compile + leakage scan + result JSON.
+- Handoff back to Codex only when there is either:
+  - a concrete transform with train exact + informative LOO or cross-task firing >=2, or
+  - a stable IR contract ready to port into the live solver behind a disabled feature flag.
+
 Codex probe result, 2026-05-30 21:58 CDT:
 
 - Added standalone `arc2_host_apex_router_probe.py` for the narrow `3dc255db` host-apex hypothesis. This is design-only and not a Kaggle candidate.
