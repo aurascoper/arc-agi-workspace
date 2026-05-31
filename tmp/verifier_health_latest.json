@@ -1,63 +1,81 @@
 {
   "artifact": "verifier_health_latest",
-  "generated_cdt": "2026-05-31 04:23:49 CDT",
+  "generated_cdt": "2026-05-31 04:28:22 CDT",
   "branch": "research/operator-promotion-audit-2026-05-30",
-  "head": "d8dcc7c6",
+  "head": "2b21bbb2",
   "handoff_mirror": {
     "dir": "/tmp/arc_agi_handoff_sync",
     "available": true,
     "branch": "research/deep-research-handoff-2026-05-30",
     "expected_branch": "research/deep-research-handoff-2026-05-30",
-    "head": "36f93cea",
-    "origin_head": "36f93cea",
+    "head": "9279405f",
+    "origin_head": "9279405f",
     "head_matches_origin": true,
     "safe_status": []
   },
+  "cadence_state": {
+    "available": true,
+    "heartbeat_stale_seconds": 390,
+    "latest": {
+      "heartbeat": {
+        "hash": "2b21bbb2",
+        "subject": "chore(sync): heartbeat 04:28 CDT",
+        "commit_cdt": "2026-05-31 04:28:17 CDT",
+        "age_seconds_at_generation": 5
+      },
+      "health": {
+        "hash": "996f23a9",
+        "subject": "chore(sync): health 04:23 CDT",
+        "commit_cdt": "2026-05-31 04:23:50 CDT",
+        "age_seconds_at_generation": 272
+      }
+    }
+  },
   "artifact_freshness": {
     "stale_threshold_seconds": 900,
-    "max_age_seconds_at_generation": 59,
+    "max_age_seconds_at_generation": 69,
     "missing": [],
     "stale": [],
     "artifacts": {
       "tmp/dsl_enumeration_latest.json": {
         "exists": true,
-        "mtime_cdt": "2026-05-31 04:22:52 CDT",
-        "age_seconds_at_generation": 57
+        "mtime_cdt": "2026-05-31 04:27:15 CDT",
+        "age_seconds_at_generation": 67
       },
       "tmp/codex_sia_all23_sentinel.json": {
         "exists": true,
-        "mtime_cdt": "2026-05-31 04:23:44 CDT",
+        "mtime_cdt": "2026-05-31 04:28:17 CDT",
         "age_seconds_at_generation": 5
       },
       "tmp/sia_lite_latest.json": {
         "exists": true,
-        "mtime_cdt": "2026-05-31 04:22:52 CDT",
-        "age_seconds_at_generation": 57
+        "mtime_cdt": "2026-05-31 04:27:15 CDT",
+        "age_seconds_at_generation": 67
       },
       "tmp/sia_lite_residual_mining.json": {
         "exists": true,
-        "mtime_cdt": "2026-05-31 04:22:52 CDT",
-        "age_seconds_at_generation": 57
+        "mtime_cdt": "2026-05-31 04:27:15 CDT",
+        "age_seconds_at_generation": 67
       },
       "tmp/claude_sketch_enumeration.json": {
         "exists": true,
-        "mtime_cdt": "2026-05-31 04:22:52 CDT",
-        "age_seconds_at_generation": 56
+        "mtime_cdt": "2026-05-31 04:27:15 CDT",
+        "age_seconds_at_generation": 66
       },
       "tmp/legend_lattice_synthetic_latest.json": {
         "exists": true,
-        "mtime_cdt": "2026-05-31 04:22:50 CDT",
-        "age_seconds_at_generation": 59
+        "mtime_cdt": "2026-05-31 04:27:13 CDT",
+        "age_seconds_at_generation": 69
       },
       "tmp/verifier_refresh_latest.json": {
         "exists": true,
-        "mtime_cdt": "2026-05-31 04:23:44 CDT",
+        "mtime_cdt": "2026-05-31 04:28:17 CDT",
         "age_seconds_at_generation": 5
       }
     }
   },
   "last_refresh": {
-    "generated_cdt": "2026-05-31 04:23 CDT",
+    "generated_cdt": "2026-05-31 04:28 CDT",
     "failures": [],
     "timed_out": [],
     "returncodes": {
@@ -70,13 +88,13 @@
       "sentinel": 0
     },
     "durations_seconds": {
-      "compile": 0.109,
-      "legend_synth": 0.174,
-      "dsl_enum": 2.076,
-      "sia_latest": 0.081,
-      "sia_mine": 0.071,
-      "sketch_enum": 0.465,
-      "sentinel": 51.849
+      "compile": 0.103,
+      "legend_synth": 0.185,
+      "dsl_enum": 2.025,
+      "sia_latest": 0.08,
+      "sia_mine": 0.073,
+      "sketch_enum": 0.48,
+      "sentinel": 61.732
     }
   },
   "process_state": {
@@ -88,18 +106,18 @@
     },
     "matching_processes": [
       {
-        "pid": "6229",
+        "pid": "10227",
         "ppid": "1",
-        "etime": "01:01",
+        "etime": "01:15",
         "categories": [
           "verifier_loop"
         ],
         "command": "tmux new-session -d -s arc2_codex_verifier cd /Users/aurascoper/Developer/arc_agi/workspace && python3 sia_arc_all23_task/codex_verifier_cycle.py --loop --interval 300 --push > tmp/codex_verifier_cycle.log 2>&1"
       },
       {
-        "pid": "6230",
-        "ppid": "6229",
-        "etime": "01:01",
+        "pid": "10228",
+        "ppid": "10227",
+        "etime": "01:15",
         "categories": [
           "verifier_loop"
         ],
@@ -108,7 +126,7 @@
     ]
   },
   "tmux_sessions": [
-    "arc2_codex_verifier: 1 windows (created Sun May 31 04:22:49 2026)"
+    "arc2_codex_verifier: 1 windows (created Sun May 31 04:27:07 2026)"
   ],
   "safe_status": [],
   "integration_ready": [],
