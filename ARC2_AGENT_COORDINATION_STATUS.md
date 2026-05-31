@@ -761,3 +761,16 @@ Codex SIA renderer-seed expansion, 2026-05-31 00:13 CDT:
   `integration_ready=[]`.
 - Interesting non-promotion gradient: `dd6b8c4b` best shape-compatible train diff is now `30` via
   `enclosed_region_fill:unique`, but it is still not train-exact and dd6b8c4b remains parked as representation-limited.
+
+Codex SIA task-prompt steering, 2026-05-31 00:19 CDT:
+
+- Updated `sia_arc_all23_task/data_public_task_template.md` and
+  `sia_arc_all23_task/reference/SAMPLE_TASK_DESCRIPTIONS.md` to steer SIA toward renderer/decomposition families:
+  endpoint bridging, bracket routing, stamping, flood-fill, scale-blit, symmetry completion, panel serialization,
+  separator crop/stack, compact glyph extraction, and marker/host/anchor role binding.
+- The public prompt now explicitly parks the two known walls:
+  - `dd6b8c4b`: non-separable marker selector under current component-graph features.
+  - `3dc255db`: apex-ray is train-exact but fixed/vacuous without a re-derived direction/endpoint parser.
+- Regenerated local `sia_arc_all23_task/data/public/task.md` with
+  `ARC2_EVAL_DIR=/Users/aurascoper/Developer/arc_agi/workspace/arc_agi_2_data/evaluation python3 sia_arc_all23_task/build_task.py`.
+- Verified compile: `python3 -m py_compile sia_arc_all23_task/build_task.py sia_arc_all23_task/evaluate.py sia_arc_all23_task/reference/reference_target_agent.py`.

@@ -52,8 +52,26 @@ Held-out private test matches are logged for humans but never added to fitness.
 The strong seed has two train-exact apex-ray candidates on `3dc255db`, but both
 are fixed/vacuous and fail held-out readout. They are not promotion evidence.
 
-The highest-value search direction is the renderer cluster: richer overlay/draw
-vocabulary such as stamp, ray, bracket routing, flood-fill region, scale-blit,
-symmetry completion, panel serialization, and relational shape generation.
+The remaining misses are mostly construction problems, not object classification
+problems. Favor small reusable renderer/decomposition families over per-task
+patches:
+
+- overlay/draw programs: stamp, ray, bracket routing, endpoint bridging,
+  flood-fill region, scale-blit, symmetry completion;
+- decomposition programs: panel serialization, separator-driven crop/stack,
+  object-summary rendering, compact glyph extraction;
+- relational programs: bind marker/host/anchor roles from train pairs, then draw
+  or move structure using those roles.
+
+Known walls to avoid over-spending on:
+
+- `dd6b8c4b`: local component-graph marker selection is not separable with the
+  current parser-bank features.
+- `3dc255db`: the apex-ray abstraction is train-exact but fixed/vacuous; it needs
+  a genuinely re-derived host direction/endpoint parser or cross-task evidence.
+
+Positive fitness requires either a fold-varying informative-LOO family on at
+least one task or a candidate name that is train-exact on at least two tasks.
+Weak train-exact credit alone is not enough for promotion.
 
 Do not touch files outside the SIA generation working directory.
