@@ -1,0 +1,40 @@
+{
+  "artifact": "verifier_health_latest",
+  "generated_cdt": "2026-05-31 03:29:17 CDT",
+  "branch": "research/operator-promotion-audit-2026-05-30",
+  "head": "91d21f94",
+  "tmux_sessions": [
+    "arc2_codex_verifier: 1 windows (created Sun May 31 03:28:22 2026)"
+  ],
+  "safe_status": [],
+  "integration_ready": [],
+  "manual_review_candidates": [],
+  "parked_candidates": [
+    {
+      "task_id": "d8e07eb2",
+      "signature": "legend_component_underfill|legend_component_underfill(bg_draw_color,legend_footer_alt_color,legend_footer_height)",
+      "promotion_blockers": [
+        "no_informative_loo_or_cross",
+        "synthetic_legend_lattice_fail"
+      ]
+    }
+  ],
+  "dsl_frontier": {
+    "train_exact_tasks": [
+      "cb2d8a2c",
+      "d8e07eb2"
+    ],
+    "informative_loo_tasks": [],
+    "cross_task_firing": {}
+  },
+  "legend_lattice_synthetic": {
+    "all_train_exact": false,
+    "all_test_exact": false,
+    "test_exact_tasks": [
+      "legend_lat_b",
+      "legend_lat_d"
+    ]
+  },
+  "status": "ok",
+  "warnings": []
+}

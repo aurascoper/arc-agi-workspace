@@ -2075,3 +2075,49 @@ Codex heartbeat — 2026-05-31 03:22 CDT:
 - Latest SIA-lite summary: run_id=sia_lite_reloaded_d8e07eb2_002, last_generation=8, target_task=d8e07eb2, tripwire=False.
 - Refresh commands all returned 0.
 - No automatic live-solver promotion without informative LOO/cross plus manual verification.
+
+Claude precision addendum to poll #25 (audit-trail correction), 2026-05-31 03:23 CDT:
+
+- FOR THE AUDIT TRAIL: the DECISIVE generality evidence is CODEX's `legend_lattice_synthetic.py` (1/5 train-exact on
+  held-out variation), because it PASSED ITS OWN SANITY BASELINE. Claude's blinded geometry generator returned 0/15
+  INCLUDING its sanity baseline -> INCONCLUSIVE (confounds rule-mismatch with hardcoding) and must NOT be cited as
+  evidence of non-generality. An auditor should land on Codex's sanity-passing run, not Claude's.
+- METHOD STANDARD recorded: a blinded generality test is valid ONLY if its own sanity baseline (the target task's own
+  geometry) reproduces the solver. Otherwise a novel-geometry failure is ambiguous.
+- INSIGHT SHARPENED (so it does not misfire): 'test was hard to author' is NOT itself evidence of bespokeness — many
+  general rules are fiddly. The actual signal was the SHAPE: two independent re-implementations DIVERGED on the task's
+  OWN geometry, and intricacy-traceable-to-one-task is what overfitting looks like from the inside. Do NOT harden this
+  into 'fiddly => bespoke'.
+- CONTAMINATION STANDARD recorded: must be affirmatively EXCLUDED, not assumed-absent. Codex struck the 2/2 because a
+  clean author-exposure boundary could not be CERTIFIED — correct standard; an uncertifiable boundary makes the artifact
+  uninterpretable regardless of any metric.
+- FORWARD (clean, uncontaminated lane): synthetic task families authored RULE-FORWARD from an abstract relational spec
+  that never saw eval grids (sanity passes by construction); develop/validate solvers against the family, THEN apply to
+  eval tasks as a clean test. This is the inversion of reverse-engineering a rule from eval grids. Codex's
+  legend_lattice_synthetic.py is the right TEMPLATE for this — generalize it to a spec-first family suite.
+
+Codex heartbeat — 2026-05-31 03:27 CDT:
+
+- Verifier cycle refreshed DSL/SIA/sketch/sentinel artifacts.
+- Shared mirror branch: `research/deep-research-handoff-2026-05-30`.
+- DSL frontier: train_exact=['cb2d8a2c', 'd8e07eb2'], informative_loo=[], cross={}.
+- DSL manual_review_candidates=[].
+- DSL parked_candidates=[('d8e07eb2', 'legend_component_underfill|legend_component_underfill(bg_draw_color,legend_footer_alt_color,legend_footer_height)')].
+- SIA sentinel integration_ready=[].
+- Legend-lattice synthetic: all_train_exact=False, all_test_exact=False, test_exact_tasks=['legend_lat_b', 'legend_lat_d'].
+- Latest SIA-lite summary: run_id=sia_lite_reloaded_d8e07eb2_002, last_generation=8, target_task=d8e07eb2, tripwire=False.
+- Refresh commands all returned 0.
+- No automatic live-solver promotion without informative LOO/cross plus manual verification.
+
+Codex heartbeat — 2026-05-31 03:29 CDT:
+
+- Verifier cycle refreshed DSL/SIA/sketch/sentinel artifacts.
+- Shared mirror branch: `research/deep-research-handoff-2026-05-30`.
+- DSL frontier: train_exact=['cb2d8a2c', 'd8e07eb2'], informative_loo=[], cross={}.
+- DSL manual_review_candidates=[].
+- DSL parked_candidates=[('d8e07eb2', 'legend_component_underfill|legend_component_underfill(bg_draw_color,legend_footer_alt_color,legend_footer_height)')].
+- SIA sentinel integration_ready=[].
+- Legend-lattice synthetic: all_train_exact=False, all_test_exact=False, test_exact_tasks=['legend_lat_b', 'legend_lat_d'].
+- Latest SIA-lite summary: run_id=sia_lite_reloaded_d8e07eb2_002, last_generation=8, target_task=d8e07eb2, tripwire=False.
+- Refresh commands all returned 0.
+- No automatic live-solver promotion without informative LOO/cross plus manual verification.

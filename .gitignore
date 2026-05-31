@@ -27,3 +27,4 @@ tmp/*
 !tmp/dsl_enumeration_latest.json
 !tmp/codex_sia_all23_sentinel.json
 !tmp/legend_lattice_synthetic_latest.json
+!tmp/verifier_health_latest.json

@@ -35,6 +35,7 @@ SAFE_PATHS = [
     "tmp/dsl_enumeration_latest.json",
     "tmp/codex_sia_all23_sentinel.json",
     "tmp/legend_lattice_synthetic_latest.json",
+    "tmp/verifier_health_latest.json",
 ]
 
 
@@ -53,7 +54,8 @@ def refresh() -> dict:
     commands = {
         "compile": ["python3", "-m", "py_compile", "sia_arc_all23_task/dsl_interpreter.py",
                     "sia_arc_all23_task/enumerate_dsl.py", "sia_arc_all23_task/sia_lite_harness.py",
-                    "sia_arc_all23_task/legend_lattice_synthetic.py", "arc2_sia_all23_sentinel.py"],
+                    "sia_arc_all23_task/legend_lattice_synthetic.py",
+                    "sia_arc_all23_task/write_verifier_health.py", "arc2_sia_all23_sentinel.py"],
         "legend_synth": ["python3", "sia_arc_all23_task/legend_lattice_synthetic.py"],
         "dsl_enum": ["python3", "sia_arc_all23_task/enumerate_dsl.py"],
         "sia_latest": ["python3", "sia_arc_all23_task/write_sia_lite_latest.py"],
@@ -132,10 +134,14 @@ def append_heartbeat(refresh_outputs: dict) -> None:
         fh.write(heartbeat_text(refresh_outputs))
 
 
-def commit_current() -> bool:
+def existing_safe_paths() -> list[str]:
+    return [path for path in SAFE_PATHS if (WORKSPACE / path).exists()]
+
+
+def commit_current(label: str = "heartbeat") -> bool:
     _ts, hm = now()
-    run(["git", "add", *SAFE_PATHS], check=False)
-    proc = run(["git", "commit", "-m", f"chore(sync): heartbeat {hm}"], check=False)
+    run(["git", "add", *existing_safe_paths()], check=False)
+    proc = run(["git", "commit", "-m", f"chore(sync): {label} {hm}"], check=False)
     return proc.returncode == 0
 
 
@@ -152,11 +158,22 @@ def mirror_push() -> None:
     run(["git", "push", "origin", MIRROR_BRANCH], cwd=MIRROR_DIR, check=False)
 
 
+def push_active_branch() -> None:
+    branch = run(["git", "branch", "--show-current"], check=False).stdout.strip()
+    if branch:
+        run(["git", "push", "origin", f"HEAD:{branch}"], check=False)
+
+
 def cycle(push: bool, commit: bool) -> None:
     outputs = refresh()
     append_heartbeat(outputs)
-    made_commit = commit_current() if commit else False
-    if push and commit and made_commit:
+    made_commit = commit_current("heartbeat") if commit else False
+    health_commit = False
+    if commit:
+        run(["python3", "sia_arc_all23_task/write_verifier_health.py"], check=False)
+        health_commit = commit_current("health")
+    if push and commit and (made_commit or health_commit):
+        push_active_branch()
         mirror_push()
 
 
