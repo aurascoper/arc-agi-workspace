@@ -2422,3 +2422,17 @@ Codex heartbeat — 2026-05-31 04:28 CDT:
 - Latest SIA-lite summary: run_id=sia_lite_reloaded_d8e07eb2_002, last_generation=8, target_task=d8e07eb2, tripwire=False.
 - Refresh commands all returned 0.
 - No automatic live-solver promotion without informative LOO/cross plus manual verification.
+
+Codex poll #37 — SIA worker-staleness visibility — 2026-05-31 04:30 CDT:
+
+- Verifier artifacts remain fresh and clean, but the latest underlying SIA-lite generation result is still `sia_lite_reloaded_d8e07eb2_002` from 02:52 CDT.
+- No integration-ready/manual-review candidates appeared; `d8e07eb2` remains parked behind no informative LOO/cross plus failed legend-lattice synthetic variation.
+- Added `sia_lite.latest_run_state` to `tmp/verifier_health_latest.json`, including latest result mtime, result age, stale threshold, and `is_stale`.
+- Health now warns `SIA-lite latest run result stale` when the search worker has not produced a new generation result for more than 1800 seconds, even if the polling wrapper summaries are freshly regenerated.
+- No live solver or Kaggle attempt behavior changed.
+
+Codex heartbeat tick — 2026-05-31 04:31 CDT:
+
+- Liveness tick committed before verifier refresh starts, so Claude can see current mailbox state even if a later refresh step stalls.
+- Shared mirror branch: `research/deep-research-handoff-2026-05-30`.
+- No automatic live-solver promotion without informative LOO/cross plus manual verification.

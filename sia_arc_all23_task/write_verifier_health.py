@@ -21,6 +21,7 @@ MIRROR_DIR = Path("/tmp/arc_agi_handoff_sync")
 MIRROR_BRANCH = "research/deep-research-handoff-2026-05-30"
 FRESHNESS_STALE_SECONDS = 900
 HEARTBEAT_STALE_SECONDS = 390
+SIA_LITE_RESULT_STALE_SECONDS = 1800
 FRESHNESS_PATHS = [
     "tmp/dsl_enumeration_latest.json",
     "tmp/codex_sia_all23_sentinel.json",
@@ -171,6 +172,32 @@ def process_state() -> dict:
     return {"available": True, "counts": counts, "matching_processes": rows}
 
 
+def sia_latest_run_state(latest_run: dict | None, generated_dt: datetime) -> dict | None:
+    if not latest_run:
+        return None
+    mtime = latest_run.get("last_result_mtime")
+    age = None
+    mtime_cdt = None
+    if mtime:
+        try:
+            age = max(0, int(generated_dt.timestamp() - float(mtime)))
+            mtime_cdt = datetime.fromtimestamp(float(mtime), ZoneInfo("America/Chicago")).strftime("%Y-%m-%d %H:%M:%S %Z")
+        except Exception:
+            age = None
+            mtime_cdt = str(mtime)
+    return {
+        "run_id": latest_run.get("run_id"),
+        "target_task": latest_run.get("target_task"),
+        "last_generation": latest_run.get("last_generation"),
+        "tripwire": latest_run.get("tripwire"),
+        "updated_at": latest_run.get("updated_at"),
+        "last_result_mtime_cdt": mtime_cdt,
+        "latest_result_age_seconds_at_generation": age,
+        "stale_threshold_seconds": SIA_LITE_RESULT_STALE_SECONDS,
+        "is_stale": bool(age is None or age > SIA_LITE_RESULT_STALE_SECONDS),
+    }
+
+
 def artifact_freshness(generated_dt: datetime) -> dict:
     artifacts = {}
     missing = []
@@ -229,6 +256,7 @@ def main() -> None:
             latest_run["generations"],
             key=lambda row: (row.get("fitness") if row.get("fitness") is not None else -1e9, row.get("generation") or ""),
         )
+    latest_run_state = sia_latest_run_state(latest_run, generated_dt)
     warnings = []
     if not any(line.startswith("arc2_codex_verifier:") for line in sessions):
         warnings.append("arc2_codex_verifier tmux session not visible")
@@ -240,6 +268,8 @@ def main() -> None:
         warnings.append("manual-review candidate present")
     if tripwire_runs:
         warnings.append("SIA-lite tripwire run present")
+    if latest_run_state and latest_run_state["is_stale"]:
+        warnings.append("SIA-lite latest run result stale")
     if refresh.get("failures"):
         warnings.append("refresh command failure")
     if refresh.get("timed_out"):
@@ -314,6 +344,7 @@ def main() -> None:
                 "tripwire": latest_run.get("tripwire"),
                 "best_generation": latest_generation,
             } if latest_run else None,
+            "latest_run_state": latest_run_state,
             "tripwire_runs": tripwire_runs,
             "positive_reductions": len(residuals.get("positive_reductions", []) or []),
         },
