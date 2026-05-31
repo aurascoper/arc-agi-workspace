@@ -27,6 +27,7 @@ FRESHNESS_PATHS = [
     "tmp/codex_sia_all23_sentinel.json",
     "tmp/sia_lite_latest.json",
     "tmp/sia_lite_residual_mining.json",
+    "tmp/sia_search_policy_latest.json",
     "tmp/claude_sketch_enumeration.json",
     "tmp/legend_lattice_synthetic_latest.json",
     "tmp/verifier_refresh_latest.json",
@@ -50,6 +51,7 @@ SAFE_STATUS_PATHS = [
     "tmp/codex_sia_all23_sentinel.json",
     "tmp/sia_lite_latest.json",
     "tmp/sia_lite_residual_mining.json",
+    "tmp/sia_search_policy_latest.json",
     "tmp/claude_sketch_enumeration.json",
     "tmp/legend_lattice_synthetic_latest.json",
     "tmp/verifier_refresh_latest.json",
@@ -238,6 +240,7 @@ def main() -> None:
     synth = load_json("tmp/legend_lattice_synthetic_latest.json") or {}
     sia_latest = load_json("tmp/sia_lite_latest.json") or {}
     residuals = load_json("tmp/sia_lite_residual_mining.json") or {}
+    sia_policy = load_json("tmp/sia_search_policy_latest.json") or {}
     refresh = load_json("tmp/verifier_refresh_latest.json") or {}
     freshness = artifact_freshness(generated_dt)
     status = git_lines(["status", "--short", "--", *SAFE_STATUS_PATHS])
@@ -271,7 +274,7 @@ def main() -> None:
         warnings.append("manual-review candidate present")
     if tripwire_runs:
         warnings.append("SIA-lite tripwire run present")
-    if processes.get("counts", {}).get("sia_lite_worker", 0) == 0:
+    if processes.get("counts", {}).get("sia_lite_worker", 0) == 0 and sia_policy.get("sia_worker_expected", True):
         warnings.append("SIA-lite search worker not active")
     if latest_run_state and latest_run_state["is_stale"]:
         warnings.append("SIA-lite latest run result stale")
@@ -352,6 +355,15 @@ def main() -> None:
             "latest_run_state": latest_run_state,
             "tripwire_runs": tripwire_runs,
             "positive_reductions": len(residuals.get("positive_reductions", []) or []),
+        },
+        "sia_search_policy": {
+            "generated_cdt": sia_policy.get("generated_cdt"),
+            "recommendation": sia_policy.get("recommendation"),
+            "sia_worker_expected": sia_policy.get("sia_worker_expected"),
+            "next_action": sia_policy.get("next_action"),
+            "exhausted_flat_targets": sia_policy.get("exhausted_flat_targets", []),
+            "unprobed_residual_targets": sia_policy.get("unprobed_residual_targets", []),
+            "admissible_signal_targets": sia_policy.get("admissible_signal_targets", []),
         },
         "status": "attention" if warnings else "ok",
         "warnings": warnings,

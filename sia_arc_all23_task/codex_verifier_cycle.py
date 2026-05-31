@@ -34,6 +34,7 @@ SAFE_PATHS = [
     "tmp/claude_sketch_enumeration.json",
     "tmp/sia_lite_latest.json",
     "tmp/sia_lite_residual_mining.json",
+    "tmp/sia_search_policy_latest.json",
     "tmp/dsl_enumeration_latest.json",
     "tmp/codex_sia_all23_sentinel.json",
     "tmp/legend_lattice_synthetic_latest.json",
@@ -68,12 +69,14 @@ def refresh() -> dict:
                     "sia_arc_all23_task/legend_lattice_synthetic.py",
                     "sia_arc_all23_task/write_sia_lite_latest.py",
                     "sia_arc_all23_task/mine_sia_residuals.py",
+                    "sia_arc_all23_task/write_sia_search_policy.py",
                     "sia_arc_all23_task/write_verifier_health.py",
                     "arc2_typed_sketch_enumerator.py", "arc2_sia_all23_sentinel.py"],
         "legend_synth": ["python3", "sia_arc_all23_task/legend_lattice_synthetic.py"],
         "dsl_enum": ["python3", "sia_arc_all23_task/enumerate_dsl.py"],
         "sia_latest": ["python3", "sia_arc_all23_task/write_sia_lite_latest.py"],
         "sia_mine": ["python3", "sia_arc_all23_task/mine_sia_residuals.py"],
+        "sia_policy": ["python3", "sia_arc_all23_task/write_sia_search_policy.py"],
         "sketch_enum": ["python3", "arc2_typed_sketch_enumerator.py"],
         "sentinel": ["python3", "arc2_sia_all23_sentinel.py"],
     }
@@ -131,6 +134,7 @@ def heartbeat_text(refresh_outputs: dict) -> str:
     dsl = load_json("tmp/dsl_enumeration_latest.json") or {}
     sentinel = load_json("tmp/codex_sia_all23_sentinel.json") or {}
     sia_latest = load_json("tmp/sia_lite_latest.json") or {}
+    sia_policy = load_json("tmp/sia_search_policy_latest.json") or {}
     legend_synth = load_json("tmp/legend_lattice_synthetic_latest.json") or {}
     exact = dsl.get("train_exact_tasks", [])
     informative = dsl.get("informative_loo_tasks", [])
@@ -165,6 +169,13 @@ def heartbeat_text(refresh_outputs: dict) -> str:
             f"run_id={latest_run.get('run_id')}, last_generation={latest_run.get('last_generation')}, "
             f"target_task={latest_run.get('target_task')}, "
             f"tripwire={latest_run.get('tripwire')}."
+        )
+    if sia_policy:
+        lines.append(
+            "- SIA search policy: "
+            f"recommendation={sia_policy.get('recommendation')}, "
+            f"worker_expected={sia_policy.get('sia_worker_expected')}, "
+            f"exhausted={sia_policy.get('exhausted_flat_targets')}."
         )
     if failed:
         lines.append(f"- WARNING: refresh command failures={failed}; see cycle stdout/stderr tails in local logs.")
