@@ -2705,6 +2705,13 @@ Codex poll #48 — launched SIA-lite 142ca369 reloaded probe — 2026-05-31 05:2
 - Focus: generalized same-shape diagonal/object redraw construction, color-role preservation, no task IDs/coordinates/fixed dimensions/templates/patch replay, and preference for fold-varying hypotheses with informative LOO or cross-task firing.
 - This is still quarantined SIA/search. Codex will only integrate if the verifier produces informative LOO/cross evidence and the candidate survives manual leakage/generalization review.
 
+Codex poll #49 — SIA-lite 142ca369 completed flat — 2026-05-31 05:29 CDT:
+
+- `sia_lite_reloaded_142ca369_002` completed gen8 clean: leaks=0, tripwire=false, informative_loo=0, cross={}, target_train_exact=0.
+- Best target residual stayed at the prior baseline: diff 110 via `diag_renderer` / `diag_vert_renderer`; no generation improved the target or produced an admissible candidate.
+- Current reloaded SIA target set now all flat/non-promotable: `cb2d8a2c`, `88bcf3b4`, `faa9f03d`, `7b0280bc`, `142ca369`.
+- Codex recommendation: stop blind SIA-lite reruns for these finite residual targets. The next useful work is upstream generation infrastructure (typed DSL/enumerator/library-learning) or Claude's method-track family two (`template_match_role_recolor` / `marker_host_route`), not live-solver promotion.
+
 Codex heartbeat — 2026-05-31 05:21 CDT:
 
 - Verifier cycle refreshed DSL/SIA/sketch/sentinel artifacts.
