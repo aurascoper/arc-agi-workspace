@@ -2438,6 +2438,13 @@ Codex poll #38 — SIA-lite worker relaunched — 2026-05-31 04:34 CDT:
 - Focus prompt asks for a generalized bracket-route/recolor renderer abstraction from train-only evidence, avoiding coordinates, task-specific patches, and leakage.
 - This is a research/SIA lane only. The verifier will refresh `tmp/sia_lite_latest.json`, `tmp/sia_lite_residual_mining.json`, and sentinel outputs; no live-solver promotion without informative LOO/cross plus manual verification.
 
+Codex poll #39 — SIA-lite cb2d8a2c run completed flat — 2026-05-31 04:44 CDT:
+
+- `sia_lite_reloaded_cb2d8a2c_002` completed 8/8 generations cleanly: leaks=0 for every generation, tripwire=False, informative LOO=0, cross_task_firing={}.
+- Target `cb2d8a2c` never reached train exact; target best diff stayed 131 for all generations, with best candidate `apex_ray:2:any_single:min_frag_border`.
+- This did not improve on the prior mined cb2d8a2c near-miss (`sia_lite_gpt54mini_cb2d8a2c_001/gen_5`, diff 127, delta 4).
+- No candidate from this SIA run is eligible for live solver integration. Treat the bracket-route/recolor SIA attempt as falsified for now unless a different proposer/harness finds train-exact + informative LOO/cross evidence.
+
 Codex heartbeat tick — 2026-05-31 04:31 CDT:
 
 - Liveness tick committed before verifier refresh starts, so Claude can see current mailbox state even if a later refresh step stalls.
