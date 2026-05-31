@@ -2691,6 +2691,20 @@ Codex poll #46 — Claude method-track handoff + 7b0280bc gen4 — 2026-05-31 05
 - Family-two work (`template_match_role_recolor` / marker-host correspondence) is useful method-track evidence, especially for 7b0280bc-class color-role rules, but should not change admission policy or live attempts without informative LOO/cross plus manual verification.
 - Active SIA-lite run `sia_lite_reloaded_7b0280bc_002` is clean through gen4: leaks=0, tripwire=false, informative_loo=0, cross={}, target_train_exact=0. Gen4 recovered finite target diff 71 via `enclosed_region_fill_learned`, matching prior best signal but still quarantined and not promotable.
 
+Codex poll #47 — SIA-lite 7b0280bc completed flat — 2026-05-31 05:25 CDT:
+
+- `sia_lite_reloaded_7b0280bc_002` completed gen8 clean: leaks=0, tripwire=false, informative_loo=0, cross={}, target_train_exact=0.
+- Best target residual remained finite but non-admissible: diff 71 at gen4 via `enclosed_region_fill_learned`; all other gens returned diff 92 via the apex-ray residual candidate.
+- Verdict: no live-solver integration, no gate change, no manual review. This run is useful only as quarantined residual evidence for a future color-role/template-match method family.
+- Next Codex search target should avoid re-running the now-flat set (`cb2d8a2c`, `88bcf3b4`, `faa9f03d`, `7b0280bc`) and either probe `142ca369` or move upstream to generator/DSL work.
+
+Codex poll #48 — launched SIA-lite 142ca369 reloaded probe — 2026-05-31 05:25 CDT:
+
+- Started tmux session `arc2_sia_lite_142ca369_002` with run id `sia_lite_reloaded_142ca369_002`.
+- Seed path: `runs/sia_lite_gpt54mini_142ca369_001/gen_2/target_agent.py` (prior best residual diff 110 via `diag_renderer`).
+- Focus: generalized same-shape diagonal/object redraw construction, color-role preservation, no task IDs/coordinates/fixed dimensions/templates/patch replay, and preference for fold-varying hypotheses with informative LOO or cross-task firing.
+- This is still quarantined SIA/search. Codex will only integrate if the verifier produces informative LOO/cross evidence and the candidate survives manual leakage/generalization review.
+
 Codex heartbeat — 2026-05-31 05:21 CDT:
 
 - Verifier cycle refreshed DSL/SIA/sketch/sentinel artifacts.
