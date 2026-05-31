@@ -1,15 +1,15 @@
 {
   "artifact": "verifier_health_latest",
-  "generated_cdt": "2026-05-31 05:26:53 CDT",
+  "generated_cdt": "2026-05-31 05:31:31 CDT",
   "branch": "research/operator-promotion-audit-2026-05-30",
-  "head": "1ecf9279",
+  "head": "82dc47cb",
   "handoff_mirror": {
     "dir": "/tmp/arc_agi_handoff_sync",
     "available": true,
     "branch": "research/deep-research-handoff-2026-05-30",
     "expected_branch": "research/deep-research-handoff-2026-05-30",
-    "head": "bd9e49f5",
-    "origin_head": "bd9e49f5",
+    "head": "53a163f9",
+    "origin_head": "53a163f9",
     "head_matches_origin": true,
     "safe_status": []
   },
@@ -18,59 +18,59 @@
     "heartbeat_stale_seconds": 390,
     "latest": {
       "heartbeat": {
-        "hash": "1ecf9279",
-        "subject": "chore(sync): heartbeat 05:26 CDT",
-        "commit_cdt": "2026-05-31 05:26:48 CDT",
-        "age_seconds_at_generation": 5
+        "hash": "c293e7c8",
+        "subject": "chore(sync): heartbeat 05:30 CDT",
+        "commit_cdt": "2026-05-31 05:30:11 CDT",
+        "age_seconds_at_generation": 80
       },
       "health": {
-        "hash": "a5355c47",
-        "subject": "chore(sync): health 05:21 CDT",
-        "commit_cdt": "2026-05-31 05:21:42 CDT",
-        "age_seconds_at_generation": 311
+        "hash": "e247dc80",
+        "subject": "chore(sync): health 05:26 CDT",
+        "commit_cdt": "2026-05-31 05:26:53 CDT",
+        "age_seconds_at_generation": 278
       }
     }
   },
   "artifact_freshness": {
     "stale_threshold_seconds": 900,
-    "max_age_seconds_at_generation": 96,
+    "max_age_seconds_at_generation": 283,
     "missing": [],
     "stale": [],
     "artifacts": {
       "tmp/dsl_enumeration_latest.json": {
         "exists": true,
-        "mtime_cdt": "2026-05-31 05:25:18 CDT",
-        "age_seconds_at_generation": 94
+        "mtime_cdt": "2026-05-31 05:30:18 CDT",
+        "age_seconds_at_generation": 72
       },
       "tmp/codex_sia_all23_sentinel.json": {
         "exists": true,
         "mtime_cdt": "2026-05-31 05:26:48 CDT",
-        "age_seconds_at_generation": 5
+        "age_seconds_at_generation": 283
       },
       "tmp/sia_lite_latest.json": {
         "exists": true,
-        "mtime_cdt": "2026-05-31 05:25:18 CDT",
-        "age_seconds_at_generation": 94
+        "mtime_cdt": "2026-05-31 05:30:19 CDT",
+        "age_seconds_at_generation": 72
       },
       "tmp/sia_lite_residual_mining.json": {
         "exists": true,
-        "mtime_cdt": "2026-05-31 05:25:18 CDT",
-        "age_seconds_at_generation": 94
+        "mtime_cdt": "2026-05-31 05:30:19 CDT",
+        "age_seconds_at_generation": 72
       },
       "tmp/claude_sketch_enumeration.json": {
         "exists": true,
-        "mtime_cdt": "2026-05-31 05:25:19 CDT",
-        "age_seconds_at_generation": 94
+        "mtime_cdt": "2026-05-31 05:30:19 CDT",
+        "age_seconds_at_generation": 72
       },
       "tmp/legend_lattice_synthetic_latest.json": {
         "exists": true,
-        "mtime_cdt": "2026-05-31 05:25:16 CDT",
-        "age_seconds_at_generation": 96
+        "mtime_cdt": "2026-05-31 05:30:16 CDT",
+        "age_seconds_at_generation": 74
       },
       "tmp/verifier_refresh_latest.json": {
         "exists": true,
         "mtime_cdt": "2026-05-31 05:26:48 CDT",
-        "age_seconds_at_generation": 5
+        "age_seconds_at_generation": 283
       }
     }
   },
@@ -101,24 +101,15 @@
     "available": true,
     "counts": {
       "verifier_loop": 1,
-      "sia_lite_worker": 1,
+      "sia_lite_worker": 0,
       "active_branch_push": 0,
       "github_arc_agi_transfer": 0
     },
     "matching_processes": [
       {
-        "pid": "68170",
-        "ppid": "34104",
-        "etime": "01:10",
-        "categories": [
-          "sia_lite_worker"
-        ],
-        "command": "/opt/homebrew/Cellar/python@3.14/3.14.5/Frameworks/Python.framework/Versions/3.14/Resources/Python.app/Contents/MacOS/Python sia_arc_all23_task/sia_lite_harness.py --run-id sia_lite_reloaded_142ca369_002 --model gpt-4.1-mini --temperature 0.8 --max-gen 8 --target-task 142ca369 --seed-path runs/sia_lite_gpt54mini_142ca369_001/gen_2/target_agent.py --focus Target generalized same-shape construction for diagonal/object redraw tasks: infer abstract draw/fill/extend/render rules from train diffs, preserve colors by role, avoid task IDs, coordinates, fixed dimensions, public templates, or local patch replay; prefer fold-varying hypotheses that can pass informative LOO or cross-task firing."
-      },
-      {
         "pid": "47648",
         "ppid": "34104",
-        "etime": "21:42",
+        "etime": "26:20",
         "categories": [
           "verifier_loop"
         ],
@@ -127,8 +118,7 @@
     ]
   },
   "tmux_sessions": [
-    "arc2_codex_verifier: 1 windows (created Sun May 31 05:05:11 2026)",
-    "arc2_sia_lite_142ca369_002: 1 windows (created Sun May 31 05:25:43 2026)"
+    "arc2_codex_verifier: 1 windows (created Sun May 31 05:05:11 2026)"
   ],
   "safe_status": [],
   "integration_ready": [],
@@ -162,40 +152,42 @@
   "sia_lite": {
     "n_runs": 20,
     "latest_run": {
-      "run_id": "sia_lite_reloaded_7b0280bc_002",
-      "target_task": "7b0280bc",
+      "run_id": "sia_lite_reloaded_142ca369_002",
+      "target_task": "142ca369",
       "last_generation": 8,
       "tripwire": false,
       "best_generation": {
         "generation": "gen_8",
         "status": "success",
-        "fitness": 0.1,
+        "fitness": -0.0,
         "leaks": 0,
         "loo_tasks": 0,
         "cross": {},
-        "train_exact": 2,
-        "shape_exact": 407,
+        "train_exact": 0,
+        "shape_exact": 12,
         "target_train_exact": 0,
         "target_informative_loo": false,
-        "target_shape_exact": 26,
-        "target_best_diff": 92,
-        "target_best_name": "apex_ray:2:away_from_frag:min_frag_border"
+        "target_shape_exact": 1,
+        "target_best_diff": 110,
+        "target_best_name": "diag_renderer:1=fill0,2=fill0,3=fill0,5=fill0"
       }
     },
     "latest_run_state": {
-      "run_id": "sia_lite_reloaded_7b0280bc_002",
-      "target_task": "7b0280bc",
+      "run_id": "sia_lite_reloaded_142ca369_002",
+      "target_task": "142ca369",
       "last_generation": 8,
       "tripwire": false,
-      "updated_at": "2026-05-31T05:24:27-0500",
-      "last_result_mtime_cdt": "2026-05-31 05:24:27 CDT",
-      "latest_result_age_seconds_at_generation": 146,
+      "updated_at": "2026-05-31T05:29:11-0500",
+      "last_result_mtime_cdt": "2026-05-31 05:29:11 CDT",
+      "latest_result_age_seconds_at_generation": 139,
       "stale_threshold_seconds": 1800,
       "is_stale": false
     },
     "tripwire_runs": [],
     "positive_reductions": 1
   },
-  "status": "ok",
-  "warnings": []
+  "status": "attention",
+  "warnings": [
+    "SIA-lite search worker not active"
+  ]
 }
