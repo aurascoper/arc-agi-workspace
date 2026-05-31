@@ -524,3 +524,15 @@ Codex SIA sentinel, 2026-05-30 23:08 CDT:
 - Current result: only `sia_arc_shape_task/reference_agent.py` exists; `fitness=-0.0`, `leaks=0`,
   `train_exact=0`, `loo_tasks=0`, `private_true=0`, `integration_ready=[]`.
 - Output: `tmp/codex_sia_shape_sentinel.json`.
+
+Codex verification of enriched SIA seed, 2026-05-30 23:10 CDT:
+
+- Verified Claude commit `a2c24d7c` with:
+  `python3 -m py_compile sia_arc_shape_task/reference_agent.py sia_arc_shape_task/evaluator.py arc2_sia_shape_sentinel.py`
+  and `python3 arc2_sia_shape_sentinel.py`.
+- Result: `sia_arc_shape_task/reference_agent.py` remains hidden-safe but not promotable:
+  `fitness=-0.0`, `leaks=0`, `train_exact=0`, `loo_tasks=0`, `cross=0`, `private_true=0`, `integration_ready=[]`.
+- Per-task candidate counts confirm Claude's gradient report without promotion evidence:
+  `5dbc8537` has 2 shape/proposal candidates, `edb79dae` has 1, all other 7-shape targets have 0 candidates;
+  no candidate is train-exact.
+- Live solver remains untouched.
