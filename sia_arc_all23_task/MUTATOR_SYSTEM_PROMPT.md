@@ -142,3 +142,32 @@ A generation scores ONLY if all five pass; any failure → discard (score −5 l
 
 Claude runs this checklist read-only on each new generation during the handshake; only checklist-clean
 generations are allowed to contribute promotion evidence.
+
+---
+
+## RUN #2+ DIRECTIVE — replace, don't accumulate (anti-seed-copying)
+
+Run #1 evidence: 8 generations all stayed at `fitness=0.1`; the model PRESERVED the seed and appended
+shape-compatible-but-non-exact families, so `shape_exact` drifted (439→445) but no family reached train-exact.
+Fix the prompt so each generation must EARN its place:
+- REPLACE the single WEAKEST existing family (one that never fires / never reproduces a train-output shape on any
+  of the visible tasks) with the new one. Do NOT grow the module unboundedly; keep it lean so the search explores.
+- Or PARAMETERIZE an existing fixed family to make it fold-varying (turn a constant into a value learned from
+  train diffs). A fixed family that is train-exact is gate-VACUOUS and worth nothing; making it refit per pair is
+  what converts it into promotion evidence.
+
+## TASK-CONDITIONED MODE — the highest-leverage change (do this for run #2)
+
+Generic family-addition cannot reach train-exactness on the 23's hard residual (confirmed independently by run #1
+and by Claude's blind hand-authored batch: 0/23 train-exact). The leverage is CONDITIONING on ONE task:
+- The harness picks ONE renderer-cluster task id (from the renderer=14 set; never `dd6b8c4b`/`3dc255db`, which are
+  closed walls), and INJECTS that task's train input/output pairs verbatim into the mutator prompt.
+- The mutator must propose a family whose transform is TRAIN-EXACT on THAT task's pairs — derived ONLY from the
+  pairs shown (still no task-id literal in the code, no hardcoded output grids; the family must be a general
+  procedure that happens to fit, so it can re-derive under LOO).
+- Reward shaping (non-fitness, for the harness's internal selection): prefer a generation that is train-exact on
+  the target task AND re-derives the same named family on `train[:-1]` (a real fold-varying hit), since THAT is
+  what trips the promotion tripwire.
+- Rationale: an LLM that SEES the input→output diff can infer the specific operation (route, stamp, fill, scale,
+  serialize) for that task; a blind mutator samples the family space with near-zero hit density on a pre-filtered
+  residual. Condition the generation on the evidence.

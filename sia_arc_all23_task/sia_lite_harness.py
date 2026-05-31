@@ -55,12 +55,14 @@ def _call_openai(model: str, temperature: float, messages: list[dict[str, str]],
     key = os.environ.get("OPENAI_API_KEY")
     if not key:
         raise RuntimeError("OPENAI_API_KEY is not set")
-    body = json.dumps({
+    body_obj: dict[str, Any] = {
         "model": model,
         "messages": messages,
         "temperature": temperature,
-        "max_tokens": max_tokens,
-    }).encode()
+    }
+    token_key = "max_completion_tokens" if model.startswith(("gpt-5", "o")) else "max_tokens"
+    body_obj[token_key] = max_tokens
+    body = json.dumps(body_obj).encode()
     req = urllib.request.Request(
         "https://api.openai.com/v1/chat/completions",
         data=body,
@@ -124,8 +126,19 @@ def _cross_task_max(report: dict[str, Any]) -> int:
     return max((len(tids) for tids in cross.values()), default=0)
 
 
-def _summary(report: dict[str, Any]) -> dict[str, Any]:
-    return {
+def _target_row(report: dict[str, Any], target_task: str | None) -> dict[str, Any] | None:
+    if not target_task:
+        return None
+    for row in report.get("tasks", []) or []:
+        if isinstance(row, dict) and row.get("task_id") == target_task:
+            return row
+    return None
+
+
+def _summary(report: dict[str, Any], target_task: str | None = None) -> dict[str, Any]:
+    row = _target_row(report, target_task)
+    best_shape = row.get("best_shape_train_diff") if isinstance(row, dict) else None
+    out = {
         "fitness": report.get("fitness"),
         "status": report.get("status"),
         "leaks": len(report.get("leakage_hits", [])),
@@ -137,16 +150,123 @@ def _summary(report: dict[str, Any]) -> dict[str, Any]:
         ),
         "private_true_total": sum(1 for v in report.get("private_readout", {}).values() if v is True),
     }
+    if row is not None:
+        target_diff = best_shape.get("diff") if isinstance(best_shape, dict) else None
+        out.update({
+            "target_task": target_task,
+            "target_train_exact": row.get("n_train_exact", 0),
+            "target_informative_loo": bool(row.get("informative_loo")),
+            "target_shape_exact": row.get("n_shape_exact", 0),
+            "target_best_shape_diff": target_diff,
+            "target_train_exact_names": row.get("train_exact_names", []),
+        })
+    out["selection_score"] = _selection_score(out)
+    return out
 
 
-def _prompt_for(seed_source: str, best_rows: list[dict[str, Any]]) -> list[dict[str, str]]:
+def _selection_score(summary: dict[str, Any]) -> float:
+    fitness = summary.get("fitness")
+    score = float(fitness if fitness is not None else -100.0)
+    if summary.get("target_task"):
+        if summary.get("target_train_exact", 0):
+            score += 3.0
+        if summary.get("target_informative_loo"):
+            score += 5.0
+        diff = summary.get("target_best_shape_diff")
+        if isinstance(diff, int):
+            score += max(0.0, 1.0 - min(diff, 250) / 250.0)
+        if summary.get("target_shape_exact", 0):
+            score += 0.05
+    return round(score, 4)
+
+
+def _prompt_safe_summary(summary: dict[str, Any]) -> dict[str, Any]:
+    """Drop log-only/private or identity-bearing fields before asking a mutator."""
+    banned = {"private_true_total", "target_task"}
+    return {k: v for k, v in summary.items() if k not in banned}
+
+
+def _load_target_context(target_task: str | None) -> str:
+    if not target_task:
+        return ""
+    path = TASK_DIR / "data" / "public" / f"{target_task}.json"
+    if not path.exists():
+        raise FileNotFoundError(f"unknown --target-task {target_task!r}: {path} does not exist")
+    data = json.loads(path.read_text())
+    train_only = {"train": data.get("train", [])}
+    summary = _target_train_summary(train_only["train"])
+    blob = json.dumps(train_only, separators=(",", ":"))
+    if len(blob) > 50000:
+        blob = json.dumps(train_only, indent=2)[:50000]
+    return f"""Selected task train pairs (task id omitted; do not write any task id or output-template literal in code):
+```json
+{blob}
+```
+
+Train-only diff summary:
+```json
+{json.dumps(summary, separators=(",", ":"))}
+```
+
+Task-conditioned objective for this generation:
+- Replace or parameterize one weak family so it becomes train-exact on the selected task above.
+- Learn all parameters from `train`; do not paste these grids into source code.
+- Prefer a candidate name that encodes learned abstract parameters, not coordinates or task identity.
+"""
+
+
+def _target_train_summary(train: list[dict[str, Any]]) -> list[dict[str, Any]]:
+    rows: list[dict[str, Any]] = []
+    for idx, pair in enumerate(train):
+        gi = pair.get("input", [])
+        go = pair.get("output", [])
+        h = len(gi)
+        w = len(gi[0]) if gi else 0
+        oh = len(go)
+        ow = len(go[0]) if go else 0
+        trans: dict[str, int] = {}
+        changed: list[tuple[int, int]] = []
+        if h == oh and w == ow:
+            for r in range(h):
+                for c in range(w):
+                    a, b = gi[r][c], go[r][c]
+                    if a != b:
+                        trans[f"{a}->{b}"] = trans.get(f"{a}->{b}", 0) + 1
+                        changed.append((r, c))
+        bbox = None
+        if changed:
+            rs = [r for r, _ in changed]
+            cs = [c for _, c in changed]
+            bbox = [min(rs), min(cs), max(rs), max(cs)]
+        rows.append({
+            "pair": idx,
+            "shape": [h, w],
+            "output_shape": [oh, ow],
+            "input_palette": sorted({v for row in gi for v in row}),
+            "output_palette": sorted({v for row in go for v in row}),
+            "changed": len(changed) if h == oh and w == ow else None,
+            "changed_bbox": bbox,
+            "transitions": dict(sorted(trans.items(), key=lambda kv: (-kv[1], kv[0]))[:12]),
+        })
+    return rows
+
+
+def _prompt_for(
+    seed_source: str,
+    best_rows: list[dict[str, Any]],
+    target_context: str = "",
+    focus: str = "",
+) -> list[dict[str, str]]:
     score_text = json.dumps(best_rows, indent=2)[:12000]
+    focus_text = f"\nAdditional focus from harness:\n{focus.strip()}\n" if focus.strip() else ""
+    target_text = f"\n{target_context}\n" if target_context else ""
     user = f"""Mutate the current best ARC2 SIA target agent.
 
 Current best score summaries:
 ```json
 {score_text}
 ```
+{target_text}{focus_text}
 
 Current best module:
 ```python
@@ -166,6 +286,7 @@ def run(args: argparse.Namespace) -> dict[str, Any]:
     run_root = WORKSPACE / "runs" / args.run_id
     run_root.mkdir(parents=True, exist_ok=True)
     evaluator = _load_evaluator()
+    target_context = _load_target_context(args.target_task)
     population: list[dict[str, Any]] = []
     seed_source = REFERENCE.read_text()
 
@@ -173,7 +294,7 @@ def run(args: argparse.Namespace) -> dict[str, Any]:
     seed_dir.mkdir(exist_ok=True)
     (seed_dir / "target_agent.py").write_text(seed_source)
     seed_report = _score(seed_dir)
-    population.append({"path": str(seed_dir / "target_agent.py"), "summary": _summary(seed_report)})
+    population.append({"path": str(seed_dir / "target_agent.py"), "summary": _summary(seed_report, args.target_task)})
 
     if args.dry_run:
         out = {"run_id": args.run_id, "dry_run": True, "population": population}
@@ -183,14 +304,19 @@ def run(args: argparse.Namespace) -> dict[str, Any]:
     for gen in range(1, args.max_gen + 1):
         gen_dir = run_root / f"gen_{gen}"
         gen_dir.mkdir(exist_ok=True)
-        best = max(population, key=lambda row: row["summary"].get("fitness", -999))
+        best = max(population, key=lambda row: row["summary"].get("selection_score", -999))
         seed_source = Path(best["path"]).read_text()
         gen_meta: dict[str, Any] = {"generation": gen, "seed": best}
         try:
             content = _call_openai(
                 args.model,
                 args.temperature,
-                _prompt_for(seed_source, [p["summary"] for p in population]),
+                _prompt_for(
+                    seed_source,
+                    [_prompt_safe_summary(p["summary"]) for p in population],
+                    target_context,
+                    args.focus,
+                ),
                 args.max_tokens,
             )
             code = _extract_python(content)
@@ -198,7 +324,7 @@ def run(args: argparse.Namespace) -> dict[str, Any]:
         except Exception as exc:
             gen_meta.update({"status": "generation_error", "error": str(exc), "fitness": -100.0})
             _write_json(gen_dir / "results.json", gen_meta)
-            population.append({"path": str(gen_dir / "target_agent.py"), "summary": _summary(gen_meta)})
+            population.append({"path": str(gen_dir / "target_agent.py"), "summary": _summary(gen_meta, args.target_task)})
             break
 
         agent = gen_dir / "target_agent.py"
@@ -220,8 +346,12 @@ def run(args: argparse.Namespace) -> dict[str, Any]:
                 report["pre_score_gate"] = gen_meta
                 gen_meta = report
         _write_json(gen_dir / "generation_meta.json", gen_meta)
-        population.append({"path": str(agent), "summary": _summary(gen_meta)})
-        population = sorted(population, key=lambda row: row["summary"].get("fitness", -999), reverse=True)[:args.top_k]
+        population.append({"path": str(agent), "summary": _summary(gen_meta, args.target_task)})
+        population = sorted(
+            population,
+            key=lambda row: row["summary"].get("selection_score", -999),
+            reverse=True,
+        )[:args.top_k]
         state = {"run_id": args.run_id, "population": population, "last_generation": gen}
         _write_json(run_root / "state.json", state)
         if _loo_count(gen_meta) >= 1 or _cross_task_max(gen_meta) >= 2:
@@ -241,6 +371,8 @@ def main() -> None:
     ap.add_argument("--top-k", type=int, default=4)
     ap.add_argument("--max-tokens", type=int, default=16000)
     ap.add_argument("--sleep", type=float, default=0.0)
+    ap.add_argument("--target-task", help="Inject this public task's train pairs into the mutator prompt; id is omitted from the prompt.")
+    ap.add_argument("--focus", default="", help="Additional train-only mutation guidance appended to the user prompt.")
     ap.add_argument("--dry-run", action="store_true")
     args = ap.parse_args()
     out = run(args)
