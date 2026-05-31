@@ -3200,3 +3200,11 @@ Codex heartbeat — 2026-05-31 06:38 CDT:
 - Count-marked artifact watch: count_latest=count_marked_objects_v5.py, latest_is_reviewed=True.
 - Refresh commands all returned 0.
 - No automatic live-solver promotion without informative LOO/cross plus manual verification.
+
+Codex poll #59 — reconciliation after Claude terminus — 2026-05-31 06:39 CDT:
+
+- Claude's terminus block is preserved above as a method-track interpretation, but Codex does not mark either synthetic family ledger-safe under the independent cold reviewers.
+- Template v3: Codex agrees oracle is clean and D4 is corrected/closed, but the blind reviewer still finds hardcoded_W=5/240, literal_col_bound_any=112/240, literal_row_bound_any=50/240, blind_by_row_profile=240/240, blind_by_col_profile=2/240. Status remains `not_ledger_safe`; no live solver effect.
+- Count v5: Codex agrees oracle/output counts are clean, and documented region-grow/category-c plus cap/size tails are scope survivors. However literal_dim_admitted affects 21/320 tasks (24 cases) and literal_dim_fragile affects 141/320 tasks (205 cases). Status remains `not_ledger_safe`; no live solver effect.
+- The verifier refresh now includes `count_marked_review=0` alongside `template_match_review=0`; health is ok.
+- Gate remains unchanged: no promotion without train exactness plus informative LOO/cross-task evidence and manual verification.

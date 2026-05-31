@@ -1,15 +1,15 @@
 {
   "artifact": "verifier_health_latest",
-  "generated_cdt": "2026-05-31 06:38:55 CDT",
+  "generated_cdt": "2026-05-31 06:39:44 CDT",
   "branch": "research/operator-promotion-audit-2026-05-30",
-  "head": "b9e306ab",
+  "head": "5b45983f",
   "handoff_mirror": {
     "dir": "/tmp/arc_agi_handoff_sync",
     "available": true,
     "branch": "research/deep-research-handoff-2026-05-30",
     "expected_branch": "research/deep-research-handoff-2026-05-30",
-    "head": "55f7a292",
-    "origin_head": "55f7a292",
+    "head": "daf87cc9",
+    "origin_head": "daf87cc9",
     "head_matches_origin": true,
     "safe_status": []
   },
@@ -17,85 +17,85 @@
     "available": true,
     "heartbeat_stale_seconds": 390,
     "latest": {
+      "health": {
+        "hash": "33571165",
+        "subject": "chore(sync): health 06:38 CDT",
+        "commit_cdt": "2026-05-31 06:38:55 CDT",
+        "age_seconds_at_generation": 49
+      },
       "heartbeat": {
         "hash": "b9e306ab",
         "subject": "chore(sync): heartbeat 06:38 CDT",
         "commit_cdt": "2026-05-31 06:38:49 CDT",
-        "age_seconds_at_generation": 6
-      },
-      "health": {
-        "hash": "e70609c5",
-        "subject": "chore(sync): health ok after v3 count reviews 06:35 CDT",
-        "commit_cdt": "2026-05-31 06:35:14 CDT",
-        "age_seconds_at_generation": 221
+        "age_seconds_at_generation": 55
       }
     }
   },
   "artifact_freshness": {
     "stale_threshold_seconds": 900,
-    "max_age_seconds_at_generation": 206,
+    "max_age_seconds_at_generation": 256,
     "missing": [],
     "stale": [],
     "artifacts": {
       "tmp/dsl_enumeration_latest.json": {
         "exists": true,
         "mtime_cdt": "2026-05-31 06:35:30 CDT",
-        "age_seconds_at_generation": 204
+        "age_seconds_at_generation": 254
       },
       "tmp/codex_sia_all23_sentinel.json": {
         "exists": true,
         "mtime_cdt": "2026-05-31 06:38:49 CDT",
-        "age_seconds_at_generation": 5
+        "age_seconds_at_generation": 54
       },
       "tmp/sia_lite_latest.json": {
         "exists": true,
         "mtime_cdt": "2026-05-31 06:35:30 CDT",
-        "age_seconds_at_generation": 204
+        "age_seconds_at_generation": 254
       },
       "tmp/sia_lite_residual_mining.json": {
         "exists": true,
         "mtime_cdt": "2026-05-31 06:35:30 CDT",
-        "age_seconds_at_generation": 204
+        "age_seconds_at_generation": 254
       },
       "tmp/sia_search_policy_latest.json": {
         "exists": true,
         "mtime_cdt": "2026-05-31 06:35:30 CDT",
-        "age_seconds_at_generation": 204
+        "age_seconds_at_generation": 253
       },
       "tmp/claude_artifact_watch_latest.json": {
         "exists": true,
         "mtime_cdt": "2026-05-31 06:37:29 CDT",
-        "age_seconds_at_generation": 86
+        "age_seconds_at_generation": 135
       },
       "tmp/synthetic_family_ledger_latest.json": {
         "exists": true,
         "mtime_cdt": "2026-05-31 06:37:29 CDT",
-        "age_seconds_at_generation": 85
+        "age_seconds_at_generation": 135
       },
       "tmp/template_match_role_recolor_latest_review.json": {
         "exists": true,
         "mtime_cdt": "2026-05-31 06:35:33 CDT",
-        "age_seconds_at_generation": 201
+        "age_seconds_at_generation": 251
       },
       "tmp/count_marked_objects_latest_review.json": {
         "exists": true,
         "mtime_cdt": "2026-05-31 06:37:29 CDT",
-        "age_seconds_at_generation": 86
+        "age_seconds_at_generation": 135
       },
       "tmp/claude_sketch_enumeration.json": {
         "exists": true,
         "mtime_cdt": "2026-05-31 06:37:29 CDT",
-        "age_seconds_at_generation": 85
+        "age_seconds_at_generation": 135
       },
       "tmp/legend_lattice_synthetic_latest.json": {
         "exists": true,
         "mtime_cdt": "2026-05-31 06:35:28 CDT",
-        "age_seconds_at_generation": 206
+        "age_seconds_at_generation": 256
       },
       "tmp/verifier_refresh_latest.json": {
         "exists": true,
         "mtime_cdt": "2026-05-31 06:38:49 CDT",
-        "age_seconds_at_generation": 5
+        "age_seconds_at_generation": 54
       }
     }
   },
@@ -144,7 +144,7 @@
       {
         "pid": "39135",
         "ppid": "39134",
-        "etime": "03:33",
+        "etime": "04:22",
         "categories": [
           "verifier_loop"
         ],
@@ -214,7 +214,7 @@
       "tripwire": false,
       "updated_at": "2026-05-31T05:29:11-0500",
       "last_result_mtime_cdt": "2026-05-31 05:29:11 CDT",
-      "latest_result_age_seconds_at_generation": 4183,
+      "latest_result_age_seconds_at_generation": 4232,
       "stale_threshold_seconds": 1800,
       "is_stale": true
     },
