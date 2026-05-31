@@ -18,6 +18,7 @@ import sys
 import time
 import urllib.error
 import urllib.request
+from copy import deepcopy
 from pathlib import Path
 from typing import Any
 
@@ -187,14 +188,17 @@ def _prompt_safe_summary(summary: dict[str, Any]) -> dict[str, Any]:
     return {k: v for k, v in summary.items() if k not in banned}
 
 
-def _load_target_context(target_task: str | None) -> str:
-    if not target_task:
-        return ""
+def _load_target_train(target_task: str) -> list[dict[str, Any]]:
     path = TASK_DIR / "data" / "public" / f"{target_task}.json"
     if not path.exists():
         raise FileNotFoundError(f"unknown --target-task {target_task!r}: {path} does not exist")
-    data = json.loads(path.read_text())
-    train_only = {"train": data.get("train", [])}
+    return json.loads(path.read_text()).get("train", [])
+
+
+def _load_target_context(target_task: str | None) -> str:
+    if not target_task:
+        return ""
+    train_only = {"train": _load_target_train(target_task)}
     summary = _target_train_summary(train_only["train"])
     blob = json.dumps(train_only, separators=(",", ":"))
     if len(blob) > 50000:
@@ -252,22 +256,98 @@ def _target_train_summary(train: list[dict[str, Any]]) -> list[dict[str, Any]]:
     return rows
 
 
+def _load_agent(path: Path):
+    spec = importlib.util.spec_from_file_location("sia_lite_seed_agent", path)
+    mod = importlib.util.module_from_spec(spec)
+    assert spec.loader is not None
+    spec.loader.exec_module(mod)
+    return mod
+
+
+def _seed_residual_context(seed_path: Path, target_task: str | None, evaluator: Any) -> str:
+    if not target_task:
+        return ""
+    try:
+        train = _load_target_train(target_task)
+        agent = _load_agent(seed_path)
+        cands = agent.propose(deepcopy(train)) or []
+        diag = evaluator.candidate_train_diagnostics(cands, train)
+    except Exception as exc:
+        return f"\nCurrent seed residual report unavailable: {type(exc).__name__}\n"
+    best = min(
+        (row for row in diag if row.get("shape_exact") and row.get("train_diff") is not None),
+        key=lambda row: row["train_diff"],
+        default=None,
+    )
+    if not best:
+        return "\nCurrent seed residual report: no shape-exact candidate on selected task.\n"
+    transform = None
+    for name, cand in cands:
+        if name == best["name"]:
+            transform = cand
+            break
+    residuals = []
+    if transform is not None:
+        for idx, pair in enumerate(train):
+            try:
+                pred = evaluator._call(transform, deepcopy(pair["input"]))
+                out = pair["output"]
+                if evaluator.dims(pred) != evaluator.dims(out):
+                    residuals.append({"pair": idx, "shape_mismatch": [evaluator.dims(pred), evaluator.dims(out)]})
+                    continue
+                changed = []
+                transitions: dict[str, int] = {}
+                pp = evaluator.norm(pred)
+                oo = evaluator.norm(out)
+                for r, (pr, orow) in enumerate(zip(pp, oo)):
+                    for c, (a, b) in enumerate(zip(pr, orow)):
+                        if a != b:
+                            changed.append((r, c))
+                            transitions[f"{a}->{b}"] = transitions.get(f"{a}->{b}", 0) + 1
+                bbox = None
+                if changed:
+                    rs = [r for r, _ in changed]
+                    cs = [c for _, c in changed]
+                    bbox = [min(rs), min(cs), max(rs), max(cs)]
+                residuals.append({
+                    "pair": idx,
+                    "diff": len(changed),
+                    "bbox": bbox,
+                    "transitions": dict(sorted(transitions.items(), key=lambda kv: (-kv[1], kv[0]))[:12]),
+                })
+            except Exception as exc:
+                residuals.append({"pair": idx, "error": type(exc).__name__})
+    report = {
+        "best_seed_candidate": best["name"],
+        "train_diff": best["train_diff"],
+        "per_pair_diff": best["per_pair_diff"],
+        "residuals": residuals,
+    }
+    return f"""Current seed train-residual report (train-only; use this to hill-climb, not to paste coordinates):
+```json
+{json.dumps(report, separators=(",", ":"))}
+```
+"""
+
+
 def _prompt_for(
     seed_source: str,
     best_rows: list[dict[str, Any]],
     target_context: str = "",
+    residual_context: str = "",
     focus: str = "",
 ) -> list[dict[str, str]]:
     score_text = json.dumps(best_rows, indent=2)[:12000]
     focus_text = f"\nAdditional focus from harness:\n{focus.strip()}\n" if focus.strip() else ""
     target_text = f"\n{target_context}\n" if target_context else ""
+    residual_text = f"\n{residual_context}\n" if residual_context else ""
     user = f"""Mutate the current best ARC2 SIA target agent.
 
 Current best score summaries:
 ```json
 {score_text}
 ```
-{target_text}{focus_text}
+{target_text}{residual_text}{focus_text}
 
 Current best module:
 ```python
@@ -319,6 +399,7 @@ def run(args: argparse.Namespace) -> dict[str, Any]:
                     seed_source,
                     [_prompt_safe_summary(p["summary"]) for p in population],
                     target_context,
+                    _seed_residual_context(Path(best["path"]), args.target_task, evaluator),
                     args.focus,
                 ),
                 args.max_tokens,
