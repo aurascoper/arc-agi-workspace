@@ -1,15 +1,15 @@
 {
   "artifact": "verifier_health_latest",
-  "generated_cdt": "2026-05-31 06:49:12 CDT",
+  "generated_cdt": "2026-05-31 06:49:56 CDT",
   "branch": "research/operator-promotion-audit-2026-05-30",
-  "head": "fe8f4ae7",
+  "head": "c38b4e80",
   "handoff_mirror": {
     "dir": "/tmp/arc_agi_handoff_sync",
     "available": true,
     "branch": "research/deep-research-handoff-2026-05-30",
     "expected_branch": "research/deep-research-handoff-2026-05-30",
-    "head": "f26572c7",
-    "origin_head": "f26572c7",
+    "head": "98578671",
+    "origin_head": "98578671",
     "head_matches_origin": true,
     "safe_status": []
   },
@@ -17,85 +17,85 @@
     "available": true,
     "heartbeat_stale_seconds": 390,
     "latest": {
+      "health": {
+        "hash": "c38b4e80",
+        "subject": "chore(sync): health 06:49 CDT",
+        "commit_cdt": "2026-05-31 06:49:12 CDT",
+        "age_seconds_at_generation": 44
+      },
       "heartbeat": {
         "hash": "fe8f4ae7",
         "subject": "chore(sync): heartbeat 06:49 CDT",
         "commit_cdt": "2026-05-31 06:49:07 CDT",
-        "age_seconds_at_generation": 5
-      },
-      "health": {
-        "hash": "49f69204",
-        "subject": "chore(sync): health ok after synthetic refresh 06:48 CDT",
-        "commit_cdt": "2026-05-31 06:48:37 CDT",
-        "age_seconds_at_generation": 35
+        "age_seconds_at_generation": 49
       }
     }
   },
   "artifact_freshness": {
     "stale_threshold_seconds": 900,
-    "max_age_seconds_at_generation": 224,
+    "max_age_seconds_at_generation": 268,
     "missing": [],
     "stale": [],
     "artifacts": {
       "tmp/dsl_enumeration_latest.json": {
         "exists": true,
         "mtime_cdt": "2026-05-31 06:45:29 CDT",
-        "age_seconds_at_generation": 222
+        "age_seconds_at_generation": 266
       },
       "tmp/codex_sia_all23_sentinel.json": {
         "exists": true,
         "mtime_cdt": "2026-05-31 06:49:06 CDT",
-        "age_seconds_at_generation": 5
+        "age_seconds_at_generation": 49
       },
       "tmp/sia_lite_latest.json": {
         "exists": true,
         "mtime_cdt": "2026-05-31 06:45:30 CDT",
-        "age_seconds_at_generation": 222
+        "age_seconds_at_generation": 266
       },
       "tmp/sia_lite_residual_mining.json": {
         "exists": true,
         "mtime_cdt": "2026-05-31 06:45:30 CDT",
-        "age_seconds_at_generation": 222
+        "age_seconds_at_generation": 266
       },
       "tmp/sia_search_policy_latest.json": {
         "exists": true,
         "mtime_cdt": "2026-05-31 06:45:30 CDT",
-        "age_seconds_at_generation": 222
+        "age_seconds_at_generation": 266
       },
       "tmp/claude_artifact_watch_latest.json": {
         "exists": true,
         "mtime_cdt": "2026-05-31 06:47:45 CDT",
-        "age_seconds_at_generation": 86
+        "age_seconds_at_generation": 130
       },
       "tmp/synthetic_family_ledger_latest.json": {
         "exists": true,
         "mtime_cdt": "2026-05-31 06:47:45 CDT",
-        "age_seconds_at_generation": 86
+        "age_seconds_at_generation": 130
       },
       "tmp/template_match_role_recolor_latest_review.json": {
         "exists": true,
         "mtime_cdt": "2026-05-31 06:46:48 CDT",
-        "age_seconds_at_generation": 143
+        "age_seconds_at_generation": 187
       },
       "tmp/count_marked_objects_latest_review.json": {
         "exists": true,
         "mtime_cdt": "2026-05-31 06:47:57 CDT",
-        "age_seconds_at_generation": 74
+        "age_seconds_at_generation": 118
       },
       "tmp/claude_sketch_enumeration.json": {
         "exists": true,
         "mtime_cdt": "2026-05-31 06:47:46 CDT",
-        "age_seconds_at_generation": 85
+        "age_seconds_at_generation": 129
       },
       "tmp/legend_lattice_synthetic_latest.json": {
         "exists": true,
         "mtime_cdt": "2026-05-31 06:45:27 CDT",
-        "age_seconds_at_generation": 224
+        "age_seconds_at_generation": 268
       },
       "tmp/verifier_refresh_latest.json": {
         "exists": true,
         "mtime_cdt": "2026-05-31 06:49:07 CDT",
-        "age_seconds_at_generation": 5
+        "age_seconds_at_generation": 49
       }
     }
   },
@@ -138,22 +138,13 @@
       "verifier_loop": 1,
       "sia_lite_worker": 0,
       "active_branch_push": 0,
-      "github_arc_agi_transfer": 1
+      "github_arc_agi_transfer": 0
     },
     "matching_processes": [
       {
-        "pid": "53396",
-        "ppid": "53364",
-        "etime": "00:01",
-        "categories": [
-          "github_arc_agi_transfer"
-        ],
-        "command": "/opt/homebrew/bin/ssh -o SendEnv=GIT_PROTOCOL git@github.com git-upload-pack 'aurascoper/arc-agi-workspace.git'"
-      },
-      {
         "pid": "39135",
         "ppid": "39134",
-        "etime": "13:50",
+        "etime": "14:34",
         "categories": [
           "verifier_loop"
         ],
@@ -223,7 +214,7 @@
       "tripwire": false,
       "updated_at": "2026-05-31T05:29:11-0500",
       "last_result_mtime_cdt": "2026-05-31 05:29:11 CDT",
-      "latest_result_age_seconds_at_generation": 4800,
+      "latest_result_age_seconds_at_generation": 4844,
       "stale_threshold_seconds": 1800,
       "is_stale": true
     },
@@ -416,8 +407,6 @@
       "sia_recommendation": "idle_exhausted_sia_queue"
     }
   },
-  "status": "attention",
-  "warnings": [
-    "arc-agi GitHub transfer process visible at health generation"
-  ]
+  "status": "ok",
+  "warnings": []
 }
