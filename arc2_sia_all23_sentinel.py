@@ -13,6 +13,7 @@ TASK_DIR = WORKSPACE / "sia_arc_all23_task"
 EVALUATOR = TASK_DIR / "evaluator.py"
 OUT_JSON = WORKSPACE / "tmp" / "codex_sia_all23_sentinel.json"
 RUN_DIRS = (TASK_DIR / "runs", WORKSPACE / "runs")
+DSL_FRONTIER_JSON = WORKSPACE / "tmp" / "dsl_enumeration_latest.json"
 
 
 def agent_paths() -> list[Path]:
@@ -102,17 +103,40 @@ def integration_ready(report: dict[str, Any]) -> bool:
     return bool(report.get("cross_task_firing"))
 
 
+def dsl_manual_review_candidates() -> list[dict[str, Any]]:
+    if not DSL_FRONTIER_JSON.exists():
+        return []
+    try:
+        data = json.loads(DSL_FRONTIER_JSON.read_text())
+    except Exception:
+        return []
+    out = []
+    for row in data.get("manual_review_candidates", []) or []:
+        if not isinstance(row, dict):
+            continue
+        out.append({
+            "task_id": row.get("task_id"),
+            "signature": row.get("signature"),
+            "promotion_blockers": row.get("promotion_blockers", []),
+            "manual_review_reason": row.get("manual_review_reason"),
+        })
+    return out
+
+
 def main() -> None:
     OUT_JSON.parent.mkdir(exist_ok=True)
     reports = [run_eval(path) for path in agent_paths()]
     for report in reports:
         report["integration_ready"] = integration_ready(report)
     ready = [r for r in reports if r.get("integration_ready")]
+    manual_review = dsl_manual_review_candidates()
     out = {
         "lane": "sia_all23_sentinel",
         "agents": reports,
         "integration_ready": [r["agent"] for r in ready],
         "integration_ready_bool": bool(ready),
+        "manual_review_candidates": manual_review,
+        "manual_review_bool": bool(manual_review),
     }
     OUT_JSON.write_text(json.dumps(out, indent=2))
     print("Codex SIA all-23 sentinel")
@@ -127,6 +151,7 @@ def main() -> None:
         if report.get("top_train_exact_names"):
             print(f"    train_exact_name_tasks={report['top_train_exact_names']}")
     print(f"integration_ready={[r['agent'] for r in ready]}")
+    print(f"manual_review_candidates={[(r.get('task_id'), r.get('signature')) for r in manual_review]}")
     print(f"wrote {OUT_JSON.relative_to(WORKSPACE)}")
 
 

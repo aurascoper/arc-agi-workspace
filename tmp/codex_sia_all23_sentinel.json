@@ -2424,5 +2424,16 @@
     }
   ],
   "integration_ready": [],
-  "integration_ready_bool": false
+  "integration_ready_bool": false,
+  "manual_review_candidates": [
+    {
+      "task_id": "d8e07eb2",
+      "signature": "legend_component_underfill|legend_component_underfill(bg_draw_color,legend_footer_alt_color,legend_footer_height)",
+      "promotion_blockers": [
+        "no_informative_loo_or_cross"
+      ],
+      "manual_review_reason": "train-exact, magic-clean, LOO-passing, synthetic-invariance-clean; blocked only by no informative LOO/cross evidence"
+    }
+  ],
+  "manual_review_bool": true
 }
