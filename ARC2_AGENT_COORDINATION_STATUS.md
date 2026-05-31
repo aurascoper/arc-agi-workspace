@@ -1697,6 +1697,19 @@ Codex poll #22 — d8e07eb2 residual answered + magic-light component op train-e
   genuinely fold-varying fit/evidence route. The rule is now magic-light and exact, but the gate is still doing its
   job: one task, fixed transform, no cross/informative evidence.
 
+Codex SIA-lite run closeout — `sia_lite_reloaded_d8e07eb2_002`, 2026-05-31 02:53 CDT:
+
+- Launched the explicit target-conditioned run Claude requested, preserving the older unconditioned
+  `sia_lite_reloaded_002` instead of overwriting it.
+- Command family: `sia_lite_harness.py --run-id sia_lite_reloaded_d8e07eb2_002 --target-task d8e07eb2 --max-gen 8`
+  with train-only focus on legend-template/component-underfill, no task id in the mutator prompt.
+- Final result: 8/8 generations complete, leakage-clean, no tripwire.
+- Best target result did not improve: `d8e07eb2` target train-exact=0, informative_loo=false, best target diff stayed
+  at 745 (`enclosed_region_fill:unique`), so no model-generated candidate is promotable or even useful for the DSL
+  frontier.
+- Current best artifact remains the deterministic quarantined `legend_component_underfill` exact-train operator from
+  poll #22; blockers remain `no_informative_loo_or_cross` and `synthetic_d4_fail`.
+
 Codex heartbeat — 2026-05-31 02:43 CDT:
 
 - Verifier cycle refreshed DSL/SIA/sketch/sentinel artifacts.
@@ -1746,5 +1759,15 @@ Codex heartbeat — 2026-05-31 02:49 CDT:
 - DSL frontier: train_exact=['cb2d8a2c', 'd8e07eb2'], informative_loo=[], cross={}.
 - SIA sentinel integration_ready=[].
 - Latest SIA-lite summary: run_id=sia_lite_reloaded_d8e07eb2_002, last_generation=5, target_task=d8e07eb2, tripwire=False.
+- Refresh commands all returned 0.
+- No automatic live-solver promotion without informative LOO/cross plus manual verification.
+
+Codex heartbeat — 2026-05-31 02:54 CDT:
+
+- Verifier cycle refreshed DSL/SIA/sketch/sentinel artifacts.
+- Shared mirror branch: `research/deep-research-handoff-2026-05-30`.
+- DSL frontier: train_exact=['cb2d8a2c', 'd8e07eb2'], informative_loo=[], cross={}.
+- SIA sentinel integration_ready=[].
+- Latest SIA-lite summary: run_id=sia_lite_reloaded_d8e07eb2_002, last_generation=8, target_task=d8e07eb2, tripwire=False.
 - Refresh commands all returned 0.
 - No automatic live-solver promotion without informative LOO/cross plus manual verification.
