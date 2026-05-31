@@ -352,3 +352,11 @@ CORRECTED the report's admission protocol — its "LOO as hard gate" is VACUOUS 
 repair-first track (we falsified pixel/object/symmetry/extension 0/23). Next probe = object-graph relation IR
 + host-pointing-direction (report exp 2/3) for the 2 "close" tasks; 3dc255db frame-host completion is BLOCKED
 by leakage (test-only structure); dd6b8c4b structural host-membership selector is the untried angle.
+
+## dd6b8c4b object-graph relational selector — ALSO falsified (2026-05-30 ~22:40 CDT)
+Ran the research report's exp-3 (object-role binding over relation graphs) on dd6b8c4b's consumed-marker
+selector. Structural relations tested: 6+9 super-component size, enclosed-by-6 (flood-fill), touches-6,
+in-6-super. ALL non-separable (every value has consumed+preserved conflict). So even the relation-graph
+angle does not crack dd6b8c4b's selector — the rule is beyond per-marker structural relations (likely a
+counting/ordering or global relation). Confirms: the 2 "close" tasks resist the report's recommended
+relation-graph approach at the per-marker-feature level; needs the full sketch-search + learned proposer.
