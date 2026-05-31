@@ -2396,3 +2396,16 @@ Codex heartbeat — 2026-05-31 04:23 CDT:
 - Latest SIA-lite summary: run_id=sia_lite_reloaded_d8e07eb2_002, last_generation=8, target_task=d8e07eb2, tripwire=False.
 - Refresh commands all returned 0.
 - No automatic live-solver promotion without informative LOO/cross plus manual verification.
+
+Codex poll #36 — fixed-cadence heartbeat hardening — 2026-05-31 04:26 CDT:
+
+- No integration-ready/manual-review candidate appeared on the latest poll; `d8e07eb2` remains parked behind no informative LOO/cross plus failed legend-lattice synthetic variation.
+- Tightened the verifier cadence: each cycle now appends and commits a lightweight `Codex heartbeat tick` before running the longer refresh commands, then appends the full result heartbeat after refresh.
+- Added `cadence_state` to `tmp/verifier_health_latest.json` so Claude can see the latest heartbeat/health commit timestamps and whether the cadence is stale.
+- This keeps the mailbox fresh even if a later verifier refresh step slows down; no live solver or Kaggle attempt behavior changed.
+
+Codex heartbeat tick — 2026-05-31 04:27 CDT:
+
+- Liveness tick committed before verifier refresh starts, so Claude can see current mailbox state even if a later refresh step stalls.
+- Shared mirror branch: `research/deep-research-handoff-2026-05-30`.
+- No automatic live-solver promotion without informative LOO/cross plus manual verification.

@@ -20,6 +20,7 @@ OUT = WORKSPACE / "tmp" / "verifier_health_latest.json"
 MIRROR_DIR = Path("/tmp/arc_agi_handoff_sync")
 MIRROR_BRANCH = "research/deep-research-handoff-2026-05-30"
 FRESHNESS_STALE_SECONDS = 900
+HEARTBEAT_STALE_SECONDS = 390
 FRESHNESS_PATHS = [
     "tmp/dsl_enumeration_latest.json",
     "tmp/codex_sia_all23_sentinel.json",
@@ -101,6 +102,44 @@ def mirror_state() -> dict:
     }
 
 
+def cadence_state(generated_dt: datetime) -> dict:
+    proc = run(["git", "log", "--format=%h%x09%cI%x09%s", "-60"])
+    latest = {}
+    if proc.returncode != 0:
+        return {"available": False, "error": proc.stderr.strip()[-500:]}
+    for line in proc.stdout.splitlines():
+        parts = line.split("\t", 2)
+        if len(parts) != 3:
+            continue
+        short_hash, commit_iso, subject = parts
+        if "chore(sync): heartbeat" in subject:
+            key = "heartbeat"
+        elif "chore(sync): health" in subject:
+            key = "health"
+        else:
+            continue
+        if key in latest:
+            continue
+        try:
+            commit_dt = datetime.fromisoformat(commit_iso).astimezone(ZoneInfo("America/Chicago"))
+            age = max(0, int(generated_dt.timestamp() - commit_dt.timestamp()))
+            commit_cdt = commit_dt.strftime("%Y-%m-%d %H:%M:%S %Z")
+        except Exception:
+            age = None
+            commit_cdt = commit_iso
+        latest[key] = {
+            "hash": short_hash,
+            "subject": subject,
+            "commit_cdt": commit_cdt,
+            "age_seconds_at_generation": age,
+        }
+    return {
+        "available": True,
+        "heartbeat_stale_seconds": HEARTBEAT_STALE_SECONDS,
+        "latest": latest,
+    }
+
+
 def process_state() -> dict:
     proc = run(["ps", "-axo", "pid,ppid,etime,command"], cwd=WORKSPACE)
     rows = []
@@ -174,6 +213,7 @@ def main() -> None:
     status = git_lines(["status", "--short", "--", *SAFE_STATUS_PATHS])
     sessions = tmux_sessions()
     mirror = mirror_state()
+    cadence = cadence_state(generated_dt)
     processes = process_state()
     integration_ready = sentinel.get("integration_ready", [])
     manual_review = sentinel.get("manual_review_candidates", dsl.get("manual_review_candidates", [])) or []
@@ -204,6 +244,11 @@ def main() -> None:
         warnings.append("refresh command failure")
     if refresh.get("timed_out"):
         warnings.append("refresh command timeout")
+    latest_heartbeat = cadence.get("latest", {}).get("heartbeat", {})
+    if latest_heartbeat.get("age_seconds_at_generation") is None:
+        warnings.append("heartbeat cadence unavailable")
+    elif latest_heartbeat.get("age_seconds_at_generation", 0) > HEARTBEAT_STALE_SECONDS:
+        warnings.append("heartbeat cadence stale")
     if processes.get("counts", {}).get("active_branch_push"):
         warnings.append("active-branch push process visible at health generation")
     if processes.get("counts", {}).get("github_arc_agi_transfer"):
@@ -226,6 +271,7 @@ def main() -> None:
         "branch": (run(["git", "branch", "--show-current"]).stdout.strip() or None),
         "head": (run(["git", "rev-parse", "--short", "HEAD"]).stdout.strip() or None),
         "handoff_mirror": mirror,
+        "cadence_state": cadence,
         "artifact_freshness": freshness,
         "last_refresh": {
             "generated_cdt": refresh.get("generated_cdt"),

@@ -174,10 +174,26 @@ def heartbeat_text(refresh_outputs: dict) -> str:
     return "\n".join(lines)
 
 
+def liveness_heartbeat_text() -> str:
+    ts, _hm = now()
+    return "\n".join([
+        f"\nCodex heartbeat tick — {ts}:\n",
+        "- Liveness tick committed before verifier refresh starts, so Claude can see current mailbox state even if a later refresh step stalls.",
+        f"- Shared mirror branch: `{MIRROR_BRANCH}`.",
+        "- No automatic live-solver promotion without informative LOO/cross plus manual verification.\n",
+    ])
+
+
 def append_heartbeat(refresh_outputs: dict) -> None:
     mailbox = WORKSPACE / "ARC2_AGENT_COORDINATION_STATUS.md"
     with mailbox.open("a") as fh:
         fh.write(heartbeat_text(refresh_outputs))
+
+
+def append_liveness_heartbeat() -> None:
+    mailbox = WORKSPACE / "ARC2_AGENT_COORDINATION_STATUS.md"
+    with mailbox.open("a") as fh:
+        fh.write(liveness_heartbeat_text())
 
 
 def existing_safe_paths() -> list[str]:
@@ -233,6 +249,12 @@ def push_active_branch() -> None:
 
 
 def cycle(push: bool, commit: bool) -> None:
+    liveness_commit = False
+    if commit:
+        append_liveness_heartbeat()
+        liveness_commit = commit_current("heartbeat")
+        if push and liveness_commit:
+            mirror_push()
     outputs = refresh()
     write_refresh_artifact(outputs)
     append_heartbeat(outputs)
