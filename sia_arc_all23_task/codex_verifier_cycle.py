@@ -35,6 +35,7 @@ SAFE_PATHS = [
     "tmp/sia_lite_latest.json",
     "tmp/sia_lite_residual_mining.json",
     "tmp/sia_search_policy_latest.json",
+    "tmp/template_match_role_recolor_latest_review.json",
     "tmp/template_match_role_recolor_v1_review.json",
     "tmp/dsl_enumeration_latest.json",
     "tmp/codex_sia_all23_sentinel.json",

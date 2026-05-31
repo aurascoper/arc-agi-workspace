@@ -1,7 +1,7 @@
 """Cold review for Claude's template_match_role_recolor synthetic family.
 
 This is coordination-only validation for a generator dropped outside the repo
-(default: ~/Downloads/template_match_role_recolor_v1.py). It imports only the
+(default: newest ~/Downloads/template_match_role_recolor_v*.py). It imports only the
 generator's `generate_family`, then reimplements the oracle and diagnostic
 siblings independently from the text spec:
 
@@ -19,6 +19,7 @@ from __future__ import annotations
 import importlib.util
 import json
 import os
+import re
 from collections import Counter
 from pathlib import Path
 from types import ModuleType
@@ -27,8 +28,8 @@ from datetime import datetime
 
 
 WORKSPACE = Path(__file__).resolve().parent.parent
-DEFAULT_GENERATOR = Path.home() / "Downloads" / "template_match_role_recolor_v1.py"
-OUT = WORKSPACE / "tmp" / "template_match_role_recolor_v1_review.json"
+DEFAULT_GENERATOR_GLOB = "template_match_role_recolor_v*.py"
+OUT = WORKSPACE / "tmp" / "template_match_role_recolor_latest_review.json"
 
 N4 = ((1, 0), (-1, 0), (0, 1), (0, -1))
 N8 = N4 + ((1, 1), (1, -1), (-1, 1), (-1, -1))
@@ -37,6 +38,23 @@ LEG_CHI = 2
 WORK_CLO = 4
 HARDCODED_H = 13
 HARDCODED_W = 15
+
+
+def version_key(path: Path) -> tuple[int, float, str]:
+    match = re.search(r"_v(\d+)\.py$", path.name)
+    version = int(match.group(1)) if match else -1
+    try:
+        mtime = path.stat().st_mtime
+    except OSError:
+        mtime = 0.0
+    return (version, mtime, path.name)
+
+
+def default_generator_path() -> Path:
+    candidates = sorted((Path.home() / "Downloads").glob(DEFAULT_GENERATOR_GLOB), key=version_key)
+    if not candidates:
+        return Path.home() / "Downloads" / "template_match_role_recolor_v1.py"
+    return candidates[-1]
 
 
 def load_generator(path: Path) -> ModuleType:
@@ -272,7 +290,8 @@ def task_domain(task):
 
 
 def main() -> None:
-    generator_path = Path(os.environ.get("TEMPLATE_MATCH_ROLE_RECOLOR_GENERATOR", DEFAULT_GENERATOR)).expanduser()
+    generator_path = Path(os.environ["TEMPLATE_MATCH_ROLE_RECOLOR_GENERATOR"]).expanduser() \
+        if os.environ.get("TEMPLATE_MATCH_ROLE_RECOLOR_GENERATOR") else default_generator_path()
     module = load_generator(generator_path)
     seeds = list(range(30))
     num_tasks = 8
@@ -365,6 +384,8 @@ def main() -> None:
         "artifact": "template_match_role_recolor_v1_review",
         "generated_cdt": datetime.now(ZoneInfo("America/Chicago")).strftime("%Y-%m-%d %H:%M:%S %Z"),
         "generator_path": str(generator_path),
+        "generator_name": generator_path.name,
+        "generator_version": version_key(generator_path)[0],
         "seeds": seeds,
         "num_tasks_per_seed": num_tasks,
         "total_tasks": total_tasks,

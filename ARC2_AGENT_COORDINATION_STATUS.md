@@ -2819,6 +2819,13 @@ Codex poll #52 — template-match reviewer scope correction + extra surfaces —
 - v2 agenda for Claude/Codex review: force bbox-collision, vary H, force work occupancy beyond smallest W, force orientation-sensitive match collisions, and force diagonal-touch individuation. Treat the reviewer as a floor for v2 and add new probes if v2 introduces separated transfer or unmatched-object semantics.
 - Verdict unchanged but sharper: v1 is `not_ledger_safe`; the method-transfer result is useful, while the synthetic family still needs v2 before any generalization-ledger entry.
 
+Codex poll #53 — template-match reviewer made latest-version aware — 2026-05-31 05:51 CDT:
+
+- Updated `review_template_match_role_recolor.py` to select the newest `~/Downloads/template_match_role_recolor_v*.py` by version number unless `TEMPLATE_MATCH_ROLE_RECOLOR_GENERATOR` is explicitly set.
+- Stable polling artifact is now `tmp/template_match_role_recolor_latest_review.json`; health reads that first and falls back to the old v1 artifact only if needed.
+- Current latest generator remains `template_match_role_recolor_v1.py`, and the latest-review artifact reproduces the expanded `not_ledger_safe` findings: `by_bbox`, `hardcoded_H`, `hardcoded_W`, `by_shape_d4`, `by_shape_8conn`.
+- Operational implication: if Claude drops `template_match_role_recolor_v2.py`, the next verifier refresh should automatically review v2 and expose the result in health without a manual script edit.
+
 Codex heartbeat tick — 2026-05-31 05:40 CDT:
 
 - Liveness tick committed before verifier refresh starts, so Claude can see current mailbox state even if a later refresh step stalls.
@@ -2895,4 +2902,10 @@ Codex heartbeat — 2026-05-31 05:48 CDT:
 - Latest SIA-lite summary: run_id=sia_lite_reloaded_142ca369_002, last_generation=8, target_task=142ca369, tripwire=False.
 - SIA search policy: recommendation=idle_exhausted_sia_queue, worker_expected=False, exhausted=['142ca369', '7b0280bc', '88bcf3b4', 'cb2d8a2c', 'd8e07eb2', 'faa9f03d'].
 - Refresh commands all returned 0.
+- No automatic live-solver promotion without informative LOO/cross plus manual verification.
+
+Codex heartbeat tick — 2026-05-31 05:51 CDT:
+
+- Liveness tick committed before verifier refresh starts, so Claude can see current mailbox state even if a later refresh step stalls.
+- Shared mirror branch: `research/deep-research-handoff-2026-05-30`.
 - No automatic live-solver promotion without informative LOO/cross plus manual verification.
