@@ -8,6 +8,35 @@
   ],
   "informative_loo_tasks": [],
   "cross_task_firing": {},
+  "manual_review_candidates": [
+    {
+      "task_id": "d8e07eb2",
+      "signature": "legend_component_underfill|legend_component_underfill(bg_draw_color,legend_footer_alt_color,legend_footer_height)",
+      "promotion_blockers": [
+        "no_informative_loo_or_cross"
+      ],
+      "loo": {
+        "passes": true,
+        "informative": false,
+        "admission_type": "train_exact_fixed_loo_vacuous"
+      },
+      "synthetic_d4_exact": {
+        "hflip": true,
+        "vflip": true,
+        "rot90": true,
+        "rot180": true,
+        "rot270": true,
+        "anti_diag": true
+      },
+      "synthetic_padding_exact": {
+        "pad_1": true,
+        "pad_asym": true,
+        "pad_topless": true
+      },
+      "cross_task_count": 1,
+      "manual_review_reason": "train-exact, magic-clean, LOO-passing, synthetic-invariance-clean; blocked only by no informative LOO/cross evidence"
+    }
+  ],
   "results": [
     {
       "task_id": "142ca369",
@@ -3870,7 +3899,9 @@
         "promotion_blockers": [
           "no_informative_loo_or_cross",
           "synthetic_padding_fail"
-        ]
+        ],
+        "manual_review_ready": false,
+        "manual_review_reason": null
       },
       "train_exact": [
         {
@@ -3931,7 +3962,9 @@
           "promotion_blockers": [
             "no_informative_loo_or_cross",
             "synthetic_padding_fail"
-          ]
+          ],
+          "manual_review_ready": false,
+          "manual_review_reason": null
         },
         {
           "name": "enum_bar_marker_route:full_map+bg_draw|bar_marker_bracket_route(bg_draw_color,full_color_transition_map)",
@@ -3991,7 +4024,9 @@
           "promotion_blockers": [
             "no_informative_loo_or_cross",
             "synthetic_padding_fail"
-          ]
+          ],
+          "manual_review_ready": false,
+          "manual_review_reason": null
         }
       ],
       "top": [
@@ -4053,7 +4088,9 @@
           "promotion_blockers": [
             "no_informative_loo_or_cross",
             "synthetic_padding_fail"
-          ]
+          ],
+          "manual_review_ready": false,
+          "manual_review_reason": null
         },
         {
           "name": "enum_bar_marker_route:full_map+bg_draw|bar_marker_bracket_route(bg_draw_color,full_color_transition_map)",
@@ -4113,7 +4150,9 @@
           "promotion_blockers": [
             "no_informative_loo_or_cross",
             "synthetic_padding_fail"
-          ]
+          ],
+          "manual_review_ready": false,
+          "manual_review_reason": null
         },
         {
           "name": "full_recolor_then_bar_bracket_route|recolor_map(full_color_transition_map)|bar_bracket_route(bg_draw_color)",
@@ -4437,7 +4476,9 @@
           "no_informative_loo_or_cross",
           "synthetic_d4_fail",
           "synthetic_padding_fail"
-        ]
+        ],
+        "manual_review_ready": false,
+        "manual_review_reason": null
       },
       "train_exact": [
         {
@@ -4513,7 +4554,9 @@
             "no_informative_loo_or_cross",
             "synthetic_d4_fail",
             "synthetic_padding_fail"
-          ]
+          ],
+          "manual_review_ready": false,
+          "manual_review_reason": null
         },
         {
           "name": "legend_component_underfill|legend_component_underfill(bg_draw_color,legend_footer_alt_color,legend_footer_height)",
@@ -4577,7 +4620,9 @@
           "admission_ready": false,
           "promotion_blockers": [
             "no_informative_loo_or_cross"
-          ]
+          ],
+          "manual_review_ready": true,
+          "manual_review_reason": "train-exact, magic-clean, LOO-passing, synthetic-invariance-clean; blocked only by no informative LOO/cross evidence"
         }
       ],
       "top": [
@@ -4654,7 +4699,9 @@
             "no_informative_loo_or_cross",
             "synthetic_d4_fail",
             "synthetic_padding_fail"
-          ]
+          ],
+          "manual_review_ready": false,
+          "manual_review_reason": null
         },
         {
           "name": "legend_component_underfill|legend_component_underfill(bg_draw_color,legend_footer_alt_color,legend_footer_height)",
@@ -4718,7 +4765,9 @@
           "admission_ready": false,
           "promotion_blockers": [
             "no_informative_loo_or_cross"
-          ]
+          ],
+          "manual_review_ready": true,
+          "manual_review_reason": "train-exact, magic-clean, LOO-passing, synthetic-invariance-clean; blocked only by no informative LOO/cross evidence"
         },
         {
           "name": "enum_bar_route:bg_draw|bar_bracket_route(bg_draw_color)",

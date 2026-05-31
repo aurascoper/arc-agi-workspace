@@ -84,6 +84,7 @@ def heartbeat_text(refresh_outputs: dict) -> str:
     exact = dsl.get("train_exact_tasks", [])
     informative = dsl.get("informative_loo_tasks", [])
     cross = dsl.get("cross_task_firing", {})
+    review = dsl.get("manual_review_candidates", [])
     ready = sentinel.get("integration_ready", [])
     latest_run = None
     runs = sia_latest.get("runs", [])
@@ -95,6 +96,7 @@ def heartbeat_text(refresh_outputs: dict) -> str:
         "- Verifier cycle refreshed DSL/SIA/sketch/sentinel artifacts.",
         f"- Shared mirror branch: `{MIRROR_BRANCH}`.",
         f"- DSL frontier: train_exact={exact}, informative_loo={informative}, cross={cross}.",
+        f"- DSL manual_review_candidates={[(r.get('task_id'), r.get('signature')) for r in review]}.",
         f"- SIA sentinel integration_ready={ready}.",
     ]
     if latest_run:

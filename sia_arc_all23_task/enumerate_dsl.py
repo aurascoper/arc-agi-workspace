@@ -224,6 +224,24 @@ def synthetic_padding_exact(program: dict[str, Any], train: list[dict[str, Any]]
     return out
 
 
+def manual_review_ready(exact: dict[str, Any], blockers: list[str]) -> bool:
+    """Surface robust quarantined candidates without admitting them automatically."""
+    allowed = {"no_informative_loo_or_cross"}
+    if set(blockers) - allowed:
+        return False
+    if not blockers:
+        return False
+    if not (exact.get("loo") or {}).get("passes"):
+        return False
+    d4 = exact.get("synthetic_d4_exact") or {}
+    padding = exact.get("synthetic_padding_exact") or {}
+    if d4 and not all(d4.values()):
+        return False
+    if padding and not all(padding.values()):
+        return False
+    return True
+
+
 def score_task(task_id: str, task: dict[str, Any], evaluator: Any, programs: list[dict[str, Any]]) -> dict[str, Any]:
     train = task["train"]
     compiled = []
@@ -290,6 +308,28 @@ def main() -> None:
             exact["cross_task_count"] = cross_count
             exact["admission_ready"] = not blockers
             exact["promotion_blockers"] = blockers
+            exact["manual_review_ready"] = manual_review_ready(exact, blockers)
+            if exact["manual_review_ready"]:
+                exact["manual_review_reason"] = (
+                    "train-exact, magic-clean, LOO-passing, synthetic-invariance-clean; "
+                    "blocked only by no informative LOO/cross evidence"
+                )
+            else:
+                exact["manual_review_reason"] = None
+    manual_review = []
+    for row in results:
+        for exact in row["train_exact"]:
+            if exact.get("manual_review_ready"):
+                manual_review.append({
+                    "task_id": row["task_id"],
+                    "signature": exact.get("signature"),
+                    "promotion_blockers": exact.get("promotion_blockers", []),
+                    "loo": exact.get("loo"),
+                    "synthetic_d4_exact": exact.get("synthetic_d4_exact"),
+                    "synthetic_padding_exact": exact.get("synthetic_padding_exact"),
+                    "cross_task_count": exact.get("cross_task_count"),
+                    "manual_review_reason": exact.get("manual_review_reason"),
+                })
     out = {
         "artifact": "dsl_enumeration_latest",
         "programs_enumerated": len(programs),
@@ -301,6 +341,7 @@ def main() -> None:
             if any((e.get("loo") or {}).get("informative") for e in r["train_exact"])
         ],
         "cross_task_firing": {k: v for k, v in cross.items() if len(v) >= 2},
+        "manual_review_candidates": manual_review,
         "results": results,
     }
     OUT.write_text(json.dumps(out, indent=2))
