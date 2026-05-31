@@ -9,7 +9,7 @@
     {
       "run_id": "sia_lite_gpt54_7b0280bc_001",
       "tripwire": false,
-      "last_generation": 2,
+      "last_generation": 3,
       "generations": [
         {
           "generation": "gen_1",
@@ -28,6 +28,21 @@
         },
         {
           "generation": "gen_2",
+          "status": "success",
+          "fitness": 0.1,
+          "leaks": 0,
+          "loo_tasks": 0,
+          "cross": {},
+          "train_exact": 2,
+          "shape_exact": 391,
+          "target_train_exact": 0,
+          "target_informative_loo": false,
+          "target_shape_exact": 25,
+          "target_best_diff": 71,
+          "target_best_name": "enclosed_region_fill:unique"
+        },
+        {
+          "generation": "gen_3",
           "status": "success",
           "fitness": 0.1,
           "leaks": 0,
