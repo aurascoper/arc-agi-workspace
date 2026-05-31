@@ -16,6 +16,7 @@ Run: python3 arc2_typed_sketch_enumerator.py        # enumerates sketches for th
 from __future__ import annotations
 
 import json
+import os
 import sys
 from collections import Counter
 from dataclasses import dataclass, field
@@ -25,7 +26,7 @@ WORKSPACE = Path(__file__).resolve().parent
 sys.path.insert(0, str(WORKSPACE))
 import arc2_object_graph as OG  # noqa: E402
 
-EVAL = WORKSPACE / "arc_agi_2_data" / "evaluation"
+EVAL = Path(os.environ.get("ARC2_EVAL_DIR", WORKSPACE / "arc_agi_2_data" / "evaluation"))
 
 # typed hole vocabularies (candidate fillers, NOT task-specific values)
 ROLES = ["largest", "smallest", "unique_color", "most_holes", "unique_shape", "by_marker", "nth_in_reading"]

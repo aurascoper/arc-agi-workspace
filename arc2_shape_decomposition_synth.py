@@ -13,6 +13,7 @@ Run: python3 arc2_shape_decomposition_synth.py
 from __future__ import annotations
 
 import json
+import os
 import re
 import sys
 from collections import Counter
@@ -23,7 +24,7 @@ WORKSPACE = Path(__file__).resolve().parent
 sys.path.insert(0, str(WORKSPACE))
 import arc2_object_graph as OG  # noqa: E402 (reusable IR scaffold)
 
-EVAL = WORKSPACE / "arc_agi_2_data" / "evaluation"
+EVAL = Path(os.environ.get("ARC2_EVAL_DIR", WORKSPACE / "arc_agi_2_data" / "evaluation"))
 TARGETS = ["5dbc8537", "edb79dae", "20a9e565", "2d0172a1", "6ffbe589", "e87109e9", "89565ca0"]
 
 

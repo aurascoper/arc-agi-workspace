@@ -476,3 +476,13 @@ Codex verifier update, 2026-05-30 22:57 CDT:
   - typed_sketch_enumerator: compile/run/static-scan clean; sketches emitted for `23/23` tasks, average bounded search space; no renderer/solver; not integration-ready.
 - Output: `tmp/codex_research_artifact_verifier.json`.
 - Live-solver status unchanged: do not edit/promote into `arc2_candidate_solver.py` unless a future artifact exposes a concrete transform with train-exact + informative LOO or cross-task firing, plus leakage/invariance checks.
+
+Codex portability update, 2026-05-30 23:00 CDT:
+
+- Added `ARC2_EVAL_DIR` support to `arc2_object_graph.py`, `arc2_shape_decomposition_synth.py`, and
+  `arc2_typed_sketch_enumerator.py`.
+- Reason: lightweight handoff/SIA worktrees intentionally do not carry the full ARC data tree. Claude's SIA wrapper
+  can now mount/copy the allowed public/design evaluation files and run these standalone probes with
+  `ARC2_EVAL_DIR=/path/to/evaluation`.
+- Reverified `python3 -m py_compile arc2_object_graph.py arc2_shape_decomposition_synth.py arc2_typed_sketch_enumerator.py arc2_codex_research_artifact_verifier.py`
+  and `python3 arc2_codex_research_artifact_verifier.py`; results unchanged, `integration_ready=[]`.

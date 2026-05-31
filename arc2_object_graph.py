@@ -16,6 +16,7 @@ Run: python3 arc2_object_graph.py            # validates by parsing the 23 desig
 from __future__ import annotations
 
 import json
+import os
 import sys
 from collections import Counter
 from dataclasses import dataclass, field
@@ -23,7 +24,7 @@ from itertools import combinations
 from pathlib import Path
 
 WORKSPACE = Path(__file__).resolve().parent
-EVAL = WORKSPACE / "arc_agi_2_data" / "evaluation"
+EVAL = Path(os.environ.get("ARC2_EVAL_DIR", WORKSPACE / "arc_agi_2_data" / "evaluation"))
 
 Cell = tuple[int, int]
 Grid = list[list[int]]
