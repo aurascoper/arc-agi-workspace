@@ -1,0 +1,166 @@
+{
+  "n": 23,
+  "frontier": [
+    {
+      "task_id": "3dc255db",
+      "closest_residual": 12,
+      "rho": 0.0309,
+      "candidate": "ttt:pixel_perceptron",
+      "family": "ttt_neural"
+    },
+    {
+      "task_id": "dd6b8c4b",
+      "closest_residual": 15,
+      "rho": 0.0413,
+      "candidate": "ttt:pixel_perceptron",
+      "family": "ttt_neural"
+    },
+    {
+      "task_id": "16b78196",
+      "closest_residual": 86,
+      "rho": 0.0478,
+      "candidate": "object_remove:interior_objects",
+      "family": "object"
+    },
+    {
+      "task_id": "88bcf3b4",
+      "closest_residual": 32,
+      "rho": 0.0483,
+      "candidate": "dsl:isolate_unique_color_object",
+      "family": "dsl"
+    },
+    {
+      "task_id": "5dbc8537",
+      "closest_residual": 16,
+      "rho": 0.0561,
+      "candidate": "dsl:fill_template_background_by_external_shape_cover",
+      "family": "dsl"
+    },
+    {
+      "task_id": "7b0280bc",
+      "closest_residual": 65,
+      "rho": 0.0685,
+      "candidate": "ttt:pixel_perceptron",
+      "family": "ttt_neural"
+    },
+    {
+      "task_id": "faa9f03d",
+      "closest_residual": 50,
+      "rho": 0.0868,
+      "candidate": "identity",
+      "family": "basic"
+    },
+    {
+      "task_id": "cb2d8a2c",
+      "closest_residual": 113,
+      "rho": 0.0975,
+      "candidate": "ttt:pixel_perceptron",
+      "family": "ttt_neural"
+    },
+    {
+      "task_id": "142ca369",
+      "closest_residual": 110,
+      "rho": 0.0979,
+      "candidate": "identity",
+      "family": "basic"
+    },
+    {
+      "task_id": "35ab12c3",
+      "closest_residual": 95,
+      "rho": 0.1001,
+      "candidate": "alignment:connect_diagonal_same_color",
+      "family": "alignment"
+    },
+    {
+      "task_id": "195c6913",
+      "closest_residual": 167,
+      "rho": 0.1012,
+      "candidate": "object_remove:interior_objects",
+      "family": "object"
+    },
+    {
+      "task_id": "4a21e3da",
+      "closest_residual": 105,
+      "rho": 0.108,
+      "candidate": "object_remove:interior_objects",
+      "family": "object"
+    },
+    {
+      "task_id": "abc82100",
+      "closest_residual": 86,
+      "rho": 0.1204,
+      "candidate": "ttt:pixel_perceptron",
+      "family": "ttt_neural"
+    },
+    {
+      "task_id": "d8e07eb2",
+      "closest_residual": 740,
+      "rho": 0.2242,
+      "candidate": "identity",
+      "family": "basic"
+    },
+    {
+      "task_id": "36a08778",
+      "closest_residual": 259,
+      "rho": 0.2738,
+      "candidate": "identity",
+      "family": "basic"
+    },
+    {
+      "task_id": "edb79dae",
+      "closest_residual": 146,
+      "rho": 0.2813,
+      "candidate": "object_crop:largest_object",
+      "family": "object"
+    },
+    {
+      "task_id": "446ef5d2",
+      "closest_residual": 96,
+      "rho": 0.2824,
+      "candidate": "dsl:move_objects_to_center",
+      "family": "dsl"
+    },
+    {
+      "task_id": "271d71e2",
+      "closest_residual": 150,
+      "rho": 0.3018,
+      "candidate": "object_remove:interior_objects",
+      "family": "object"
+    },
+    {
+      "task_id": "20a9e565",
+      "closest_residual": null,
+      "rho": null,
+      "candidate": null,
+      "family": null
+    },
+    {
+      "task_id": "2d0172a1",
+      "closest_residual": null,
+      "rho": null,
+      "candidate": null,
+      "family": null
+    },
+    {
+      "task_id": "6ffbe589",
+      "closest_residual": null,
+      "rho": null,
+      "candidate": null,
+      "family": null
+    },
+    {
+      "task_id": "e87109e9",
+      "closest_residual": null,
+      "rho": null,
+      "candidate": null,
+      "family": null
+    },
+    {
+      "task_id": "89565ca0",
+      "closest_residual": null,
+      "rho": null,
+      "candidate": null,
+      "family": null
+    }
+  ]
+}

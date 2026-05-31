@@ -1,0 +1,309 @@
+{
+  "summary": {
+    "genuine_coverage_miss": 23,
+    "solved_now": 7
+  },
+  "n_design_misses_in_snapshot": 30,
+  "now_solved": [
+    "981571dc",
+    "2b83f449",
+    "db695cfb",
+    "64efde09",
+    "8f3a5a89",
+    "898e7135",
+    "da515329"
+  ],
+  "verifier_leak": [],
+  "genuine_coverage_miss": [
+    "5dbc8537",
+    "edb79dae",
+    "dd6b8c4b",
+    "88bcf3b4",
+    "cb2d8a2c",
+    "142ca369",
+    "3dc255db",
+    "195c6913",
+    "36a08778",
+    "4a21e3da",
+    "16b78196",
+    "446ef5d2",
+    "7b0280bc",
+    "abc82100",
+    "d8e07eb2",
+    "271d71e2",
+    "faa9f03d",
+    "35ab12c3",
+    "20a9e565",
+    "2d0172a1",
+    "6ffbe589",
+    "e87109e9",
+    "89565ca0"
+  ],
+  "rows": [
+    {
+      "task_id": "5dbc8537",
+      "n_candidates": 94,
+      "n_train_exact": 0,
+      "n_test_exact": 0,
+      "status": "genuine_coverage_miss",
+      "solver_names": []
+    },
+    {
+      "task_id": "edb79dae",
+      "n_candidates": 94,
+      "n_train_exact": 0,
+      "n_test_exact": 0,
+      "status": "genuine_coverage_miss",
+      "solver_names": []
+    },
+    {
+      "task_id": "dd6b8c4b",
+      "n_candidates": 95,
+      "n_train_exact": 0,
+      "n_test_exact": 0,
+      "status": "genuine_coverage_miss",
+      "solver_names": []
+    },
+    {
+      "task_id": "88bcf3b4",
+      "n_candidates": 95,
+      "n_train_exact": 0,
+      "n_test_exact": 0,
+      "status": "genuine_coverage_miss",
+      "solver_names": []
+    },
+    {
+      "task_id": "cb2d8a2c",
+      "n_candidates": 94,
+      "n_train_exact": 0,
+      "n_test_exact": 0,
+      "status": "genuine_coverage_miss",
+      "solver_names": []
+    },
+    {
+      "task_id": "142ca369",
+      "n_candidates": 95,
+      "n_train_exact": 0,
+      "n_test_exact": 0,
+      "status": "genuine_coverage_miss",
+      "solver_names": []
+    },
+    {
+      "task_id": "3dc255db",
+      "n_candidates": 95,
+      "n_train_exact": 0,
+      "n_test_exact": 0,
+      "status": "genuine_coverage_miss",
+      "solver_names": []
+    },
+    {
+      "task_id": "195c6913",
+      "n_candidates": 93,
+      "n_train_exact": 0,
+      "n_test_exact": 0,
+      "status": "genuine_coverage_miss",
+      "solver_names": []
+    },
+    {
+      "task_id": "36a08778",
+      "n_candidates": 95,
+      "n_train_exact": 0,
+      "n_test_exact": 0,
+      "status": "genuine_coverage_miss",
+      "solver_names": []
+    },
+    {
+      "task_id": "981571dc",
+      "n_candidates": 97,
+      "n_train_exact": 4,
+      "n_test_exact": 4,
+      "status": "solved_now",
+      "solver_names": [
+        "symmetry_context:diagonal_zero_run_completion",
+        "tta_d4:anti_transpose:symmetry_context:diagonal_zero_run_completion",
+        "tta_d4:rot180:symmetry_context:diagonal_zero_run_completion"
+      ]
+    },
+    {
+      "task_id": "2b83f449",
+      "n_candidates": 96,
+      "n_train_exact": 1,
+      "n_test_exact": 1,
+      "status": "solved_now",
+      "solver_names": [
+        "marker_triplet_antennas:row_end_stencils"
+      ]
+    },
+    {
+      "task_id": "4a21e3da",
+      "n_candidates": 95,
+      "n_train_exact": 0,
+      "n_test_exact": 0,
+      "status": "genuine_coverage_miss",
+      "solver_names": []
+    },
+    {
+      "task_id": "16b78196",
+      "n_candidates": 94,
+      "n_train_exact": 0,
+      "n_test_exact": 0,
+      "status": "genuine_coverage_miss",
+      "solver_names": []
+    },
+    {
+      "task_id": "446ef5d2",
+      "n_candidates": 95,
+      "n_train_exact": 0,
+      "n_test_exact": 0,
+      "status": "genuine_coverage_miss",
+      "solver_names": []
+    },
+    {
+      "task_id": "7b0280bc",
+      "n_candidates": 95,
+      "n_train_exact": 0,
+      "n_test_exact": 0,
+      "status": "genuine_coverage_miss",
+      "solver_names": []
+    },
+    {
+      "task_id": "abc82100",
+      "n_candidates": 94,
+      "n_train_exact": 0,
+      "n_test_exact": 0,
+      "status": "genuine_coverage_miss",
+      "solver_names": []
+    },
+    {
+      "task_id": "d8e07eb2",
+      "n_candidates": 92,
+      "n_train_exact": 0,
+      "n_test_exact": 0,
+      "status": "genuine_coverage_miss",
+      "solver_names": []
+    },
+    {
+      "task_id": "db695cfb",
+      "n_candidates": 103,
+      "n_train_exact": 8,
+      "n_test_exact": 8,
+      "status": "solved_now",
+      "solver_names": [
+        "line_network:diagonal_marker_crossings",
+        "tta_d4:anti_transpose:line_network:diagonal_marker_crossings",
+        "tta_d4:mirror_h:line_network:diagonal_marker_crossings"
+      ]
+    },
+    {
+      "task_id": "64efde09",
+      "n_candidates": 98,
+      "n_train_exact": 6,
+      "n_test_exact": 4,
+      "status": "solved_now",
+      "solver_names": [
+        "marker_scaffold_rays:two_cell_strip_propagation",
+        "tta_d4:rot180:marker_scaffold_rays:two_cell_strip_propagation",
+        "tta_color:bg_first:marker_scaffold_rays:two_cell_strip_propagation"
+      ]
+    },
+    {
+      "task_id": "271d71e2",
+      "n_candidates": 95,
+      "n_train_exact": 0,
+      "n_test_exact": 0,
+      "status": "genuine_coverage_miss",
+      "solver_names": []
+    },
+    {
+      "task_id": "8f3a5a89",
+      "n_candidates": 103,
+      "n_train_exact": 8,
+      "n_test_exact": 8,
+      "status": "solved_now",
+      "solver_names": [
+        "sparse_line_endpoint_bridge:marker_exterior_boundary",
+        "tta_d4:anti_transpose:sparse_line_endpoint_bridge:marker_exterior_boundary",
+        "tta_d4:mirror_h:sparse_line_endpoint_bridge:marker_exterior_boundary"
+      ]
+    },
+    {
+      "task_id": "faa9f03d",
+      "n_candidates": 95,
+      "n_train_exact": 0,
+      "n_test_exact": 0,
+      "status": "genuine_coverage_miss",
+      "solver_names": []
+    },
+    {
+      "task_id": "35ab12c3",
+      "n_candidates": 94,
+      "n_train_exact": 0,
+      "n_test_exact": 0,
+      "status": "genuine_coverage_miss",
+      "solver_names": []
+    },
+    {
+      "task_id": "898e7135",
+      "n_candidates": 104,
+      "n_train_exact": 10,
+      "n_test_exact": 10,
+      "status": "solved_now",
+      "solver_names": [
+        "mask_scale:fill_expanded_holes_with_objects",
+        "tta_d4:anti_transpose:mask_scale:fill_expanded_holes_with_objects",
+        "tta_d4:mirror_h:mask_scale:fill_expanded_holes_with_objects"
+      ]
+    },
+    {
+      "task_id": "da515329",
+      "n_candidates": 95,
+      "n_train_exact": 1,
+      "n_test_exact": 1,
+      "status": "solved_now",
+      "solver_names": [
+        "cross_spiral:expand_plus_to_rectangular_spiral"
+      ]
+    },
+    {
+      "task_id": "20a9e565",
+      "n_candidates": 94,
+      "n_train_exact": 0,
+      "n_test_exact": 0,
+      "status": "genuine_coverage_miss",
+      "solver_names": []
+    },
+    {
+      "task_id": "2d0172a1",
+      "n_candidates": 94,
+      "n_train_exact": 0,
+      "n_test_exact": 0,
+      "status": "genuine_coverage_miss",
+      "solver_names": []
+    },
+    {
+      "task_id": "6ffbe589",
+      "n_candidates": 94,
+      "n_train_exact": 0,
+      "n_test_exact": 0,
+      "status": "genuine_coverage_miss",
+      "solver_names": []
+    },
+    {
+      "task_id": "e87109e9",
+      "n_candidates": 94,
+      "n_train_exact": 0,
+      "n_test_exact": 0,
+      "status": "genuine_coverage_miss",
+      "solver_names": []
+    },
+    {
+      "task_id": "89565ca0",
+      "n_candidates": 92,
+      "n_train_exact": 0,
+      "n_test_exact": 0,
+      "status": "genuine_coverage_miss",
+      "solver_names": []
+    }
+  ],
+  "wall_time_sec": 19.9
+}

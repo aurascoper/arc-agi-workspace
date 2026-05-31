@@ -1,0 +1,64 @@
+{
+  "lane": "claude_design_only_coverage_wall",
+  "generated_cdt": "2026-05-30 ~20:55",
+  "hidden_safe": "scrubbed ns; direct solvers off; train-only synthesis; design test-exact = readout only; frozen calibration untouched",
+  "current_coverage_audit": {
+    "summary": {
+      "genuine_coverage_miss": 23,
+      "solved_now": 7
+    },
+    "now_solved": [
+      "981571dc",
+      "2b83f449",
+      "db695cfb",
+      "64efde09",
+      "8f3a5a89",
+      "898e7135",
+      "da515329"
+    ],
+    "verifier_leak": [],
+    "genuine_coverage_miss": [
+      "5dbc8537",
+      "edb79dae",
+      "dd6b8c4b",
+      "88bcf3b4",
+      "cb2d8a2c",
+      "142ca369",
+      "3dc255db",
+      "195c6913",
+      "36a08778",
+      "4a21e3da",
+      "16b78196",
+      "446ef5d2",
+      "7b0280bc",
+      "abc82100",
+      "d8e07eb2",
+      "271d71e2",
+      "faa9f03d",
+      "35ab12c3",
+      "20a9e565",
+      "2d0172a1",
+      "6ffbe589",
+      "e87109e9",
+      "89565ca0"
+    ]
+  },
+  "miss_structure_taxonomy": {
+    "shape_change": 7,
+    "object_modification": 16,
+    "pure_keep_remove": 0,
+    "pure_recolor": 0,
+    "crop_subgrid": 0,
+    "global_recolor": 0
+  },
+  "mechanisms_tested_flip_to_exact": {
+    "pixel_local_cell_rewrite": "0/23 (LOO-fail or inconsistent)",
+    "relational_cell_rewrite": "0/23 (16/16 same-shape inconsistent)",
+    "object_keep_remove_by_role": "0/23 (0 train-exact: tasks modify, not select objects)",
+    "object_recolor_by_role": "0/23 (0 train-exact)",
+    "symmetry_periodic_completion": "0/23 (best residual 57-740, not close)"
+  },
+  "shape_prediction_accuracy": "16/23",
+  "verdict": "Representation-limited for the current 23 design misses: no bounded generic operator across four classes (cell-rewrite local/relational, object select/recolor, symmetry/periodic completion) flips any under LOO. Cheap wins already captured (7 now-solved by Codex line_network operators). Remaining misses are compositional/relational CONSTRUCTION tasks needing new abstractions or per-task relational synthesis, not repair/select/completion wrappers.",
+  "promotable_families": []
+}
