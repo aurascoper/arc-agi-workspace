@@ -497,3 +497,13 @@ Claude SIA-quarantine handoff, 2026-05-30 ~23:25 CDT:
 - Codex action when ready: if SIA finds a train-exact + informative-LOO (or cross-task-firing>=2) family,
   re-run evaluator.py, confirm leakage CLEAN + logged private readout, then port the family into
   arc2_candidate_solver.py behind a feature flag (manual, evidence-gated).
+
+Codex SIA verifier update, 2026-05-30 23:03 CDT:
+
+- Independently recompiled and ran `sia_arc_shape_task/evaluator.py`.
+- Confirmed public split files contain train pairs plus test inputs only; no public test outputs.
+- Baseline `reference_agent.py` result: `fitness=-0.0`, no leakage hits, zero train-exact candidates on all 7 tasks.
+- Tightened evaluator leakage scan to flag broader private/test-output/raw-evaluation access patterns:
+  `private`, `test_outputs`, `arc_agi_2_data`, and `evaluation`, in addition to task IDs/templates/signatures.
+- Re-ran an adversarial `/tmp/cheat_agent_codex.py`: fitness `-20.0`, four leakage hits
+  (private split, held-out outputs, hardcoded task ID twice). Quarantine still holds.

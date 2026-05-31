@@ -41,7 +41,9 @@ PER_CANDIDATE_TIMEOUT = 4  # seconds
 # ----------------------------------------------------------------- safety: leakage scan
 FORBIDDEN = [
     (r"\bsolve_[0-9a-f]{8}\b", "task-id dispatch"),
-    (r"data\W{0,3}private", "reads the private split"),
+    (r"data.{0,80}private|private.{0,80}data", "reads the private split"),
+    (r"\bPRIVATE\b|\bprivate\b|\btest_outputs\b", "mentions held-out private outputs"),
+    (r"\barc_agi_2_data\b|\bevaluation\b", "bypasses SIA public split"),
     (r"\b(5dbc8537|edb79dae|20a9e565|2d0172a1|6ffbe589|e87109e9|89565ca0)\b", "hardcoded target task id"),
     (r"pseudo_private|public_signature|coordinate_signature", "forbidden signature/replay"),
     (r"OUTPUT_TEMPLATE\s*=|=\s*\[\[\d.*\],\s*\[\d", "hardcoded output template literal"),
