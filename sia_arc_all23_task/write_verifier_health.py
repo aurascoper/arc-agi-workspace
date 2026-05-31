@@ -17,6 +17,8 @@ from zoneinfo import ZoneInfo
 TASK_DIR = Path(__file__).resolve().parent
 WORKSPACE = TASK_DIR.parent
 OUT = WORKSPACE / "tmp" / "verifier_health_latest.json"
+MIRROR_DIR = Path("/tmp/arc_agi_handoff_sync")
+MIRROR_BRANCH = "research/deep-research-handoff-2026-05-30"
 SAFE_STATUS_PATHS = [
     ".gitignore",
     "ARC2_AGENT_COORDINATION_STATUS.md",
@@ -57,6 +59,28 @@ def tmux_sessions() -> list[str]:
     return [line for line in proc.stdout.splitlines() if "arc2" in line or "sia" in line or "codex" in line]
 
 
+def mirror_state() -> dict:
+    if not MIRROR_DIR.exists():
+        return {"dir": str(MIRROR_DIR), "available": False}
+    branch = run(["git", "branch", "--show-current"], cwd=MIRROR_DIR).stdout.strip() or None
+    head = run(["git", "rev-parse", "--short", "HEAD"], cwd=MIRROR_DIR).stdout.strip() or None
+    origin = run(["git", "rev-parse", "--short", f"origin/{MIRROR_BRANCH}"], cwd=MIRROR_DIR).stdout.strip() or None
+    status = [
+        line for line in run(["git", "status", "--short", "--", *SAFE_STATUS_PATHS], cwd=MIRROR_DIR).stdout.splitlines()
+        if line.strip()
+    ]
+    return {
+        "dir": str(MIRROR_DIR),
+        "available": True,
+        "branch": branch,
+        "expected_branch": MIRROR_BRANCH,
+        "head": head,
+        "origin_head": origin,
+        "head_matches_origin": bool(head and origin and head == origin),
+        "safe_status": status,
+    }
+
+
 def main() -> None:
     dsl = load_json("tmp/dsl_enumeration_latest.json") or {}
     sentinel = load_json("tmp/codex_sia_all23_sentinel.json") or {}
@@ -65,6 +89,7 @@ def main() -> None:
     residuals = load_json("tmp/sia_lite_residual_mining.json") or {}
     status = git_lines(["status", "--short", "--", *SAFE_STATUS_PATHS])
     sessions = tmux_sessions()
+    mirror = mirror_state()
     integration_ready = sentinel.get("integration_ready", [])
     manual_review = sentinel.get("manual_review_candidates", dsl.get("manual_review_candidates", [])) or []
     parked = sentinel.get("parked_candidates", dsl.get("parked_candidates", [])) or []
@@ -90,11 +115,20 @@ def main() -> None:
         warnings.append("manual-review candidate present")
     if tripwire_runs:
         warnings.append("SIA-lite tripwire run present")
+    if not mirror.get("available"):
+        warnings.append("handoff mirror worktree not visible")
+    elif mirror.get("branch") != MIRROR_BRANCH:
+        warnings.append("handoff mirror on unexpected branch")
+    elif mirror.get("safe_status"):
+        warnings.append("handoff mirror has uncommitted safe-path changes")
+    elif not mirror.get("head_matches_origin"):
+        warnings.append("handoff mirror head differs from local origin ref")
     out = {
         "artifact": "verifier_health_latest",
         "generated_cdt": datetime.now(ZoneInfo("America/Chicago")).strftime("%Y-%m-%d %H:%M:%S %Z"),
         "branch": (run(["git", "branch", "--show-current"]).stdout.strip() or None),
         "head": (run(["git", "rev-parse", "--short", "HEAD"]).stdout.strip() or None),
+        "handoff_mirror": mirror,
         "tmux_sessions": sessions,
         "safe_status": status,
         "integration_ready": integration_ready,
