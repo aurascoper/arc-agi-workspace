@@ -1,0 +1,4475 @@
+{
+  "artifact": "dsl_enumeration_latest",
+  "programs_enumerated": 20,
+  "tasks": 23,
+  "train_exact_tasks": [
+    "cb2d8a2c"
+  ],
+  "informative_loo_tasks": [],
+  "cross_task_firing": {},
+  "results": [
+    {
+      "task_id": "142ca369",
+      "n_compiled": 9,
+      "best": {
+        "name": "route_singletons_same|route_singletons()",
+        "shape_exact": true,
+        "train_diff": 110,
+        "per_pair_diff": [
+          56,
+          28,
+          26
+        ],
+        "pred_shapes": [
+          [
+            20,
+            20
+          ],
+          [
+            18,
+            18
+          ],
+          [
+            20,
+            20
+          ]
+        ],
+        "error": null,
+        "program_name": "route_singletons_same",
+        "signature": "route_singletons_same|route_singletons()"
+      },
+      "train_exact": [],
+      "top": [
+        {
+          "name": "route_singletons_same|route_singletons()",
+          "shape_exact": true,
+          "train_diff": 110,
+          "per_pair_diff": [
+            56,
+            28,
+            26
+          ],
+          "pred_shapes": [
+            [
+              20,
+              20
+            ],
+            [
+              18,
+              18
+            ],
+            [
+              20,
+              20
+            ]
+          ],
+          "error": null,
+          "program_name": "route_singletons_same",
+          "signature": "route_singletons_same|route_singletons()"
+        },
+        {
+          "name": "enum_route_singletons:same|route_singletons()",
+          "shape_exact": true,
+          "train_diff": 110,
+          "per_pair_diff": [
+            56,
+            28,
+            26
+          ],
+          "pred_shapes": [
+            [
+              20,
+              20
+            ],
+            [
+              18,
+              18
+            ],
+            [
+              20,
+              20
+            ]
+          ],
+          "error": null,
+          "program_name": "enum_route_singletons:same",
+          "signature": "enum_route_singletons:same|route_singletons()"
+        },
+        {
+          "name": "fill_enclosed_changed_color|fill_enclosed(changed_output_color)",
+          "shape_exact": true,
+          "train_diff": 110,
+          "per_pair_diff": [
+            56,
+            28,
+            26
+          ],
+          "pred_shapes": [
+            [
+              20,
+              20
+            ],
+            [
+              18,
+              18
+            ],
+            [
+              20,
+              20
+            ]
+          ],
+          "error": null,
+          "program_name": "fill_enclosed_changed_color",
+          "signature": "fill_enclosed_changed_color|fill_enclosed(changed_output_color)"
+        },
+        {
+          "name": "enum_fill_enclosed:changed_output_color|fill_enclosed(changed_output_color)",
+          "shape_exact": true,
+          "train_diff": 110,
+          "per_pair_diff": [
+            56,
+            28,
+            26
+          ],
+          "pred_shapes": [
+            [
+              20,
+              20
+            ],
+            [
+              18,
+              18
+            ],
+            [
+              20,
+              20
+            ]
+          ],
+          "error": null,
+          "program_name": "enum_fill_enclosed:changed_output_color",
+          "signature": "enum_fill_enclosed:changed_output_color|fill_enclosed(changed_output_color)"
+        },
+        {
+          "name": "enum_bar_route:bg_draw|bar_bracket_route(bg_draw_color)",
+          "shape_exact": true,
+          "train_diff": 153,
+          "per_pair_diff": [
+            56,
+            58,
+            39
+          ],
+          "pred_shapes": [
+            [
+              20,
+              20
+            ],
+            [
+              18,
+              18
+            ],
+            [
+              20,
+              20
+            ]
+          ],
+          "error": null,
+          "program_name": "enum_bar_route:bg_draw",
+          "signature": "enum_bar_route:bg_draw|bar_bracket_route(bg_draw_color)"
+        },
+        {
+          "name": "dominant_recolor_map|recolor_map(dominant_transition_map)",
+          "shape_exact": true,
+          "train_diff": 1045,
+          "per_pair_diff": [
+            370,
+            298,
+            377
+          ],
+          "pred_shapes": [
+            [
+              20,
+              20
+            ],
+            [
+              18,
+              18
+            ],
+            [
+              20,
+              20
+            ]
+          ],
+          "error": null,
+          "program_name": "dominant_recolor_map",
+          "signature": "dominant_recolor_map|recolor_map(dominant_transition_map)"
+        },
+        {
+          "name": "enum_recolor:dominant_transition_map|recolor_map(dominant_transition_map)",
+          "shape_exact": true,
+          "train_diff": 1045,
+          "per_pair_diff": [
+            370,
+            298,
+            377
+          ],
+          "pred_shapes": [
+            [
+              20,
+              20
+            ],
+            [
+              18,
+              18
+            ],
+            [
+              20,
+              20
+            ]
+          ],
+          "error": null,
+          "program_name": "enum_recolor:dominant_transition_map",
+          "signature": "enum_recolor:dominant_transition_map|recolor_map(dominant_transition_map)"
+        },
+        {
+          "name": "enum_recolor_then_bar_route:dominant_transition_map+bg_draw|recolor_map(dominant_transition_map)|bar_bracket_route(bg_draw_color)",
+          "shape_exact": true,
+          "train_diff": 1045,
+          "per_pair_diff": [
+            370,
+            298,
+            377
+          ],
+          "pred_shapes": [
+            [
+              20,
+              20
+            ],
+            [
+              18,
+              18
+            ],
+            [
+              20,
+              20
+            ]
+          ],
+          "error": null,
+          "program_name": "enum_recolor_then_bar_route:dominant_transition_map+bg_draw",
+          "signature": "enum_recolor_then_bar_route:dominant_transition_map+bg_draw|recolor_map(dominant_transition_map)|bar_bracket_route(bg_draw_color)"
+        }
+      ]
+    },
+    {
+      "task_id": "16b78196",
+      "n_compiled": 16,
+      "best": {
+        "name": "full_color_transition_map|recolor_map(full_color_transition_map)",
+        "shape_exact": true,
+        "train_diff": 109,
+        "per_pair_diff": [
+          73,
+          36
+        ],
+        "pred_shapes": [
+          [
+            30,
+            30
+          ],
+          [
+            30,
+            30
+          ]
+        ],
+        "error": null,
+        "program_name": "full_color_transition_map",
+        "signature": "full_color_transition_map|recolor_map(full_color_transition_map)"
+      },
+      "train_exact": [],
+      "top": [
+        {
+          "name": "full_color_transition_map|recolor_map(full_color_transition_map)",
+          "shape_exact": true,
+          "train_diff": 109,
+          "per_pair_diff": [
+            73,
+            36
+          ],
+          "pred_shapes": [
+            [
+              30,
+              30
+            ],
+            [
+              30,
+              30
+            ]
+          ],
+          "error": null,
+          "program_name": "full_color_transition_map",
+          "signature": "full_color_transition_map|recolor_map(full_color_transition_map)"
+        },
+        {
+          "name": "enum_recolor:full_color_transition_map|recolor_map(full_color_transition_map)",
+          "shape_exact": true,
+          "train_diff": 109,
+          "per_pair_diff": [
+            73,
+            36
+          ],
+          "pred_shapes": [
+            [
+              30,
+              30
+            ],
+            [
+              30,
+              30
+            ]
+          ],
+          "error": null,
+          "program_name": "enum_recolor:full_color_transition_map",
+          "signature": "enum_recolor:full_color_transition_map|recolor_map(full_color_transition_map)"
+        },
+        {
+          "name": "bar_marker_bracket_route|bar_marker_bracket_route(bg_draw_color,full_color_transition_map)",
+          "shape_exact": true,
+          "train_diff": 109,
+          "per_pair_diff": [
+            73,
+            36
+          ],
+          "pred_shapes": [
+            [
+              30,
+              30
+            ],
+            [
+              30,
+              30
+            ]
+          ],
+          "error": null,
+          "program_name": "bar_marker_bracket_route",
+          "signature": "bar_marker_bracket_route|bar_marker_bracket_route(bg_draw_color,full_color_transition_map)"
+        },
+        {
+          "name": "enum_bar_marker_route:full_map+bg_draw|bar_marker_bracket_route(bg_draw_color,full_color_transition_map)",
+          "shape_exact": true,
+          "train_diff": 109,
+          "per_pair_diff": [
+            73,
+            36
+          ],
+          "pred_shapes": [
+            [
+              30,
+              30
+            ],
+            [
+              30,
+              30
+            ]
+          ],
+          "error": null,
+          "program_name": "enum_bar_marker_route:full_map+bg_draw",
+          "signature": "enum_bar_marker_route:full_map+bg_draw|bar_marker_bracket_route(bg_draw_color,full_color_transition_map)"
+        },
+        {
+          "name": "full_recolor_then_bar_bracket_route|recolor_map(full_color_transition_map)|bar_bracket_route(bg_draw_color)",
+          "shape_exact": true,
+          "train_diff": 109,
+          "per_pair_diff": [
+            73,
+            36
+          ],
+          "pred_shapes": [
+            [
+              30,
+              30
+            ],
+            [
+              30,
+              30
+            ]
+          ],
+          "error": null,
+          "program_name": "full_recolor_then_bar_bracket_route",
+          "signature": "full_recolor_then_bar_bracket_route|recolor_map(full_color_transition_map)|bar_bracket_route(bg_draw_color)"
+        },
+        {
+          "name": "enum_recolor_then_bar_route:full_color_transition_map+bg_draw|recolor_map(full_color_transition_map)|bar_bracket_route(bg_draw_color)",
+          "shape_exact": true,
+          "train_diff": 109,
+          "per_pair_diff": [
+            73,
+            36
+          ],
+          "pred_shapes": [
+            [
+              30,
+              30
+            ],
+            [
+              30,
+              30
+            ]
+          ],
+          "error": null,
+          "program_name": "enum_recolor_then_bar_route:full_color_transition_map+bg_draw",
+          "signature": "enum_recolor_then_bar_route:full_color_transition_map+bg_draw|recolor_map(full_color_transition_map)|bar_bracket_route(bg_draw_color)"
+        },
+        {
+          "name": "enum_bar_route_then_recolor:bg_draw+full_color_transition_map|bar_bracket_route(bg_draw_color)|recolor_map(full_color_transition_map)",
+          "shape_exact": true,
+          "train_diff": 109,
+          "per_pair_diff": [
+            73,
+            36
+          ],
+          "pred_shapes": [
+            [
+              30,
+              30
+            ],
+            [
+              30,
+              30
+            ]
+          ],
+          "error": null,
+          "program_name": "enum_bar_route_then_recolor:bg_draw+full_color_transition_map",
+          "signature": "enum_bar_route_then_recolor:bg_draw+full_color_transition_map|bar_bracket_route(bg_draw_color)|recolor_map(full_color_transition_map)"
+        },
+        {
+          "name": "enum_bar_route:bg_draw|bar_bracket_route(bg_draw_color)",
+          "shape_exact": true,
+          "train_diff": 165,
+          "per_pair_diff": [
+            111,
+            54
+          ],
+          "pred_shapes": [
+            [
+              30,
+              30
+            ],
+            [
+              30,
+              30
+            ]
+          ],
+          "error": null,
+          "program_name": "enum_bar_route:bg_draw",
+          "signature": "enum_bar_route:bg_draw|bar_bracket_route(bg_draw_color)"
+        }
+      ]
+    },
+    {
+      "task_id": "195c6913",
+      "n_compiled": 16,
+      "best": {
+        "name": "full_color_transition_map|recolor_map(full_color_transition_map)",
+        "shape_exact": true,
+        "train_diff": 207,
+        "per_pair_diff": [
+          53,
+          61,
+          93
+        ],
+        "pred_shapes": [
+          [
+            20,
+            20
+          ],
+          [
+            25,
+            25
+          ],
+          [
+            25,
+            25
+          ]
+        ],
+        "error": null,
+        "program_name": "full_color_transition_map",
+        "signature": "full_color_transition_map|recolor_map(full_color_transition_map)"
+      },
+      "train_exact": [],
+      "top": [
+        {
+          "name": "full_color_transition_map|recolor_map(full_color_transition_map)",
+          "shape_exact": true,
+          "train_diff": 207,
+          "per_pair_diff": [
+            53,
+            61,
+            93
+          ],
+          "pred_shapes": [
+            [
+              20,
+              20
+            ],
+            [
+              25,
+              25
+            ],
+            [
+              25,
+              25
+            ]
+          ],
+          "error": null,
+          "program_name": "full_color_transition_map",
+          "signature": "full_color_transition_map|recolor_map(full_color_transition_map)"
+        },
+        {
+          "name": "enum_recolor:full_color_transition_map|recolor_map(full_color_transition_map)",
+          "shape_exact": true,
+          "train_diff": 207,
+          "per_pair_diff": [
+            53,
+            61,
+            93
+          ],
+          "pred_shapes": [
+            [
+              20,
+              20
+            ],
+            [
+              25,
+              25
+            ],
+            [
+              25,
+              25
+            ]
+          ],
+          "error": null,
+          "program_name": "enum_recolor:full_color_transition_map",
+          "signature": "enum_recolor:full_color_transition_map|recolor_map(full_color_transition_map)"
+        },
+        {
+          "name": "bar_marker_bracket_route|bar_marker_bracket_route(bg_draw_color,full_color_transition_map)",
+          "shape_exact": true,
+          "train_diff": 207,
+          "per_pair_diff": [
+            53,
+            61,
+            93
+          ],
+          "pred_shapes": [
+            [
+              20,
+              20
+            ],
+            [
+              25,
+              25
+            ],
+            [
+              25,
+              25
+            ]
+          ],
+          "error": null,
+          "program_name": "bar_marker_bracket_route",
+          "signature": "bar_marker_bracket_route|bar_marker_bracket_route(bg_draw_color,full_color_transition_map)"
+        },
+        {
+          "name": "enum_bar_marker_route:full_map+bg_draw|bar_marker_bracket_route(bg_draw_color,full_color_transition_map)",
+          "shape_exact": true,
+          "train_diff": 207,
+          "per_pair_diff": [
+            53,
+            61,
+            93
+          ],
+          "pred_shapes": [
+            [
+              20,
+              20
+            ],
+            [
+              25,
+              25
+            ],
+            [
+              25,
+              25
+            ]
+          ],
+          "error": null,
+          "program_name": "enum_bar_marker_route:full_map+bg_draw",
+          "signature": "enum_bar_marker_route:full_map+bg_draw|bar_marker_bracket_route(bg_draw_color,full_color_transition_map)"
+        },
+        {
+          "name": "full_recolor_then_bar_bracket_route|recolor_map(full_color_transition_map)|bar_bracket_route(bg_draw_color)",
+          "shape_exact": true,
+          "train_diff": 207,
+          "per_pair_diff": [
+            53,
+            61,
+            93
+          ],
+          "pred_shapes": [
+            [
+              20,
+              20
+            ],
+            [
+              25,
+              25
+            ],
+            [
+              25,
+              25
+            ]
+          ],
+          "error": null,
+          "program_name": "full_recolor_then_bar_bracket_route",
+          "signature": "full_recolor_then_bar_bracket_route|recolor_map(full_color_transition_map)|bar_bracket_route(bg_draw_color)"
+        },
+        {
+          "name": "enum_recolor_then_bar_route:full_color_transition_map+bg_draw|recolor_map(full_color_transition_map)|bar_bracket_route(bg_draw_color)",
+          "shape_exact": true,
+          "train_diff": 207,
+          "per_pair_diff": [
+            53,
+            61,
+            93
+          ],
+          "pred_shapes": [
+            [
+              20,
+              20
+            ],
+            [
+              25,
+              25
+            ],
+            [
+              25,
+              25
+            ]
+          ],
+          "error": null,
+          "program_name": "enum_recolor_then_bar_route:full_color_transition_map+bg_draw",
+          "signature": "enum_recolor_then_bar_route:full_color_transition_map+bg_draw|recolor_map(full_color_transition_map)|bar_bracket_route(bg_draw_color)"
+        },
+        {
+          "name": "enum_bar_route_then_recolor:bg_draw+full_color_transition_map|bar_bracket_route(bg_draw_color)|recolor_map(full_color_transition_map)",
+          "shape_exact": true,
+          "train_diff": 207,
+          "per_pair_diff": [
+            53,
+            61,
+            93
+          ],
+          "pred_shapes": [
+            [
+              20,
+              20
+            ],
+            [
+              25,
+              25
+            ],
+            [
+              25,
+              25
+            ]
+          ],
+          "error": null,
+          "program_name": "enum_bar_route_then_recolor:bg_draw+full_color_transition_map",
+          "signature": "enum_bar_route_then_recolor:bg_draw+full_color_transition_map|bar_bracket_route(bg_draw_color)|recolor_map(full_color_transition_map)"
+        },
+        {
+          "name": "enum_bar_route:bg_draw|bar_bracket_route(bg_draw_color)",
+          "shape_exact": true,
+          "train_diff": 211,
+          "per_pair_diff": [
+            53,
+            65,
+            93
+          ],
+          "pred_shapes": [
+            [
+              20,
+              20
+            ],
+            [
+              25,
+              25
+            ],
+            [
+              25,
+              25
+            ]
+          ],
+          "error": null,
+          "program_name": "enum_bar_route:bg_draw",
+          "signature": "enum_bar_route:bg_draw|bar_bracket_route(bg_draw_color)"
+        }
+      ]
+    },
+    {
+      "task_id": "20a9e565",
+      "n_compiled": 0,
+      "best": null,
+      "train_exact": [],
+      "top": []
+    },
+    {
+      "task_id": "271d71e2",
+      "n_compiled": 9,
+      "best": {
+        "name": "enum_bar_route:bg_draw|bar_bracket_route(bg_draw_color)",
+        "shape_exact": true,
+        "train_diff": 183,
+        "per_pair_diff": [
+          20,
+          113,
+          50
+        ],
+        "pred_shapes": [
+          [
+            8,
+            8
+          ],
+          [
+            17,
+            17
+          ],
+          [
+            12,
+            12
+          ]
+        ],
+        "error": null,
+        "program_name": "enum_bar_route:bg_draw",
+        "signature": "enum_bar_route:bg_draw|bar_bracket_route(bg_draw_color)"
+      },
+      "train_exact": [],
+      "top": [
+        {
+          "name": "enum_bar_route:bg_draw|bar_bracket_route(bg_draw_color)",
+          "shape_exact": true,
+          "train_diff": 183,
+          "per_pair_diff": [
+            20,
+            113,
+            50
+          ],
+          "pred_shapes": [
+            [
+              8,
+              8
+            ],
+            [
+              17,
+              17
+            ],
+            [
+              12,
+              12
+            ]
+          ],
+          "error": null,
+          "program_name": "enum_bar_route:bg_draw",
+          "signature": "enum_bar_route:bg_draw|bar_bracket_route(bg_draw_color)"
+        },
+        {
+          "name": "fill_enclosed_changed_color|fill_enclosed(changed_output_color)",
+          "shape_exact": true,
+          "train_diff": 183,
+          "per_pair_diff": [
+            20,
+            113,
+            50
+          ],
+          "pred_shapes": [
+            [
+              8,
+              8
+            ],
+            [
+              17,
+              17
+            ],
+            [
+              12,
+              12
+            ]
+          ],
+          "error": null,
+          "program_name": "fill_enclosed_changed_color",
+          "signature": "fill_enclosed_changed_color|fill_enclosed(changed_output_color)"
+        },
+        {
+          "name": "enum_fill_enclosed:changed_output_color|fill_enclosed(changed_output_color)",
+          "shape_exact": true,
+          "train_diff": 183,
+          "per_pair_diff": [
+            20,
+            113,
+            50
+          ],
+          "pred_shapes": [
+            [
+              8,
+              8
+            ],
+            [
+              17,
+              17
+            ],
+            [
+              12,
+              12
+            ]
+          ],
+          "error": null,
+          "program_name": "enum_fill_enclosed:changed_output_color",
+          "signature": "enum_fill_enclosed:changed_output_color|fill_enclosed(changed_output_color)"
+        },
+        {
+          "name": "route_singletons_same|route_singletons()",
+          "shape_exact": true,
+          "train_diff": 191,
+          "per_pair_diff": [
+            20,
+            119,
+            52
+          ],
+          "pred_shapes": [
+            [
+              8,
+              8
+            ],
+            [
+              17,
+              17
+            ],
+            [
+              12,
+              12
+            ]
+          ],
+          "error": null,
+          "program_name": "route_singletons_same",
+          "signature": "route_singletons_same|route_singletons()"
+        },
+        {
+          "name": "enum_route_singletons:same|route_singletons()",
+          "shape_exact": true,
+          "train_diff": 191,
+          "per_pair_diff": [
+            20,
+            119,
+            52
+          ],
+          "pred_shapes": [
+            [
+              8,
+              8
+            ],
+            [
+              17,
+              17
+            ],
+            [
+              12,
+              12
+            ]
+          ],
+          "error": null,
+          "program_name": "enum_route_singletons:same",
+          "signature": "enum_route_singletons:same|route_singletons()"
+        },
+        {
+          "name": "dominant_recolor_map|recolor_map(dominant_transition_map)",
+          "shape_exact": true,
+          "train_diff": 360,
+          "per_pair_diff": [
+            50,
+            205,
+            105
+          ],
+          "pred_shapes": [
+            [
+              8,
+              8
+            ],
+            [
+              17,
+              17
+            ],
+            [
+              12,
+              12
+            ]
+          ],
+          "error": null,
+          "program_name": "dominant_recolor_map",
+          "signature": "dominant_recolor_map|recolor_map(dominant_transition_map)"
+        },
+        {
+          "name": "enum_recolor:dominant_transition_map|recolor_map(dominant_transition_map)",
+          "shape_exact": true,
+          "train_diff": 360,
+          "per_pair_diff": [
+            50,
+            205,
+            105
+          ],
+          "pred_shapes": [
+            [
+              8,
+              8
+            ],
+            [
+              17,
+              17
+            ],
+            [
+              12,
+              12
+            ]
+          ],
+          "error": null,
+          "program_name": "enum_recolor:dominant_transition_map",
+          "signature": "enum_recolor:dominant_transition_map|recolor_map(dominant_transition_map)"
+        },
+        {
+          "name": "enum_recolor_then_bar_route:dominant_transition_map+bg_draw|recolor_map(dominant_transition_map)|bar_bracket_route(bg_draw_color)",
+          "shape_exact": true,
+          "train_diff": 360,
+          "per_pair_diff": [
+            50,
+            205,
+            105
+          ],
+          "pred_shapes": [
+            [
+              8,
+              8
+            ],
+            [
+              17,
+              17
+            ],
+            [
+              12,
+              12
+            ]
+          ],
+          "error": null,
+          "program_name": "enum_recolor_then_bar_route:dominant_transition_map+bg_draw",
+          "signature": "enum_recolor_then_bar_route:dominant_transition_map+bg_draw|recolor_map(dominant_transition_map)|bar_bracket_route(bg_draw_color)"
+        }
+      ]
+    },
+    {
+      "task_id": "2d0172a1",
+      "n_compiled": 0,
+      "best": null,
+      "train_exact": [],
+      "top": []
+    },
+    {
+      "task_id": "35ab12c3",
+      "n_compiled": 9,
+      "best": {
+        "name": "route_singletons_same|route_singletons()",
+        "shape_exact": true,
+        "train_diff": 116,
+        "per_pair_diff": [
+          56,
+          17,
+          43
+        ],
+        "pred_shapes": [
+          [
+            20,
+            20
+          ],
+          [
+            18,
+            18
+          ],
+          [
+            15,
+            15
+          ]
+        ],
+        "error": null,
+        "program_name": "route_singletons_same",
+        "signature": "route_singletons_same|route_singletons()"
+      },
+      "train_exact": [],
+      "top": [
+        {
+          "name": "route_singletons_same|route_singletons()",
+          "shape_exact": true,
+          "train_diff": 116,
+          "per_pair_diff": [
+            56,
+            17,
+            43
+          ],
+          "pred_shapes": [
+            [
+              20,
+              20
+            ],
+            [
+              18,
+              18
+            ],
+            [
+              15,
+              15
+            ]
+          ],
+          "error": null,
+          "program_name": "route_singletons_same",
+          "signature": "route_singletons_same|route_singletons()"
+        },
+        {
+          "name": "enum_route_singletons:same|route_singletons()",
+          "shape_exact": true,
+          "train_diff": 116,
+          "per_pair_diff": [
+            56,
+            17,
+            43
+          ],
+          "pred_shapes": [
+            [
+              20,
+              20
+            ],
+            [
+              18,
+              18
+            ],
+            [
+              15,
+              15
+            ]
+          ],
+          "error": null,
+          "program_name": "enum_route_singletons:same",
+          "signature": "enum_route_singletons:same|route_singletons()"
+        },
+        {
+          "name": "fill_enclosed_changed_color|fill_enclosed(changed_output_color)",
+          "shape_exact": true,
+          "train_diff": 179,
+          "per_pair_diff": [
+            62,
+            24,
+            93
+          ],
+          "pred_shapes": [
+            [
+              20,
+              20
+            ],
+            [
+              18,
+              18
+            ],
+            [
+              15,
+              15
+            ]
+          ],
+          "error": null,
+          "program_name": "fill_enclosed_changed_color",
+          "signature": "fill_enclosed_changed_color|fill_enclosed(changed_output_color)"
+        },
+        {
+          "name": "enum_fill_enclosed:changed_output_color|fill_enclosed(changed_output_color)",
+          "shape_exact": true,
+          "train_diff": 179,
+          "per_pair_diff": [
+            62,
+            24,
+            93
+          ],
+          "pred_shapes": [
+            [
+              20,
+              20
+            ],
+            [
+              18,
+              18
+            ],
+            [
+              15,
+              15
+            ]
+          ],
+          "error": null,
+          "program_name": "enum_fill_enclosed:changed_output_color",
+          "signature": "enum_fill_enclosed:changed_output_color|fill_enclosed(changed_output_color)"
+        },
+        {
+          "name": "enum_bar_route:bg_draw|bar_bracket_route(bg_draw_color)",
+          "shape_exact": true,
+          "train_diff": 209,
+          "per_pair_diff": [
+            79,
+            24,
+            106
+          ],
+          "pred_shapes": [
+            [
+              20,
+              20
+            ],
+            [
+              18,
+              18
+            ],
+            [
+              15,
+              15
+            ]
+          ],
+          "error": null,
+          "program_name": "enum_bar_route:bg_draw",
+          "signature": "enum_bar_route:bg_draw|bar_bracket_route(bg_draw_color)"
+        },
+        {
+          "name": "dominant_recolor_map|recolor_map(dominant_transition_map)",
+          "shape_exact": true,
+          "train_diff": 849,
+          "per_pair_diff": [
+            367,
+            309,
+            173
+          ],
+          "pred_shapes": [
+            [
+              20,
+              20
+            ],
+            [
+              18,
+              18
+            ],
+            [
+              15,
+              15
+            ]
+          ],
+          "error": null,
+          "program_name": "dominant_recolor_map",
+          "signature": "dominant_recolor_map|recolor_map(dominant_transition_map)"
+        },
+        {
+          "name": "enum_recolor:dominant_transition_map|recolor_map(dominant_transition_map)",
+          "shape_exact": true,
+          "train_diff": 849,
+          "per_pair_diff": [
+            367,
+            309,
+            173
+          ],
+          "pred_shapes": [
+            [
+              20,
+              20
+            ],
+            [
+              18,
+              18
+            ],
+            [
+              15,
+              15
+            ]
+          ],
+          "error": null,
+          "program_name": "enum_recolor:dominant_transition_map",
+          "signature": "enum_recolor:dominant_transition_map|recolor_map(dominant_transition_map)"
+        },
+        {
+          "name": "enum_recolor_then_bar_route:dominant_transition_map+bg_draw|recolor_map(dominant_transition_map)|bar_bracket_route(bg_draw_color)",
+          "shape_exact": true,
+          "train_diff": 849,
+          "per_pair_diff": [
+            367,
+            309,
+            173
+          ],
+          "pred_shapes": [
+            [
+              20,
+              20
+            ],
+            [
+              18,
+              18
+            ],
+            [
+              15,
+              15
+            ]
+          ],
+          "error": null,
+          "program_name": "enum_recolor_then_bar_route:dominant_transition_map+bg_draw",
+          "signature": "enum_recolor_then_bar_route:dominant_transition_map+bg_draw|recolor_map(dominant_transition_map)|bar_bracket_route(bg_draw_color)"
+        }
+      ]
+    },
+    {
+      "task_id": "36a08778",
+      "n_compiled": 13,
+      "best": {
+        "name": "fill_enclosed_changed_color|fill_enclosed(changed_output_color)",
+        "shape_exact": true,
+        "train_diff": 259,
+        "per_pair_diff": [
+          61,
+          48,
+          28,
+          21,
+          36,
+          65
+        ],
+        "pred_shapes": [
+          [
+            14,
+            14
+          ],
+          [
+            16,
+            13
+          ],
+          [
+            8,
+            9
+          ],
+          [
+            14,
+            5
+          ],
+          [
+            8,
+            20
+          ]
+        ],
+        "error": null,
+        "program_name": "fill_enclosed_changed_color",
+        "signature": "fill_enclosed_changed_color|fill_enclosed(changed_output_color)"
+      },
+      "train_exact": [],
+      "top": [
+        {
+          "name": "fill_enclosed_changed_color|fill_enclosed(changed_output_color)",
+          "shape_exact": true,
+          "train_diff": 259,
+          "per_pair_diff": [
+            61,
+            48,
+            28,
+            21,
+            36,
+            65
+          ],
+          "pred_shapes": [
+            [
+              14,
+              14
+            ],
+            [
+              16,
+              13
+            ],
+            [
+              8,
+              9
+            ],
+            [
+              14,
+              5
+            ],
+            [
+              8,
+              20
+            ]
+          ],
+          "error": null,
+          "program_name": "fill_enclosed_changed_color",
+          "signature": "fill_enclosed_changed_color|fill_enclosed(changed_output_color)"
+        },
+        {
+          "name": "enum_fill_enclosed:changed_output_color|fill_enclosed(changed_output_color)",
+          "shape_exact": true,
+          "train_diff": 259,
+          "per_pair_diff": [
+            61,
+            48,
+            28,
+            21,
+            36,
+            65
+          ],
+          "pred_shapes": [
+            [
+              14,
+              14
+            ],
+            [
+              16,
+              13
+            ],
+            [
+              8,
+              9
+            ],
+            [
+              14,
+              5
+            ],
+            [
+              8,
+              20
+            ]
+          ],
+          "error": null,
+          "program_name": "enum_fill_enclosed:changed_output_color",
+          "signature": "enum_fill_enclosed:changed_output_color|fill_enclosed(changed_output_color)"
+        },
+        {
+          "name": "enum_bar_route:bg_draw|bar_bracket_route(bg_draw_color)",
+          "shape_exact": true,
+          "train_diff": 316,
+          "per_pair_diff": [
+            67,
+            56,
+            24,
+            35,
+            26,
+            108
+          ],
+          "pred_shapes": [
+            [
+              14,
+              14
+            ],
+            [
+              16,
+              13
+            ],
+            [
+              8,
+              9
+            ],
+            [
+              14,
+              5
+            ],
+            [
+              8,
+              20
+            ]
+          ],
+          "error": null,
+          "program_name": "enum_bar_route:bg_draw",
+          "signature": "enum_bar_route:bg_draw|bar_bracket_route(bg_draw_color)"
+        },
+        {
+          "name": "route_singletons_same|route_singletons()",
+          "shape_exact": true,
+          "train_diff": 336,
+          "per_pair_diff": [
+            81,
+            62,
+            29,
+            38,
+            41,
+            85
+          ],
+          "pred_shapes": [
+            [
+              14,
+              14
+            ],
+            [
+              16,
+              13
+            ],
+            [
+              8,
+              9
+            ],
+            [
+              14,
+              5
+            ],
+            [
+              8,
+              20
+            ]
+          ],
+          "error": null,
+          "program_name": "route_singletons_same",
+          "signature": "route_singletons_same|route_singletons()"
+        },
+        {
+          "name": "enum_route_singletons:same|route_singletons()",
+          "shape_exact": true,
+          "train_diff": 336,
+          "per_pair_diff": [
+            81,
+            62,
+            29,
+            38,
+            41,
+            85
+          ],
+          "pred_shapes": [
+            [
+              14,
+              14
+            ],
+            [
+              16,
+              13
+            ],
+            [
+              8,
+              9
+            ],
+            [
+              14,
+              5
+            ],
+            [
+              8,
+              20
+            ]
+          ],
+          "error": null,
+          "program_name": "enum_route_singletons:same",
+          "signature": "enum_route_singletons:same|route_singletons()"
+        },
+        {
+          "name": "learned_recolor_map|recolor_map(color_transition_map)",
+          "shape_exact": true,
+          "train_diff": 511,
+          "per_pair_diff": [
+            102,
+            144,
+            26,
+            31,
+            87,
+            121
+          ],
+          "pred_shapes": [
+            [
+              14,
+              14
+            ],
+            [
+              16,
+              13
+            ],
+            [
+              8,
+              9
+            ],
+            [
+              14,
+              5
+            ],
+            [
+              8,
+              20
+            ]
+          ],
+          "error": null,
+          "program_name": "learned_recolor_map",
+          "signature": "learned_recolor_map|recolor_map(color_transition_map)"
+        },
+        {
+          "name": "dominant_recolor_map|recolor_map(dominant_transition_map)",
+          "shape_exact": true,
+          "train_diff": 511,
+          "per_pair_diff": [
+            102,
+            144,
+            26,
+            31,
+            87,
+            121
+          ],
+          "pred_shapes": [
+            [
+              14,
+              14
+            ],
+            [
+              16,
+              13
+            ],
+            [
+              8,
+              9
+            ],
+            [
+              14,
+              5
+            ],
+            [
+              8,
+              20
+            ]
+          ],
+          "error": null,
+          "program_name": "dominant_recolor_map",
+          "signature": "dominant_recolor_map|recolor_map(dominant_transition_map)"
+        },
+        {
+          "name": "enum_recolor:color_transition_map|recolor_map(color_transition_map)",
+          "shape_exact": true,
+          "train_diff": 511,
+          "per_pair_diff": [
+            102,
+            144,
+            26,
+            31,
+            87,
+            121
+          ],
+          "pred_shapes": [
+            [
+              14,
+              14
+            ],
+            [
+              16,
+              13
+            ],
+            [
+              8,
+              9
+            ],
+            [
+              14,
+              5
+            ],
+            [
+              8,
+              20
+            ]
+          ],
+          "error": null,
+          "program_name": "enum_recolor:color_transition_map",
+          "signature": "enum_recolor:color_transition_map|recolor_map(color_transition_map)"
+        }
+      ]
+    },
+    {
+      "task_id": "3dc255db",
+      "n_compiled": 16,
+      "best": {
+        "name": "full_color_transition_map|recolor_map(full_color_transition_map)",
+        "shape_exact": true,
+        "train_diff": 13,
+        "per_pair_diff": [
+          6,
+          4,
+          3
+        ],
+        "pred_shapes": [
+          [
+            12,
+            12
+          ],
+          [
+            10,
+            10
+          ],
+          [
+            12,
+            12
+          ]
+        ],
+        "error": null,
+        "program_name": "full_color_transition_map",
+        "signature": "full_color_transition_map|recolor_map(full_color_transition_map)"
+      },
+      "train_exact": [],
+      "top": [
+        {
+          "name": "full_color_transition_map|recolor_map(full_color_transition_map)",
+          "shape_exact": true,
+          "train_diff": 13,
+          "per_pair_diff": [
+            6,
+            4,
+            3
+          ],
+          "pred_shapes": [
+            [
+              12,
+              12
+            ],
+            [
+              10,
+              10
+            ],
+            [
+              12,
+              12
+            ]
+          ],
+          "error": null,
+          "program_name": "full_color_transition_map",
+          "signature": "full_color_transition_map|recolor_map(full_color_transition_map)"
+        },
+        {
+          "name": "enum_recolor:full_color_transition_map|recolor_map(full_color_transition_map)",
+          "shape_exact": true,
+          "train_diff": 13,
+          "per_pair_diff": [
+            6,
+            4,
+            3
+          ],
+          "pred_shapes": [
+            [
+              12,
+              12
+            ],
+            [
+              10,
+              10
+            ],
+            [
+              12,
+              12
+            ]
+          ],
+          "error": null,
+          "program_name": "enum_recolor:full_color_transition_map",
+          "signature": "enum_recolor:full_color_transition_map|recolor_map(full_color_transition_map)"
+        },
+        {
+          "name": "bar_marker_bracket_route|bar_marker_bracket_route(bg_draw_color,full_color_transition_map)",
+          "shape_exact": true,
+          "train_diff": 13,
+          "per_pair_diff": [
+            6,
+            4,
+            3
+          ],
+          "pred_shapes": [
+            [
+              12,
+              12
+            ],
+            [
+              10,
+              10
+            ],
+            [
+              12,
+              12
+            ]
+          ],
+          "error": null,
+          "program_name": "bar_marker_bracket_route",
+          "signature": "bar_marker_bracket_route|bar_marker_bracket_route(bg_draw_color,full_color_transition_map)"
+        },
+        {
+          "name": "enum_bar_marker_route:full_map+bg_draw|bar_marker_bracket_route(bg_draw_color,full_color_transition_map)",
+          "shape_exact": true,
+          "train_diff": 13,
+          "per_pair_diff": [
+            6,
+            4,
+            3
+          ],
+          "pred_shapes": [
+            [
+              12,
+              12
+            ],
+            [
+              10,
+              10
+            ],
+            [
+              12,
+              12
+            ]
+          ],
+          "error": null,
+          "program_name": "enum_bar_marker_route:full_map+bg_draw",
+          "signature": "enum_bar_marker_route:full_map+bg_draw|bar_marker_bracket_route(bg_draw_color,full_color_transition_map)"
+        },
+        {
+          "name": "full_recolor_then_bar_bracket_route|recolor_map(full_color_transition_map)|bar_bracket_route(bg_draw_color)",
+          "shape_exact": true,
+          "train_diff": 13,
+          "per_pair_diff": [
+            6,
+            4,
+            3
+          ],
+          "pred_shapes": [
+            [
+              12,
+              12
+            ],
+            [
+              10,
+              10
+            ],
+            [
+              12,
+              12
+            ]
+          ],
+          "error": null,
+          "program_name": "full_recolor_then_bar_bracket_route",
+          "signature": "full_recolor_then_bar_bracket_route|recolor_map(full_color_transition_map)|bar_bracket_route(bg_draw_color)"
+        },
+        {
+          "name": "enum_recolor_then_bar_route:full_color_transition_map+bg_draw|recolor_map(full_color_transition_map)|bar_bracket_route(bg_draw_color)",
+          "shape_exact": true,
+          "train_diff": 13,
+          "per_pair_diff": [
+            6,
+            4,
+            3
+          ],
+          "pred_shapes": [
+            [
+              12,
+              12
+            ],
+            [
+              10,
+              10
+            ],
+            [
+              12,
+              12
+            ]
+          ],
+          "error": null,
+          "program_name": "enum_recolor_then_bar_route:full_color_transition_map+bg_draw",
+          "signature": "enum_recolor_then_bar_route:full_color_transition_map+bg_draw|recolor_map(full_color_transition_map)|bar_bracket_route(bg_draw_color)"
+        },
+        {
+          "name": "enum_bar_route_then_recolor:bg_draw+full_color_transition_map|bar_bracket_route(bg_draw_color)|recolor_map(full_color_transition_map)",
+          "shape_exact": true,
+          "train_diff": 17,
+          "per_pair_diff": [
+            7,
+            4,
+            6
+          ],
+          "pred_shapes": [
+            [
+              12,
+              12
+            ],
+            [
+              10,
+              10
+            ],
+            [
+              12,
+              12
+            ]
+          ],
+          "error": null,
+          "program_name": "enum_bar_route_then_recolor:bg_draw+full_color_transition_map",
+          "signature": "enum_bar_route_then_recolor:bg_draw+full_color_transition_map|bar_bracket_route(bg_draw_color)|recolor_map(full_color_transition_map)"
+        },
+        {
+          "name": "fill_enclosed_changed_color|fill_enclosed(changed_output_color)",
+          "shape_exact": true,
+          "train_diff": 26,
+          "per_pair_diff": [
+            8,
+            8,
+            10
+          ],
+          "pred_shapes": [
+            [
+              12,
+              12
+            ],
+            [
+              10,
+              10
+            ],
+            [
+              12,
+              12
+            ]
+          ],
+          "error": null,
+          "program_name": "fill_enclosed_changed_color",
+          "signature": "fill_enclosed_changed_color|fill_enclosed(changed_output_color)"
+        }
+      ]
+    },
+    {
+      "task_id": "446ef5d2",
+      "n_compiled": 16,
+      "best": {
+        "name": "route_singletons_same|route_singletons()",
+        "shape_exact": true,
+        "train_diff": 153,
+        "per_pair_diff": [
+          113,
+          40
+        ],
+        "pred_shapes": [
+          [
+            12,
+            20
+          ],
+          [
+            10,
+            10
+          ]
+        ],
+        "error": null,
+        "program_name": "route_singletons_same",
+        "signature": "route_singletons_same|route_singletons()"
+      },
+      "train_exact": [],
+      "top": [
+        {
+          "name": "route_singletons_same|route_singletons()",
+          "shape_exact": true,
+          "train_diff": 153,
+          "per_pair_diff": [
+            113,
+            40
+          ],
+          "pred_shapes": [
+            [
+              12,
+              20
+            ],
+            [
+              10,
+              10
+            ]
+          ],
+          "error": null,
+          "program_name": "route_singletons_same",
+          "signature": "route_singletons_same|route_singletons()"
+        },
+        {
+          "name": "enum_route_singletons:same|route_singletons()",
+          "shape_exact": true,
+          "train_diff": 153,
+          "per_pair_diff": [
+            113,
+            40
+          ],
+          "pred_shapes": [
+            [
+              12,
+              20
+            ],
+            [
+              10,
+              10
+            ]
+          ],
+          "error": null,
+          "program_name": "enum_route_singletons:same",
+          "signature": "enum_route_singletons:same|route_singletons()"
+        },
+        {
+          "name": "full_color_transition_map|recolor_map(full_color_transition_map)",
+          "shape_exact": true,
+          "train_diff": 155,
+          "per_pair_diff": [
+            120,
+            35
+          ],
+          "pred_shapes": [
+            [
+              12,
+              20
+            ],
+            [
+              10,
+              10
+            ]
+          ],
+          "error": null,
+          "program_name": "full_color_transition_map",
+          "signature": "full_color_transition_map|recolor_map(full_color_transition_map)"
+        },
+        {
+          "name": "enum_recolor:full_color_transition_map|recolor_map(full_color_transition_map)",
+          "shape_exact": true,
+          "train_diff": 155,
+          "per_pair_diff": [
+            120,
+            35
+          ],
+          "pred_shapes": [
+            [
+              12,
+              20
+            ],
+            [
+              10,
+              10
+            ]
+          ],
+          "error": null,
+          "program_name": "enum_recolor:full_color_transition_map",
+          "signature": "enum_recolor:full_color_transition_map|recolor_map(full_color_transition_map)"
+        },
+        {
+          "name": "bar_marker_bracket_route|bar_marker_bracket_route(bg_draw_color,full_color_transition_map)",
+          "shape_exact": true,
+          "train_diff": 155,
+          "per_pair_diff": [
+            120,
+            35
+          ],
+          "pred_shapes": [
+            [
+              12,
+              20
+            ],
+            [
+              10,
+              10
+            ]
+          ],
+          "error": null,
+          "program_name": "bar_marker_bracket_route",
+          "signature": "bar_marker_bracket_route|bar_marker_bracket_route(bg_draw_color,full_color_transition_map)"
+        },
+        {
+          "name": "enum_bar_marker_route:full_map+bg_draw|bar_marker_bracket_route(bg_draw_color,full_color_transition_map)",
+          "shape_exact": true,
+          "train_diff": 155,
+          "per_pair_diff": [
+            120,
+            35
+          ],
+          "pred_shapes": [
+            [
+              12,
+              20
+            ],
+            [
+              10,
+              10
+            ]
+          ],
+          "error": null,
+          "program_name": "enum_bar_marker_route:full_map+bg_draw",
+          "signature": "enum_bar_marker_route:full_map+bg_draw|bar_marker_bracket_route(bg_draw_color,full_color_transition_map)"
+        },
+        {
+          "name": "full_recolor_then_bar_bracket_route|recolor_map(full_color_transition_map)|bar_bracket_route(bg_draw_color)",
+          "shape_exact": true,
+          "train_diff": 158,
+          "per_pair_diff": [
+            123,
+            35
+          ],
+          "pred_shapes": [
+            [
+              12,
+              20
+            ],
+            [
+              10,
+              10
+            ]
+          ],
+          "error": null,
+          "program_name": "full_recolor_then_bar_bracket_route",
+          "signature": "full_recolor_then_bar_bracket_route|recolor_map(full_color_transition_map)|bar_bracket_route(bg_draw_color)"
+        },
+        {
+          "name": "enum_recolor_then_bar_route:full_color_transition_map+bg_draw|recolor_map(full_color_transition_map)|bar_bracket_route(bg_draw_color)",
+          "shape_exact": true,
+          "train_diff": 158,
+          "per_pair_diff": [
+            123,
+            35
+          ],
+          "pred_shapes": [
+            [
+              12,
+              20
+            ],
+            [
+              10,
+              10
+            ]
+          ],
+          "error": null,
+          "program_name": "enum_recolor_then_bar_route:full_color_transition_map+bg_draw",
+          "signature": "enum_recolor_then_bar_route:full_color_transition_map+bg_draw|recolor_map(full_color_transition_map)|bar_bracket_route(bg_draw_color)"
+        }
+      ]
+    },
+    {
+      "task_id": "4a21e3da",
+      "n_compiled": 9,
+      "best": {
+        "name": "enum_bar_route:bg_draw|bar_bracket_route(bg_draw_color)",
+        "shape_exact": true,
+        "train_diff": 168,
+        "per_pair_diff": [
+          61,
+          58,
+          49
+        ],
+        "pred_shapes": [
+          [
+            18,
+            18
+          ],
+          [
+            18,
+            18
+          ],
+          [
+            18,
+            18
+          ]
+        ],
+        "error": null,
+        "program_name": "enum_bar_route:bg_draw",
+        "signature": "enum_bar_route:bg_draw|bar_bracket_route(bg_draw_color)"
+      },
+      "train_exact": [],
+      "top": [
+        {
+          "name": "enum_bar_route:bg_draw|bar_bracket_route(bg_draw_color)",
+          "shape_exact": true,
+          "train_diff": 168,
+          "per_pair_diff": [
+            61,
+            58,
+            49
+          ],
+          "pred_shapes": [
+            [
+              18,
+              18
+            ],
+            [
+              18,
+              18
+            ],
+            [
+              18,
+              18
+            ]
+          ],
+          "error": null,
+          "program_name": "enum_bar_route:bg_draw",
+          "signature": "enum_bar_route:bg_draw|bar_bracket_route(bg_draw_color)"
+        },
+        {
+          "name": "fill_enclosed_changed_color|fill_enclosed(changed_output_color)",
+          "shape_exact": true,
+          "train_diff": 168,
+          "per_pair_diff": [
+            61,
+            58,
+            49
+          ],
+          "pred_shapes": [
+            [
+              18,
+              18
+            ],
+            [
+              18,
+              18
+            ],
+            [
+              18,
+              18
+            ]
+          ],
+          "error": null,
+          "program_name": "fill_enclosed_changed_color",
+          "signature": "fill_enclosed_changed_color|fill_enclosed(changed_output_color)"
+        },
+        {
+          "name": "enum_fill_enclosed:changed_output_color|fill_enclosed(changed_output_color)",
+          "shape_exact": true,
+          "train_diff": 168,
+          "per_pair_diff": [
+            61,
+            58,
+            49
+          ],
+          "pred_shapes": [
+            [
+              18,
+              18
+            ],
+            [
+              18,
+              18
+            ],
+            [
+              18,
+              18
+            ]
+          ],
+          "error": null,
+          "program_name": "enum_fill_enclosed:changed_output_color",
+          "signature": "enum_fill_enclosed:changed_output_color|fill_enclosed(changed_output_color)"
+        },
+        {
+          "name": "route_singletons_same|route_singletons()",
+          "shape_exact": true,
+          "train_diff": 171,
+          "per_pair_diff": [
+            61,
+            61,
+            49
+          ],
+          "pred_shapes": [
+            [
+              18,
+              18
+            ],
+            [
+              18,
+              18
+            ],
+            [
+              18,
+              18
+            ]
+          ],
+          "error": null,
+          "program_name": "route_singletons_same",
+          "signature": "route_singletons_same|route_singletons()"
+        },
+        {
+          "name": "enum_route_singletons:same|route_singletons()",
+          "shape_exact": true,
+          "train_diff": 171,
+          "per_pair_diff": [
+            61,
+            61,
+            49
+          ],
+          "pred_shapes": [
+            [
+              18,
+              18
+            ],
+            [
+              18,
+              18
+            ],
+            [
+              18,
+              18
+            ]
+          ],
+          "error": null,
+          "program_name": "enum_route_singletons:same",
+          "signature": "enum_route_singletons:same|route_singletons()"
+        },
+        {
+          "name": "dominant_recolor_map|recolor_map(dominant_transition_map)",
+          "shape_exact": true,
+          "train_diff": 826,
+          "per_pair_diff": [
+            276,
+            271,
+            279
+          ],
+          "pred_shapes": [
+            [
+              18,
+              18
+            ],
+            [
+              18,
+              18
+            ],
+            [
+              18,
+              18
+            ]
+          ],
+          "error": null,
+          "program_name": "dominant_recolor_map",
+          "signature": "dominant_recolor_map|recolor_map(dominant_transition_map)"
+        },
+        {
+          "name": "enum_recolor:dominant_transition_map|recolor_map(dominant_transition_map)",
+          "shape_exact": true,
+          "train_diff": 826,
+          "per_pair_diff": [
+            276,
+            271,
+            279
+          ],
+          "pred_shapes": [
+            [
+              18,
+              18
+            ],
+            [
+              18,
+              18
+            ],
+            [
+              18,
+              18
+            ]
+          ],
+          "error": null,
+          "program_name": "enum_recolor:dominant_transition_map",
+          "signature": "enum_recolor:dominant_transition_map|recolor_map(dominant_transition_map)"
+        },
+        {
+          "name": "enum_recolor_then_bar_route:dominant_transition_map+bg_draw|recolor_map(dominant_transition_map)|bar_bracket_route(bg_draw_color)",
+          "shape_exact": true,
+          "train_diff": 826,
+          "per_pair_diff": [
+            276,
+            271,
+            279
+          ],
+          "pred_shapes": [
+            [
+              18,
+              18
+            ],
+            [
+              18,
+              18
+            ],
+            [
+              18,
+              18
+            ]
+          ],
+          "error": null,
+          "program_name": "enum_recolor_then_bar_route:dominant_transition_map+bg_draw",
+          "signature": "enum_recolor_then_bar_route:dominant_transition_map+bg_draw|recolor_map(dominant_transition_map)|bar_bracket_route(bg_draw_color)"
+        }
+      ]
+    },
+    {
+      "task_id": "5dbc8537",
+      "n_compiled": 0,
+      "best": null,
+      "train_exact": [],
+      "top": []
+    },
+    {
+      "task_id": "6ffbe589",
+      "n_compiled": 0,
+      "best": null,
+      "train_exact": [],
+      "top": []
+    },
+    {
+      "task_id": "7b0280bc",
+      "n_compiled": 8,
+      "best": {
+        "name": "fill_enclosed_changed_color|fill_enclosed(changed_output_color)",
+        "shape_exact": true,
+        "train_diff": 297,
+        "per_pair_diff": [
+          86,
+          46,
+          165
+        ],
+        "pred_shapes": [
+          [
+            18,
+            18
+          ],
+          [
+            15,
+            15
+          ],
+          [
+            20,
+            20
+          ]
+        ],
+        "error": null,
+        "program_name": "fill_enclosed_changed_color",
+        "signature": "fill_enclosed_changed_color|fill_enclosed(changed_output_color)"
+      },
+      "train_exact": [],
+      "top": [
+        {
+          "name": "fill_enclosed_changed_color|fill_enclosed(changed_output_color)",
+          "shape_exact": true,
+          "train_diff": 297,
+          "per_pair_diff": [
+            86,
+            46,
+            165
+          ],
+          "pred_shapes": [
+            [
+              18,
+              18
+            ],
+            [
+              15,
+              15
+            ],
+            [
+              20,
+              20
+            ]
+          ],
+          "error": null,
+          "program_name": "fill_enclosed_changed_color",
+          "signature": "fill_enclosed_changed_color|fill_enclosed(changed_output_color)"
+        },
+        {
+          "name": "enum_fill_enclosed:changed_output_color|fill_enclosed(changed_output_color)",
+          "shape_exact": true,
+          "train_diff": 297,
+          "per_pair_diff": [
+            86,
+            46,
+            165
+          ],
+          "pred_shapes": [
+            [
+              18,
+              18
+            ],
+            [
+              15,
+              15
+            ],
+            [
+              20,
+              20
+            ]
+          ],
+          "error": null,
+          "program_name": "enum_fill_enclosed:changed_output_color",
+          "signature": "enum_fill_enclosed:changed_output_color|fill_enclosed(changed_output_color)"
+        },
+        {
+          "name": "route_singletons_same|route_singletons()",
+          "shape_exact": true,
+          "train_diff": 333,
+          "per_pair_diff": [
+            118,
+            93,
+            122
+          ],
+          "pred_shapes": [
+            [
+              18,
+              18
+            ],
+            [
+              15,
+              15
+            ],
+            [
+              20,
+              20
+            ]
+          ],
+          "error": null,
+          "program_name": "route_singletons_same",
+          "signature": "route_singletons_same|route_singletons()"
+        },
+        {
+          "name": "enum_route_singletons:same|route_singletons()",
+          "shape_exact": true,
+          "train_diff": 333,
+          "per_pair_diff": [
+            118,
+            93,
+            122
+          ],
+          "pred_shapes": [
+            [
+              18,
+              18
+            ],
+            [
+              15,
+              15
+            ],
+            [
+              20,
+              20
+            ]
+          ],
+          "error": null,
+          "program_name": "enum_route_singletons:same",
+          "signature": "enum_route_singletons:same|route_singletons()"
+        },
+        {
+          "name": "learned_recolor_map|recolor_map(color_transition_map)",
+          "shape_exact": true,
+          "train_diff": 478,
+          "per_pair_diff": [
+            43,
+            65,
+            370
+          ],
+          "pred_shapes": [
+            [
+              18,
+              18
+            ],
+            [
+              15,
+              15
+            ],
+            [
+              20,
+              20
+            ]
+          ],
+          "error": null,
+          "program_name": "learned_recolor_map",
+          "signature": "learned_recolor_map|recolor_map(color_transition_map)"
+        },
+        {
+          "name": "dominant_recolor_map|recolor_map(dominant_transition_map)",
+          "shape_exact": true,
+          "train_diff": 478,
+          "per_pair_diff": [
+            43,
+            65,
+            370
+          ],
+          "pred_shapes": [
+            [
+              18,
+              18
+            ],
+            [
+              15,
+              15
+            ],
+            [
+              20,
+              20
+            ]
+          ],
+          "error": null,
+          "program_name": "dominant_recolor_map",
+          "signature": "dominant_recolor_map|recolor_map(dominant_transition_map)"
+        },
+        {
+          "name": "enum_recolor:color_transition_map|recolor_map(color_transition_map)",
+          "shape_exact": true,
+          "train_diff": 478,
+          "per_pair_diff": [
+            43,
+            65,
+            370
+          ],
+          "pred_shapes": [
+            [
+              18,
+              18
+            ],
+            [
+              15,
+              15
+            ],
+            [
+              20,
+              20
+            ]
+          ],
+          "error": null,
+          "program_name": "enum_recolor:color_transition_map",
+          "signature": "enum_recolor:color_transition_map|recolor_map(color_transition_map)"
+        },
+        {
+          "name": "enum_recolor:dominant_transition_map|recolor_map(dominant_transition_map)",
+          "shape_exact": true,
+          "train_diff": 478,
+          "per_pair_diff": [
+            43,
+            65,
+            370
+          ],
+          "pred_shapes": [
+            [
+              18,
+              18
+            ],
+            [
+              15,
+              15
+            ],
+            [
+              20,
+              20
+            ]
+          ],
+          "error": null,
+          "program_name": "enum_recolor:dominant_transition_map",
+          "signature": "enum_recolor:dominant_transition_map|recolor_map(dominant_transition_map)"
+        }
+      ]
+    },
+    {
+      "task_id": "88bcf3b4",
+      "n_compiled": 9,
+      "best": {
+        "name": "fill_enclosed_changed_color|fill_enclosed(changed_output_color)",
+        "shape_exact": true,
+        "train_diff": 51,
+        "per_pair_diff": [
+          8,
+          8,
+          16,
+          9,
+          10
+        ],
+        "pred_shapes": [
+          [
+            7,
+            7
+          ],
+          [
+            12,
+            12
+          ],
+          [
+            17,
+            17
+          ],
+          [
+            10,
+            10
+          ],
+          [
+            9,
+            9
+          ]
+        ],
+        "error": null,
+        "program_name": "fill_enclosed_changed_color",
+        "signature": "fill_enclosed_changed_color|fill_enclosed(changed_output_color)"
+      },
+      "train_exact": [],
+      "top": [
+        {
+          "name": "fill_enclosed_changed_color|fill_enclosed(changed_output_color)",
+          "shape_exact": true,
+          "train_diff": 51,
+          "per_pair_diff": [
+            8,
+            8,
+            16,
+            9,
+            10
+          ],
+          "pred_shapes": [
+            [
+              7,
+              7
+            ],
+            [
+              12,
+              12
+            ],
+            [
+              17,
+              17
+            ],
+            [
+              10,
+              10
+            ],
+            [
+              9,
+              9
+            ]
+          ],
+          "error": null,
+          "program_name": "fill_enclosed_changed_color",
+          "signature": "fill_enclosed_changed_color|fill_enclosed(changed_output_color)"
+        },
+        {
+          "name": "enum_fill_enclosed:changed_output_color|fill_enclosed(changed_output_color)",
+          "shape_exact": true,
+          "train_diff": 51,
+          "per_pair_diff": [
+            8,
+            8,
+            16,
+            9,
+            10
+          ],
+          "pred_shapes": [
+            [
+              7,
+              7
+            ],
+            [
+              12,
+              12
+            ],
+            [
+              17,
+              17
+            ],
+            [
+              10,
+              10
+            ],
+            [
+              9,
+              9
+            ]
+          ],
+          "error": null,
+          "program_name": "enum_fill_enclosed:changed_output_color",
+          "signature": "enum_fill_enclosed:changed_output_color|fill_enclosed(changed_output_color)"
+        },
+        {
+          "name": "route_singletons_same|route_singletons()",
+          "shape_exact": true,
+          "train_diff": 52,
+          "per_pair_diff": [
+            8,
+            8,
+            16,
+            10,
+            10
+          ],
+          "pred_shapes": [
+            [
+              7,
+              7
+            ],
+            [
+              12,
+              12
+            ],
+            [
+              17,
+              17
+            ],
+            [
+              10,
+              10
+            ],
+            [
+              9,
+              9
+            ]
+          ],
+          "error": null,
+          "program_name": "route_singletons_same",
+          "signature": "route_singletons_same|route_singletons()"
+        },
+        {
+          "name": "enum_route_singletons:same|route_singletons()",
+          "shape_exact": true,
+          "train_diff": 52,
+          "per_pair_diff": [
+            8,
+            8,
+            16,
+            10,
+            10
+          ],
+          "pred_shapes": [
+            [
+              7,
+              7
+            ],
+            [
+              12,
+              12
+            ],
+            [
+              17,
+              17
+            ],
+            [
+              10,
+              10
+            ],
+            [
+              9,
+              9
+            ]
+          ],
+          "error": null,
+          "program_name": "enum_route_singletons:same",
+          "signature": "enum_route_singletons:same|route_singletons()"
+        },
+        {
+          "name": "enum_bar_route:bg_draw|bar_bracket_route(bg_draw_color)",
+          "shape_exact": true,
+          "train_diff": 69,
+          "per_pair_diff": [
+            8,
+            8,
+            34,
+            9,
+            10
+          ],
+          "pred_shapes": [
+            [
+              7,
+              7
+            ],
+            [
+              12,
+              12
+            ],
+            [
+              17,
+              17
+            ],
+            [
+              10,
+              10
+            ],
+            [
+              9,
+              9
+            ]
+          ],
+          "error": null,
+          "program_name": "enum_bar_route:bg_draw",
+          "signature": "enum_bar_route:bg_draw|bar_bracket_route(bg_draw_color)"
+        },
+        {
+          "name": "enum_bar_route_then_recolor:bg_draw+dominant_transition_map|bar_bracket_route(bg_draw_color)|recolor_map(dominant_transition_map)",
+          "shape_exact": true,
+          "train_diff": 583,
+          "per_pair_diff": [
+            43,
+            133,
+            251,
+            89,
+            67
+          ],
+          "pred_shapes": [
+            [
+              7,
+              7
+            ],
+            [
+              12,
+              12
+            ],
+            [
+              17,
+              17
+            ],
+            [
+              10,
+              10
+            ],
+            [
+              9,
+              9
+            ]
+          ],
+          "error": null,
+          "program_name": "enum_bar_route_then_recolor:bg_draw+dominant_transition_map",
+          "signature": "enum_bar_route_then_recolor:bg_draw+dominant_transition_map|bar_bracket_route(bg_draw_color)|recolor_map(dominant_transition_map)"
+        },
+        {
+          "name": "enum_recolor_then_bar_route:dominant_transition_map+bg_draw|recolor_map(dominant_transition_map)|bar_bracket_route(bg_draw_color)",
+          "shape_exact": true,
+          "train_diff": 592,
+          "per_pair_diff": [
+            43,
+            127,
+            266,
+            89,
+            67
+          ],
+          "pred_shapes": [
+            [
+              7,
+              7
+            ],
+            [
+              12,
+              12
+            ],
+            [
+              17,
+              17
+            ],
+            [
+              10,
+              10
+            ],
+            [
+              9,
+              9
+            ]
+          ],
+          "error": null,
+          "program_name": "enum_recolor_then_bar_route:dominant_transition_map+bg_draw",
+          "signature": "enum_recolor_then_bar_route:dominant_transition_map+bg_draw|recolor_map(dominant_transition_map)|bar_bracket_route(bg_draw_color)"
+        },
+        {
+          "name": "dominant_recolor_map|recolor_map(dominant_transition_map)",
+          "shape_exact": true,
+          "train_diff": 598,
+          "per_pair_diff": [
+            43,
+            133,
+            266,
+            89,
+            67
+          ],
+          "pred_shapes": [
+            [
+              7,
+              7
+            ],
+            [
+              12,
+              12
+            ],
+            [
+              17,
+              17
+            ],
+            [
+              10,
+              10
+            ],
+            [
+              9,
+              9
+            ]
+          ],
+          "error": null,
+          "program_name": "dominant_recolor_map",
+          "signature": "dominant_recolor_map|recolor_map(dominant_transition_map)"
+        }
+      ]
+    },
+    {
+      "task_id": "89565ca0",
+      "n_compiled": 0,
+      "best": null,
+      "train_exact": [],
+      "top": []
+    },
+    {
+      "task_id": "abc82100",
+      "n_compiled": 16,
+      "best": {
+        "name": "full_color_transition_map|recolor_map(full_color_transition_map)",
+        "shape_exact": true,
+        "train_diff": 139,
+        "per_pair_diff": [
+          8,
+          53,
+          61,
+          17
+        ],
+        "pred_shapes": [
+          [
+            5,
+            5
+          ],
+          [
+            15,
+            15
+          ],
+          [
+            20,
+            20
+          ],
+          [
+            8,
+            8
+          ]
+        ],
+        "error": null,
+        "program_name": "full_color_transition_map",
+        "signature": "full_color_transition_map|recolor_map(full_color_transition_map)"
+      },
+      "train_exact": [],
+      "top": [
+        {
+          "name": "full_color_transition_map|recolor_map(full_color_transition_map)",
+          "shape_exact": true,
+          "train_diff": 139,
+          "per_pair_diff": [
+            8,
+            53,
+            61,
+            17
+          ],
+          "pred_shapes": [
+            [
+              5,
+              5
+            ],
+            [
+              15,
+              15
+            ],
+            [
+              20,
+              20
+            ],
+            [
+              8,
+              8
+            ]
+          ],
+          "error": null,
+          "program_name": "full_color_transition_map",
+          "signature": "full_color_transition_map|recolor_map(full_color_transition_map)"
+        },
+        {
+          "name": "enum_recolor:full_color_transition_map|recolor_map(full_color_transition_map)",
+          "shape_exact": true,
+          "train_diff": 139,
+          "per_pair_diff": [
+            8,
+            53,
+            61,
+            17
+          ],
+          "pred_shapes": [
+            [
+              5,
+              5
+            ],
+            [
+              15,
+              15
+            ],
+            [
+              20,
+              20
+            ],
+            [
+              8,
+              8
+            ]
+          ],
+          "error": null,
+          "program_name": "enum_recolor:full_color_transition_map",
+          "signature": "enum_recolor:full_color_transition_map|recolor_map(full_color_transition_map)"
+        },
+        {
+          "name": "full_recolor_then_bar_bracket_route|recolor_map(full_color_transition_map)|bar_bracket_route(bg_draw_color)",
+          "shape_exact": true,
+          "train_diff": 151,
+          "per_pair_diff": [
+            11,
+            53,
+            61,
+            26
+          ],
+          "pred_shapes": [
+            [
+              5,
+              5
+            ],
+            [
+              15,
+              15
+            ],
+            [
+              20,
+              20
+            ],
+            [
+              8,
+              8
+            ]
+          ],
+          "error": null,
+          "program_name": "full_recolor_then_bar_bracket_route",
+          "signature": "full_recolor_then_bar_bracket_route|recolor_map(full_color_transition_map)|bar_bracket_route(bg_draw_color)"
+        },
+        {
+          "name": "enum_recolor_then_bar_route:full_color_transition_map+bg_draw|recolor_map(full_color_transition_map)|bar_bracket_route(bg_draw_color)",
+          "shape_exact": true,
+          "train_diff": 151,
+          "per_pair_diff": [
+            11,
+            53,
+            61,
+            26
+          ],
+          "pred_shapes": [
+            [
+              5,
+              5
+            ],
+            [
+              15,
+              15
+            ],
+            [
+              20,
+              20
+            ],
+            [
+              8,
+              8
+            ]
+          ],
+          "error": null,
+          "program_name": "enum_recolor_then_bar_route:full_color_transition_map+bg_draw",
+          "signature": "enum_recolor_then_bar_route:full_color_transition_map+bg_draw|recolor_map(full_color_transition_map)|bar_bracket_route(bg_draw_color)"
+        },
+        {
+          "name": "bar_marker_bracket_route|bar_marker_bracket_route(bg_draw_color,full_color_transition_map)",
+          "shape_exact": true,
+          "train_diff": 169,
+          "per_pair_diff": [
+            8,
+            68,
+            76,
+            17
+          ],
+          "pred_shapes": [
+            [
+              5,
+              5
+            ],
+            [
+              15,
+              15
+            ],
+            [
+              20,
+              20
+            ],
+            [
+              8,
+              8
+            ]
+          ],
+          "error": null,
+          "program_name": "bar_marker_bracket_route",
+          "signature": "bar_marker_bracket_route|bar_marker_bracket_route(bg_draw_color,full_color_transition_map)"
+        },
+        {
+          "name": "enum_bar_marker_route:full_map+bg_draw|bar_marker_bracket_route(bg_draw_color,full_color_transition_map)",
+          "shape_exact": true,
+          "train_diff": 169,
+          "per_pair_diff": [
+            8,
+            68,
+            76,
+            17
+          ],
+          "pred_shapes": [
+            [
+              5,
+              5
+            ],
+            [
+              15,
+              15
+            ],
+            [
+              20,
+              20
+            ],
+            [
+              8,
+              8
+            ]
+          ],
+          "error": null,
+          "program_name": "enum_bar_marker_route:full_map+bg_draw",
+          "signature": "enum_bar_marker_route:full_map+bg_draw|bar_marker_bracket_route(bg_draw_color,full_color_transition_map)"
+        },
+        {
+          "name": "enum_bar_route_then_recolor:bg_draw+full_color_transition_map|bar_bracket_route(bg_draw_color)|recolor_map(full_color_transition_map)",
+          "shape_exact": true,
+          "train_diff": 179,
+          "per_pair_diff": [
+            11,
+            69,
+            72,
+            27
+          ],
+          "pred_shapes": [
+            [
+              5,
+              5
+            ],
+            [
+              15,
+              15
+            ],
+            [
+              20,
+              20
+            ],
+            [
+              8,
+              8
+            ]
+          ],
+          "error": null,
+          "program_name": "enum_bar_route_then_recolor:bg_draw+full_color_transition_map",
+          "signature": "enum_bar_route_then_recolor:bg_draw+full_color_transition_map|bar_bracket_route(bg_draw_color)|recolor_map(full_color_transition_map)"
+        },
+        {
+          "name": "fill_enclosed_changed_color|fill_enclosed(changed_output_color)",
+          "shape_exact": true,
+          "train_diff": 193,
+          "per_pair_diff": [
+            11,
+            80,
+            83,
+            19
+          ],
+          "pred_shapes": [
+            [
+              5,
+              5
+            ],
+            [
+              15,
+              15
+            ],
+            [
+              20,
+              20
+            ],
+            [
+              8,
+              8
+            ]
+          ],
+          "error": null,
+          "program_name": "fill_enclosed_changed_color",
+          "signature": "fill_enclosed_changed_color|fill_enclosed(changed_output_color)"
+        }
+      ]
+    },
+    {
+      "task_id": "cb2d8a2c",
+      "n_compiled": 20,
+      "best": {
+        "name": "bar_marker_bracket_route|bar_marker_bracket_route(bg_draw_color,full_color_transition_map)",
+        "shape_exact": true,
+        "train_diff": 0,
+        "per_pair_diff": [
+          0,
+          0,
+          0,
+          0
+        ],
+        "pred_shapes": [
+          [
+            19,
+            13
+          ],
+          [
+            17,
+            19
+          ],
+          [
+            19,
+            19
+          ],
+          [
+            12,
+            19
+          ]
+        ],
+        "error": null,
+        "program_name": "bar_marker_bracket_route",
+        "signature": "bar_marker_bracket_route|bar_marker_bracket_route(bg_draw_color,full_color_transition_map)",
+        "loo": {
+          "passes": true,
+          "informative": false,
+          "admission_type": "train_exact_fixed_loo_vacuous"
+        }
+      },
+      "train_exact": [
+        {
+          "name": "bar_marker_bracket_route|bar_marker_bracket_route(bg_draw_color,full_color_transition_map)",
+          "shape_exact": true,
+          "train_diff": 0,
+          "per_pair_diff": [
+            0,
+            0,
+            0,
+            0
+          ],
+          "pred_shapes": [
+            [
+              19,
+              13
+            ],
+            [
+              17,
+              19
+            ],
+            [
+              19,
+              19
+            ],
+            [
+              12,
+              19
+            ]
+          ],
+          "error": null,
+          "program_name": "bar_marker_bracket_route",
+          "signature": "bar_marker_bracket_route|bar_marker_bracket_route(bg_draw_color,full_color_transition_map)",
+          "loo": {
+            "passes": true,
+            "informative": false,
+            "admission_type": "train_exact_fixed_loo_vacuous"
+          }
+        },
+        {
+          "name": "enum_bar_marker_route:full_map+bg_draw|bar_marker_bracket_route(bg_draw_color,full_color_transition_map)",
+          "shape_exact": true,
+          "train_diff": 0,
+          "per_pair_diff": [
+            0,
+            0,
+            0,
+            0
+          ],
+          "pred_shapes": [
+            [
+              19,
+              13
+            ],
+            [
+              17,
+              19
+            ],
+            [
+              19,
+              19
+            ],
+            [
+              12,
+              19
+            ]
+          ],
+          "error": null,
+          "program_name": "enum_bar_marker_route:full_map+bg_draw",
+          "signature": "enum_bar_marker_route:full_map+bg_draw|bar_marker_bracket_route(bg_draw_color,full_color_transition_map)",
+          "loo": {
+            "passes": true,
+            "informative": false,
+            "admission_type": "train_exact_fixed_loo_vacuous"
+          }
+        }
+      ],
+      "top": [
+        {
+          "name": "bar_marker_bracket_route|bar_marker_bracket_route(bg_draw_color,full_color_transition_map)",
+          "shape_exact": true,
+          "train_diff": 0,
+          "per_pair_diff": [
+            0,
+            0,
+            0,
+            0
+          ],
+          "pred_shapes": [
+            [
+              19,
+              13
+            ],
+            [
+              17,
+              19
+            ],
+            [
+              19,
+              19
+            ],
+            [
+              12,
+              19
+            ]
+          ],
+          "error": null,
+          "program_name": "bar_marker_bracket_route",
+          "signature": "bar_marker_bracket_route|bar_marker_bracket_route(bg_draw_color,full_color_transition_map)",
+          "loo": {
+            "passes": true,
+            "informative": false,
+            "admission_type": "train_exact_fixed_loo_vacuous"
+          }
+        },
+        {
+          "name": "enum_bar_marker_route:full_map+bg_draw|bar_marker_bracket_route(bg_draw_color,full_color_transition_map)",
+          "shape_exact": true,
+          "train_diff": 0,
+          "per_pair_diff": [
+            0,
+            0,
+            0,
+            0
+          ],
+          "pred_shapes": [
+            [
+              19,
+              13
+            ],
+            [
+              17,
+              19
+            ],
+            [
+              19,
+              19
+            ],
+            [
+              12,
+              19
+            ]
+          ],
+          "error": null,
+          "program_name": "enum_bar_marker_route:full_map+bg_draw",
+          "signature": "enum_bar_marker_route:full_map+bg_draw|bar_marker_bracket_route(bg_draw_color,full_color_transition_map)",
+          "loo": {
+            "passes": true,
+            "informative": false,
+            "admission_type": "train_exact_fixed_loo_vacuous"
+          }
+        },
+        {
+          "name": "full_recolor_then_bar_bracket_route|recolor_map(full_color_transition_map)|bar_bracket_route(bg_draw_color)",
+          "shape_exact": true,
+          "train_diff": 110,
+          "per_pair_diff": [
+            14,
+            47,
+            22,
+            27
+          ],
+          "pred_shapes": [
+            [
+              19,
+              13
+            ],
+            [
+              17,
+              19
+            ],
+            [
+              19,
+              19
+            ],
+            [
+              12,
+              19
+            ]
+          ],
+          "error": null,
+          "program_name": "full_recolor_then_bar_bracket_route",
+          "signature": "full_recolor_then_bar_bracket_route|recolor_map(full_color_transition_map)|bar_bracket_route(bg_draw_color)"
+        },
+        {
+          "name": "enum_recolor_then_bar_route:full_color_transition_map+bg_draw|recolor_map(full_color_transition_map)|bar_bracket_route(bg_draw_color)",
+          "shape_exact": true,
+          "train_diff": 110,
+          "per_pair_diff": [
+            14,
+            47,
+            22,
+            27
+          ],
+          "pred_shapes": [
+            [
+              19,
+              13
+            ],
+            [
+              17,
+              19
+            ],
+            [
+              19,
+              19
+            ],
+            [
+              12,
+              19
+            ]
+          ],
+          "error": null,
+          "program_name": "enum_recolor_then_bar_route:full_color_transition_map+bg_draw",
+          "signature": "enum_recolor_then_bar_route:full_color_transition_map+bg_draw|recolor_map(full_color_transition_map)|bar_bracket_route(bg_draw_color)"
+        },
+        {
+          "name": "enum_bar_route_then_recolor:bg_draw+full_color_transition_map|bar_bracket_route(bg_draw_color)|recolor_map(full_color_transition_map)",
+          "shape_exact": true,
+          "train_diff": 110,
+          "per_pair_diff": [
+            14,
+            47,
+            22,
+            27
+          ],
+          "pred_shapes": [
+            [
+              19,
+              13
+            ],
+            [
+              17,
+              19
+            ],
+            [
+              19,
+              19
+            ],
+            [
+              12,
+              19
+            ]
+          ],
+          "error": null,
+          "program_name": "enum_bar_route_then_recolor:bg_draw+full_color_transition_map",
+          "signature": "enum_bar_route_then_recolor:bg_draw+full_color_transition_map|bar_bracket_route(bg_draw_color)|recolor_map(full_color_transition_map)"
+        },
+        {
+          "name": "full_color_transition_map|recolor_map(full_color_transition_map)",
+          "shape_exact": true,
+          "train_diff": 115,
+          "per_pair_diff": [
+            25,
+            28,
+            36,
+            26
+          ],
+          "pred_shapes": [
+            [
+              19,
+              13
+            ],
+            [
+              17,
+              19
+            ],
+            [
+              19,
+              19
+            ],
+            [
+              12,
+              19
+            ]
+          ],
+          "error": null,
+          "program_name": "full_color_transition_map",
+          "signature": "full_color_transition_map|recolor_map(full_color_transition_map)"
+        },
+        {
+          "name": "enum_recolor:full_color_transition_map|recolor_map(full_color_transition_map)",
+          "shape_exact": true,
+          "train_diff": 115,
+          "per_pair_diff": [
+            25,
+            28,
+            36,
+            26
+          ],
+          "pred_shapes": [
+            [
+              19,
+              13
+            ],
+            [
+              17,
+              19
+            ],
+            [
+              19,
+              19
+            ],
+            [
+              12,
+              19
+            ]
+          ],
+          "error": null,
+          "program_name": "enum_recolor:full_color_transition_map",
+          "signature": "enum_recolor:full_color_transition_map|recolor_map(full_color_transition_map)"
+        },
+        {
+          "name": "enum_bar_route:bg_draw|bar_bracket_route(bg_draw_color)",
+          "shape_exact": true,
+          "train_diff": 126,
+          "per_pair_diff": [
+            18,
+            51,
+            27,
+            30
+          ],
+          "pred_shapes": [
+            [
+              19,
+              13
+            ],
+            [
+              17,
+              19
+            ],
+            [
+              19,
+              19
+            ],
+            [
+              12,
+              19
+            ]
+          ],
+          "error": null,
+          "program_name": "enum_bar_route:bg_draw",
+          "signature": "enum_bar_route:bg_draw|bar_bracket_route(bg_draw_color)"
+        }
+      ]
+    },
+    {
+      "task_id": "d8e07eb2",
+      "n_compiled": 9,
+      "best": {
+        "name": "enum_bar_route:bg_draw|bar_bracket_route(bg_draw_color)",
+        "shape_exact": true,
+        "train_diff": 740,
+        "per_pair_diff": [
+          202,
+          202,
+          118,
+          119,
+          99
+        ],
+        "pred_shapes": [
+          [
+            30,
+            22
+          ],
+          [
+            30,
+            22
+          ],
+          [
+            30,
+            22
+          ],
+          [
+            30,
+            22
+          ],
+          [
+            30,
+            22
+          ]
+        ],
+        "error": null,
+        "program_name": "enum_bar_route:bg_draw",
+        "signature": "enum_bar_route:bg_draw|bar_bracket_route(bg_draw_color)"
+      },
+      "train_exact": [],
+      "top": [
+        {
+          "name": "enum_bar_route:bg_draw|bar_bracket_route(bg_draw_color)",
+          "shape_exact": true,
+          "train_diff": 740,
+          "per_pair_diff": [
+            202,
+            202,
+            118,
+            119,
+            99
+          ],
+          "pred_shapes": [
+            [
+              30,
+              22
+            ],
+            [
+              30,
+              22
+            ],
+            [
+              30,
+              22
+            ],
+            [
+              30,
+              22
+            ],
+            [
+              30,
+              22
+            ]
+          ],
+          "error": null,
+          "program_name": "enum_bar_route:bg_draw",
+          "signature": "enum_bar_route:bg_draw|bar_bracket_route(bg_draw_color)"
+        },
+        {
+          "name": "fill_enclosed_changed_color|fill_enclosed(changed_output_color)",
+          "shape_exact": true,
+          "train_diff": 744,
+          "per_pair_diff": [
+            203,
+            203,
+            118,
+            120,
+            100
+          ],
+          "pred_shapes": [
+            [
+              30,
+              22
+            ],
+            [
+              30,
+              22
+            ],
+            [
+              30,
+              22
+            ],
+            [
+              30,
+              22
+            ],
+            [
+              30,
+              22
+            ]
+          ],
+          "error": null,
+          "program_name": "fill_enclosed_changed_color",
+          "signature": "fill_enclosed_changed_color|fill_enclosed(changed_output_color)"
+        },
+        {
+          "name": "enum_fill_enclosed:changed_output_color|fill_enclosed(changed_output_color)",
+          "shape_exact": true,
+          "train_diff": 744,
+          "per_pair_diff": [
+            203,
+            203,
+            118,
+            120,
+            100
+          ],
+          "pred_shapes": [
+            [
+              30,
+              22
+            ],
+            [
+              30,
+              22
+            ],
+            [
+              30,
+              22
+            ],
+            [
+              30,
+              22
+            ],
+            [
+              30,
+              22
+            ]
+          ],
+          "error": null,
+          "program_name": "enum_fill_enclosed:changed_output_color",
+          "signature": "enum_fill_enclosed:changed_output_color|fill_enclosed(changed_output_color)"
+        },
+        {
+          "name": "route_singletons_same|route_singletons()",
+          "shape_exact": true,
+          "train_diff": 1117,
+          "per_pair_diff": [
+            274,
+            263,
+            197,
+            209,
+            174
+          ],
+          "pred_shapes": [
+            [
+              30,
+              22
+            ],
+            [
+              30,
+              22
+            ],
+            [
+              30,
+              22
+            ],
+            [
+              30,
+              22
+            ],
+            [
+              30,
+              22
+            ]
+          ],
+          "error": null,
+          "program_name": "route_singletons_same",
+          "signature": "route_singletons_same|route_singletons()"
+        },
+        {
+          "name": "enum_route_singletons:same|route_singletons()",
+          "shape_exact": true,
+          "train_diff": 1117,
+          "per_pair_diff": [
+            274,
+            263,
+            197,
+            209,
+            174
+          ],
+          "pred_shapes": [
+            [
+              30,
+              22
+            ],
+            [
+              30,
+              22
+            ],
+            [
+              30,
+              22
+            ],
+            [
+              30,
+              22
+            ],
+            [
+              30,
+              22
+            ]
+          ],
+          "error": null,
+          "program_name": "enum_route_singletons:same",
+          "signature": "enum_route_singletons:same|route_singletons()"
+        },
+        {
+          "name": "dominant_recolor_map|recolor_map(dominant_transition_map)",
+          "shape_exact": true,
+          "train_diff": 1859,
+          "per_pair_diff": [
+            290,
+            290,
+            418,
+            418,
+            443
+          ],
+          "pred_shapes": [
+            [
+              30,
+              22
+            ],
+            [
+              30,
+              22
+            ],
+            [
+              30,
+              22
+            ],
+            [
+              30,
+              22
+            ],
+            [
+              30,
+              22
+            ]
+          ],
+          "error": null,
+          "program_name": "dominant_recolor_map",
+          "signature": "dominant_recolor_map|recolor_map(dominant_transition_map)"
+        },
+        {
+          "name": "enum_recolor:dominant_transition_map|recolor_map(dominant_transition_map)",
+          "shape_exact": true,
+          "train_diff": 1859,
+          "per_pair_diff": [
+            290,
+            290,
+            418,
+            418,
+            443
+          ],
+          "pred_shapes": [
+            [
+              30,
+              22
+            ],
+            [
+              30,
+              22
+            ],
+            [
+              30,
+              22
+            ],
+            [
+              30,
+              22
+            ],
+            [
+              30,
+              22
+            ]
+          ],
+          "error": null,
+          "program_name": "enum_recolor:dominant_transition_map",
+          "signature": "enum_recolor:dominant_transition_map|recolor_map(dominant_transition_map)"
+        },
+        {
+          "name": "enum_recolor_then_bar_route:dominant_transition_map+bg_draw|recolor_map(dominant_transition_map)|bar_bracket_route(bg_draw_color)",
+          "shape_exact": true,
+          "train_diff": 1859,
+          "per_pair_diff": [
+            290,
+            290,
+            418,
+            418,
+            443
+          ],
+          "pred_shapes": [
+            [
+              30,
+              22
+            ],
+            [
+              30,
+              22
+            ],
+            [
+              30,
+              22
+            ],
+            [
+              30,
+              22
+            ],
+            [
+              30,
+              22
+            ]
+          ],
+          "error": null,
+          "program_name": "enum_recolor_then_bar_route:dominant_transition_map+bg_draw",
+          "signature": "enum_recolor_then_bar_route:dominant_transition_map+bg_draw|recolor_map(dominant_transition_map)|bar_bracket_route(bg_draw_color)"
+        }
+      ]
+    },
+    {
+      "task_id": "dd6b8c4b",
+      "n_compiled": 8,
+      "best": {
+        "name": "learned_recolor_map|recolor_map(color_transition_map)",
+        "shape_exact": true,
+        "train_diff": 28,
+        "per_pair_diff": [
+          17,
+          6,
+          5
+        ],
+        "pred_shapes": [
+          [
+            11,
+            11
+          ],
+          [
+            11,
+            11
+          ],
+          [
+            11,
+            11
+          ]
+        ],
+        "error": null,
+        "program_name": "learned_recolor_map",
+        "signature": "learned_recolor_map|recolor_map(color_transition_map)"
+      },
+      "train_exact": [],
+      "top": [
+        {
+          "name": "learned_recolor_map|recolor_map(color_transition_map)",
+          "shape_exact": true,
+          "train_diff": 28,
+          "per_pair_diff": [
+            17,
+            6,
+            5
+          ],
+          "pred_shapes": [
+            [
+              11,
+              11
+            ],
+            [
+              11,
+              11
+            ],
+            [
+              11,
+              11
+            ]
+          ],
+          "error": null,
+          "program_name": "learned_recolor_map",
+          "signature": "learned_recolor_map|recolor_map(color_transition_map)"
+        },
+        {
+          "name": "dominant_recolor_map|recolor_map(dominant_transition_map)",
+          "shape_exact": true,
+          "train_diff": 28,
+          "per_pair_diff": [
+            17,
+            6,
+            5
+          ],
+          "pred_shapes": [
+            [
+              11,
+              11
+            ],
+            [
+              11,
+              11
+            ],
+            [
+              11,
+              11
+            ]
+          ],
+          "error": null,
+          "program_name": "dominant_recolor_map",
+          "signature": "dominant_recolor_map|recolor_map(dominant_transition_map)"
+        },
+        {
+          "name": "enum_recolor:color_transition_map|recolor_map(color_transition_map)",
+          "shape_exact": true,
+          "train_diff": 28,
+          "per_pair_diff": [
+            17,
+            6,
+            5
+          ],
+          "pred_shapes": [
+            [
+              11,
+              11
+            ],
+            [
+              11,
+              11
+            ],
+            [
+              11,
+              11
+            ]
+          ],
+          "error": null,
+          "program_name": "enum_recolor:color_transition_map",
+          "signature": "enum_recolor:color_transition_map|recolor_map(color_transition_map)"
+        },
+        {
+          "name": "enum_recolor:dominant_transition_map|recolor_map(dominant_transition_map)",
+          "shape_exact": true,
+          "train_diff": 28,
+          "per_pair_diff": [
+            17,
+            6,
+            5
+          ],
+          "pred_shapes": [
+            [
+              11,
+              11
+            ],
+            [
+              11,
+              11
+            ],
+            [
+              11,
+              11
+            ]
+          ],
+          "error": null,
+          "program_name": "enum_recolor:dominant_transition_map",
+          "signature": "enum_recolor:dominant_transition_map|recolor_map(dominant_transition_map)"
+        },
+        {
+          "name": "fill_enclosed_changed_color|fill_enclosed(changed_output_color)",
+          "shape_exact": true,
+          "train_diff": 37,
+          "per_pair_diff": [
+            11,
+            18,
+            8
+          ],
+          "pred_shapes": [
+            [
+              11,
+              11
+            ],
+            [
+              11,
+              11
+            ],
+            [
+              11,
+              11
+            ]
+          ],
+          "error": null,
+          "program_name": "fill_enclosed_changed_color",
+          "signature": "fill_enclosed_changed_color|fill_enclosed(changed_output_color)"
+        },
+        {
+          "name": "enum_fill_enclosed:changed_output_color|fill_enclosed(changed_output_color)",
+          "shape_exact": true,
+          "train_diff": 37,
+          "per_pair_diff": [
+            11,
+            18,
+            8
+          ],
+          "pred_shapes": [
+            [
+              11,
+              11
+            ],
+            [
+              11,
+              11
+            ],
+            [
+              11,
+              11
+            ]
+          ],
+          "error": null,
+          "program_name": "enum_fill_enclosed:changed_output_color",
+          "signature": "enum_fill_enclosed:changed_output_color|fill_enclosed(changed_output_color)"
+        },
+        {
+          "name": "route_singletons_same|route_singletons()",
+          "shape_exact": true,
+          "train_diff": 49,
+          "per_pair_diff": [
+            5,
+            29,
+            15
+          ],
+          "pred_shapes": [
+            [
+              11,
+              11
+            ],
+            [
+              11,
+              11
+            ],
+            [
+              11,
+              11
+            ]
+          ],
+          "error": null,
+          "program_name": "route_singletons_same",
+          "signature": "route_singletons_same|route_singletons()"
+        },
+        {
+          "name": "enum_route_singletons:same|route_singletons()",
+          "shape_exact": true,
+          "train_diff": 49,
+          "per_pair_diff": [
+            5,
+            29,
+            15
+          ],
+          "pred_shapes": [
+            [
+              11,
+              11
+            ],
+            [
+              11,
+              11
+            ],
+            [
+              11,
+              11
+            ]
+          ],
+          "error": null,
+          "program_name": "enum_route_singletons:same",
+          "signature": "enum_route_singletons:same|route_singletons()"
+        }
+      ]
+    },
+    {
+      "task_id": "e87109e9",
+      "n_compiled": 0,
+      "best": null,
+      "train_exact": [],
+      "top": []
+    },
+    {
+      "task_id": "edb79dae",
+      "n_compiled": 0,
+      "best": null,
+      "train_exact": [],
+      "top": []
+    },
+    {
+      "task_id": "faa9f03d",
+      "n_compiled": 9,
+      "best": {
+        "name": "fill_enclosed_changed_color|fill_enclosed(changed_output_color)",
+        "shape_exact": true,
+        "train_diff": 51,
+        "per_pair_diff": [
+          11,
+          13,
+          12,
+          15
+        ],
+        "pred_shapes": [
+          [
+            12,
+            12
+          ],
+          [
+            12,
+            12
+          ],
+          [
+            12,
+            12
+          ],
+          [
+            12,
+            12
+          ]
+        ],
+        "error": null,
+        "program_name": "fill_enclosed_changed_color",
+        "signature": "fill_enclosed_changed_color|fill_enclosed(changed_output_color)"
+      },
+      "train_exact": [],
+      "top": [
+        {
+          "name": "fill_enclosed_changed_color|fill_enclosed(changed_output_color)",
+          "shape_exact": true,
+          "train_diff": 51,
+          "per_pair_diff": [
+            11,
+            13,
+            12,
+            15
+          ],
+          "pred_shapes": [
+            [
+              12,
+              12
+            ],
+            [
+              12,
+              12
+            ],
+            [
+              12,
+              12
+            ],
+            [
+              12,
+              12
+            ]
+          ],
+          "error": null,
+          "program_name": "fill_enclosed_changed_color",
+          "signature": "fill_enclosed_changed_color|fill_enclosed(changed_output_color)"
+        },
+        {
+          "name": "enum_fill_enclosed:changed_output_color|fill_enclosed(changed_output_color)",
+          "shape_exact": true,
+          "train_diff": 51,
+          "per_pair_diff": [
+            11,
+            13,
+            12,
+            15
+          ],
+          "pred_shapes": [
+            [
+              12,
+              12
+            ],
+            [
+              12,
+              12
+            ],
+            [
+              12,
+              12
+            ],
+            [
+              12,
+              12
+            ]
+          ],
+          "error": null,
+          "program_name": "enum_fill_enclosed:changed_output_color",
+          "signature": "enum_fill_enclosed:changed_output_color|fill_enclosed(changed_output_color)"
+        },
+        {
+          "name": "route_singletons_same|route_singletons()",
+          "shape_exact": true,
+          "train_diff": 70,
+          "per_pair_diff": [
+            19,
+            17,
+            13,
+            21
+          ],
+          "pred_shapes": [
+            [
+              12,
+              12
+            ],
+            [
+              12,
+              12
+            ],
+            [
+              12,
+              12
+            ],
+            [
+              12,
+              12
+            ]
+          ],
+          "error": null,
+          "program_name": "route_singletons_same",
+          "signature": "route_singletons_same|route_singletons()"
+        },
+        {
+          "name": "enum_route_singletons:same|route_singletons()",
+          "shape_exact": true,
+          "train_diff": 70,
+          "per_pair_diff": [
+            19,
+            17,
+            13,
+            21
+          ],
+          "pred_shapes": [
+            [
+              12,
+              12
+            ],
+            [
+              12,
+              12
+            ],
+            [
+              12,
+              12
+            ],
+            [
+              12,
+              12
+            ]
+          ],
+          "error": null,
+          "program_name": "enum_route_singletons:same",
+          "signature": "enum_route_singletons:same|route_singletons()"
+        },
+        {
+          "name": "enum_bar_route:bg_draw|bar_bracket_route(bg_draw_color)",
+          "shape_exact": true,
+          "train_diff": 76,
+          "per_pair_diff": [
+            9,
+            14,
+            22,
+            31
+          ],
+          "pred_shapes": [
+            [
+              12,
+              12
+            ],
+            [
+              12,
+              12
+            ],
+            [
+              12,
+              12
+            ],
+            [
+              12,
+              12
+            ]
+          ],
+          "error": null,
+          "program_name": "enum_bar_route:bg_draw",
+          "signature": "enum_bar_route:bg_draw|bar_bracket_route(bg_draw_color)"
+        },
+        {
+          "name": "enum_bar_route_then_recolor:bg_draw+dominant_transition_map|bar_bracket_route(bg_draw_color)|recolor_map(dominant_transition_map)",
+          "shape_exact": true,
+          "train_diff": 527,
+          "per_pair_diff": [
+            140,
+            136,
+            131,
+            120
+          ],
+          "pred_shapes": [
+            [
+              12,
+              12
+            ],
+            [
+              12,
+              12
+            ],
+            [
+              12,
+              12
+            ],
+            [
+              12,
+              12
+            ]
+          ],
+          "error": null,
+          "program_name": "enum_bar_route_then_recolor:bg_draw+dominant_transition_map",
+          "signature": "enum_bar_route_then_recolor:bg_draw+dominant_transition_map|bar_bracket_route(bg_draw_color)|recolor_map(dominant_transition_map)"
+        },
+        {
+          "name": "dominant_recolor_map|recolor_map(dominant_transition_map)",
+          "shape_exact": true,
+          "train_diff": 548,
+          "per_pair_diff": [
+            140,
+            136,
+            139,
+            133
+          ],
+          "pred_shapes": [
+            [
+              12,
+              12
+            ],
+            [
+              12,
+              12
+            ],
+            [
+              12,
+              12
+            ],
+            [
+              12,
+              12
+            ]
+          ],
+          "error": null,
+          "program_name": "dominant_recolor_map",
+          "signature": "dominant_recolor_map|recolor_map(dominant_transition_map)"
+        },
+        {
+          "name": "enum_recolor:dominant_transition_map|recolor_map(dominant_transition_map)",
+          "shape_exact": true,
+          "train_diff": 548,
+          "per_pair_diff": [
+            140,
+            136,
+            139,
+            133
+          ],
+          "pred_shapes": [
+            [
+              12,
+              12
+            ],
+            [
+              12,
+              12
+            ],
+            [
+              12,
+              12
+            ],
+            [
+              12,
+              12
+            ]
+          ],
+          "error": null,
+          "program_name": "enum_recolor:dominant_transition_map",
+          "signature": "enum_recolor:dominant_transition_map|recolor_map(dominant_transition_map)"
+        }
+      ]
+    }
+  ]
+}
