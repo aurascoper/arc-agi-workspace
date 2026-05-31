@@ -22,8 +22,9 @@ def agent_paths() -> list[Path]:
         if path.exists():
             paths.append(path)
     for run_dir in RUN_DIRS:
-        for path in sorted(run_dir.glob("run_*/gen_*/target_agent.py")):
-            paths.append(path.resolve())
+        for pattern in ("run_*/gen_*/target_agent.py", "*/gen_*/target_agent.py"):
+            for path in sorted(run_dir.glob(pattern)):
+                paths.append(path.resolve())
     seen: set[Path] = set()
     out: list[Path] = []
     for path in paths:
